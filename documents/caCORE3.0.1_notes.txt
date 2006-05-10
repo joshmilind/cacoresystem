@@ -1,0 +1,1813 @@
+                          Release Notes
+    
+                             caCORE
+                         Version 3.0.1
+                         July 22, 2005
+
+       National Cancer Institute Center for Bioinformatics
+
+
+================================================================
+                            Contents
+================================================================
+    
+    1.0 caCORE Introduction and History
+    2.0 caBIO
+          2.1 Release History
+          2.2 New Features and Updates
+          2.3 Bugs Fixed Since Last Release
+          2.4 Known Issues
+    3.0 caDSR
+          3.1 Release History
+          3.2 New Features and Updates
+          3.3 Bugs Fixed Since Last Release
+          3.4 Known Issues
+    4.0 CSM
+          4.1 Release History
+          4.2 Features
+          4.3 Bugs Fixed Since Last Release
+          4.4 Known Issues
+    5.0 EVS
+          5.1 Release History
+          5.2 New Features and Updates
+          5.3 Bugs Fixed Since Last Release
+          5.4 Known Issues
+    6.0 Bug Reports and Support
+    7.0 Documentation
+    8.0 NCICB Web Pages
+
+
+================================================================
+                1.0 caCORE Introduction and History
+================================================================
+
+    caCORE 3.0.1
+
+    --  22 July 2005
+
+    caCORE 3.0
+
+    --  31 March 2005    
+
+    caCORE 2.1
+
+    --  28 May 2004
+
+    caCORE 2.0.1
+
+    --  19 December 2003 
+
+    caCORE 2.0
+
+    --  31 October 2003
+
+    caCORE 1.2
+
+    --  13 June 2003
+
+    caCORE 1.1
+
+    --  7 February 2003
+
+    caCORE 1.0
+
+    --  29 August 2002 
+
+    caCORE consists of four main components: Cancer
+    Bioinformatics Infrastructure Objects (caBIO), Cancer Data
+    Standards Repository (caDSR), Common Security Module (CSM),
+    and Enterprise Vocabulary Services (EVS).  Each component
+    has both standalone functionality as well as integration
+    points with the rest of caCORE.
+
+    caCORE is a product of the NCI Center for Bioinformatics
+    and its partners. Visit the caCORE web site for more
+    information:
+
+    --  http://ncicb.nci.nih.gov/core.
+
+
+================================================================
+                           2.0 caBIO
+================================================================
+
+
+----------------------------------------------------------------
+    2.1 Release History
+----------------------------------------------------------------
+
+    caBIO 3.0.1
+
+    --  22 July 2005
+
+    caBIO 3.0
+
+    --  31 March 2005
+
+    caBIO 2.1
+
+    --  28 May 2004
+    
+    caBIO 2.0.2
+
+    --  18 March 2004
+    
+    caBIO 2.0.1
+
+    --  15 December 2004
+    
+    caBIO 2.0:
+
+    --  31 October 2003
+    
+    caBIO 1.2.1
+
+    --  27 June 2003
+    
+    caBIO 1.2
+
+    --  13 June 2003
+    
+    caBIO 1.1.1
+
+    --  11 April 2003
+    
+    caBIO 1.1
+
+    --  7 February 2003
+    
+    caBIO 1.0
+
+    --  29 August 2002
+    
+    caBIO .91
+
+    --  April 2002
+    
+    caBIO .90
+
+    --  October 2001
+
+
+----------------------------------------------------------------
+    2.2 New Features and Updates
+----------------------------------------------------------------
+   
+    --  We have eliminated the use of an altered Hibernate2 jar
+	file.  We are now only using the Hibernate3 jar.
+
+    --  The following enhancements and modifications to the EVS
+	package are included in this release:
+
+	--  evsQuery.hasParents(conceptName) 
+	--  evsQuery.hasChildrens(conceptName) 
+	--  evsQuery.getParentConcepts(conceptName) 
+	--  evsQuery.getChildConcepts(concepName)
+	--  getConceptCodeByName
+	--  Improved EVS API JavaDocs
+	--  Design Document for the EVS process up to RPC
+	    client.
+	--  searchByLoincId - this method has been deprecated
+	    and replaced by searchSourceByCode
+	--  getDescLogicConcept(vocabularyName, conceptCode,
+	    isConceptCode) - fixed
+	--  convertRoles - fixed
+
+    --  Implemented Hibernate's Second level Cache Mechanism
+	Hibernate features an extremely granular (class or
+	collection role) second-level cache and offers various
+	pluggable implementations for it. We are using the
+	EHCache (http://ehcache.sourceforge.net./ )
+	implementation (Hibernate -default) .  A second level
+	caching strategy helps us improve performance for
+	frequently run queries. EHCache also provides a memory
+	to disk persistence caching strategy, which is highly
+	scalable.
+        
+        Only objects that are being accessed from a periodic
+	data upload process such as caBIO objects have been
+	configured to cache, other regularly updated objects 
+	such as caDSR objects are not being cached.
+
+
+----------------------------------------------------------------
+    2.3 Bugs Fixed Since Last Release
+----------------------------------------------------------------
+
+    --  The 1,000 record limitation bug has been fixed.  The
+	caCORE 3.0.1 application service layer internally uses
+	the ListProxy object that implements the Java List
+	interface.  This ListProxy allows for the client side
+	management of large result sets returned by queries or
+	lazy loaded collections.  At it simplest form it is a
+	sublist of a large virtual list that represents the full
+	results of a query.  Results are retuned in chucks of
+	1000 records (default).  ListProxy can determine if the
+	complete request is in the "Chunk" or "CurrentWindow"
+	or outside of it.  If it is outside the CurrentWindow
+	the ListProxy internally uses the original query with
+	the stop and start cursor points set so that it can
+	return the results contained within the request.
+ 
+	The "Chuck" or "CurrentWindow" size can be adjusted by
+	the caCORE user by either setting a new value in the
+	ApplicationService method setRecordsCount(int) or by
+	modifying the RECORDSPERQUERY property value in the
+	CORESystem.properties file.  The CORESystem.properties
+	file is located within the caCORE's downloaded
+	client.jar file.
+
+	To prevent memory explosion with large resultsets,
+	currently the caCORE server allows a maximum "chunk"
+	size of 5000. A server error will be thrown if the
+	client attempts to set the count to greater than 5000. 
+
+	The ListProxy class extends ArrayList. All of the
+	ListProxy methods behave the same as in ArrayList
+	except in the following situations where the listed
+	methods behave differently.
+
+	--  The following methods return an incorrect value for
+	    the index of an object that goes beyond the current
+	    window of objects returned during a query. 
+
+	    --  public int indexOf(Object o)
+	    --  public int lastIndexOf(Object o)
+
+	--  The following methods are not implemented in
+	    situations where the total records (size of the
+	    List) is more than the limit set for each query.
+	    However, if the total number of records returned
+	    is less than 1000 records, these methods behave
+	    normally as in ArrayList.
+
+	    --  public Object[] toArray(Object a[])
+	    --  public boolean add(Object o)
+	    --  public boolean remove (Object o)
+	    --  public boolean addAll(Collection c)
+	    --  public boolean addAll(int index, Collection c)
+	    --  public boolean removeAll(Collection c)
+	    --  public boolean retainAll(Collection c)
+	    --  public Object set(int index, Object element)
+	    --  public void add(int index, Object element)
+	    --  public Object remove(int index)
+
+    --  The time required for Nucleic Acid Sequence, Protein, or
+	Location objects searches has been reduced to an
+	acceptable level similar to all other objects by
+	modifying the hibernate mapping file properties for
+	these types of relationships and also by implementing
+	a second-level caching mechanism.
+
+    --  Lazy initialization errors are no longer thrown when
+	navigating uni-directional, many-to-one, or one-to-one
+	relationships.
+
+    --  Searches are no longer case sensitive.
+
+    --  Object attributes that map to CLOB data types within
+	the database are searchable, but only using wildcards.
+	Exact matches are not searchable as CLOB data type
+	does not support it
+
+    --  Searching for Library protocols based on ‘type’ (TISSUE
+	or LIBRARY) now works properly.
+
+    --  When conducting a multi level search, the different
+	objects used as criteria for the search still have to be
+	specified by a fully qualified domain name, but white
+	space restrictions no longer matter. For example:
+
+	--  appService.search("gov.nih.nci.cabio.domain.Protein,
+	    gov.nih.nci.cabio.domain.Gene", chr); is a correct
+	    search, while appService.search("Protein,Gene", chr)
+	    is an incorrect search.
+
+    --  The caCORE 3.0.1 WSDL file is now fully WS-I compliant. 
+        caCORE WSDL files are generate by Axis 1.2, and passed 
+        the WS-I compliance testing through a WS-I recommended 
+        testing tool "Interoperability Testing Tools 1.1
+	(SSBP)".
+
+    --  SocketTimeout Exceptions will no longer occur when
+	running a query using web services.
+
+    --  The caBIO database is now reloaded with fresh data every
+	two weeks.
+
+    --  Searching for Genes based on Pathways now returns proper
+	results.
+
+    --  The following EVS API methods are now working:
+
+	--  searchDescLogicConcept 
+	--  getBroaderConcepts 
+	--  getNarrowerConcepts
+	--  getRelatedConcepts
+	--  getAllAssociationTypes 
+	--  getAllPropertyTypes  
+	--  getAllSubConceptNames 
+	--  searchMetaThesaurus
+
+
+----------------------------------------------------------------
+    2.4 Known Issues
+----------------------------------------------------------------
+ 
+    --  Searching for ranges.
+
+	Using Hibernate Criteria, you can search for values in
+	ranges such as Physical Location
+
+	For example:
+
+  ApplicationService appService =
+      ApplicationService.getRemoteInstance(
+      "http://cabio.nci.nih.gov/cacore30/server/HTTPServer");
+  Criteria criteria =
+    DetachedCriteria.forClass(PhysicalLocation.class);
+  //PhysicalLocation ph = new PhysicalLocationImpl();
+	 
+criteria.add(Restrictions.gt("chromosomalStartPosition",
+  new Long("0")));
+criteria.add(Restrictions.lt("chromosomalStartPosition",
+  new Long("10000")));
+criteria.createAlias("chromosome", "chr");
+criteria.add(Restrictions.eq(("chr.number"),
+  new String("9")));
+  try {
+    resultList = appService.query(criteria,
+      PhysicalLocationImpl.class.getName());
+    System.out.println("\n Total # of  records = " +
+      resultList.size());
+    for (Iterator resultsIterator = resultList.iterator(); 
+      resultsIterator.hasNext();) {
+      PhysicalLocation returnedPhysicalLocation =
+	(PhysicalLocation) resultsIterator.next();
+      System.out.println( "Chromosome No.: "+
+	returnedPhysicalLocation.getChromosome().getNumber());
+      System.out.println( "Chromosome Start Position: "+
+	returnedPhysicalLocation.getChromosomalStartPosition());
+      System.out.println( "Chromosome End Position: "+
+	returnedPhysicalLocation.getChromosomalEndPosition());
+      if(returnedPhysicalLocation.getGene()!= null){
+        System.out.println( "Associated Gene: "+ 
+	  returnedPhysicalLocation.getGene().getSymbol());
+      }
+      if(returnedPhysicalLocation.getSNP()!= null){
+        System.out.println( "Associated SNP: "+
+	  returnedPhysicalLocation.getSNP().getDBSNPID());
+      }
+      if(returnedPhysicalLocation.getNucleicAcidSequence()!=
+	null){
+        System.out.println( "Associated NucleicAcidSequence: "+
+	  returnedPhysicalLocation.getNucleicAcidSequence().
+	  getAccessionNumber());
+      }
+      System.out.println("----------------------------------
+	-------------");
+    }
+	 
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+
+    --  Searching based on the Protein object's keyword and
+	secondaryAccession attributes will throw a
+	gov.nih.nci.system.delegator.DelegateException. - Bug
+	#800
+
+    --  currently there is no data in our database to support
+	provenance package objects. - Bug #760
+
+    --  Searching for DatabaseCrossReferences - Bug #753
+
+	In order to retrieve DatabaseCrossReferences you have to
+	employ a workaround technique as shown below. This
+	workaround needs to be employed for retrieving
+	DatabaseCrossReference objects associated with the SNP,
+	Gene, NucleicAcidSequence, and EngineeredGene objects.
+
+	In this example we want to retrieve the
+	DatabaseCrossReferences associated with a given SNP. 
+
+SNP snp = new SNPImpl();
+snp.setId(new Long(34053));
+
+//Instead of searching for DatabaseCrossReferences based on a
+//SNP you need to first search for a SNP based on its criteria
+//(in this case it's id) and then call its
+//getDatabaseCrossReferenceCollection() method.
+
+List rs3 =
+  appService.search("gov.nih.nci.cabio.domain.SNP",snp);
+
+for (Iterator i = rs3.iterator(); i.hasNext();) {
+  List rs4 = rs3[i].getDatabaseCrossReferenceCollection();
+  for (Interator j, rs4.iterator(); j.hasNext(); {
+    gov.nih.nci.common.domain.DatabaseCrossReference dbref =
+    (gov.nih.nci.common.domain.DatabaseCrossReference) i.next();
+    System.out.println("Cross ref Id - " +
+      dbref.getCrossReferenceId());
+    System.out.println("Source type - " +
+      dbref.getSourceType());
+    System.out.println("Data source - " +
+      dbref.getDataSourceName()); 
+  }
+}
+
+    --  The Distributed Annotation System (DAS) package is not
+	available in this release. We plan to put it back in
+	durning a future release.
+
+    --  The HTTP interface is not available in this release. We
+	plan to put it back in in a future release.
+
+    --  Searches for GeneOntology, OrganOntology, and
+	DiseaseOntology now return correct results. However, do
+	to the nature of ontologies searching for related
+	ontologies and relationships after initially retrieving
+	an ontology using the ApplicationService search method
+	is limited. You should use the specific ontology or
+	ontology relationship’s "get" methods as demonstrated
+	below to retrieve related objects:
+
+OrganOntology g2 = new OrganOntologyImpl(); 
+  g2.setId(new Long(7)); 
+  List resultList =
+    appService.search("gov.nih.nci.cabio.domain.OrganOntology",
+    g2); 
+  if (resultList != null) 
+  { 
+    if(resultList.size()<1){ 
+        System.out.println("0 records found."); 
+    }else{ 
+      for (Iterator i = resultList.iterator(); i.hasNext();) 
+      { 
+        OrganOntology g = (OrganOntology)i.next();
+        System.out.println("Organ Ontology ID is " + g.getId() +
+          " | name is " + g.getName());  
+        System.out.println("To get Child Ontologies first get
+        ChildOrganOntologyRelationship, then get it’s Child
+          Ontology ");
+          List childRelations =
+          (List)g.getChildOrganOntologyRelationshipCollection();
+          for(Iterator j = childRelations.iterator();
+            j.hasNext();) 
+          {
+            OrganOntologyRelationship or =
+              (OrganOntologyRelationship)j.next(); 
+            System.out.println("    Child  Organ Ontology ID of
+	      organ Ontology 7  is " +
+            or.getChildOrganOntology().getId() + " | name is " +
+              or.getChildOrganOntology().getName());
+  }
+System.out.println("To get Parent Ontologies, first get
+  ParentOrganOntologyRelationship, then get Parent Ontology ");
+List parentRelations =
+  (List)g.getParentOrganOntologyRelationshipCollection(); 
+for(Iterator j = parentRelations.iterator(); j.hasNext();)  
+{ 
+  OrganOntologyRelationship or =
+    (OrganOntologyRelationship)j.next(); 
+  System.out.println("    Parent Organ Ontology ID of above is "
+    + or.getParentOrganOntology().getId() +
+    " | name is " + or.getParentOrganOntology().getName());
+          } 
+      } 
+      System.out.println("Number of records is " +
+        resultList.size()); 
+    } 
+  }else{ 
+    System.out.println("None records found."); 
+  } 
+
+    --  Querying for objects based on relationships to
+	collections of other objects only works if the objects
+	contained within the related collection are all expected
+	to be associated to the target search. By this we mean
+	for example: If I want to search for a Gene based on
+	Target 'x' and Target 'y' the result set will only
+	contain Genes associated with both X and Y and not X
+	or Y. The work around for "OR" functionality would be
+	to run individual queries based on each associated
+	object.
+
+	An example of how to do this is shown below:
+
+System.out.println("Retrieve a list of Gene objects associated
+  to a list of Target objects." );   
+
+Target target1 = new TargetImpl();
+target1.setId(new Long(61));
+
+Target target2 = new TargetImpl();
+target2.setId(new Long(42));
+
+List targetList = new ArrayList();
+targetList.add(_target1);
+targetList.add(_target2);
+
+Gene gene5 = new GeneImpl();
+gene5.setTargetCollection(targetList);
+
+List resultList =
+  appService.search("gov.nih.nci.cabio.domain.Gene", gene5); 
+if(resultList.size()<1)
+{
+  System.out.println("\n(Example: Gene(target list)->Geme) No
+    records found");
+}
+else
+{
+  System.out.println("\n(Example: Gene(target list)->Gene) Total
+    # of  records = "+ resultList.size());
+  Iterator iterator = resultList.iterator();
+  while (iterator.hasNext())
+  {
+    Gene go = (Gene)iterator.next();
+    System.out.println(" result id = " + go.getId() +
+    " | result symbol = " + go.getSymbol());
+  }
+}
+
+
+================================================================
+                           3.0 caDSR
+================================================================
+
+
+----------------------------------------------------------------
+    3.1 Release History
+----------------------------------------------------------------
+
+    caDSR 3.0.1
+
+    --  22 July 2005
+
+    caDSR 3.0
+
+    --  31 March 2005    
+
+    caDSR 2.1
+
+    --  28 May 2004
+
+    caDSR 2.0.1
+
+    --  19 December 2003 
+    
+    caDSR 2.0
+
+    --  31 October 2003 
+    
+    caDSR 1.2
+
+    --  13 June 2003    
+    
+    caDSR 1.1
+
+    --  7 February 2003
+    
+    caDSR 1.0
+
+    --  29 August 2002
+
+
+----------------------------------------------------------------
+    3.2 New Features and Updates
+----------------------------------------------------------------
+
+    +------------------------------------+
+    | Admin Tool and caDSR Repository    |
+    +------------------------------------+
+
+    --  The following three features were added to the Admin
+	Tool to support users who want to view data added to
+	caDSR using the UML Loader:
+  
+        --  New Search Criteria: Classification Scheme and
+	    Classification Scheme Item have been added as new
+	    search criteria for Data Element, Data Element
+	    Concept, and Property.
+ 
+        --  New Object Class Relationships Screen. The Admin
+	    Tool now displays information about object class
+	    relationships for Administered Components created in
+	    caDSR using the UML Loader.
+
+        --  Classification Scheme Assignments for Alternate
+	    Names and Alternate Definitions. Administered
+	    Components created in caDSR using the UML loader are
+	    automatically assigned Alternate Names and
+	    Definitions and these are automatically assigned to
+	    a set of classification schemes.  These assignments
+	    can be viewed now from the Admin Tool.
+
+    --  The APIs used to access the EVS system have changed.
+	Instead of accessing EVS using the Oracle and Apelon
+	APIs, the Admin Tool now accesses EVS using the caCORE
+	EVS API (version 3.0.1). 
+
+    --  The default setting for the Language field for Alternate
+	Names and Alternate Definitions has been set to English.
+	In prior releases, no default was set.
+
+    --  The business rules applied during DEC creation have been
+	updated. It is no longer possible in the Admin Tool to
+	create a DEC using retired Object Class, Property, or
+	Representation  components.
+
+    +------------------------------------+
+    | CDE Browser                        |
+    +------------------------------------+
+
+    --  We have added two screens to the CDE Browser to display
+	additional details on the objects and domain model upon
+	which a DE is based.  Note: In this release, detailed
+	information about objects and associations will be
+	available for viewing only for those DEs that were
+	created in caDSR using the UML Loader. 
+
+    --  For each CDE, we now provide a concise list of all the
+	forms the CDE appears on and the question text used on
+	each form. 
+         
+    --  The Excel and XML downloads, which are accessed from the
+	Search Results page and from the CDE Cart, have been
+	expanded to include all the new data fields that were
+	added in Release 3.0. Twenty-eight new fields have been
+	added, bringing the total number of fields in the
+	download files to 85. In addition, the CDE Browser now
+	uses the Apache Jakarta Open Source POI API to generate
+	the Excel file. As a result, the downloaded Excel file
+	will be formatted as an Excel file instead of a CSV file.
+	(Prior to this release, the file was formatted as a CSV
+	file.) The new default name for the Excel Download file
+	is "CDEBrowser_SearchResults(1).xls". 
+        
+    --  In the previous release, the Search Preferences settings
+	applied to all searches. This has been changed.  Now,
+	when you search by selecting a form or template from the
+	caDSR Tree, the Search Preferences filters will be
+	ignored. That is, all CDEs associated with the form or
+	template will be displayed in the search result table.
+ 
+    --  On the Data Element Details page, we now display the
+	Long Name rather than Preferred Name for Value Domains
+	and Data Element Concepts.
+
+    +------------------------------------+
+    | Form Builder                       |
+    +------------------------------------+
+
+    --  We have added a new feature that provides greater
+	flexibility When organizing forms in the caDSR Tree.
+	Curators can now create subfolders within the Protocol
+	Forms and Protocol Form Templates folders in the caDSR
+	Tree and assign forms and templates to these new
+	subfolders. See the CDE Browser and Form Builder online
+	help for details.
+
+    +------------------------------------+
+    | CDE Curation Tool                  |
+    +------------------------------------+
+
+    --  Version 3.0.1 is using the caCORE 3.0.1 EVS API to
+	access the Enterprise Vocabulary Service.
+    
+    --  Definition field size has been expanded to display more
+	of the Definition.
+
+    --  The "DECs Using" column on Object Class and Property
+	search results from the caDSR display a hyperlinked
+	number indicating the number of Data Element Concepts
+	using the Object Class or Property. Clicking the
+	hyperlinked number causes a pop-up window to display
+	information about the DECs.
+
+    --  Value Domain screens now display the Datatype
+	Description and Comment of the selected Datatype.
+
+    --  Get Associated search results headings display the Long
+	Name of the source Administered Component instead of
+	its Preferred Name.
+
+    --  The label for Preferred Name type "Existing Name
+	(Editable)" on Create New screens has been changed to
+	"User Entered"
+
+    --  Success messages contain instructions on how to copy the
+	text of the message.
+
+    --  Designations function now provides users with the
+	ability to set the Language for Designations, Alternate
+	Names, and Reference Documents.
+
+    --  The text displayed on secondary windows opened after a
+	session timeout now reads "This session is no longer
+	active. User session has expired. Close session and log
+	in again."
+
+    --  Respective Definitions are replaced on Data Element
+	screens if the user changes the Date Element Concept
+	or Value Domain.
+
+    --  Definition on Data Element Concept and Value Domains are
+	updated in the following ways:
+
+	--  On Create New screens, the respective Definition is
+	    replaced as naming components are changed.
+
+	--  On Edit, Version, and Create New Using Existing
+	    screens, the existing Definition is appended as
+	    naming components are added. The Definition is not
+	    changed when a naming component is removed.
+
+    +------------------------------------+
+    | caDSR Sentinel Tool                |
+    +------------------------------------+
+
+    Sentinel User Interface and Alert Definitions
+    ---------------------------------------------
+
+    --  The Criteria may be limited to specific Administered
+	Component types:
+
+	--  Classification Scheme
+	--  Classification Scheme Item
+	--  Conceptual Domain
+	--  Context
+	--  Data Element
+	--  Data Element Concept
+	--  Form/ Template
+	--  Module
+	--  Object Class
+	--  Property
+	--  Permissible Value
+	--  Question
+	--  Valid Value
+	--  Value Domain
+
+    --  Use of Reporting Dates to pull changes from the caDSR is
+        controlled via the Edit Criteria screen and may be
+	specified as "Date Modified Only:, :Date Created Only",
+	or "Date Created and Date Modified" (default).
+
+    --  The Version and build number has been moved to the left
+	corner.
+
+    Sentinel Report Content
+    -----------------------
+
+    --  Alert emails contain instructions on how to save a local
+	copy of a Report.
+
+    --  Instructions on how to read the Report content appear in
+        italics between the Report Heading and the Change
+	Details.
+
+    --  Sections detailing a change in the caDSR begin with 
+        "Changes to the" Sections noting records associated to
+	a change begin with "Associated To".
+
+    --  Columns are aligned for improved readability.
+
+    --  When Public ID or Version do not apply to a record,
+	the label is grey and the text "N/A" appears beneath it.
+        These are present to maintain the column alignment.
+
+    --  Modified By and Modified Date are blank for records that
+        have not been changed since their creation.
+
+    --  Abbreviations are fully expanded for the Attribute Names
+        appearing in the change sections.
+
+
+----------------------------------------------------------------
+    3.3 Bugs Fixed Since Last Release
+----------------------------------------------------------------
+
+    +------------------------------------+
+    | Admin Tool                         |
+    +------------------------------------+
+
+    --  Under certain circumstances, in the prior release,
+	reference documents were being incorrectly assigned by
+	the system to the "Test" Context rather than to the
+	owning context. This bug has been fixed and the existing
+	data updated so that all reference documents are
+	assigned to the proper context.
+
+    --  A bug in the 3.0 release was preventing end users from
+	successfully versioning a Conceptual Domain. This bug
+	has been fixed.
+
+    --  Under certain circumstances, users were getting the
+	following error message when selecting the Alternate
+	Name link on the tree: LINK NAME IS NULL. This bug has
+	been fixed.
+
+    --  The Version Radio Button on the Data Element Concept
+	Search page has been fixed to clearly indicate to users
+	that "Latest Version" is the default.
+
+    --  For some concepts in caDSR, the Concept Class Database
+	attribute was being set to null. This bug has been fixed
+	and the correct data for this field has been added to
+	any affected concepts.
+
+    --  A problem with the way disable user accounts were being
+	handled has been fixed.
+
+    --  Referential integrity constraints were missing from DEC
+	and VD. This has been fixed.
+
+    --  In some cases, EVS Source was not being assigned to
+	concepts_Ext. This has been fixed.
+
+    +------------------------------------+
+    | CDE Browser                        |
+    +------------------------------------+
+
+    --  When using the CDE Browser with Firefox, users were 
+        getting unexpected search results if they entered a 
+        term and then hit the Enter key (rather than clicking 
+        the Search button). This bug has been fixed. The Enter 
+        key should work as expected when the CDE Browser is 
+        accessed using Firefox.
+
+    --  The Excel download file was not properly formatting any
+	rows that contained text with double quotes (" "). This
+	problem has been fixed.
+
+    --  The Browser was displaying only the first 30 characters
+	for each Alternate Name in the Alternate Names field on
+	the Data Element Details page. This has been fixed. The
+	Browser now displays up to 255 characters for each
+	Alternate Name, which is the maximum length permitted
+	in the database for each Alternate Name.
+
+    --  When the C3D Domain classification (as well as several
+	other classifications) was selected from the caDSR Tree,
+	each DE was appearing multiple times. This problem has
+	been fixed.
+ 
+    --  The caDSR Tree was typically taking 15-20 seconds to
+	display when users started a CDE Browser session or
+	refreshed the Tree. The Tree's performance has been
+	improved by up to 50%.
+
+    --  Some CDEs were not being shown in the results table when
+	forms or templates were being viewed in the CDE Browser.
+	This was caused by the default filters in the Search
+	Preferences, which excluded CDEs belonging to Test or
+	Training or having certain "non-released" workflow
+	statuses. This problem has been corrected. The Search
+	Preferences  filters have been changed so that they do
+	not apply to the display of the CDEs belonging to a
+	form or template.
+
+    --  The Help button was not working from the Form Builder
+	Login Page and the CDE Compare Page. This bug has been
+	fixed.
+        
+    --  Under certain circumstances, paginating through large
+	search results (typically if the result set included
+	more 1000 matches) was causing a system error. This bug
+	has been fixed.
+             
+    --  Adding certain data elements to the CDE Cart or CDE
+	Compare tool was causing a JSP Error. The following
+	CDEs were known to cause an error when added to Cart or
+	Compare Tool: New Cancer Diagnosis ICD-O Code (Public
+	ID 2005839) and Primary Cancer Diagnosis ICD-O Code
+	(Public ID 2006871). This bug has been fixed.
+
+    +------------------------------------+
+    | Form Builder                       |
+    +------------------------------------+
+
+    --  Users were not able to add CDE's that contain more than
+	999 valid values to a Form using Form Builder. This
+	problem has been fixed.
+        
+    --  The Enter key was not working on the Form Builder
+        Login page. This has been fixed. The Enter key can now 
+        be used instead of the Login button.
+        
+    --  Form Builder was generating a system error whenever the
+	255 character limit was exceeded for the Form Header,
+	Form Footer, Question Text, Question Instruction, and
+	Valid Value Instruction fields. The system error
+	occurred when the user tried to save the form. This
+	bug has been fixed. If a user exceeds the 255 character
+	limit, a message appears informing the user of the
+	limit.
+
+    --  Under certain circumstances, newly created forms in the 
+        Test context were displaying in the caDSR Tree with a
+	number rather than name. This bug has been fixed.
+        
+    --  On the Module Edit screen, while adding questions from 
+        the drop down list of previously deleted questions, the
+	first question in the drop down list was always added
+	to the module instead of the actual question the user
+	selected. This bug has been fixed.
+
+    +------------------------------------+
+    |  CDE Curation Tool                 |
+    +------------------------------------+
+
+    --  Administered Component edits made during a block-edit
+	function are correctly displayed when the Administered
+	Component is examined immediately after the block-edit
+	is submitted.
+
+    --  The Edit Selection button never becomes enabled on
+	Object Class or Property search results screen.
+
+    --  Search results against EVS Vocabularies are not affected
+	by other user’s EVS searches being conducted
+	simultaneously.
+
+    --  When submitting a new or edited Data Element where a
+	Component Data Element (a Derived DE attribute) has been
+	removed, users do not receive errant messages stating
+	that the Component Data Element was not removed.
+
+    --  Permissible values are retained on the Edit Value Domain
+	screen as the Type is toggled from Enumerated to
+	Non-Enumerated and back.
+
+    --  Preferred Name is always truncated to 30 characters.
+
+    --  Search results from the caDSR are no longer returned
+	when an EVS search window has its "Search In" focused
+	on "None" for caDSR and "Code (Metathesaurus)" for EVS
+
+    --  EVS Concepts are displayed in bold font in the EVS
+	structure when the hyperlinked Concept name is clicked
+	in the search area.
+
+    --  The EVS tree structure is correctly displayed when a
+	hyperlinked Concept name is clicked in the search
+	results area of a Select Parent window (Referenced
+	Value Domain).
+
+    --  The EVS tree structure correctly displays a Concept as
+	many times in the tree structure as it appears in the
+	source Vocabulary’s hierarchy when its hyperlinked
+	Concept name is clicked in the search results area.
+
+    --  Block Edit Data Element validation enforces all of the
+	business rules enforced during a single Edit Data
+	Element function.
+
+    --  Registration Statuses Standard and Candidate are always
+	present in the Registration Status pick-list on Create,
+	Edit, or Version Data Element.
+
+    --  Block Edit Data Element Concept Validation function
+	enforces all of the business rules enforced during a
+	single Edit Data Element Concept 
+
+    --  Evoking the Get Superconcepts function no longer
+	displays the EVS Tree structure last viewed.
+
+    --  Concepts from different EVS vocabulary sources sharing
+	the same Concept ID retain their unique identity in the
+	Curation Tool.
+
+    --  EVS Concepts names containing an apostrophe are returned
+	when the exact name (including the apostrophe) is
+	entered as the search term.
+
+    --  Referenced Values constrained to a parent from the
+	VA_NDFRT vocabulary are displayed with the correct
+	"Level" indicator.
+
+    --  The Get All Subconcepts function on a Referenced
+	Enumerated Value Domain’s Select Values window works
+	for the VA_NDFRT vocabulary.
+
+    --  The EVS_Source column is always populated in the Concept
+	Class table when an Object Class, Property, or
+	Representation Term is created.
+
+    --  Selecting All Attributes for Permissible Values search
+	results no longer displays an error followed by
+	misaligned data.
+
+    --  Quotation marks may be part of a Permissible Value’s
+	name without producing adverse effects.
+
+    --  The screen captures for the Help document’s CRT
+	Integration section correspond to the text.
+
+    --  The user-defined sort order is retained when the Get
+	Associated Back button is clicked.
+
+    --  Data Element Search In Names & Definitions, or Names,
+	Definitions, and Doc Text no longer searches in the
+	Designations Table for Used By Preferred Name.
+
+    --  When the user has selected it for use, an Object Class,
+	Property, or Representation Term in the caDSR with a
+	Workflow Status other than RELEASED is automatically
+	versioned and given the Workflow Status of RELEASED.
+
+
+----------------------------------------------------------------
+    3.4 Known Issues
+----------------------------------------------------------------
+
+    +------------------------------------+
+    | Admin Tool                         |
+    +------------------------------------+
+
+    --  The Admin Tool is not officially supported when used
+	with Firefox. Certain features in the Admin Tool are
+	known not to work as designed when used with Firefox.
+	We recommend using the Admin Tool with IE v.6.0 or
+	higher.
+
+    --  Concepts that have been marked as Retired in EVS are
+	included in the EVS Search results in the Admin Tool if
+	they meet the specified search criteria. If needed,
+	users can verify the status of an EVS term by checking
+	EVS directly. In a future release, we will add a filter
+	to the Admin Tool that allows users to exclude Retired
+	EVS concepts. In addition, in a future release we will
+	flag Retired EVS concepts in the search results.
+	(TestTrack: #872, #1704)
+
+    --  If a result in the EVS Search results table contains a
+	single quote in any of its text in any of the columns,
+	users will get a JavaScript error when they try to use
+	the term to create an Object Class, Property, or
+	Representation. (TestTrack: #1703)
+
+    --  In general, it should not be necessary to use wildcards
+	in the EVS Search. The Admin Tool is designed to return
+	any concept in EVS that contains the term you entered
+	anywhere in its name. For example, if you enter "gene",
+	you will get results such as  "Gene", "Genes, vif" or
+	"HTR3 Gene". If needed, however, "*" can be used as the
+	wildcard character. For example, if you enter "gen*",
+	you will get concepts that contain gene, genetic, and
+	the like in their name. Do not include "." in the
+	search terms when using the EVS search feature. The
+	"." will truncate the search term and the results that
+	are returned will not necessarily match what you are
+	looking for.
+
+    --  Currently, the Admin Tool does not prevent users from
+	including a carriage return in the Long Name for a
+	Classification Scheme. The use of carriage returns in
+	the Long Name for a Classification Scheme is known under
+	certain circumstances to create a JavaScript error in
+	the Curation Tool. We will fix the Admin Tool in a
+	future release to check for and prevent the use of
+	carriage returns in Long Names.  Workaround: Edit the
+	relevant Long Name and remove the carriage return.
+	(TestTrack: #1676)
+
+    --  If a change is made to existing data, the Admin Info tab
+	should update to reflect that a modification was made.
+	However, this does not happen for all changes. For
+	example, it is known that changes to the value meaning
+	associated with an existing value will not cause the
+	date modified field in the Admin Info section to update.
+	(TestTrack: #1665)
+
+    +------------------------------------+
+    | CDE Browser                        |
+    +------------------------------------+
+
+    --  Test and Training Context Forms and Templates shows up
+	under the caBIG Catalogue of Published Forms node even
+	when the user has selected to exclude Test and Training
+	context using search preferences.
+
+    --  Sorting the search results by Public ID in the Browser
+	does not produce the results one may expect. This is
+	because the Browser does not treat Public IDs as whole
+	numbers Instead, it sorts based on an examination of
+	each number in the Public ID. No workaround. This will
+	be fixed in a future release. (TestTrack: #1612)
+
+    --  Users may encounter an error when downloading very large
+	sets of DEs to Excel in the CDE Browser. This error
+	occurs if the Excel 65000 row limit is exceeded.
+	Typically, this will only happen if you are downloading
+	at one time more than 1000+ CDEs.  Workaround:  Add a
+	subset of the CDEs you want to download to the CDE cart
+	and then download these to Excel from within the Cart.
+	Empty the cart and repeat this process until you have
+	successfully downloaded all the CDEs you want. Combine
+	the Excel files into one file using multiple sheets.
+	(TestTrack: #245)
+
+    --  On the DEC, VD, and OC Details pages, concepts which
+	have MeDRA as their source are not hyperlinked. Concepts
+	from the following sources are hyperlinked in the
+	Browser: NCI Metathesaurus, NCI Thesaurus, LOINC, GO,
+	UMLS, MGED Ontology, UWD Visual Anatomist, and VA NDF.
+	(TestTrack: #1697)
+
+    --  URLs that are displayed in the CDE Browser may not work
+	if they are not preceded by "http://". For example,
+	"www.cancer.gov" will not work. If clicked, an error
+	message will appear. The web address must be displayed
+	in the CDE Browser as "http://www.cancer.gov". We will
+	fix this issue in a future release. (TestTrack: #1687)
+
+    +------------------------------------+
+    | caDSR UML Model                    |
+    +------------------------------------+
+
+    --  The caDSR 3.0 UML Model exposes most caDSR classes and
+        attributes. Some classes and attributes are not exposed.
+        For example "instruction" class is not included.
+
+    +------------------------------------+
+    | CDE Curation Tool                  |
+    +------------------------------------+
+
+    --  Using only a wildcard by itself during an EVS search
+	will prevent EVS results from being returned.
+
+	--  Avoid using a "*" in the search term field.
+
+    --  The "Set Meta Returns Limit" filter resets to "100"
+	after a search is conducted.
+
+	--  Select the desired MetaThesaurus returns limit
+	    before conducting another search.
+
+    --  If a user initiates a second search while previous
+	search results are still displayed, the user can click
+	"More >>" link in the previous search results. However,
+	this action terminates the second search while leaving
+	the "Searching, please wait" message and
+	hourglass-cursor displayed.
+
+	--  Avoid clicking a "More >>" link after initiating any
+	    search. If the link is inadvertently clicked, click
+	    the main menu Search button to begin another search.
+
+    --  An "Error on page" message displays if a search is
+	initiated before the screen fully refreshes. For
+	example, if "CRF Questions" is selected as the Search
+	For and the screen is still refreshing, and the user
+	clicks the Enter button, the error will be displayed.
+
+	--  Avoid initiating a search before the screen has
+	    refreshed completely. If the error is displayed
+	    (will either be a pop-up message or just text in
+	    the lower left corner of the IE window), click the
+	    main menu Search button and start again.
+
+    --  Date picker calendars can display too large inside the
+	default display window size if the IE Browser Text Size
+	is set higher than Medium. 
+
+	--  Expand the Date Picker window to make it large
+	    enough to see all the dates or change the Text Size
+	    through the IE View/ Text Size menu. Select Medium
+	    to Smallest to ensure the entire calendar displays
+	    inside the default display window size.
+ 
+    --  The "." acts as a wildcard during the NCI Metathesaurus
+	portion of an EVS search.  Since the standard wildcard
+	for searches in the Curation Tool is "*", this can
+	inadvertently cause the search string to be truncated.
+	(E.g., "123.4*" would be searched as "123." for the
+	Metathesaurus portion of a search.)
+
+	--  Do not include "." in search terms.
+
+    --  Alternate Name, Reference Document, and CSI assignments
+	made on the Designation Screen in the Data Element's
+	same Context are retained. The Designation in the same
+	context is not. 
+
+	--  Remove the Alternate Name, Reference Document, or
+	    CSI assignments using the Designations screen.
+
+    --  Microsoft Windows XP Service Pack 2® has a pop-up window
+	blocker engaged by default. This can interfere with some
+	success messages produced by the CDE Curation Tool;
+	preventing them from being displayed.
+
+	--  Follow these steps to allow the CDE Curation Tool to
+	    display the success messages blocked by SPII’s
+	    Pop-up Blocker:
+
+	    1.	Select "Internet Options" from the browser’s
+		"Tools" menu.
+	    2.	Select the "Privacy" tab.
+            3.	Click the "Settings" button in the "Pop-up
+		Blocker" area.
+	    4.	Copy and paste this URL into the "Address of Web
+		site to allow" http://cdecurate.nci.nih.gov
+	    5.	Click the "Add" button on the "Pop-up Blocker 
+   		Settings" window.
+	    6.	Click the "Close" button on the "Pop-up Blocker
+		Settings" window.
+	    7.	Click the "OK" button on the "Internet Options"
+		window.
+
+    --  Validation screens do not include a row indicating the
+	selected Preferred Name Type.
+
+	--  No workaround. Implementation planned for 3.1
+	    release.
+
+    --  The Select Values search screen for Referenced Value
+	Domains briefly refreshes three times as it compiles
+	the display of the Parent Concept in the search results
+	area and as the sole superconcept in the EVS tree
+	structure.
+
+	--  No workaround. Please wait until the screen has 
+	    fully refreshed before attempting to search for 
+            and select Values.
+
+    --  Varying number of search results are returned if a
+	search term is used that is likely to return several
+	thousand records. For example, *c*.
+
+	--  Avoid using text in the search term field likely to
+	    return several thousand records
+
+    --  A message stating that search results must be present to
+	update Display Attributes is incorrectly displayed if a
+	change in the Display Attributes is attempted after
+	clicking the Get Associated Back button.
+
+	--  Sorting the results will ‘refresh’ the screen to
+	    allow changes to the Displayed Attributes.
+
+    --  In order to maximize tool performance, the Curation Tool
+	builds pick-lists when the session is initiated. One of
+	these is the Conceptual Domain list for searching Value
+	Meanings. If a Conceptual Domain is created in the caDSR
+	Admin Tool while the Curation tool is open, this
+	Conceptual Domain will not be present in the Conceptual
+	Domain pick list on the search Value meaning screen. 
+
+	--  Logout, close the window, open a new session and
+	    restart the CDE Curation Tool.
+
+    --  Results columns for EVS Identifier, Definition Source,
+	and Vocabulary are not sorted correctly on search Value
+	Meaning search results.
+
+	--  No Workaround.
+
+    --  The Curation Tool will display JavaScript errors when
+	navigating to Create screens if a Classification Scheme
+	with an Item is created with a carriage return in its
+	Long Name.
+
+	--  No Workaround. Report the behavior to NCICB
+	    Application Support.
+
+    --  Curation Tool Help document is labeled 3.0 instead
+	of 3.0.1.	
+
+	--  Please refer to the 3.0.1 Release Notes for
+	    information about enhancements and bug fixes.
+
+    --  Simultaneous expanding (or refreshing) of the EVS tree
+	structure causes expected results for each user. This
+	is due to the basic design which stores the information
+	about which nodes have been expanded at the server level
+	instead of the session level. 
+
+	--  Evoke the refresh tree function by clicking the
+	    hyperlinked vocabulary name.
+
+    --  There is a potential of creating a Data Element Concept
+	with an Object Class and/or Property where either the
+	Object Class and/ or Property would have a Workflow
+	Status other than Released when the Validation screen
+	displays a warning that another Data Element Concept in
+	a different Context shares the Object Class/ Property
+	combination. 
+
+	--  There is no way to tell the Workflow Status of an
+	    Object Class or Property in the Curation Tool.
+	    Search for both the Object Class and Property in the
+	    Admin Tool ensure their Workflow Status are Released
+	    before submitting the Data Element Concept in the
+	    Curation Tool.
+
+    --  An Object Class. Property, or Representation Term may be
+	displayed twice as search results from the caDSR. The
+	reason is that there are more than one version of the
+	Object Class/ Property/ Representation Term with
+	Workflow Statuses of Released. The Curation Tool does
+	display the Version of these Administered Components.
+
+	--  No Workaround. It does not matter which one is
+	    selected because the tool will use the latest
+	    version of the Object Class, Property, or
+	    Representation Term.
+
+    +------------------------------------+
+    | Sentinel Tool                      |
+    +------------------------------------+
+
+    --  Since all Object Class, Property and Representation
+        Terms are created in the caBIG Context, all users
+        have limited Curator privileges and will receive 
+        an Alert if the Alert Details option includes
+        "caBIG Curators" as a Recepient.  
+
+        -- This is working as currently designed, consider 
+           "Broadcast Exemption" for 3.1. 
+
+
+================================================================
+                            4.0 CSM
+================================================================
+
+
+----------------------------------------------------------------
+    4.1 Release History
+----------------------------------------------------------------
+
+    CSM 3.0.1
+
+    --  22 July 2005
+
+    CSM 3.0
+
+    --  31 March 2005
+
+
+----------------------------------------------------------------
+    4.2 Features
+----------------------------------------------------------------
+
+    CSM provides a flexible, comprehensive solution to common
+    security objectives.  Development teams can use CSM services
+    rather than creating their own independent security
+    methodology.
+
+    +------------------------------------+
+    | CSM APIs                           |
+    +------------------------------------+
+
+    This CSM release provides the following services:
+    
+    --  Standard Privileges - In order to become compliant with
+	JAAS and Authorization Policy CSM has adapted a standard
+	set of privileges. These privileges can be used across
+	systems.  They will automatically populate into an
+	authorization schema with the SQL priming scripts
+	provided in this release.  If a schema has already been
+	created, we have provided a migration script that will
+	add the privileges.
+	
+	Privileges include:
+
+	CREATE - This privilege grants permission to a user to
+	create an entity.  This entity can be an object, a
+	database entry, or a resource such as a network
+	connection.
+	
+	ACCESS - This privilege allows a user to access a
+	particular resource.  Examples of resources include a
+	network connection, database connection, socket, module
+	of the application, or even the application itself.
+
+	READ - This privilege permits the user to read data from
+	a file, URL, socket, database, or an object. This can be
+	used at an entity level signifying that the user is
+	allowed to read data about a particular entry (which can
+	be object or database row, etc.)
+
+	WRITE - This privilege allows a user to write data to a
+	file, URL, socket, database, or object. This can also be
+	used at an entity level signifying that the user is
+	allowed to write data about a particular entity (which
+	may include an object, database row, etc.)
+
+	UPDATE - This privilege grants permission at an entity
+	level and signifies that the user is allowed to update
+	and modify data for a particular entity.  Entities may
+	include an object, an attribute of the object, a
+	database row, etc.
+
+	DELETE - This privilege permits a user to delete a
+	logical entity. This entity can be an object, a database
+	entry, a resource such as a network connection, etc.
+
+	EXECUTE - This privilege allows a user to execute a
+	particular resource. The resource can be a method,
+	function, behavior of the application, URL, button etc.
+        
+    --  Primitive Types - The secureObjects method of the API
+	needs was modified to throw an error for data objects
+	that contain attributes of primitive data types. This
+	method supports only objects coded to the Java Bean
+	specifications.
+
+    --  Reporting Functionality - The API was updated to provide
+	new methods to support the reporting. This method will
+	return the object privilege map for the given user id.
+	The object privilege map contains the protection
+	elements with the corresponding privileges for a given
+	user. 
+	
+    --  Cross-database Compatibility - CSM was modified to work
+	with both MySQL and Oracle.  The Authorization Schema
+	database is now independent to support various
+	databases.  A migration procedure is available on the
+	download site to port data from old schema to the new. 
+        
+    --  Cross-browser Compatibility - CSM was modified to work
+	with both Microsoft Internet Explorer version 5.0 and
+	above and Mozilla Firefox 1.0
+
+    +------------------------------------+
+    | User Provisioning Tool (UPT)       |
+    +------------------------------------+
+
+    --  Standard Privileges - The UPT was modified to
+	accommodate the Standard Privileges mentioned above.
+	We removed the create, update and delete operations from
+	the Privilege section of the Admin Mode. These
+	operations were incorporated into a new Privilege
+	section in the Super Admin Mode.  Therefore only a Super
+	Admin can modify CSM Standard Privileges.  Admin
+	administrators will still have the ability to view the
+	privileges and assign them to roles, and subsequently
+	to users.
+        
+    --  Association Screens - We increased the width of the
+	combo boxes on the associations screens to allow for
+	names with a large length to display properly.  All
+	associated screens received this update.
+
+    --  Reporting Functionality - The UPT offers a new report
+	in the User section.  This report will display the list
+	of all protection elements and the associated privileges
+	for the selected user. This report is provided in a
+	manner that will be useful to the developers which are
+	integrating the security in their applications.  It
+	provides the parameters needed for the checkPermission
+	method of the API, namely the user name, the protection
+	element object id, attribute and privilege.
+
+    +---------------------------------------+
+    | CSM Enabled, Writeable APIs (for SDK) |
+    +---------------------------------------+
+
+    This release offers additional functionality that makes the
+    SDK more comprehensive.  It provides the ability to enable:
+    
+    --  Security
+    --  Session management
+    --  Writeable APIs
+
+    The CSM team provided this solution as a special addition to
+    the SDK Toolkit.  It is provided in a separate csmsdk.zip
+    file that can be found on the CSM download site:
+    http://ncicb.nci.nih.gov/download/downloadcsm.jsp
+
+    This solution is described in brief below:
+
+    --  CSM Integration - The CSM integration with SDK does not
+	require additional coding on the part of the developers.
+	All that is required is configuring CSM for the
+	application. For instructions refer to the standard
+	procedure in the CSM Guide for Application Developers.
+	After installing CSM, the application administrator(s)
+	will need to use the UPT to create an authorization
+	policy for the application.  An authorization policy is
+	the knowledge of what to protect.  Within the UPT, users
+	can be given different roles (and permissions) for
+	different domain objects. Any change in the
+	authorization policy will be reflected in the
+	application at run time. This means that the CSM service
+	will continuously provide the latest authorization
+	policy to the Application Service.
+
+        The SDK generates two components - the client and the
+	server.  Only the server component is integrated with
+	CSM for the purpose of authentication and authorization.
+
+        CSM will authenticate using the configured credential
+	provider for that particular application. The CSM
+	service integration is not obtrusive. There is a flag
+	to turn the CSM service on and off. 
+
+    --  Session Management - The Session management service has
+	been provided as a part of this solution. Whenever a
+	user authenticates by successfully logging in, the
+	Session Manager (on the server side) generates a unique
+	key for the user session. When the user sends another
+	request the service does not ask the user to
+	authenticate again as long as the session has not
+	expired.  Application administrators can use a
+	configuration setting to declare a session time out
+	period for their application. 
+
+    --  Writeable APIs - The first step toward writable APIs and
+	transaction management is creating a simple writable
+	API, which performs simple CRUD operations. These CRUD
+	operations will be exposed as a Persistence Manager
+	service layer or any other business service. The key
+	benefit is to enable distributed computing.  The
+	interface takes generic arguments for CRUD operations
+	thereby making it non-specific to any domain objects.
+	As long as the passed object can be cast to any domain
+	object within that domain, the operation is expected to
+	execute. If execution fails, the method throws an
+	exception. 
+
+
+----------------------------------------------------------------
+    4.3 Bugs Fixed Since Last Release
+----------------------------------------------------------------
+        
+    +------------------------------------+
+    | User Provisioning Tool (UPT)       |
+    +------------------------------------+
+
+    --  Mozilla Compatibility - The latest NCICB UI standards
+        require web applications to support both IE and Mozilla 
+	browsers.  The UPT tool has been enhanced to function
+	properly with Mozilla's Firefox browser.
+
+    --  UI Fixes - The following errors were addressed:
+    
+	In the prior release, when clicking on the project logo
+	in the header of the Super Admin mode, it redirected the
+	user to the Admin home page.  Now the link correctly
+	directs the user to the Super Admin mode. 
+
+	In the Admin functionality, the main menu was displayed
+	in two rows. The menu now displays in one row only.
+
+
+----------------------------------------------------------------
+    4.4 Known Issues
+----------------------------------------------------------------
+
+    +---------------------------------------+
+    | CSM APIs                              |
+    +---------------------------------------+
+
+    --  The getSubject method of Authentication Manager has not
+	been implemented.
+    
+    --  Certain thrown exceptions may display hibernate-specific
+        error messages.
+        
+    --  The connection pool provided by hibernate (c3po
+	connection pool) shows inconsistent behavior in
+	different environments.
+
+    +---------------------------------------+
+    | UPT Tool                              |
+    +---------------------------------------+
+
+    --  In the Protection Element and User section, when adding
+        object details, if you press enter you'll be taken back
+        to the object's home page.     
+
+    +---------------------------------------+
+    | CSM Enabled, Writeable APIs (for SDK) |
+    +---------------------------------------+
+
+    --  The OR Mapping files generated for the application which
+        is generated using the caCORE Toolkit are for read-only
+        objects. In order for writable APIs to work these OR 
+        mapping files (*.hbm.xml files) needs to be modified.
+        These files are in the classes folder of the war file
+        generated by the CSM Enabling process. The "mutable" tag
+        for each of the object should be changed to "true" from
+        "false". Also the "cache usage" should be changed to
+        "read-write" from "read-only". The war file should re-
+        created with these updated hbm files and used for
+        deployment.
+
+
+================================================================
+                            5.0 EVS
+================================================================
+
+
+----------------------------------------------------------------
+    5.1 Release History
+----------------------------------------------------------------
+    
+    NCI Thesaurus v 05.04d (monthly, concurrent with
+       caCORE 3.01)
+
+    -- 22 July 2005
+
+    NCI Metathesaurus v P050516 (monthly, concurrent with
+       caCORE 3.01)
+
+    -- 22 July 2005
+
+    NCI Thesaurus V 05.01d (monthly, concurrent with caCORE 3.0)
+
+    --  31 March 2005
+
+    NCI Metathesaurus V P050224 (monthly, concurrent with 
+        caCORE 3.0)
+        
+    --  31 March 2005
+
+    NCI Thesaurus V 04.03n (monthly, concurrent with caCORE 2.1)
+
+    --  28 May 2004
+
+    NCI Metathesaurus V P040517 (monthly, concurrent with
+        caCORE 2.1)
+
+    --  28 May 2004
+
+    NCI Thesaurus V 2.0 (released in caCORE 2.0)
+
+    --  31 October 2003
+
+    NCI Thesaurus V 1.1 (released in caCORE 1.1)
+
+    --  7 February 2003
+    
+    NCI Thesaurus V 1.0 (released in caCORE 1.0)
+
+    --  29 August 2002
+    
+    CTRM V 6.5 (released in caCORE 1.0)
+
+    --  29 August 2002
+
+
+----------------------------------------------------------------
+    5.2 New Features and Updates
+----------------------------------------------------------------
+ 
+    DTSRPC V 2.01
+    -------------
+
+    Only minor software enhancements and bug fixes are in scope
+    for the caCORE 3.0.1 release by EVS.  All of these fixes and
+    enhancements are in the DTSRPC API supporting queries to
+    vocabularies served by the Apelon DTS (e.g. the NCI
+    Thesaurus).
+
+    Minor software enhancements.  The DTSRPC on the client side
+    will be modified to better support the caCORE EVS API,
+    particularly in regards to the caDSR use cases.  These
+    include:
+
+    Addition of new methods
+
+    --  getDescLogicConcept(String identifier, boolean isCode)
+    --  getDescLogicSubconcepts(String identifier,
+	boolean isCode)
+    --  getDescLogicSuperconcepts(String identifier, boolean
+	isCode)
+    --  getDescLogicConcepts(Vector identifiers, boolean isCode)
+
+    Modification of existing code to support three new methods
+    in the gov.nih.nci.evs.domain.DescLogicConcept class 
+
+    --  hasChildren() 
+    --  hasParent() 
+    --  isRetired() 
+
+
+----------------------------------------------------------------
+    5.3 Bugs Fixed Since Last Release
+----------------------------------------------------------------
+   
+    The DTSRPC on the server and client side will be modified to
+    better handle exceptions thrown by the XML/RPC layer under
+    certain conditions, namely when entities such as
+    associations and qualifiers have not been defined for a
+    vocabulary.  These include:
+
+    Elimination of the org.xml.sax.SAXParseException thrown by
+    the following methods:
+    
+    --  fetchTermAssociations
+    --  fetchDTSProperties
+    --  getAllConceptAssociationQualifierTypes
+    --  getAllConceptPropertyQualifierTypes
+    --  getAllQualifierTypes
+    --  getAllSynonymTypes
+    --  getAllTermAssociationQualifierTypes
+    --  getAllTermAssociationTypes
+    --  getAllTermPropertyQualifierTypes
+    --  getAllTermPropertyTypes
+
+
+----------------------------------------------------------------
+    5.4 Known Issues
+----------------------------------------------------------------
+    
+    There is an issue related to Firefox rendering the NCI
+    Terminology Browser pages.  Under some circumstances Firefox
+    will render a web page entirely with the NCI banner image
+    normally seen only at the top of the page.  This is related
+    to session cookies; currently the only workaround is to exit
+    Firefox and start a new session.
+
+    Please see nciterms.nci.nih.gov/NCIBrowser/knownissues.do
+
+
+================================================================
+                  6.0 Bug Reports and Support
+================================================================
+
+    Send email to ncicb@pop.nci.nih.gov to request support or
+    report a bug.  
+
+    In addition, mailing lists are used by the caCORE developer
+    and user community to exchange ideas and make announcements.
+    You can subscribe at these addresses:
+
+    caBIO users
+
+    --  http://list.nih.gov/archives/cabio_users.html
+    
+    caBIO developers
+
+    --  http://list.nih.gov/archives/cabio_devel.html
+
+    caDSR users
+
+    --  http://list.nih.gov/archives/sbr_users.html
+
+    EVS users
+
+    --  http://list.nih.gov/archives/ncievs-l.html
+
+
+================================================================
+                        7.0 Documentation
+================================================================
+    
+    The caCORE 3.0.1 Technical Supplement, Programmers guide,
+    and Installation guide can be downloaded via FTP:
+
+    --  ftp://ftp1.nci.nih.gov/pub/
+	cacore/caCORE3.0.1_Tech_Supp.pdf
+
+    --  ftp://ftp1.nci.nih.gov/pub/
+	cacore/caCORE_SDK1.0.3_Programmers_Guide.pdf
+
+    --  ftp://ftp1.nci.nih.gov/pub/cacore/
+	caCORE_SDK1.0.3_Installation_and_Basic_Test_Guide.pdf
+
+
+================================================================
+                        8.0 NCICB Web Pages
+================================================================
+
+    The NCI Center for Bioinformatics
+
+    --  http://ncicb.nci.nih.gov/
+    
+    NCICB Application Support
+     
+    --  http://ncicbsupport.nci.nih.gov/sw/
+
+    NCICB Download Center
+
+    --  http://ncicb.nci.nih.gov/download/
+
+    caCORE
+
+    --  http://ncicb.nci.nih.gov/core
+    
+    caBIO
+
+    --  http://ncicb.nci.nih.gov/core/caBIO
+    
+    caDSR
+
+    --  http://ncicb.nci.nih.gov/core/caDSR 
+    --  http://ncicb.nci.nih.gov/xml 
+    
+    CSM
+    
+    --  http://ncicb.nci.nih.gov/core/CSM
+
+    EVS
+
+    --  http://ncicb.nci.nih.gov/core/EVS
+
+
+//end

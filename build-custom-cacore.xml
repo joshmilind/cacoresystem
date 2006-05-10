@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="caCORESDKCustom">
+
+	<target name="-build-artifacts.custom" if="build-artifacts.custom.use"/>
+	<target name="-build-beans.custom" if="build-beans.custom.use"/>
+	<target name="-build-framework.custom" if="build-framework.custom.use"/>
+	<target name="-build-orm.custom" if="build-orm.custom.use"/>
+	<target name="-build-schema.custom" if="build-schema.custom.use"/>
+	<target name="-build-system.custom" if="build-system.custom.use"/>
+	<target name="-clean.custom" if="clean.custom.use"/>
+	<target name="-clean-all.custom" if="clean-all.custom.use"/>
+	<target name="-clean-framework.custom" if="clean-framework.custom.use"/>
+	<target name="-compile-beans.custom" if="compile-beans.custom.use"/>
+	<target name="-compile-framework.custom" if="compile-framework.custom.use"/>
+	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use"/>
+	<target name="-copy-custom-orm.custom" if="copy-custom-orm.custom.use">
+		<copy todir="${dir.output.project.conf}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.src.custom.orm}">
+				<include name="${file.orm.properties}"/>
+				<include name="${file.dao.configuration}"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="-copy-project-framework.custom" if="copy-project-framework.custom.use">
+		<copy todir="${dir.output.project.framework}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.custom.framework.src}">
+				<!--exclude name="**/domain/*.java" />
+				<exclude name="**/domain/impl/*.java" /-->
+				<include name="**/evs/domain/*.java"/>
+				<include name="**/evs/query/*.java"/>
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>		
+	</target>
+	<target name="-copy-server-file.custom" if="copy-server-file.custom.use"/>
+	<target name="-copy-template-files.custom" if="copy-template-files.custom.use">
+		<copy todir="${dir.output.project.templates}">
+			<fileset dir="${dir.custom.conf}">
+				<include name="*.javajet"/>
+			</fileset>
+			<fileset dir="${dir.custom.conf}">
+				<include name="*.skeleton"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="-create-control-files.custom" if="create-control-files.custom.use">
+		<SDKcreatecontrol outputdir="${dir.output.project.src}">
+			<controlfileset>
+				<fileset dir="${dir.custom.conf}">
+					<include name="${file.control.beanevsgeneration}"/>
+					<include name="${file.control.beanevswsgeneration}"/>
+				</fileset>
+			</controlfileset>
+		</SDKcreatecontrol>	
+	</target>
+	<target name="-create-output-dirs.custom" if="create-output-dirs.custom.use"/>
+	<target name="-create-project-dirs.custom" if="create-project-dirs.custom.use"/>
+	<target name="-deploy-server.custom" if="deploy-server.custom.use"/>
+	<target name="-deployWS.custom" if="deployWS.custom.use"/>
+	<target name="-disable-writable-api.custom" if="disable-writable-api-yes,disable-writable-api.custom.use"/>
+	<target name="-doc.custom" if="doc.custom.use"/>
+	<target name="-doc-framework.custom" if="doc-framework.custom.use"/>
+	<target name="-fix-xmi.custom" if="fix-xmi-yes,fix-xmi.custom.use"/>
+	<target name="-format.custom" if="format.custom.use"/>
+	<target name="-generate-artifacts.custom" if="generate-artifacts.custom.use"/>
+	<target name="-generate-beans.custom" if="generate-beans.custom.use">
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanevsgeneration}"/>
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanevswsgeneration}"/>
+	</target>
+	<target name="-generate-cache.custom" if="generate-cache.custom.use"/>
+	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use"/>
+	<target name="-generate-common-role-util.custom" if="generate-common-role-util.custom.use"/>
+	<target name="-generate-dao-conf.custom" if="generate-dao-conf.custom.use"/>
+	<target name="-generate-junit.custom" if="generate-junit.custom.use"/>
+	<target name="-generate-OR-mapping.custom" if="generate-OR-mapping.custom.use"/>
+	<target name="-generate-orm-conf.custom" if="generate-orm-conf.custom.use"/>
+	<target name="-generate-schemas.custom" if="generate-schemas.custom.use"/>
+	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
+	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
+	<target name="-init-project.custom" if="init-project.custom.use">
+		<copy todir="${dir.src.custom.orm}">
+			<fileset dir="${dir.custom.orm}"/>
+		</copy>
+		<copy todir="${dir.src.custom.beans}">
+			<fileset dir="${dir.custom.beans}">
+				<include name="**/evs/domain/*.java" />
+			</fileset>
+		</copy>	
+		<copy todir="${dir.src.custom.orm}">
+			<fileset dir="${dir.custom.conf}">
+				<include name="${file.orm.configuration}"/>
+				<include name="${file.orm2.configuration}"/>
+				<include name="${file.orm.properties}"/>
+				<include name="${file.dao.configuration}"/>
+			</fileset>
+		</copy>
+		<copy todir="${dir.output.project.conf}">
+			<fileset dir="${dir.custom.conf}">
+				<include name="evsBeans.properties"/>
+			</fileset>
+			<fileset dir="${dir.custom.conf}/xslt">
+				<include name="evsFormat.xsl"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="-jetc.custom" if="jetc.custom.use">
+		<jetc template="${dir.output.project.templates}/BeanEVSImpl.javajet" destdir="${dir.output.project.src}"/>
+		<jetc template="${dir.output.project.templates}/BeanEVSWS.javajet" destdir="${dir.output.project.src}"/>
+		<javac srcdir="${dir.output.project.src}" destdir="${dir.output.project.build}">
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+	<target name="-package-client.custom" if="package-client.custom.use"/>
+	<target name="-package-framework.custom" if="package-framework.custom.use"/>
+	<target name="-package-server.custom" if="package-server.custom.use">
+		<delete file="${dir.output.project.package.server}/${file.project.server.war}"/>
+		<war destfile="${dir.output.project.package.server}/${file.project.server.war}" 
+			webxml="${dir.custom.conf}/web.xml" update="yes" duplicate="preserve">
+			<lib dir="${dir.lib}">
+				<exclude name="log4j-1.2.8.jar"/>
+				<exclude name="commons-logging*.*"/>
+				<exclude name="spring-richclient.jar"/>
+			</lib>
+			<zipfileset dir="${dir.conf}" prefix="log">
+				<include name="server.log"/>
+				<include name="client.log"/>
+				<include name="hibernate.log"/>
+			</zipfileset>
+			<webinf dir="${dir.conf}">
+				<include name="server-config.wsdd"/>
+				<include name="hibernate-configuration-3.0.dtd"/>
+				<include name="hibernate-mapping-3.0.dtd"/>
+				<include name="applicationContext.xml"/>
+				<include name="httpinvoker-servlet.xml"/>
+			</webinf>
+			<classes dir="${dir.output.project.build}">
+				<exclude name="**/impl/test/*.class"/>
+			</classes>
+			<classes dir="${dir.framework.build}">
+				<exclude name="**/ApplicationServiceClientImpl.class"/>
+				<exclude name="**/ClientSession.class"/>
+			</classes>
+			<classes dir="${dir.output.project.orm}"/>
+			<classes dir="${dir.output.project.conf}">
+				<include name="${file.control.systemProperties}"/>
+				<include name="DAOConfig.xml"/>
+				<include name="roleLookup.properties"/>
+				<include name="cacoreBeans.properties"/>
+				<include name="evsBeans.properties"/>
+				<include name="log4j.properties"/>
+				<include name="applicationService.xml"/>
+				<include name="${file.orm.configuration}"/>
+				<include name="${file.orm2.configuration}"/>
+				<include name="${file.cache.properties}"/>
+				<include name="${file.orm.properties}"/>
+			</classes>
+			<classes file="${dir.output.project.xmlmapping}/xml-mapping.xml" />
+			<classes file="${dir.conf}/xml.properties"/>
+			<classes file="${dir.output.project}/log4j.properties"/>
+			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/conf">
+				<include name="DAOConfig.xml"/>
+				<include name="log4j.properties"/>
+				<include name="roleLookup.properties"/>
+				<include name="cacoreBeans.properties"/>
+				<include name="${file.cache.properties}"/>
+				<include name="${file.orm.properties}"/>
+				<include name="${file.orm.configuration}"/>
+				<include name="${file.orm2.configuration}"/>
+			</zipfileset>
+			<zipfileset file="${dir.output.project}/log4j.properties" prefix="WEB-INF/conf"/>
+			<fileset dir="${dir.conf}">
+				<include name="Happy.jsp"/>
+				<include name="Classes.jsp"/>
+				<include name="Packages.jsp"/>
+				<include name="Criteria.jsp"/>
+				<include name="Result.jsp"/>
+			</fileset>			
+		   	<fileset dir="${dir.conf.xslt}">
+				<include name="**/**"/>
+				<exclude name="*.xsl"/>
+			</fileset>
+			<zipfileset dir="${dir.custom.conf}/xslt/images" prefix="images">
+				<include name="**/**"/>
+			</zipfileset>
+			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/classes/xslt">
+				<include name="*.xsl"/>
+			</zipfileset>
+		</war>
+	</target>
+	<target name="-package-system.custom" if="package-system.custom.use"/>
+	<target name="-rundemo.custom" if="rundemo.custom.use"/>
+	<target name="-runtest.custom" if="runtest.custom.use"/>
+	<target name="-runXMLdemo.custom" if="runXMLdemo.custom.use"/>
+	<target name="-runWSdemo.custom" if="runWSdemo.custom.use"/>
+	<target name="-undeployWS.custom" if="undeployWS.custom.use"/>
+
+
+
+</project>

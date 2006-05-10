@@ -1,0 +1,202 @@
+<%@ jet package="gov.nih.nci.codegen.core.template.jet" 
+        class="BeanImpl"
+        skeleton="BeanSkel.skeleton" %>
+
+<%
+Classifier klass = (Classifier)context.get("modelElement");
+String basePkg = (String)context.get("basePackage"); 
+%>
+package gov.nih.nci.system.dao.impl.evs;
+
+import java.util.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import javax.swing.tree.DefaultMutableTreeNode;
+//internal
+import gov.nih.nci.evs.domain.Definition;
+import gov.nih.nci.evs.domain.DescLogicConcept;
+import gov.nih.nci.evs.domain.MetaThesaurusConcept;
+import gov.nih.nci.evs.domain.Role;
+import gov.nih.nci.evs.domain.Property;
+import gov.nih.nci.evs.domain.SemanticType;
+import gov.nih.nci.evs.domain.Source;
+import gov.nih.nci.evs.query.EVSQueryImpl;
+import gov.nih.nci.common.exception.ManagerException;
+
+import gov.nih.nci.common.util.StringHelper;
+
+import gov.nih.nci.common.net.*;
+
+import gov.nih.nci.system.dao.DAOException;
+//dtsrpc jar
+import gov.nih.nci.dtsrpc.client.Concept;
+import gov.nih.nci.dtsrpc.client.*;
+//metaphrase jar
+import COM.Lexical.Metaphrase.Cooccurrence;
+import COM.Lexical.Metaphrase.Match;
+import COM.Lexical.Metaphrase.Metaphrase;
+import COM.Lexical.Metaphrase.Partition;
+import COM.Lexical.Metaphrase.RMIMetaphrase;
+import COM.Lexical.Metaphrase.Relationship;
+import COM.Lexical.Metaphrase.SearchSpec;
+import COM.Lexical.Metaphrase.Term;
+
+
+public class EVSDAOImpl
+{
+	private DTSRPCClient dtsrpc;
+	private Metaphrase  metaphrase;
+	private String server;
+	private String port;
+
+	/**
+	 * Creates a EVSDAOImpl instance
+	 */
+	public EVSDAOImpl()
+	{
+	}
+
+	/**
+	 * Creates a EVSDAOImpl instance
+	 * @param request Holds the query
+	 */
+	public EVSDAOImpl(Request request)
+	{
+	}
+
+	/**
+	 * Starting point
+	 * @param q
+	 * @return
+	 * @throws DAOException
+	 * @throws Exception
+	 */
+	public Response query(Request r) throws DAOException, Exception
+	{
+		System.out.println("EVSDAOimpl query method...");
+		Object obj = r.getRequest();
+		List resultList  = new ArrayList();
+		gov.nih.nci.common.net.Response response = null;
+		//getConfig of DescLogicConcept
+		Hashtable configs;
+
+		configs= r.getConfig();
+		System.out.println("Configuration >>>>> "+ configs);
+
+		if (configs==null)
+		{
+		}
+
+
+		try{
+			//we know what object to cast to..
+			EVSQueryImpl criteria = (EVSQueryImpl)obj;
+
+			Field[] fields = criteria.getClass().getDeclaredFields();
+			for(int i=0; i<fields.length; i++)
+			{
+				fields[i].setAccessible(true);
+				String fieldName = fields[i].getName();
+				if(fields[i].getType().equals(HashMap.class))
+				{
+					HashMap mapValues = (HashMap)fields[i].get(criteria);
+					//System.out.println("mapValues: "+mapValues);
+					if((mapValues != null) && (mapValues.size() > 0))
+					{
+						if(fieldName.equalsIgnoreCase("descLogicValues"))
+						{
+							//getConfig of DescLogicConcept
+							server = (String)configs.get("dtsrpcServer");
+							port = (String)configs.get("port");
+							System.out.println("DTSRPC   server = "+ server +"  \tport: "+ port);
+							//dtsrpc = new DTSRPCClient(server, port);
+							//dtsrpc = new DTSRPCClient("ncievs-bk2.nci.nih.gov","8585");
+							if(server != null && port != null){
+								dtsrpc = new DTSRPCClient(server, port);
+								}
+							else{
+								throw new Exception("DTSRPC Server name is null");
+								}
+
+						}
+						else
+						{
+							 //getConfig of Meta
+							 String metaServer = (String)configs.get("metaphraseServer");
+							 String database = (String) configs.get("database");
+							 String username = (String)configs.get("username");
+							 String password = (String)configs.get("password");
+							 System.out.println("METAPHRASE SERVER NAME = "+ metaServer +" \tDATABASE = "+ database +" \tUSER = "+ username +" \tPASSWORD = "+password);
+							 metaphrase = new RMIMetaphrase("//" + metaServer + "/RemoteMetaphrase",  database , username , password);
+						}
+
+						Iterator iter = mapValues.keySet().iterator();
+						String key = (String)iter.next();
+						String methodName = key.substring(0, key.indexOf("$"));
+						System.out.println("methodname: "+methodName);
+						Method method = this.getClass().getDeclaredMethod(methodName, new Class[]{HashMap.class});
+						response  = (Response)method.invoke(this, new HashMap[]{mapValues});
+						//System.out.println("key: "+key.substring(0, key.indexOf("$")));
+
+					}
+				}
+			}
+			return response;
+		}catch(Exception e)
+		{
+			throw new Exception ("Exception occured at : \n"+getClass().getName(),  e);
+		}
+	}
+
+/**
+* Sets Vocabulary
+* @param vocabularyName
+* @throws Exception
+*/
+private void setVocabulary(String vocabularyName) throws Exception
+{
+		//set vocabulary
+if(!StringHelper.hasValue(vocabularyName))
+    throw new Exception("vocabularyName cannot be null");
+        dtsrpc.setVocabulary(vocabularyName);
+}
+
+<%for(Iterator i=UML13Utils.getOperations((UmlClass)klass).iterator();i.hasNext();){%>
+<%Operation op = (Operation)i.next();%>
+<%String paramValue = null; %>
+<%String paramType = null; %>
+private Response <%=op.getName()%>(HashMap map) throws Exception{
+<%for (Iterator j = UML13Utils.getParameters(op).iterator(); j.hasNext();){%><%Parameter param = (Parameter)j.next();%><%if(param.getKind().toString().equals("pdk_in")){%><%paramValue = param.getName();%><%TaggedValue doc = UML13Utils.getTaggedValue(param,"type");%><%if(doc != null){%><%paramType = doc.getValue();%><%}%><%}%><%if(j.hasNext()){%><%}%><%}%>
+<%=fillInMethodDeclarations(op)%>
+Vector v = new Vector();
+	List list = new ArrayList();
+	try
+	{
+		//parse hashmap
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("vocabularyName"))
+				vocabularyName = (String)map.get(key);
+<%=fillInMethodElseIfs(op)%>
+}
+//set vocabulary
+setVocabulary(vocabularyName);
+//get concepts
+v=dtsrpc.<%=fillMethodSignature(op)%>
+		
+			for(int i=0; i<v.size(); i++)
+			{
+				list.add(v.get(i));
+			}
+	}
+	catch(Exception e)
+	{
+		throw new Exception ("Exception occured at : \n"+getClass().getName(),  e);
+	}
+	
+	return (new Response(list));
+}
+<%}%>
+}

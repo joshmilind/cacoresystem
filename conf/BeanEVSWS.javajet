@@ -1,0 +1,242 @@
+<%@ jet package="gov.nih.nci.codegen.core.template.jet" 
+        class="BeanEVSWS"
+        skeleton="BeanSkel_EVS.skeleton" %>
+
+<%
+Classifier klass = (Classifier)context.get("modelElement");
+String basePkg = (String)context.get("basePackage");
+String basePkg1 = null;
+String isAbstract = new String();
+
+if (klass.isAbstract()) {
+  isAbstract="abstract";
+} 
+if (isAbstract.equals("abstract")){
+   
+}
+%>
+
+package <%=UML13Utils.getNamespaceName(UML13Utils.getPackage(UML13Utils.getModel(klass), basePkg), klass)%>.ws;
+
+
+import java.util.*;
+<%
+//import org.omg.uml.modelmanagement.UmlPackage;
+%>
+<%=UML13JavaSourceHelper.getClassJavadoc(klass)%>
+
+/**
+ * <!-- LICENSE_TEXT_START -->
+ * <!-- LICENSE_TEXT_END -->
+ */
+
+public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=klass.getName()%>
+<% UmlClass superClass = UML13Utils.getSuperClass((UmlClass)klass); %>
+<% if(superClass != null){ %>
+    extends <%=superClass.getName()%>
+<% } %>
+	implements java.io.Serializable
+{
+	private static final long serialVersionUID = 1234567890L;
+
+	<%if(getConstructorValue(klass).equalsIgnoreCase("true")){%>
+	<%=getConstructor(klass)%>;	<%}%>	
+	<% for(Iterator i = UML13Utils.getAttributes((UmlClass)klass).iterator(); i.hasNext();){ %>
+	   <% Attribute att = (Attribute)i.next(); %>
+	 /**
+	 * <%if(UML13Utils.getTaggedValue(att,"documentation")!=null){%><%=UML13Utils.getTaggedValue(att,"documentation").getValue()%><%}%>	   
+	 */
+	   <%if(getIsStaticConstant(att).equalsIgnoreCase("true")){
+	   	String constValue = getConstValue(att);
+	   	%>
+	public static final  <% if(getQualifiedName(att.getType(), basePkg).startsWith(".")){%><%=getQualifiedName(att.getType(), basePkg).substring(1)%> <%=att.getName()%>= <%=constValue%>;<%} else {%><%=getQualifiedName(att.getType(), basePkg).substring(getQualifiedName(att.getType(), basePkg).lastIndexOf(".")+1)%>      <%=att.getName()%> = <%=constValue%>;<%}%> 
+	   <% }else{%>	
+	<%if(getQualifiedName(att.getType(), basePkg).endsWith("Vector")||getQualifiedName(att.getType(), basePkg).endsWith("HashSet")){%>	<%=att.getVisibility().toString().substring(3)%> <%if(getQualifiedName(att.getType(), basePkg).startsWith(".")){%>java.util.ArrayList <%=att.getName()%> = new ArrayList();<%} else {%>java.util.ArrayList <%=att.getName()%> = new ArrayList();<%}%>	   
+	   <%}%><%else{%>
+	<%=att.getVisibility().toString().substring(3)%> <%if(getQualifiedName(att.getType(), basePkg).startsWith(".")){%><%=getQualifiedName(att.getType(), basePkg).substring(1)%> <%=att.getName()%>;<%} else {%><%=getQualifiedName(att.getType(), basePkg)%> <%=att.getName()%>;<%}%>	   
+	   <%}%>
+	<%if(UML13Utils.getTaggedValue(att,"deprecated")!=null){%>
+	/**
+	* <%=UML13Utils.getTaggedValue(att,"deprecated").getValue()%>
+	*/
+	<%}%>   
+	/**
+	* <%if(UML13Utils.getTaggedValue(att,"documentation-get-method")!=null){%><%=UML13Utils.getTaggedValue(att,"documentation-get-method").getValue()%><%}%>	   
+	* @return - <%=att.getName()%>
+	*/
+	
+	<% if (getQualifiedName(att.getType(), basePkg).equals("java.util.Vector") || getQualifiedName(att.getType(), basePkg).equals("java.util.HashSet")){ %>
+	public java.util.ArrayList get<%=capFirst(att.getName())%>(){     
+	   return <%=att.getName()%>;
+	}
+	<% } else {%>
+	
+	
+	
+	
+	public <%if(getQualifiedName(att.getType(), basePkg).startsWith(".")){%><%=getQualifiedName(att.getType(), basePkg).substring(1)%><%} else { %> <%=getQualifiedName(att.getType(),basePkg)%><%}%> get<%=capFirst(att.getName())%>(){
+	      return <%=att.getName()%>;
+	      }  
+	<% } %>     
+	       
+	   <% if(getDeprecateValue(att).equalsIgnoreCase("true")){%>	  
+	<%=getDeprecateJavaDoc(att)%>
+	public <%if(getQualifiedName(att.getType(), basePkg).startsWith(".")){%><%=getQualifiedName(att.getType(), basePkg).substring(1)%><%} else { %> <%=getQualifiedName(att.getType(),basePkg)%><%}%> <%=att.getName()%>(){
+	   	      return <%=att.getName()%>;
+	   	   }	   	   
+	   <%  }   %>		
+	/**
+	* <%if(UML13Utils.getTaggedValue(att,"documentation-set-method")!=null){%><%=UML13Utils.getTaggedValue(att,"documentation-set-method").getValue()%><%}%>	   
+	* @param - <%=att.getName()%>
+	*/
+	<% if (getQualifiedName(att.getType(), basePkg).equals("java.util.Vector") || getQualifiedName(att.getType(), basePkg).equals("java.util.HashSet")){ %>
+	public void set<%=capFirst(att.getName())%>(java.util.ArrayList <%=att.getName()%>){
+	      this.<%=att.getName()%> = <%=att.getName()%>;
+	   }
+	<% } else {%>
+	public void set<%=capFirst(att.getName())%>(<% if(getQualifiedName(att.getType(), basePkg).startsWith(".")) {%><%=getQualifiedName(att.getType(), basePkg).substring(1)%> <%=att.getName()%>)<%} else {%> <%=getQualifiedName(att.getType(), basePkg)%> <%=att.getName()%>)<% } %>{
+	      this.<%=att.getName()%> = <%=att.getName()%>;
+	   }
+	<% } %>       	   
+	<% } } %>
+	<% for(Iterator i = UML13Utils.getAssociationEnds(klass).iterator(); i.hasNext();){%>
+	   <% AssociationEnd thisEnd = (AssociationEnd)i.next(); %>
+	   <% AssociationEnd otherEnd = (AssociationEnd)UML13Utils.getOtherAssociationEnd(thisEnd); %>	
+	   <% UmlAssociation asso = null;%>
+	   <% if(otherEnd.getAssociation()!=null){ asso = otherEnd.getAssociation();}%>
+	   <% if(otherEnd.isNavigable() && !getCreateMethod(otherEnd).equalsIgnoreCase("false")){ %>
+	      <% if(UML13Utils.isMany2Many(thisEnd, otherEnd) || UML13Utils.isOne2Many(thisEnd, otherEnd)){ %>	      		
+	      		<%if(getMetaphraseValue(klass).equalsIgnoreCase("true")){%>	      				
+	private java.util.ArrayList <%=otherEnd.getName()%> = new java.util.ArrayList();
+	
+	/**
+	* <%if(UML13Utils.getTaggedValue(asso,"otherend-get-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-get-method").getValue()%><%}%>	   
+	* @return - <%=otherEnd.getName()%>
+	*/
+
+	public java.util.ArrayList get<%=capFirst(otherEnd.getName())%>(){
+	      	return <%=otherEnd.getName()%>;
+	}
+	      		<%}else	{%>
+	private java.util.ArrayList <%=otherEnd.getName()%> = new java.util.ArrayList();
+	/**
+	* <%if(UML13Utils.getTaggedValue(asso,"otherend-get-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-get-method").getValue()%><%}%>	   
+	* @return - <%=otherEnd.getName()%>
+	*/
+
+	public java.util.ArrayList get<%=capFirst(otherEnd.getName())%>(){
+		return <%=otherEnd.getName()%>;
+	}
+	              	<%}%>  
+	      <% } else if( UML13Utils.isMany2One(thisEnd, otherEnd) ){ %>			
+			<%
+			String fullInterfaceName=getQualifiedName(otherEnd.getType(), basePkg);
+		    String implName=fullInterfaceName.substring(fullInterfaceName.lastIndexOf(".")+1);
+			String fullBeanName = fullInterfaceName.substring(0, fullInterfaceName.lastIndexOf("."))+"."+implName;
+			%>
+	private <%=implName%> <%=otherEnd.getName()%>;
+	/**
+	* <%if(UML13Utils.getTaggedValue(asso,"otherend-get-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-get-method").getValue()%><%}%>	   
+	* @return - <%=otherEnd.getName()%>
+	*/
+
+	public <%=implName%> get<%=capFirst(otherEnd.getName())%>(){
+		return <%=otherEnd.getName()%>;			
+        }		   
+	      <% }else if(UML13Utils.isOne2One(thisEnd, otherEnd)){ %>
+			<%
+			String fullInterfaceName=getQualifiedName(otherEnd.getType(), basePkg);
+		        String implName=fullInterfaceName.substring(fullInterfaceName.lastIndexOf(".")+1);
+			String fullBeanName = fullInterfaceName.substring(0, fullInterfaceName.lastIndexOf("."))+"."+implName;
+			%>
+	private <%=implName%> <%=otherEnd.getName()%>;
+	<%if(getDeprecateJavaDoc(otherEnd)!=null){%>
+	<%=getDeprecateJavaDoc(otherEnd)%>
+	<%}%>
+
+	public <%=implName%> get<%=capFirst(otherEnd.getName())%>(){
+		return <%=otherEnd.getName()%>;			
+       	}                        
+	      <% }else{ %>
+		     <% if(true) throw new RuntimeException("Unknown association multiplicity: " + thisEnd.getType().getName() + "." + thisEnd.getName() + ".upper=" + ((MultiplicityRange)thisEnd.getMultiplicity().getRange().iterator().next()).getUpper() + ", " + otherEnd.getType().getName() + "." + otherEnd.getName() + ".upper=" + ((MultiplicityRange)otherEnd.getMultiplicity().getRange().iterator().next()).getUpper()); %>
+	      <% } %>
+	<%if(getDeprecateValue(otherEnd).equalsIgnoreCase("true")){ 	%>
+	<%=getDeprecateMethod(otherEnd)%>
+	<%}%>     
+	<% if(UML13Utils.isMany2Many(thisEnd, otherEnd) || UML13Utils.isOne2Many(thisEnd, otherEnd)){ %>	   
+	   	<%
+	   	if(getMetaphraseValue(klass).equalsIgnoreCase("true")){
+	   	%>
+	/**
+	* <%if(UML13Utils.getTaggedValue(asso,"otherend-set-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-set-method").getValue()%><%}%>	   
+	* @param - <%=otherEnd.getName()%>
+	*/
+
+	public void set<%=capFirst(otherEnd.getName())%>(java.util.ArrayList <%=otherEnd.getName()%>){
+	   	<% }else {%>
+	/**
+	* <%if(UML13Utils.getTaggedValue(asso,"otherend-set-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-set-method").getValue()%><%}%>	   
+	* @return - <%=otherEnd.getName()%>
+	*/
+
+	public void set<%=capFirst(otherEnd.getName())%>(java.util.ArrayList <%=otherEnd.getName()%>){
+	   	<%}%>
+	   	this.<%=otherEnd.getName()%> = <%=otherEnd.getName()%>;
+	        }	
+	   <% } else if(UML13Utils.isMany2One(thisEnd, otherEnd) || UML13Utils.isOne2One(thisEnd, otherEnd)){ %>	   
+	   <%  			String fullInterfaceName=getQualifiedName(otherEnd.getType(), basePkg);
+	   		        String implName=fullInterfaceName.substring(fullInterfaceName.lastIndexOf(".")+1);
+	   			String fullBeanName = fullInterfaceName.substring(0, fullInterfaceName.lastIndexOf("."))+"."+implName;
+			%>
+	/**
+	* <%if(UML13Utils.getTaggedValue(asso,"otherend-set-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-set-method").getValue()%><%}%>	   
+	* @param - <%=otherEnd.getName()%>
+	*/
+		
+	public void set<%=capFirst(otherEnd.getName())%>(<%=implName%> <%=otherEnd.getName()%>){
+		this.<%=otherEnd.getName()%> = <%=otherEnd.getName()%>;
+	}	
+	<% } %>
+	<% }else{//end if otherEnd.isNavigable() %>
+	<% if(otherEnd.getAggregation().equals(AggregationKindEnum.AK_AGGREGATE)){ %>
+	private Long <%=otherEnd.getName()%>Id;
+	public Long get<%=capFirst(otherEnd.getName())%>Id(){
+	      return <%=otherEnd.getName()%>Id;
+	}
+	      <% } %><% } %><% } %>
+	<% if (klass.getName().equals("DescLogicConcept")) { %>      
+	private String vocabularyName;
+    public void setVocabularyName(String vocabularyName){
+      this.vocabularyName =vocabularyName;
+    }
+    
+    public String getVocabularyName(){
+       return vocabularyName;
+    }
+	<% } %>
+	public boolean equals(Object obj){
+		boolean eq = false;
+		if(obj instanceof <%=klass.getName() %>) {
+			<%=klass.getName() %> c =(<%=klass.getName() %>)obj; 
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String methodName = "get" + capFirst(keyAtt.getName());	%>				
+				<%=keyAtt.getType().getName()%> thisKey =  <%=methodName%>();			
+				if(thisKey!= null && thisKey.equals(c.<%=methodName%>())) {
+					eq = true;
+				}		
+				
+			}
+			return eq;
+		}
+		
+
+	public int hashCode(){
+		int h = 0;					
+		if(<%=methodName%>() != null) {
+			h += <%=methodName%>().hashCode();
+		}
+		return h;
+	}
+	
+	
+}
