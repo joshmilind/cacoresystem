@@ -27,6 +27,7 @@ conf/orm2.cfg.xml -text
 conf/web.xml -text
 conf/wsddEVSUtil.xml -text
 conf/xml.properties -text
+conf/xslt/cacoreFormat.xsl -text
 conf/xslt/evsFormat.xsl -text
 conf/xslt/images/evs.gif -text
 /core-build.xml -text
