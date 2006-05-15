@@ -12,25 +12,52 @@
 	<target name="-clean-framework.custom" if="clean-framework.custom.use"/>
 	<target name="-compile-beans.custom" if="compile-beans.custom.use"/>
 	<target name="-compile-framework.custom" if="compile-framework.custom.use"/>
-	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use"/>
-	<target name="-copy-custom-orm.custom" if="copy-custom-orm.custom.use">
+
+	<target name="-copy-custom-wsdd.custom" if="copy-custom-wsdd.custom.use" depends="-init-project.custom">
+		<SDKecho message="inside of copy-customwsdd.custom."/>
+				<copy todir="${dir.output.project.web-inf}" overwrite="yes" failonerror="false">
+					<fileset dir="${dir.src.custom.wsdd}">
+						<include name="${file.server.config.wsdd}"/>
+					</fileset>
+				</copy>
+	</target>
+
+	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use" depends="-init-project.custom">
+	<SDKecho message="inside of copy-custombeans.custom."/>
+			<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
+				<fileset dir="${dir.src.custom.beans}">
+					<include name="**/evs/domain/*.java"/>
+				    <include name="**/evs/query/*.java"/>
+				    <include name="**/evs/domain/ws/*.java"/>
+				    <include name="**/evs/service/*.java"/>
+					<include name="**/*.java"/>
+				</fileset>
+			</copy>
+	</target>
+	<target name="-copy-custom-orm.custom" if="copy-custom-orm.custom.use" depends="-init-project.custom">
+	<SDKecho message="inside of copy-custom-orm.custom."/>
 		<copy todir="${dir.output.project.conf}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.src.custom.orm}">
 				<include name="${file.orm.properties}"/>
 				<include name="${file.dao.configuration}"/>
+				<include name="${file.orm.configuration}"/>
+				<include name="${file.orm2.configuration}"/>
 			</fileset>
 		</copy>
 	</target>
-	<target name="-copy-project-framework.custom" if="copy-project-framework.custom.use">
+	<target name="-copy-project-framework.custom" if="copy-project-framework.custom.use" depends="-init-project.custom">
 		<copy todir="${dir.output.project.framework}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.framework.src}">
-				<!--exclude name="**/domain/*.java" />
-				<exclude name="**/domain/impl/*.java" /-->
-				<include name="**/evs/domain/*.java"/>
-				<include name="**/evs/query/*.java"/>
-				<include name="**/*.java"/>
+				<include name="**/common/util/*.java"/>
+				<include name="**/system/applicationservice/impl/*.java"/>
+				<include name="**/system/applicationservice/*.java"/>
+				<include name="**/comm/common/*.java"/>
+				<include name="**/comm/server/*.java"/>
+				<include name="**/dao/impl/externalsystem/*.java"/>
+				<include name="**/dao/impl/orm/*.java"/>
+				<include name="**/dao/*.java"/>
 			</fileset>
-		</copy>		
+		</copy>
 	</target>
 	<target name="-copy-server-file.custom" if="copy-server-file.custom.use"/>
 	<target name="-copy-template-files.custom" if="copy-template-files.custom.use">
@@ -51,7 +78,7 @@
 					<include name="${file.control.beanevswsgeneration}"/>
 				</fileset>
 			</controlfileset>
-		</SDKcreatecontrol>	
+		</SDKcreatecontrol>
 	</target>
 	<target name="-create-output-dirs.custom" if="create-output-dirs.custom.use"/>
 	<target name="-create-project-dirs.custom" if="create-project-dirs.custom.use"/>
@@ -78,6 +105,34 @@
 	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
 	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
 	<target name="-init-project.custom" if="init-project.custom.use">
+	<SDKecho message="Inside of -init-project.custom"/>
+		<copy todir="${dir.src.custom.wsdd}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.custom.wsdd}">
+					<include name="${file.server.config.wsdd}"/>
+			</fileset>
+		</copy>
+		<copy todir="${dir.src.custom.beans}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.custom.beans}">
+					<include name="**/evs/domain/*.java"/>
+					<include name="**/evs/query/*.java"/>
+					<include name="**/evs/domain/ws/*.java"/>
+					<include name="**/evs/service/*.java"/>
+					<include name="**/*.java"/>
+			</fileset>
+		</copy>
+		<copy todir="${dir.src.custom.framework}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.custom.beans}">
+					<include name="**/common/util/*.java"/>
+					<include name="**/system/applicationservice/impl/*.java"/>
+					<include name="**/system/applicationservice/*.java"/>
+					<include name="**/comm/common/*.java"/>
+					<include name="**/comm/server/*.java"/>
+					<include name="**/dao/impl/externalsystem/*.java"/>
+					<include name="**/dao/impl/orm/*.java"/>
+				   	<include name="**/dao/*.java"/>
+			</fileset>
+		</copy>
+
 		<copy todir="${dir.src.custom.orm}">
 			<fileset dir="${dir.custom.orm}"/>
 		</copy>
@@ -85,7 +140,7 @@
 			<fileset dir="${dir.custom.beans}">
 				<include name="**/evs/domain/*.java" />
 			</fileset>
-		</copy>	
+		</copy>
 		<copy todir="${dir.src.custom.orm}">
 			<fileset dir="${dir.custom.conf}">
 				<include name="${file.orm.configuration}"/>
@@ -100,6 +155,7 @@
 			</fileset>
 			<fileset dir="${dir.custom.conf}/xslt">
 				<include name="evsFormat.xsl"/>
+				<include name="cacoreFormat.xsl"/>
 			</fileset>
 		</copy>
 	</target>
@@ -111,10 +167,11 @@
 		</javac>
 	</target>
 	<target name="-package-client.custom" if="package-client.custom.use"/>
-	<target name="-package-framework.custom" if="package-framework.custom.use"/>
-	<target name="-package-server.custom" if="package-server.custom.use">
+	<target name="-package-framework.custom" if="package-framework.custom.use" />
+	<target name="-package-server.custom" if="package-server.custom.use" depends="-copy-custom-orm.custom">
+	<SDKecho message="Inside of -package-server.custom"/>
 		<delete file="${dir.output.project.package.server}/${file.project.server.war}"/>
-		<war destfile="${dir.output.project.package.server}/${file.project.server.war}" 
+		<war destfile="${dir.output.project.package.server}/${file.project.server.war}"
 			webxml="${dir.custom.conf}/web.xml" update="yes" duplicate="preserve">
 			<lib dir="${dir.lib}">
 				<exclude name="log4j-1.2.8.jar"/>
@@ -143,14 +200,13 @@
 			<classes dir="${dir.output.project.orm}"/>
 			<classes dir="${dir.output.project.conf}">
 				<include name="${file.control.systemProperties}"/>
-				<include name="DAOConfig.xml"/>
 				<include name="roleLookup.properties"/>
 				<include name="cacoreBeans.properties"/>
 				<include name="evsBeans.properties"/>
 				<include name="log4j.properties"/>
 				<include name="applicationService.xml"/>
-				<include name="${file.orm.configuration}"/>
-				<include name="${file.orm2.configuration}"/>
+				<include name="orm2.cfg.xml"/>
+				<include name="orm1.cfg.xml"/>
 				<include name="${file.cache.properties}"/>
 				<include name="${file.orm.properties}"/>
 			</classes>
@@ -159,6 +215,8 @@
 			<classes file="${dir.output.project}/log4j.properties"/>
 			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/conf">
 				<include name="DAOConfig.xml"/>
+				<!--
+
 				<include name="log4j.properties"/>
 				<include name="roleLookup.properties"/>
 				<include name="cacoreBeans.properties"/>
@@ -166,6 +224,8 @@
 				<include name="${file.orm.properties}"/>
 				<include name="${file.orm.configuration}"/>
 				<include name="${file.orm2.configuration}"/>
+
+				-->
 			</zipfileset>
 			<zipfileset file="${dir.output.project}/log4j.properties" prefix="WEB-INF/conf"/>
 			<fileset dir="${dir.conf}">
@@ -174,13 +234,16 @@
 				<include name="Packages.jsp"/>
 				<include name="Criteria.jsp"/>
 				<include name="Result.jsp"/>
-			</fileset>			
+			</fileset>
 		   	<fileset dir="${dir.conf.xslt}">
 				<include name="**/**"/>
 				<exclude name="*.xsl"/>
 			</fileset>
 			<zipfileset dir="${dir.custom.conf}/xslt/images" prefix="images">
 				<include name="**/**"/>
+			</zipfileset>
+			<zipfileset dir="${dir.custom.conf}/wsdl" prefix="wsdl">
+							<include name="server-config.wsdd"/>
 			</zipfileset>
 			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/classes/xslt">
 				<include name="*.xsl"/>
@@ -193,7 +256,4 @@
 	<target name="-runXMLdemo.custom" if="runXMLdemo.custom.use"/>
 	<target name="-runWSdemo.custom" if="runWSdemo.custom.use"/>
 	<target name="-undeployWS.custom" if="undeployWS.custom.use"/>
-
-
-
 </project>

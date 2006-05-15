@@ -26,6 +26,7 @@ conf/orm1.cfg.xml -text
 conf/orm2.cfg.xml -text
 conf/web.xml -text
 conf/wsddEVSUtil.xml -text
+conf/wsdl/server-config.wsdd -text
 conf/xml.properties -text
 conf/xslt/cacoreFormat.xsl -text
 conf/xslt/evsFormat.xsl -text
@@ -47,6 +48,7 @@ models/caCORE3-0-EVS.eap -text
 models/caCORE3-1-EVS.eap -text
 models/xmi/evs3-1.xmi -text
 models/xmi/fixed_evs3-1.xmi -text
+orm/DAOConfig.xml -text
 orm/gov/nih/nci/cabio/domain/Location.hbm.xml -text
 orm/gov/nih/nci/cabio/domain/impl/LocationImpl.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/Provenance.hbm.xml -text

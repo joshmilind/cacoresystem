@@ -32,10 +32,10 @@
   		<td><font color="white" size="6"><b><h4>caCORE - HTTP INTERFACE</h4></b></font></td>
   		<td height="50" align="right">
   		<a href="http://cabio.nci.nih.gov/NCICB/infrastructure/cacore_overview">
-  		<img src="/@XSLT_PATH@/images/cabio58.gif" alt="Application Logo" height="35" hspace="10" border="0"/></a>
-  		<img src="/@XSLT_PATH@/images/cadsr.gif" alt="Application Logo" height="35" hspace="10" border="0"/>			
-		<img src="/@XSLT_PATH@/images/evs.gif" alt="Application Logo" height="35" hspace="10" border="0"/>
-		<img src="/@XSLT_PATH@/images/csm.gif" alt="Application Logo" height="35" hspace="10" border="0"/>
+  		<img src="/cacore32/images/cabio58.gif" alt="Application Logo" height="35" hspace="10" border="0"/></a>
+  		<img src="/cacore32/images/cadsr.gif" alt="Application Logo" height="35" hspace="10" border="0"/>			
+		<img src="/cacore32/images/evs.gif" alt="Application Logo" height="35" hspace="10" border="0"/>
+		<img src="/cacore32/images/csm.gif" alt="Application Logo" height="35" hspace="10" border="0"/>
 		</td>  		
 
   		</tr>
