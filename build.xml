@@ -15,14 +15,6 @@
 	<target name="build-system">
 		<SDKecho message="BUILDING caCORE"/>
 		<antcall target="caCORESDK.build-system"/>
-		<mkdir dir="${cacore_home}/output"/>
-		<copy todir="${cacore_home}/output" overwrite="true">
-			<fileset dir="${dir.output.project.package}"/>
-		</copy>
 	</target>
 	
-	<target name="deployWS">
-		<antcall target="caCORESDK.deployWS"/>
-	</target>
-
 </project>

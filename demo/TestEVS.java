@@ -13,13 +13,14 @@ public class TestEVS {
 
         System.out.println("*** TestEVS...");
 
-        String local = "http://localhost:8080/cacore31/http/remoteService";
-        String prod = "http://cabio.nci.nih.gov/cacore31/http/remoteService";
-        String stage = "http://cabio-stage.nci.nih.gov/cacore31/http/remoteService";
-        String qa = "http://cbioqa101.nci.nih.gov:49080/cacore31/http/remoteService";
-        String dev = "http://cbiodev104.nci.nih.gov:49080/cacore31/http/remoteService";
-//      ApplicationService appService = ApplicationService.getRemoteInstance(qa);
-        ApplicationService appService = ApplicationServiceProvider.getApplicationService();
+            String prodUrl  = "http://cabio.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+            String stageUrl = "http://cabio-stage.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+            String qaUrl    = "http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+            String localUrl = "http://localhost:8080/@PROJECT_NAME@/http/remoteService";
+			//String genUrl = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
+			//ApplicationService appService = ApplicationService.getRemoteInstance(prodUrl);
+
+			ApplicationService appService = ApplicationServiceProvider.getApplicationService();
 
 
 		try

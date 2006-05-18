@@ -128,7 +128,7 @@
 	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
 	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
 	<target name="-init-project.custom" if="init-project.custom.use">
-	<SDKecho message="Inside of -init-project.custom"/>
+		<SDKecho message="Inside of -init-project.custom"/>
 		<copy todir="${dir.src.custom.wsdd}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.wsdd}">
 					<include name="${file.server.config.wsdd}"/>
@@ -180,11 +180,112 @@
 				<include name="evsFormat.xsl"/>
 				<include name="cacoreFormat.xsl"/>
 			</fileset>
+			<filterset>
+		        <filter token="XSLT_PATH" value="${project_name}"/>
+			</filterset>				
 		</copy>
 	</target>
-	<target name="-package-client.custom" if="package-client.custom.use"/>
+	<target name="-package-client.custom" if="package-client.custom.use">
+		<!-- First, create test client files with current project information -->
+		<copy todir="${dir.output.project.client}" overwrite="true">
+			<fileset dir="${dir.custom.demo}">
+				<include name="**/**"/>
+			</fileset>
+			<filterset>
+				<filter token="WEB_SERVER_NAME" value="${web_server_name}"/>
+				<filter token="WEB_SERVER_PORT" value="${web_server_port}"/>
+				<filter token="PROJECT_NAME" value="${project_name}"/>
+				<filter token="SCHEMA_DIR" value="${basedir.unix}/${dir.output.project.xmlschema}"/>
+				<filter token="CLIENT_DIR" value="${basedir.unix}/${dir.output.project.package.client}"/>
+				<filter token="WEBSERVICENAME" value="${webservice_name}"/>
+			</filterset>
+		</copy>
+		<copy file="${dir.custom.conf}/build_client.xml" tofile="${dir.output.project.client}/build.xml" overwrite="true">
+			<filterset>
+				<filter token="AXIS_SERVICE" value="-l${url.project.axisservice}"/>
+			</filterset>
+		</copy>
+
+		<!-- Create client jar file -->
+		<mkdir dir="${dir.output.project.package.client.lib}"/>
+		<jar destfile="${dir.output.project.package.client.lib}/${file.project.client.jar}" update="yes">
+			<manifest>
+				<attribute name="Generated-By" value="caCORE SDK Code Generator"/>
+				<attribute name="Project-Title" value="${project_name}"/>
+				<attribute name="Model-File" value="${model_filename}"/>
+			</manifest>
+			<fileset dir="${dir.output.project.framework.build}">
+				<exclude name="gov/nih/nci/system/applicationservice/impl/**"/>
+				<exclude name="gov/nih/nci/system/comm/server/**"/>
+				<exclude name="gov/nih/nci/system/dao/**"/>
+				<exclude name="gov/nih/nci/system/delegator/BaseDelegate.class"/>
+				<exclude name="gov/nih/nci/system/proxy/LocalProxy.class"/>
+				<exclude name="gov/nih/nci/system/proxy/HTTPQuery.class"/>
+				<exclude name="gov/nih/nci/system/server/**"/>
+				<exclude name="gov/nih/nci/system/servicelocator/**"/>
+				<exclude name="gov/nih/nci/system/webservice/**"/>
+				<exclude name="**/impl/test/*.class"/>
+			</fileset>
+			<fileset dir="${dir.generator.build}">
+				<include name="gov/nih/nci/common/**"/>
+			</fileset>
+			<fileset dir="${dir.conf}">
+				<include name="mapping.dtd"/>
+				<include name="xml.properties"/>
+			</fileset>
+			<fileset dir="${dir.output.project.xmlmapping}">
+				<include name="xml-mapping.xml"/>
+			</fileset>
+			<fileset dir="${dir.output.project.conf}">
+				<include name="roleLookup.properties"/>
+				<include name="cacoreBeans.properties"/>
+				<include name="evsBeans.properties"/>
+				<include name="CORESystem.properties"/>
+				<include name="ehcache.xml"/>
+			</fileset>
+		</jar>
+
+		<!-- Create ZIP file with client jar and all necessary libs/conf -->
+		<zip destfile="${dir.output.project.package}/${file.project.client.zip}">
+			<zipfileset dir="${dir.output.project.package.client.lib}" includes="${file.project.client.jar}" prefix="lib"/>
+			<zipfileset dir="${dir.lib}" prefix="lib">
+				<include name="axis.jar"/>
+				<include name="saaj.jar"/>
+				<include name="mail.jar"/>
+				<include name="jaxrpc.jar"/>
+				<include name="activation.jar"/>
+				<include name="aspect*.jar"/>
+				<include name="hibernate3.jar"/>
+				<include name="log4j*.jar"/>
+				<include name="commons-logging.jar"/>
+				<include name="commons-discovery-0.2.jar"/>
+				<include name="wsdl4j-1.5.1.jar"/>
+				<include name="cglib-full*.jar"/>
+				<include name="castor-0.9.9.jar"/>
+				<include name="xercesImpl.jar"/>
+				<include name="spring.jar"/>
+				<include name="spring-richclient.jar"/>
+				<include name="xml-apis.jar"/>
+			</zipfileset>
+			<zipfileset dir="${dir.conf}" includes="client_log4j.properties" prefix="conf"/>
+			<zipfileset dir="${dir.output.project.conf}" includes="${file.control.remoteservice}" prefix="conf"/>
+			<zipfileset dir="${dir.custom.conf}" includes="ClientREADME.txt" fullpath="README.txt"/>
+			<zipfileset dir="${dir.conf}" includes="xml.properties" prefix="lib"/>
+			<zipfileset dir="${dir.conf}" includes="mapping.dtd" prefix="lib"/>
+			<zipfileset dir="${dir.output.project.client}"/>
+			<zipfileset dir="${dir.output.project.xmlschema}" prefix="lib">
+				<include name="*.xsd"/>
+			</zipfileset>
+			<zipfileset dir="${dir.conf}" includes="client.log" prefix="log"/>
+		</zip>
+
+		<!-- Unpack ZIP file into package directory so it can be used for tests/demos -->
+		<unzip src="${dir.output.project.package}/${file.project.client.zip}"
+			dest="${dir.output.project.package.client}"/>
+	
+	</target>
 	<target name="-package-framework.custom" if="package-framework.custom.use" />
-	<target name="-package-server.custom" if="package-server.custom.use" depends="-copy-custom-orm.custom">
+	<target name="-package-server.custom" if="package-server.custom.use">
 	<SDKecho message="Inside of -package-server.custom"/>
 		<delete file="${dir.output.project.package.server}/${file.project.server.war}"/>
 		<war destfile="${dir.output.project.package.server}/${file.project.server.war}"
@@ -210,6 +311,9 @@
 				<exclude name="gov/nih/nci/system/comm/client/ApplicationServiceClientImpl.class"/>
 				<exclude name="gov/nih/nci/system/comm/client/ClientSession.class"/>			
 			</classes>
+			<classes dir="${dir.generator.build}">
+				<include name="gov/nih/nci/common/**"/>
+			</classes>
 			<classes dir="${dir.output.project.build}">
 				<exclude name="**/impl/test/*.class"/>
 			</classes>
@@ -232,7 +336,6 @@
 			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/conf">
 				<include name="DAOConfig.xml"/>
 				<!--
-
 				<include name="log4j.properties"/>
 				<include name="roleLookup.properties"/>
 				<include name="cacoreBeans.properties"/>
@@ -240,7 +343,6 @@
 				<include name="${file.orm.properties}"/>
 				<include name="${file.orm.configuration}"/>
 				<include name="${file.orm2.configuration}"/>
-
 				-->
 			</zipfileset>
 			<zipfileset file="${dir.output.project}/log4j.properties" prefix="WEB-INF/conf"/>
@@ -266,7 +368,13 @@
 			</zipfileset>
 		</war>
 	</target>
-	<target name="-package-system.custom" if="package-system.custom.use"/>
+	<target name="-package-system.custom" if="package-system.custom.use">
+		<delete dir="${cacore_home}/output"/>
+		<mkdir dir="${cacore_home}/output"/>
+		<copy todir="${cacore_home}/output" overwrite="true">
+			<fileset dir="${dir.output.project.package}"/>
+		</copy>	
+	</target>
 	<target name="-rundemo.custom" if="rundemo.custom.use"/>
 	<target name="-runtest.custom" if="runtest.custom.use"/>
 	<target name="-runXMLdemo.custom" if="runXMLdemo.custom.use"/>

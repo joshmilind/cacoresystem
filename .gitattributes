@@ -7,6 +7,7 @@
 conf/BeanEVSImpl.javajet -text
 conf/BeanEVSWS.javajet -text
 conf/BeanSkel_EVS.skeleton -text
+conf/ClientREADME.txt -text
 conf/DAOConfig-evs.xml -text
 conf/DAOConfig-evs2.xml -text
 conf/DAOConfig.xml -text
@@ -35,7 +36,11 @@ conf/xslt/images/evs.gif -text
 /core-build.xml -text
 demo/EVSMonitor.java -text
 demo/EVSWSClient.java -text
+demo/TestClient.java -text
+demo/TestDSR.java -text
 demo/TestEVS.java -text
+demo/TestSVG.java -text
+demo/TestXML.java -text
 documents/caCORE3-0-1-1_README.txt -text
 documents/caCORE3-0-1-2_README.txt -text
 documents/caCORE3-0-1_README.txt -text

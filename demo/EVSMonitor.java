@@ -25,7 +25,14 @@ public class EVSMonitor extends Thread
     
     public void run()
     {
-        ApplicationService appService = ApplicationServiceProvider.getApplicationService();
+        String prodUrl  = "http://cabio.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+        String stageUrl = "http://cabio-stage.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+        String qaUrl    = "http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+        String localUrl = "http://localhost:8080/@PROJECT_NAME@/http/remoteService";
+        //String genUrl = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
+		//ApplicationService appService = ApplicationService.getRemoteInstance(prodUrl);
+
+		ApplicationService appService = ApplicationServiceProvider.getApplicationService();
         
         try
         {            
