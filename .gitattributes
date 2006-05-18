@@ -2,6 +2,7 @@
 /.project -text
 /build-custom-cacore.properties -text
 /build-custom-cacore.xml -text
+/build.xml -text
 /caCORE.bat -text
 conf/BeanEVSImpl.javajet -text
 conf/BeanEVSWS.javajet -text

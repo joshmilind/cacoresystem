@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="caCOREAPI" default="help" basedir="c:/dev/eclipse/cacoresdk">
+	<description>Build script for caCORE APIs</description>
+
+	<!--  SET basedir PROPERTY ABOVE TO HOME DIRECTORY OF SDK -->
+	<property name="cacore_home" value="c:/dev/eclipse/cacoresystem"/>
+	
+	<property name="file.build.custom" value="${cacore_home}/build-custom-cacore.xml"/>
+	<property name="file.properties.custom" value="${cacore_home}/build-custom-cacore.properties"/>
+	<property name="file.conf" value="${cacore_home}/conf/core-deploy.properties"/>
+	<property file="${file.conf}"/>
+
+	<import file="${basedir}/build.xml"/>
+
+	<target name="build-system">
+		<SDKecho message="BUILDING caCORE"/>
+		<antcall target="caCORESDK.build-system"/>
+		<mkdir dir="${cacore_home}/output"/>
+		<copy todir="${cacore_home}/output" overwrite="true">
+			<fileset dir="${dir.output.project.package}"/>
+		</copy>
+	</target>
+	
+	<target name="deployWS">
+		<antcall target="caCORESDK.deployWS"/>
+	</target>
+
+</project>
