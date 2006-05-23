@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.omg.uml.foundation.core.Classifier;
 import org.omg.uml.modelmanagement.Model;
 import org.omg.uml.modelmanagement.UmlPackage;
+import java.io.*;
 
 /**
  * <!-- LICENSE_TEXT_START -->
@@ -320,19 +321,26 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
         log.debug("basePackage: " + _pkgName);
 
         _svcName = getParameter(config, "webserviceName");
-        outputDir = getParameter(config, "outputDir");
         evsFileName = getParameter(config, "evsFileName");
         int found = -1;
         try{
-            found = Thread.currentThread().getContextClassLoader().getResourceAsStream(outputDir+evsFileName).available();
+            found = Thread.currentThread().getContextClassLoader().getResourceAsStream(evsFileName).available();
             if(found != -1){
                 createEVS = true;
                 this.loadEVSProperties();
             }
         }
+        catch (FileNotFoundException fnfex) {
+        	createEVS = false;
+        	log.error("Error: the file '" + evsFileName + "' could not be found", fnfex);
+        }
+        catch (IOException ioex) {
+        	createEVS = false;
+        	log.error("Error: could not read file '" + evsFileName + "'", ioex);
+        }
         catch(Exception ex){
             createEVS = false;
-            log.error("Error: unable to locate evs - " + ex.getMessage());
+            log.error("Error: an unknown error occurred while trying to find/access '" + evsFileName + "' - " + ex.getMessage(), ex);
         }
         
         try {
@@ -388,8 +396,8 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
         return param;
     }
 
-    public void loadEVSProperties() throws Exception{        
-        String fileName = outputDir+ evsFileName; 
+    public void loadEVSProperties() throws Exception {       
+        String fileName = evsFileName; 
         evsProperties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));
     }
     public String getEVSClassList() throws Exception{

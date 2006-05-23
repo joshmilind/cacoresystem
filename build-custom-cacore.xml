@@ -76,6 +76,7 @@
 				<include name="**/proxy/**/*.java"/>
 				<include name="**/webservice/**/*.java"/>
 				<include name="**/evs/service/*.java"/>
+				<include name="**/codegen/**/*.java"/>
 			</fileset>
 		</copy>
 	</target>
@@ -100,6 +101,19 @@
 			</controlfileset>
 			<extendedfilterset>
 		        <filter token="EVS_MODEL" value="${dir.custom.model}/${evs_model}"/>				
+			</extendedfilterset>
+		</SDKcreatecontrol>
+		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
+			<controlfileset>
+				<fileset dir="${dir.custom.conf}">
+					<include name="${file.control.corewsdd}"/>
+				</fileset>
+			</controlfileset>
+			<extendedfilterset>
+				<!-- The generator that uses this control file looks for the following file on the 
+					 classpath, which includes the project's conf directory where the evsBeans file
+					 is located.  -->
+				<filter token="EVSPROPERTIESFILE" value="evsBeans.properties"/>
 			</extendedfilterset>
 		</SDKcreatecontrol>
 	</target>
@@ -285,7 +299,7 @@
 	
 	</target>
 	<target name="-package-framework.custom" if="package-framework.custom.use" />
-	<target name="-package-server.custom" if="package-server.custom.use">
+	<target name="-package-server.custom" if="package-server.custom.use" depends="-generate-wsdd.cacore">
 	<SDKecho message="Inside of -package-server.custom"/>
 		<delete file="${dir.output.project.package.server}/${file.project.server.war}"/>
 		<war destfile="${dir.output.project.package.server}/${file.project.server.war}"
@@ -380,4 +394,13 @@
 	<target name="-runXMLdemo.custom" if="runXMLdemo.custom.use"/>
 	<target name="-runWSdemo.custom" if="runWSdemo.custom.use"/>
 	<target name="-undeployWS.custom" if="undeployWS.custom.use"/>
+	
+	<!--********************************************************************-->
+	<!--          CUSTOM TARGETS                                            -->
+	<!--********************************************************************-->
+	<target name="-generate-wsdd.cacore">
+		<SDKecho message="Generating WSDD file"/>
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.corewsdd}"/>
+	</target>	
+	
 </project>
