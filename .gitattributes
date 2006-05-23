@@ -33,7 +33,6 @@ conf/xml.properties -text
 conf/xslt/cacoreFormat.xsl -text
 conf/xslt/evsFormat.xsl -text
 conf/xslt/images/evs.gif -text
-/core-build.xml -text
 demo/EVSMonitor.java -text
 demo/EVSWSClient.java -text
 demo/TestClient.java -text
