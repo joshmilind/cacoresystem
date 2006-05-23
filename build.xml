@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="caCOREAPI" default="help" basedir="c:/dev/eclipse/cacoresdk">
+<project name="caCOREAPI" default="help" basedir="c:/tmp/cacore/cacoresdk">
 	<description>Build script for caCORE APIs</description>
 
 	<!--  SET basedir PROPERTY ABOVE TO HOME DIRECTORY OF SDK -->
-	<property name="cacore_home" value="c:/dev/eclipse/cacoresystem"/>
+	<property name="cacore_home" value="c:/tmp/cacore/cacoresystem"/>
 	
 	<property name="file.build.custom" value="${cacore_home}/build-custom-cacore.xml"/>
 	<property name="file.properties.custom" value="${cacore_home}/build-custom-cacore.properties"/>
