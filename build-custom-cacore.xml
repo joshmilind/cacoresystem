@@ -203,7 +203,7 @@
 		<!-- First, create test client files with current project information -->
 		<copy todir="${dir.output.project.client}" overwrite="true">
 			<fileset dir="${dir.custom.demo}">
-				<include name="**/**"/>
+				<exclude name="build_client.xml"/>
 			</fileset>
 			<filterset>
 				<filter token="WEB_SERVER_NAME" value="${web_server_name}"/>
@@ -214,7 +214,7 @@
 				<filter token="WEBSERVICENAME" value="${webservice_name}"/>
 			</filterset>
 		</copy>
-		<copy file="${dir.custom.conf}/build_client.xml" tofile="${dir.output.project.client}/build.xml" overwrite="true">
+		<copy file="${dir.custom.demo}/build_client.xml" tofile="${dir.output.project.client}/build.xml" overwrite="true">
 			<filterset>
 				<filter token="AXIS_SERVICE" value="-l${url.project.axisservice}"/>
 			</filterset>
@@ -315,11 +315,13 @@
 				<include name="hibernate.log"/>
 			</zipfileset>
 			<webinf dir="${dir.conf}">
-				<include name="server-config.wsdd"/>
 				<include name="hibernate-configuration-3.0.dtd"/>
 				<include name="hibernate-mapping-3.0.dtd"/>
 				<include name="applicationContext.xml"/>
 				<include name="httpinvoker-servlet.xml"/>
+			</webinf>
+			<webinf dir="${dir.custom.wsdd}">
+				<include name="server-config.wsdd"/>			
 			</webinf>
 			<classes dir="${dir.output.project.framework.build}">
 				<exclude name="gov/nih/nci/system/comm/client/ApplicationServiceClientImpl.class"/>
@@ -374,7 +376,7 @@
 			<zipfileset dir="${dir.custom.conf}/xslt/images" prefix="images">
 				<include name="**/**"/>
 			</zipfileset>
-			<zipfileset dir="${dir.custom.conf}/wsdl" prefix="wsdl">
+			<zipfileset dir="${dir.custom.wsdd}" prefix="wsdl">
 							<include name="server-config.wsdd"/>
 			</zipfileset>
 			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/classes/xslt">
