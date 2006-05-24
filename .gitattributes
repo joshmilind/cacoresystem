@@ -3,7 +3,6 @@
 /build-custom-cacore.properties -text
 /build-custom-cacore.xml -text
 /build.xml -text
-/caCORE.bat -text
 conf/BeanEVSImpl.javajet -text
 conf/BeanEVSWS.javajet -text
 conf/BeanSkel_EVS.skeleton -text
@@ -17,7 +16,6 @@ conf/EVSQueryBeanImpl.javajet -text
 conf/EVSQueryImplBeanImpl.javajet -text
 conf/beanevsgeneration.xml -text
 conf/beanevswsgeneration.xml -text
-conf/build_client.xml -text
 conf/core-deploy.properties -text
 conf/daogeneration.xml -text
 conf/evsBeans.properties -text
@@ -40,6 +38,8 @@ demo/TestDSR.java -text
 demo/TestEVS.java -text
 demo/TestSVG.java -text
 demo/TestXML.java -text
+demo/build_client.xml -text
+demo/evsmonitor.bat -text
 documents/caCORE3-0-1-1_README.txt -text
 documents/caCORE3-0-1-2_README.txt -text
 documents/caCORE3-0-1_README.txt -text
@@ -48,7 +48,6 @@ documents/caCORE3.0.1.1_notes.txt -text
 documents/caCORE3.0.1_notes.txt -text
 documents/caCORE_SDK1.0_notes.txt -text
 documents/caCORE_SDK1.1_notes.txt -text
-/evsmonitor.bat -text
 models/caCORE3-0-EVS.eap -text
 models/caCORE3-1-EVS.eap -text
 models/xmi/evs3-1.xmi -text
