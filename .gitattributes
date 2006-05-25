@@ -38,6 +38,7 @@ demo/TestDSR.java -text
 demo/TestEVS.java -text
 demo/TestSVG.java -text
 demo/TestXML.java -text
+demo/WSTestClient.java -text
 demo/build_client.xml -text
 demo/evsmonitor.bat -text
 documents/caCORE3-0-1-1_README.txt -text
