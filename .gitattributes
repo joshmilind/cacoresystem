@@ -99,5 +99,6 @@ src/gov/nih/nci/system/dao/EVSDAOFactory.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDAOImpl.java -text
 src/gov/nih/nci/system/delegator/BaseDelegate.java -text
 src/gov/nih/nci/system/proxy/HTTPQuery.java -text
+src/gov/nih/nci/system/webservice/EVSWSTransformer.java -text
 src/gov/nih/nci/system/webservice/EVSWebService.java -text
 src/gov/nih/nci/system/webservice/WSQuery.java -text
