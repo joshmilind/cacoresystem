@@ -344,33 +344,5 @@ public class EVSWSTransformer {
             }
         }
         return field;
-    }
-    
-    /**
-     * Returns the vocabularyName defined in the wsObject
-     * 
-     * @param wsObject -
-     *            an instance of a class defined in the
-     *            gov.nih.nci.evs.domain.ws package
-     * @return
-     * @throws Exception
-     */
-    
-    public String getVocabularyName(Object wsObject) throws Exception {
-        String vocabularyName = null;
-        Field field = null;
-        if (this.getFieldByName(wsObject.getClass().getDeclaredFields(),
-                "vocabularyName") != null) {
-            field = this.getFieldByName(
-                    wsObject.getClass().getDeclaredFields(), "vocabularyName");
-            if (field.get(wsObject) != null) {
-                vocabularyName = (String) field.get(wsObject);
-            }
-        }
-        return vocabularyName;
-
-    }
-
-
-  
+    }  
 }
