@@ -572,9 +572,7 @@ public class EVSWebService {
 
     private List query(EVSQuery evsQuery) throws Exception {
         List results = new ArrayList();
-        try {
-            Request request = new Request(evsQuery);
-            request.setDomainObjectName(evsQuery.getClass().getName());
+        try {            
             ApplicationService appService = ApplicationServiceProvider.getLocalInstance();
             results = (List)  appService.evsSearch(evsQuery);
         } catch (Exception ex) {
