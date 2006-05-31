@@ -43,12 +43,8 @@
 	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use" depends="-init-project.custom">
 	<SDKecho message="inside of copy-custombeans.custom."/>
 			<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
-				<fileset dir="${dir.src.custom.beans}">
-					<include name="**/evs/domain/*.java"/>
-				    <include name="**/evs/query/*.java"/>
-				    <include name="**/evs/domain/ws/*.java"/>
-				    <!--include name="**/evs/service/*.java"/>
-					<include name="**/*.java"/-->
+				<fileset dir="${dir.src.custom.beans}">					
+				    <include name="**/evs/query/*.java"/>					
 				</fileset>
 			</copy>
 	</target>
