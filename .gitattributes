@@ -68,6 +68,7 @@ src/gov/nih/nci/codegen/core/transformer/UML13WSDDTransformerForEVS.java -text
 src/gov/nih/nci/common/util/Constant.java -text
 src/gov/nih/nci/common/util/HTTPUtils.java -text
 src/gov/nih/nci/common/util/PrintUtils.java -text
+src/gov/nih/nci/common/util/SearchUtils.java -text
 src/gov/nih/nci/common/util/StringHelper.java -text
 src/gov/nih/nci/evs/domain/Association.java -text
 src/gov/nih/nci/evs/domain/Atom.java -text
