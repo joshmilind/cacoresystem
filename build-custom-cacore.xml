@@ -93,6 +93,7 @@
 				<fileset dir="${dir.custom.conf}">
 					<include name="${file.control.beanevsgeneration}"/>
 					<include name="${file.control.beanevswsgeneration}"/>
+					<include name="${file.control.evsPackageUtil}"/>
 				</fileset>
 			</controlfileset>
 			<extendedfilterset>
@@ -128,7 +129,9 @@
 		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanevswsgeneration}"/>
 	</target>
 	<target name="-generate-cache.custom" if="generate-cache.custom.use"/>
-	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use"/>
+	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use">
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evsPackageUtil}"/>
+	</target>
 	<target name="-generate-common-role-util.custom" if="generate-common-role-util.custom.use"/>
 	<target name="-generate-dao-conf.custom" if="generate-dao-conf.custom.use"/>
 	<target name="-generate-junit.custom" if="generate-junit.custom.use"/>
