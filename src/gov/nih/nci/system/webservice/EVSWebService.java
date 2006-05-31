@@ -70,12 +70,7 @@ public class EVSWebService {
 			int startIndex, int recordCounter) throws Exception {
 		Object searchObject = null;
 		if (wsObject.getClass().getName().indexOf(".ws.") > 0) {
-			searchObject = transformer.convertWStoEVS(wsObject);
-			if (wsObject.getClass().getName().endsWith("DescLogicConcept")) {
-				if (transformer.getVocabularyName(wsObject) != null) {
-					defaultVocabulary = transformer.getVocabularyName(wsObject);
-				}
-			}
+			searchObject = transformer.convertWStoEVS(wsObject);			
 		} else {
 			searchObject = wsObject;
 		}
@@ -112,10 +107,7 @@ public class EVSWebService {
 		List finalResults = new ArrayList();
 		if (wsObject.getClass().getName().indexOf(".ws.") > 0) {
 			for (int i = 0; i < evsResults.size(); i++) {
-				Object wsResult = transformer.convertEVStoWS(evsResults.get(i));
-				if (wsResult.getClass().getName().endsWith("DescLogicConcept")) {
-					//transformer.setVocabularyName(wsResult);
-				}
+				Object wsResult = transformer.convertEVStoWS(evsResults.get(i));				
 				results.add(wsResult);
 			}
 		} else {
@@ -244,7 +236,7 @@ public class EVSWebService {
         String siloName = null;
         String historyStartDate = null;
         String historyEndDate = null;
-        //Vocabulary vocabulary = null;
+        Vocabulary vocabulary = null;
 
         DescLogicConcept concept = new DescLogicConcept();
         if(criteria.getClass().getName().endsWith("DescLogicConcept")){
@@ -260,12 +252,11 @@ public class EVSWebService {
             }
             if (concept.getRoleCollection().size() > 0) {
                 criteria = concept.getRoleCollection().get(0);
-            }
-            /*
+            }            
             if(concept.getVocabulary()!=null){
                 criteria = concept.getVocabulary();
             }
-            */
+            
 
         }
         if(conceptCode == null && conceptName == null){
@@ -308,12 +299,11 @@ public class EVSWebService {
                     conceptCode = history.getDescLogicConceptCode();
                 }
             }
-            /*
+            
             else if(criteria.getClass().getName().endsWith("Vocabulary")){
                 if(vocabulary.getName()!= null && vocabulary.getName().length()>0){
-                    //defaultVocabulary = concept.getVocabulary().getName();
-                }
-                 new model
+                    defaultVocabulary = concept.getVocabulary().getName();
+                }                 
                 if(vocabulary.getSiloCollection().size()>0){
                     Silo silo = (Silo)vocabulary.getSiloCollection().get(0);
                     if(silo.getName()!=null){
@@ -323,7 +313,7 @@ public class EVSWebService {
                 }
 
             }
-            */
+            
         }
         EVSQuery evsQuery = new EVSQueryImpl();
 
