@@ -1,5 +1,5 @@
 package gov.nih.nci.common.util;
-import gov.nih.nci.system.webservice.WSApplicationService;
+
 import gov.nih.nci.system.webservice.WSQuery;
 import gov.nih.nci.system.applicationservice.*;
 
