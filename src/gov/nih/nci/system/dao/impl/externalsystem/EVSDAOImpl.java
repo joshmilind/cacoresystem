@@ -72,6 +72,8 @@ public class EVSDAOImpl
 	private String server;
 	private String port;
 	private Exception pastEx = new Exception();
+    private Vocabulary vocabulary = null;
+    
 
 	/**
 	 * Creates a EVSDAOImpl instance
@@ -291,9 +293,28 @@ public class EVSDAOImpl
                     log.error("DTSRPC Exception - Unable to connect to the DTSRPC Server");
                 }                
             }
-            
+            else{
+                vocabulary = populateVocabulary(vocabularyName);                
+            }          
             
 	}
+    
+    private Vocabulary populateVocabulary(String vocabularyName){
+        Vocabulary vocab = new Vocabulary();
+        vocab.setName(vocabularyName);
+        vocab.setNamespaceId(dtsrpc.getNamespaceId(vocabularyName));
+        vocab.setDescription(dtsrpc.getVocabularyDescription(vocabularyName));
+        return vocab;
+    }
+    
+    private Response getAllVocabularies(HashMap map){
+        List vocabList = new ArrayList();
+        Vector names = dtsrpc.getVocabularyNames();
+        for(int i=0; i<names.size(); i++){
+            vocabList.add(populateVocabulary((String)names.get(i)));
+        }
+        return new Response(vocabList);
+    }
 
 	/**
 	 * Performs a search for a DescLogicConcept in the DTSRPC server and returns a response
@@ -407,11 +428,14 @@ public class EVSDAOImpl
 	        }
 	        Concept[] concepts =null;	        
 			concepts = dtsrpc.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
+            if(vocabulary == null){
+                populateVocabulary(vocabularyName);
+            }
 
 	        DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
 	        for(int x=0; x<concepts.length; x++){
 	            dlc[x] = new DescLogicConcept();
-	            dlc[x] = buildDescLogicConcept(concepts[x]);
+	            dlc[x] = buildDescLogicConcept(concepts[x]);                
 	            list.add(dlc[x]);
 	        }
 
@@ -3419,8 +3443,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    		dlc.setCode(concept.getCode());
    		dlc.setPropertyCollection(convertProperties(concept.getProperties()));
    		dlc.setRoleCollection(convertRoles(concept.getRoles()));
-   		dlc.setInverseRoleCollection(convertRoles(concept.getInverseRoles()));
-   		
+   		dlc.setInverseRoleCollection(convertRoles(concept.getInverseRoles()));   		
         dlc.setNamespaceId(concept.getNamespaceId());
    		dlc.setHasParents(concept.getHasParents());
 		dlc.setHasChildren(concept.getHasChildren());
@@ -3434,6 +3457,9 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		    }
 
 		dlc.setSemanticTypeVector(getDLSemanticTypes(dlc));
+		if(vocabulary != null){
+            dlc.setVocabulary(vocabulary);
+        }        
    		return dlc;
    	}
 

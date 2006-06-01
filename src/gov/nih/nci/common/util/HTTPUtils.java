@@ -934,6 +934,9 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
                  if(fields[f].get(result)!=null){
                      value = fields[f].get(result);             
                  }
+                 else{
+                	 value = Class.forName(fieldType).newInstance();
+                 }
                  fieldElement.setAttribute("type","association");
                  fieldElement.addContent(getEVSElement(value,"1"));
              }
