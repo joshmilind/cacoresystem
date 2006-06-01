@@ -28,7 +28,7 @@
 
 	<artifact-handler
 		className="gov.nih.nci.codegen.core.handler.SimpleFileHandler">
-		<param name="outputDir" value="@OUTPUTDIR@/conf/"/>
+		<param name="outputDir" value="@OUTPUTDIR@"/>
 		<param name="fileName" value="evsBeans.properties"/>
 	</artifact-handler>
 

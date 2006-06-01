@@ -100,6 +100,18 @@
 		        <filter token="EVS_MODEL" value="${dir.custom.model}/${evs_model}"/>				
 			</extendedfilterset>
 		</SDKcreatecontrol>
+		
+		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
+					<controlfileset>
+						<fileset dir="${dir.custom.conf}">
+							<include name="${file.control.evsPackageUtil}"/>
+						</fileset>
+					</controlfileset>
+					<extendedfilterset>
+				        <filter token="EVS_MODEL" value="${dir.custom.model}/${evs_model}"/>				
+					</extendedfilterset>
+				</SDKcreatecontrol>
+			
 		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
 			<controlfileset>
 				<fileset dir="${dir.custom.conf}">
@@ -130,6 +142,7 @@
 	</target>
 	<target name="-generate-cache.custom" if="generate-cache.custom.use"/>
 	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use">
+		<SDKecho message="Generating evs package utilities"/>
 		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evsPackageUtil}"/>
 	</target>
 	<target name="-generate-common-role-util.custom" if="generate-common-role-util.custom.use"/>
