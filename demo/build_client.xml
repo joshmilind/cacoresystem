@@ -203,5 +203,18 @@
 		</java>
 
 	</target>
-	
+	<!-- ************************************************************************************************-->
+	<!--                                             Deploy web services                                        -->
+	<!-- ************************************************************************************************-->
+
+	<target name="deploy">					
+			<java classname="org.apache.axis.client.AdminClient" fork="true">
+				<classpath refid="cp"/>
+				<classpath><pathelement location="${src.dir}"/>	</classpath>				
+				<arg value="-lhttp://localhost:8080/cacore32/ws/AdminService"/>
+				<arg value="${conf.dir}/deploy.wsdd"/>				
+				<sysproperty key="log4j.configuration" value="${conf.dir}/client_log4j.properties"/>
+			</java>
+	</target>
+			
 </project>
