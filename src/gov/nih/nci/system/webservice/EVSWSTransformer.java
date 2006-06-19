@@ -300,7 +300,7 @@ public class EVSWSTransformer {
      * @return
      * @throws Exception
      */
-    private String locateClass(String beanName) throws Exception {
+    public String locateClass(String beanName) throws Exception {
         String className = null;
         boolean found = false;
         if (evsProperties == null) {
