@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
  */
 
 public class EVSWebService {
-
 	private static Logger log = Logger.getLogger(EVSWebService.class.getName());
 	private String defaultVocabulary = "NCI_Thesaurus";
 	private int defaultLimit = 100;
@@ -67,7 +66,7 @@ public class EVSWebService {
 	 * @throws Exception
 	 */
 	public List evsSearch(String parameterList, Object wsObject,
-			int startIndex, int recordCounter) throws Exception {
+		int startIndex, int recordCounter) throws Exception {
 		Object searchObject = null;
 		if (wsObject.getClass().getName().indexOf(".ws.") > 0) {
 			searchObject = transformer.convertWStoEVS(wsObject);			
@@ -125,7 +124,7 @@ public class EVSWebService {
 	 * @throws Exception
 	 */
 	public List evsSearch(String parameterList, Object searchObject)
-			throws Exception {
+			throws Exception {        
 	    List dtsrpcList = new ArrayList();
         String queryType = getQueryType(searchObject);
         List results = new ArrayList();
@@ -139,53 +138,60 @@ public class EVSWebService {
             returnClassName = parameterList;
         }
 
+        if(!(returnClassName.indexOf(".")>0)){
+            returnClassName = transformer.locateClass(returnClassName);
+        }
+       
 		try {
 			if (queryType.equals("dtsrpc")) {
-                if(searchObject.getClass().getName().startsWith("History") && returnClassName.startsWith("History")){
+                if(searchObject.getClass().getName().endsWith("History") && returnClassName.endsWith("History")){
                     results = getHistoryRecords(searchObject);
                 }else  if(searchObject.getClass().getName().endsWith("Vocabulary") && returnClassName.endsWith("Vocabulary")){
-                    results = getVocabularies();
-                } if(searchObject.getClass().getName().endsWith("Silo")&& returnClassName.getClass().getName().endsWith("Silo")){
-                    results = getSilos();
+                    Vocabulary vocabulary = (Vocabulary)searchObject;
+                    if(vocabulary.getName() != null && vocabulary.getName().length()>0){
+                        results = getVocabulary(vocabulary.getName());
+                    }
+                    else{
+                        results = getVocabularies();
+                    }  
+                   
+                } else if(searchObject.getClass().getName().endsWith("Silo")&& returnClassName.endsWith("Silo")){
+                    results = getMatchFromList(getAllSilos(),searchObject, "name");
+                } else if(searchObject.getClass().getName().endsWith("Association")&& returnClassName.endsWith("Association")){
+                    results = getMatchFromList(getAllAssociations(),searchObject, "name");
+                } else if(searchObject.getClass().getName().endsWith("Property")&& returnClassName.endsWith("Property")){
+                    results = getMatchFromList(getAllProperties(),searchObject, "name");                                        
+                } else if(searchObject.getClass().getName().endsWith("Qualifier")&& returnClassName.endsWith("Qualifier")){
+                    results = getMatchFromList(getAllQualifiers(),searchObject, "name");
+                } else if(searchObject.getClass().getName().endsWith("Role")&& returnClassName.endsWith("Role")){
+                    results = getMatchFromList(getAllRoles(),searchObject, "name");
                 }else{
                     results = searchDTSRPC(searchObject);
                 }
-			} else if(queryType.equals("meta")) {                
-                    List metaConcepts = searchMetaphrase(searchObject);                    
-                    if(metaConcepts.get(0).getClass().getName().endsWith("MetaThesaurusConcept")){
-                        if (returnClassName != null && returnClassName.endsWith("DescLogicConcept")) {
-                            results = convertConcepts(metaConcepts);
-                        }else if(returnClassName != null    && returnClassName.endsWith("Atom")){
-                            results = getAtoms(metaConcepts);
-                        }else if(returnClassName != null    && returnClassName.startsWith("History")){
-                            results = getHistoryRecords(convertConcepts(metaConcepts));
-                        }else {
-                            results = metaConcepts;
-                        }
-                    }
-                    else if(metaConcepts.get(0).getClass().getName().endsWith("Source")){
-                        results = metaConcepts;
-                    }
-                    else if(metaConcepts.get(0).getClass().getName().endsWith("SemanticType")){
-                        results = metaConcepts;
-                    }
+			} else if(queryType.equals("meta")) {
+                if(searchObject.getClass().getName().endsWith("Source")&& returnClassName.endsWith("Source")){                    
+                    results = getMatchFromList(getAllMetaSources(), searchObject, "abbreviation");                                       
+                }else if(searchObject.getClass().getName().endsWith("SemanticType")&& returnClassName.endsWith("SemanticType")){
+                    results = getMatchFromList(getAllSemanticTypes(),searchObject, "name");
+                }else{
+                    results = searchMetaphrase(searchObject);
+                }   
  			} else {
 				throw new Exception("Invalid search class " + searchObject.getClass().getName());
 			}
-
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
-
+          
 		return results;
 	}
-
+    
      /**
      * Returns the EVS Query type for the specified object
      * @param searchObject An instance of gov.nih.nci.evs.domain.* domain object
      * @return
      */
-    private String getQueryType(Object searchObject){
+    private String getQueryType(Object searchObject)throws Exception{        
         String queryType = null;
         List dtsrpcList = new ArrayList();
         dtsrpcList.add("DescLogicConcept");
@@ -217,7 +223,28 @@ public class EVSWebService {
                 break;
             }
         }
+        
         return queryType;
+    }
+    
+    /**
+     * Returns the EVS query type for a given class name. 
+     * @param specifies the class name
+     * @return returns a String that represents a vocabulary type.
+     */
+    private String getQueryType(String className) throws Exception{
+        String name = null;
+        if(!(className.indexOf(".")>0)){
+            try{
+                name = transformer.locateClass(className);
+            }catch(Exception ex){
+                throw new Exception("Class not found: "+ returnClassName);
+            }            
+        }
+        else{
+            name = className;
+        }
+        return getQueryType(Class.forName(name).newInstance());
     }
 
     /**
@@ -253,12 +280,24 @@ public class EVSWebService {
             if (concept.getRoleCollection().size() > 0) {
                 criteria = concept.getRoleCollection().get(0);
             }            
-            if(concept.getVocabulary()!=null){
-                criteria = concept.getVocabulary();
-            }
-            
+            if(concept.getVocabulary()!=null){                
+                criteria = concept.getVocabulary();                
+            }            
 
         }
+        if(criteria.getClass().getName().endsWith("Vocabulary")){
+            vocabulary = (Vocabulary)criteria;
+            if(vocabulary.getName()!= null && vocabulary.getName().length()>0){                
+                defaultVocabulary = vocabulary.getName();
+            }                 
+            if(vocabulary.getSiloCollection().size()>0){
+                Silo silo = (Silo)vocabulary.getSiloCollection().get(0);
+                if(silo.getName()!=null){
+                    siloName = silo.getName();
+                    matchOption = 4;
+                }
+            }
+        } 
         if(conceptCode == null && conceptName == null){
             if(criteria.getClass().getName().endsWith("Property")){
                 Property property = (Property) criteria;
@@ -298,29 +337,13 @@ public class EVSWebService {
                 if(history.getDescLogicConceptCode()!=null){
                     conceptCode = history.getDescLogicConceptCode();
                 }
-            }
-            
-            else if(criteria.getClass().getName().endsWith("Vocabulary")){
-                if(vocabulary.getName()!= null && vocabulary.getName().length()>0){
-                    defaultVocabulary = concept.getVocabulary().getName();
-                }                 
-                if(vocabulary.getSiloCollection().size()>0){
-                    Silo silo = (Silo)vocabulary.getSiloCollection().get(0);
-                    if(silo.getName()!=null){
-                        siloName = silo.getName();
-                        matchOption = 4;
-                    }
-                }
-
-            }
-            
+            }          
         }
         EVSQuery evsQuery = new EVSQueryImpl();
-
         if (conceptCode != null) {
            evsQuery.getDescLogicConcept(defaultVocabulary, conceptCode, true);
         } else if (conceptName != null && matchOption == 0) {
-            evsQuery.searchDescLogicConcepts(defaultVocabulary, conceptName, defaultLimit);
+            evsQuery.searchDescLogicConcepts(defaultVocabulary, conceptName, defaultLimit,0,"",1);
         } else if (matchType != null) {
             if (searchValue == null && conceptName != null) {
                 searchValue = conceptName;
@@ -336,28 +359,26 @@ public class EVSWebService {
         }else if(returnClassName.endsWith("Silo")){
             evsQuery.getAllSilos(defaultVocabulary);
         }else{
-            throw new Exception("Please specify search term or concept code");
+            throw new Exception("Invalid search");
         }
-
-
         results = query(evsQuery);
-        if (results.size() > 0) {
-            if (returnClassName.endsWith("MetaThesaurusConcept")) {
-                results = convertConcepts(results);
-            } else if (returnClassName.endsWith("HistoryRecord")
-                    || returnClassName.endsWith("History")) {
-                results = getHistoryRecords(results);
-            } else if (returnClassName.endsWith("Atom")){
-                results = getAtoms(convertConcepts(results));
-            }
+        
+        if (results.size() > 0) {            
+            if(results.get(0).getClass().getName().endsWith("DescLogicConcept")){                
+                if(getQueryType(returnClassName).equals("meta")){
+                    return getConceptProperties(convertConcepts(results));                
+                }
+                else{
+                    return getConceptProperties(results);
+                }
+            }            
          }
-
 
         return results;
     }
 
     /**
-     * Returns a List records from the Metathesaurus
+     * Returns a List of records from the Metathesaurus
      * @param criteria - Instance of gov.nih.nci.evs.domain.* object
      * @return
      * @throws Exception
@@ -413,27 +434,41 @@ public class EVSWebService {
         List results = new ArrayList();
 
         try {
-
-            if (conceptCode != null && source == null) {
-                evsQuery.searchMetaThesaurus(conceptCode);
-            } else if (conceptCode != null && source != null) {
-                evsQuery.searchMetaThesaurus(conceptCode, defaultLimit, source,
-                        true, false, true);
-            } else if (conceptName != null) {
-                evsQuery.searchMetaThesaurus(conceptName, defaultLimit, source,
-                        false, false, true);
-            } else if (conceptName == null && conceptCode == null && atomList.size()>0) {
-                return searchMetaphraseByAtoms(atomList, source);
-            } else if(returnClassName.endsWith("Source")){
-                    evsQuery.getMetaSources();
-            }else if(returnClassName.endsWith("SemanticType")){
-                evsQuery.getSemanticTypes();
-            }
+            if (conceptName == null && conceptCode == null && atomList.size()>0) {
+                results =  searchMetaphraseByAtoms(atomList, source);
+                }
             else{
-                throw new Exception(
-                        "You need to specify either a concept name, code or an Atom code along with the source abbreviation");
+                
+                if (conceptCode != null && source == null) {
+                    evsQuery.searchMetaThesaurus(conceptCode);
+                } else if (conceptCode != null && source != null) {
+                    evsQuery.searchMetaThesaurus(conceptCode, defaultLimit, source,
+                            true, false, true);
+                } else if (conceptName != null) {
+                    evsQuery.searchMetaThesaurus(conceptName, defaultLimit, source,
+                            false, false, true);
+                }else{
+                    throw new Exception("Invalid search criteria");
+                }
+                results = query(evsQuery);
             }
-            results = query(evsQuery);
+
+            
+              
+            
+            if(results.size()>0){
+                
+                if(results.get(0).getClass().getName().endsWith("MetaThesaurusConcept")){
+                    
+                    if(getQueryType(returnClassName).endsWith("dtsrpc")){
+                        List dtsResults = convertConcepts(results);
+                        return getConceptProperties(dtsResults);
+                    }      
+                    else{
+                        return getConceptProperties(results);
+                    }
+                }                
+            }            
             
         } catch (Exception e) {
             throw new Exception(e.getMessage());
@@ -441,8 +476,62 @@ public class EVSWebService {
         return results;
 
     }
-    
-    public List searchMetaphraseByAtoms(List atomList, String sourceAbbr) throws Exception{
+    /**
+     * Returns a list of Properties for the objects in the List
+     * @param This list consists of EVS domain objects
+     */
+    private List getConceptProperties(List conceptList) throws Exception{
+        if(!(conceptList.size()>0)){
+            return new ArrayList();
+        }
+        List resultList = new ArrayList();
+        if(returnClassName.endsWith("DescLogicConcept")){
+            return conceptList;
+        }
+        else if(returnClassName.endsWith("MetaThesaurusConcept")){
+            return conceptList;
+        }
+        else{            
+            String className = conceptList.get(0).getClass().getName();
+            Field[] fields = conceptList.get(0).getClass().getDeclaredFields();
+            Field field = null;
+            String fieldType = null;
+            for(int f=0; f<fields.length; f++){
+                fields[f].setAccessible(true);                
+                fieldType = fields[f].getType().getName();
+                String beanName = null;
+                if(returnClassName.indexOf(".")>0){
+                    beanName = returnClassName.substring(returnClassName.lastIndexOf(".")+1);
+                    beanName = beanName.substring(0,1).toLowerCase() + beanName.substring(1);
+                }
+                if(fields[f].getName().startsWith(beanName)){                    
+                    field = fields[f];
+                    break;
+                }
+            }
+            if(field == null){
+                throw new Exception("Cannot locate "+returnClassName +" in " + className);
+            }
+            Set values = new HashSet();
+            for(int i=0; i<conceptList.size(); i++){        
+                Object concept = conceptList.get(i);
+                if(fieldType.endsWith("Collection")|| fieldType.endsWith("HashSet")|| fieldType.endsWith("Vector")|| fieldType.endsWith("ArrayList")){
+                    for(Iterator it = ((Collection)field.get(concept)).iterator(); it.hasNext();){
+                        Object value = it.next();
+                        values.add(value);
+                    }
+                }
+                else{
+                    values.add(field.get(concept));
+                }
+            }
+            if(values.size()>0){
+                resultList.addAll(values);
+            }
+        }
+        return resultList;
+    }
+    private List searchMetaphraseByAtoms(List atomList, String sourceAbbr) throws Exception{
         
         List conceptList = new ArrayList();
         for(int i=0; i<atomList.size(); i++){
@@ -481,8 +570,18 @@ public class EVSWebService {
 
     private List getVocabularies() throws Exception{
       EVSQuery evsQuery = new EVSQueryImpl();
-      //evsQuery.getVocabularies();
+      evsQuery.getAllVocabularies();      
       return query(evsQuery);
+    }
+    
+    /**
+     * Returns the specified vocabulary
+     * @name specifies the vocabulary name 
+     */
+    private List getVocabulary(String name) throws Exception{
+        EVSQuery evsQuery = new EVSQueryImpl();
+        evsQuery.getVocabularyByName(name);        
+        return query(evsQuery);
     }
 
     /**
@@ -490,7 +589,7 @@ public class EVSWebService {
      * @return
      * @throws Exception
      */
-    private List getSilos() throws Exception{
+    private List getAllSilos() throws Exception{
         EVSQuery evsQuery = new EVSQueryImpl();
         evsQuery.getAllSilos(defaultVocabulary);
         return query(evsQuery);
@@ -544,11 +643,82 @@ public class EVSWebService {
   }
 
   /**
+   * Returns all SemanticTypes from the Metaphrase
+   */
+  private List getAllSemanticTypes() throws Exception{
+      EVSQuery evsQuery = new EVSQueryImpl();
+      evsQuery.getSemanticTypes();
+      return query(evsQuery);
+  }
+  
+  /**
+   * Returns all Sources from the Metaphrase
+   */
+  private List getAllMetaSources() throws Exception{
+      EVSQuery evsQuery = new EVSQueryImpl();
+      evsQuery.getMetaSources();
+      return query(evsQuery);
+  }
+  
+  /**
+   * Returns the specified Source from Metaphrase
+   */
+  private List getMetaSource(String abbreviation)throws Exception{
+      List sourceList = getAllMetaSources();
+      List result = new ArrayList();
+      for(int i=0; i < sourceList.size(); i++){
+          Source src = (Source)sourceList.get(i);
+          if(src.getAbbreviation().equalsIgnoreCase(abbreviation)){
+              result.add(src);
+              break;
+          }
+      }
+      return result;
+  }
+  /**
+   * Returns a list of SemanticTypes for one or more MetaThesaurusConcepts specified in the list
+   * @param mtcList List of instance of gov.nih.nci.evs.domain.MetaThesaurusConcepts
+   * @return
+   */
+  private List getSemanticTypes(List mtcList)throws Exception{
+      Set list = new HashSet();
+
+      for(int i=0; i<mtcList.size(); i++){
+          MetaThesaurusConcept mtc = (MetaThesaurusConcept)mtcList.get(i);
+          List sList = mtc.getSemanticTypeCollection();
+          for(int a=0; a< sList.size(); a++){
+              list.add(sList.get(a));
+          }
+      }
+      List semanticList = new ArrayList();
+      semanticList.addAll(list);
+      return semanticList;
+  }
+  /**
+   * Returns a list of Sources for one or more MetaThesaurusConcepts specified in the list
+   * @param mtcList List of instance of gov.nih.nci.evs.domain.MetaThesaurusConcepts
+   * @return
+   */
+  private List getSources(List mtcList) throws Exception{
+      Set list = new HashSet();
+
+      for(int i=0; i<mtcList.size(); i++){
+          MetaThesaurusConcept mtc = (MetaThesaurusConcept)mtcList.get(i);
+          List sourceList = mtc.getSourceCollection();
+          for(int a=0; a< sourceList.size(); a++){
+              list.add(sourceList.get(a));
+          }
+      }
+      List sources = new ArrayList();
+      sources.addAll(list);
+      return sources;
+  }
+  /**
    * Returns a list of Atoms for one or more MetaThesaurusConcepts specified in the list
    * @param mtcList List of instance of gov.nih.nci.evs.domain.MetaThesaurusConcepts
    * @return
    */
-  private List getAtoms(List mtcList){
+  private List getAtoms(List mtcList)throws Exception{
       Set list = new HashSet();
 
       for(int i=0; i<mtcList.size(); i++){
@@ -562,7 +732,69 @@ public class EVSWebService {
       atoms.addAll(list);
       return atoms;
   }
+  /**
+   * Returns all Property names from the NCI_Thesaurus
+   */
+  private List getAllProperties()throws Exception{
+      EVSQuery evsQuery = new EVSQueryImpl();
+      evsQuery.getAllPropertyTypes(defaultVocabulary);
+      List results = query(evsQuery);
+      List propList = new ArrayList();
+      for(int i=0; i< results.size(); i++){
+          Property prop = new Property();
+          prop.setName((String)results.get(i));
+          propList.add(prop);
+      }
+      return propList;
+  }
 
+  /**
+   * Returns all Qualifier names from the NCI_Thesaurus
+   */
+  private List getAllQualifiers() throws Exception{
+      EVSQuery evsQuery = new EVSQueryImpl();
+      evsQuery.getAllQualifierTypes(defaultVocabulary);
+      List results = query(evsQuery);
+      List qList = new ArrayList();
+      for(int i=0; i< results.size(); i++){
+          Qualifier q = new Qualifier();
+          q.setName((String)results.get(i));
+          qList.add(q);
+      }
+      return qList;
+  }
+  
+  /**
+   * Returns all the Role names from the NCI_Thesaurus
+   */
+  private List getAllRoles()throws Exception{
+      EVSQuery evsQuery = new EVSQueryImpl();
+      evsQuery.getAllRoleNames(defaultVocabulary);
+      List results = query(evsQuery);
+      List roleList = new ArrayList();
+      for(int i=0; i< results.size(); i++){
+          Role role = new Role();
+          role.setName((String)results.get(i));
+          roleList.add(role);
+      }
+      return roleList;
+  }
+  
+  /**
+   * Returns all Association names from the NCI_Thesaurus
+   */
+  private List getAllAssociations() throws Exception{
+      EVSQuery evsQuery = new EVSQueryImpl();
+      evsQuery.getAllAssociationTypes(defaultVocabulary);
+      List results = query(evsQuery);
+      List assList = new ArrayList();
+      for(int i=0; i< results.size(); i++){
+          Association ass = new Association();
+          ass.setName((String)results.get(i));
+          assList.add(ass);          
+      }
+      return assList;
+  }
   /**
      * Queries EVS vocabularies  and returns results
      * @param evsQuery - specifies the EVSQuery
@@ -574,7 +806,7 @@ public class EVSWebService {
         List results = new ArrayList();
         try {            
             ApplicationService appService = ApplicationServiceProvider.getLocalInstance();
-            results = (List)  appService.evsSearch(evsQuery);
+            results = (List)  appService.evsSearch(evsQuery);          
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception(ex.getMessage());
@@ -593,6 +825,9 @@ public class EVSWebService {
     private List convertConcepts(List concepts) throws Exception {
         List convertedResults = new ArrayList();
         Set results = new HashSet();
+        if(!(concepts.size()>0)){
+            return new ArrayList();
+        }
         if (concepts.get(0).getClass().getName().endsWith("DescLogicConcept")) {
             for (int i = 0; i < concepts.size(); i++) {
                 DescLogicConcept concept = (DescLogicConcept) concepts.get(i);
@@ -706,10 +941,73 @@ public class EVSWebService {
         }
         return convertedResults;
     }
-
-
-
-
-//  ===============================================================
+    
+    private List getMatchFromList(List resultList, Object criteria, String fieldName) throws Exception{
+        List matchList = new ArrayList();
+        if(resultList.size()>0){
+            try{
+                
+                Field matchField = null;
+                String matchName = null;
+                try{
+                    if(criteria.getClass().getName().equals(resultList.get(0).getClass().getName())){
+                        matchField = criteria.getClass().getDeclaredField(fieldName);
+                        matchField.setAccessible(true);   
+                        if(matchField.get(criteria) != null){
+                            matchName = ((String)matchField.get(criteria)).toLowerCase();
+                        }                        
+                    }                    
+                }catch(Exception ex){
+                    log.error(ex.getMessage());
+                }
+                
+                int starIndex = -1;
+                if(matchName != null && matchField !=null ){
+                    if(matchName.indexOf("*")>-1){
+                        starIndex = matchName.indexOf("*");
+                    }
+                    
+                   
+                    for(int i=0; i< resultList.size(); i++){
+                        String match = matchName;
+                        Object result = resultList.get(i);
+                        String value = ((String)matchField.get(result)).toLowerCase();                       
+                        if(match.length()>1){
+                            if(starIndex == 0){                                
+                                match = match.substring(1);
+                                if(value.endsWith(match)){
+                                    matchList.add(result);
+                                }                                
+                            }
+                            else if(starIndex > 0 ){                                
+                                match = match.substring(0,starIndex);                                
+                                if(value.startsWith(match)){                                    
+                                    matchList.add(result);
+                                }                                
+                            }
+                            else if(starIndex == -1){                                
+                                if(value.equalsIgnoreCase(match)){
+                                    matchList.add(result);
+                                }                                
+                            }                             
+                        }
+                        else if(starIndex == 0){
+                            matchList =  resultList;
+                        }
+                    }
+                    
+                }
+                else{
+                    matchList =  resultList;
+                }
+                
+               
+            }catch(Exception ex){
+                throw new Exception(ex.getMessage());
+            }
+        }
+        
+        return matchList;
+    }
 
 }
