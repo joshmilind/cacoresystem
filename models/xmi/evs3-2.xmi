@@ -1,5 +1,5 @@
 <?xml version="1.0"  encoding="windows-1252"?>
-<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2006-05-26 12:19:53">
+<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2006-06-16 12:39:19">
 	<XMI.header>
 		<XMI.documentation>
 			<XMI.exporter>Enterprise Architect</XMI.exporter>
@@ -1030,7 +1030,7 @@
 																				<UML:TaggedValue tag="version" value="1.0"/>
 																				<UML:TaggedValue tag="package" value="EAPK_9514C5AC_6C06_4480_93A5_619F8D4F1BE1"/>
 																				<UML:TaggedValue tag="date_created" value="2005-05-17 15:11:39"/>
-																				<UML:TaggedValue tag="date_modified" value="2006-05-26 09:39:27"/>
+																				<UML:TaggedValue tag="date_modified" value="2006-06-12 16:32:48"/>
 																				<UML:TaggedValue tag="genfile" value="C:\Temp\Model\gov.nih.nci.evs.domain\Source.java"/>
 																				<UML:TaggedValue tag="gentype" value="Java"/>
 																				<UML:TaggedValue tag="tagged" value="0"/>
@@ -1041,7 +1041,7 @@
 																				<UML:TaggedValue tag="style" value="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=0;HSwimLanes=0;BorderStyle=0;"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Classifier.feature>
-																				<UML:Attribute name="abbreviation" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
+																				<UML:Attribute name="code" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
 																					<UML:StructuralFeature.multiplicity>
 																						<UML:Multiplicity>
 																							<UML:Multiplicity.range>
@@ -1065,9 +1065,39 @@
 																						<UML:TaggedValue tag="lowerBound" value="1"/>
 																						<UML:TaggedValue tag="upperBound" value="1"/>
 																						<UML:TaggedValue tag="duplicates" value="0"/>
+																						<UML:TaggedValue tag="ea_guid" value="{A7C27B4C-73B6-4cd7-A36D-85F598A41405}"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="Returns the code for this source" xmi.id="EAID_05D89AF2_51D0_4a8d_9DAD_9474CA18A88A"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified value as the code for this source" xmi.id="EAID_35B24983_7959_4258_95B9_E5C0132DA607"/>
+																						<UML:TaggedValue tag="documentation" value="Specifies the source code" xmi.id="EAID_51459F89_63DE_43e2_9EA4_B7FC04164299"/>
+																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_82F4686B_D7D4_4d50_8909_070377FCEE33"/>
+																					</UML:ModelElement.taggedValue>
+																				</UML:Attribute>
+																				<UML:Attribute name="abbreviation" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
+																					<UML:StructuralFeature.multiplicity>
+																						<UML:Multiplicity>
+																							<UML:Multiplicity.range>
+																								<UML:MultiplicityRange lower="1" upper="1"/>
+																							</UML:Multiplicity.range>
+																						</UML:Multiplicity>
+																					</UML:StructuralFeature.multiplicity>
+																					<UML:Attribute.initialValue>
+																						<UML:Expression/>
+																					</UML:Attribute.initialValue>
+																					<UML:StructuralFeature.type>
+																						<Foundation.Core.Classifier xmi.idref="EAID_8099B492_C932_49a0_ADFC_DE5064849FAE"/>
+																					</UML:StructuralFeature.type>
+																					<UML:ModelElement.taggedValue>
+																						<UML:TaggedValue tag="type" value="String"/>
+																						<UML:TaggedValue tag="derived" value="0"/>
+																						<UML:TaggedValue tag="containment" value="Not Specified"/>
+																						<UML:TaggedValue tag="ordered" value="0"/>
+																						<UML:TaggedValue tag="collection" value="false"/>
+																						<UML:TaggedValue tag="position" value="1"/>
+																						<UML:TaggedValue tag="lowerBound" value="1"/>
+																						<UML:TaggedValue tag="upperBound" value="1"/>
+																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{7D461C04-9A22-4eb4-A061-FD950C2A9CD9}"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
-																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_04415997_56BF_46f2_B44C_78315F9FAA2C"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the source abbreviation" xmi.id="EAID_25B03C66_0630_4b74_9008_5D9E20C8B8CD"/>
 																						<UML:TaggedValue tag="documentation-get-method" value="Returns the abbreviation of this Source" xmi.id="EAID_C9C45D00_7D12_4cf3_A7FD_933D726AB84D"/>
 																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified abbreviation  for this Source" xmi.id="EAID_E92C49C3_FDE2_4928_8E33_4161153C54AF"/>
@@ -1093,7 +1123,7 @@
 																						<UML:TaggedValue tag="containment" value="Not Specified"/>
 																						<UML:TaggedValue tag="ordered" value="0"/>
 																						<UML:TaggedValue tag="collection" value="false"/>
-																						<UML:TaggedValue tag="position" value="1"/>
+																						<UML:TaggedValue tag="position" value="2"/>
 																						<UML:TaggedValue tag="lowerBound" value="1"/>
 																						<UML:TaggedValue tag="upperBound" value="1"/>
 																						<UML:TaggedValue tag="duplicates" value="0"/>
@@ -1385,7 +1415,7 @@
 																				<UML:TaggedValue tag="style" value="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=0;HSwimLanes=0;BorderStyle=0;"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Classifier.feature>
-																				<UML:Attribute name="Name" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
+																				<UML:Attribute name="name" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
 																					<UML:StructuralFeature.multiplicity>
 																						<UML:Multiplicity>
 																							<UML:Multiplicity.range>
@@ -3047,7 +3077,7 @@
 														<UML:TaggedValue tag="phase" value="1.0"/>
 														<UML:TaggedValue tag="complexity" value="1"/>
 														<UML:TaggedValue tag="status" value="Proposed"/>
-														<UML:TaggedValue tag="$ea_attsclassified" value="{1C37067A-A714-4891-87FF-DAE8AE7805FE},{678863B8-30EA-49f8-ACC5-763ECEC025C0},{E540D091-9C8B-4195-B084-A1CBC79C679A},{2DA57FAD-4771-45d2-9EAB-DC982169ABF1},{A3BEFA20-F398-4170-B976-7F4D9930C7E8},{70222B1F-E7A5-4b91-BC8B-B9782932576D},{D8A2F78D-2466-4acb-A0F8-4D5B4807CC6A},{7D461C04-9A22-4eb4-A061-FD950C2A9CD9},{9A90AB95-10D0-40b9-9EDB-996E31D9DBC3},{B9724CBC-456E-470f-9087-7219AF767BFA},{7713B5CB-8EDB-4c8f-AAE0-EE7356C93ACD},{67BE90B6-D709-4530-9F56-3FA9891DB3FF},{D7549FBE-3892-4a42-BCBE-8B961359F085},{290F430A-4861-437a-B568-16A33AE4DDD8},{2D3D6FB3-4963-476c-9665-40FD806FB6CF},{BEA7E6B1-8455-4372-91E6-992522888DEC},{1F8E738D-5CAE-42c0-AB1C-CEA7B272DCBC},{4C8893A1-DAF1-46a1-8260-AC2A75EA4ABF},{1C82F060-7F46-4ddf-BEF9-7A7973426C8B},{8B399771-D152-460a-BE73-3FD86364671A},{239F4A6D-26D1-4c48-91A6-3801C385742F},{AA263295-FD8A-4162-AA3D-7818688679D7},{4CE9D9E1-025E-4096-9FC8-1BEDB2AB6CD6},{88644C55-FF5F-4c30-902A-068C2F65B2A5},{672FF35D-E21E-4942-A136-DD293AE48015},{DF415497-8AAF-46d9-B774-332BDA312F85},{3E99007F-887A-4b5a-A1E2-BE10677133D2},{68C126F3-57FF-42d9-AD15-D5B7681E025E},{843AB899-B3F0-48cb-8431-EE8E3876E3B7},{10D0815A-503F-42f1-A3EE-067783F2A261}"/>
+														<UML:TaggedValue tag="$ea_attsclassified" value="{1C37067A-A714-4891-87FF-DAE8AE7805FE},{678863B8-30EA-49f8-ACC5-763ECEC025C0},{E540D091-9C8B-4195-B084-A1CBC79C679A},{2DA57FAD-4771-45d2-9EAB-DC982169ABF1},{A3BEFA20-F398-4170-B976-7F4D9930C7E8},{70222B1F-E7A5-4b91-BC8B-B9782932576D},{D8A2F78D-2466-4acb-A0F8-4D5B4807CC6A},{7D461C04-9A22-4eb4-A061-FD950C2A9CD9},{9A90AB95-10D0-40b9-9EDB-996E31D9DBC3},{B9724CBC-456E-470f-9087-7219AF767BFA},{7713B5CB-8EDB-4c8f-AAE0-EE7356C93ACD},{67BE90B6-D709-4530-9F56-3FA9891DB3FF},{D7549FBE-3892-4a42-BCBE-8B961359F085},{290F430A-4861-437a-B568-16A33AE4DDD8},{2D3D6FB3-4963-476c-9665-40FD806FB6CF},{BEA7E6B1-8455-4372-91E6-992522888DEC},{1F8E738D-5CAE-42c0-AB1C-CEA7B272DCBC},{4C8893A1-DAF1-46a1-8260-AC2A75EA4ABF},{1C82F060-7F46-4ddf-BEF9-7A7973426C8B},{8B399771-D152-460a-BE73-3FD86364671A},{239F4A6D-26D1-4c48-91A6-3801C385742F},{AA263295-FD8A-4162-AA3D-7818688679D7},{4CE9D9E1-025E-4096-9FC8-1BEDB2AB6CD6},{A7C27B4C-73B6-4cd7-A36D-85F598A41405},{88644C55-FF5F-4c30-902A-068C2F65B2A5},{672FF35D-E21E-4942-A136-DD293AE48015},{DF415497-8AAF-46d9-B774-332BDA312F85},{3E99007F-887A-4b5a-A1E2-BE10677133D2},{68C126F3-57FF-42d9-AD15-D5B7681E025E},{843AB899-B3F0-48cb-8431-EE8E3876E3B7},{10D0815A-503F-42f1-A3EE-067783F2A261}"/>
 														<UML:TaggedValue tag="style" value="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=0;HSwimLanes=0;BorderStyle=0;"/>
 													</UML:ModelElement.taggedValue>
 												</UML:Class>

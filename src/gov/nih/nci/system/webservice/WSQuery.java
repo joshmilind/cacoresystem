@@ -8,7 +8,13 @@ import java.lang.reflect.*;
 
 import org.apache.log4j.*;
 
+/**
+ * @author caBIO Team
+ */
 
+/**
+ * The WSQuery class describes operations that can be used to perform Web Service queries
+ */
 public class WSQuery {
     private static Logger log = Logger.getLogger(WSQuery.class);
     private boolean wsPackage = true;
@@ -20,24 +26,45 @@ public class WSQuery {
     private String beanFileName = "cacoreBeans.properties";
     private WSTransformer transformer = null;
 
+    /**
+     * Instantiates a WSQuery instance
+     */
     public WSQuery() throws Exception{
         loadProperties();
         loadWSTransformer();
     }
 
-    //======================================================
+   /**
+    * Returns the Version number
+    */
     public String getVersion(){
         return version;
     }
+    /**
+     * Returns the number of records per query 
+     */
     public int getRecordsPerQuery(){
         return recordsPerQuery;
     }
+    /**
+     * Returns the maximum number of records per query 
+     */
     public int getMaximumRecordsPerQuery(){
         return maximumRecordsPerQuery;
     }
+    /**
+     * Returns true if <i>Process caCORE Ontology</i> value has been set to true 
+     */
     public boolean getProcessOntology(){
         return processOntology;
     }
+    /**
+     * Returns the total number of records in the database for the specified query
+     * @param targetClassName - The target class name can be a fully qualified class name or 
+     * a navigation path (A comma seperated list of fully qualified class names)
+     * @param criteria - Search Criteria object
+     * @return 
+     */
     public int getTotalNumberOfRecords(String targetClassName, Object criteria) throws Exception{
         List results = new ArrayList();
         if(criteria.getClass().getPackage().getName().indexOf(".nci.evs.")>0){
@@ -48,12 +75,26 @@ public class WSQuery {
         }
         return results.size();
     }
-    //  ======================================================
+    /**
+     * Returns a List of target objects beased on the search criteria 
+     * @param targetClassName The target class name can be a fully qualified class name of 
+     * a navigation path (a comma seperated list of fully qualified class names)
+     * @param criteria Specifies the search critera
+     */
      public List queryObject(String targetClassName, Object criteria) throws Exception
      {
          return query(targetClassName,criteria,0,0);
      }
-    //==========================================================
+
+
+     /**
+      * Returns a List of target objects based on the search criteria
+      * @param targetClassName The target class name can be a fully qualified class name of 
+      * a navigation path (a comma seperated list of fully qualified class names)
+      * @param Specifies the search criteria 
+      * @param specifies the start index of the result set
+      * @param specifies the total number of records that need to be returned 
+      */
       public List query(String targetClassName, Object criteria, int startIndex, int recordCounter) throws Exception
       {
           List alteredResults = new ArrayList();
@@ -83,7 +124,13 @@ public class WSQuery {
         return alteredResults;
       }
 
-      //===========================================================================
+      /**
+       * Queries the database and returns a List of objects specified in the target class
+       * @param targetClassName The target class name can be a fully qualified class name of 
+       * a navigation path (a comma seperated list of fully qualified class names)
+       * @param Specifies the search criteria      
+       * @return returns a list of objects
+       */
       private List getResultSet(String targetClassName, Object criteria) throws Exception{
 
           List results = new ArrayList();
@@ -111,6 +158,9 @@ public class WSQuery {
           return results;
       }
 
+      /**
+       * Loads the Properties file
+       */
       private  void loadProperties() throws Exception{
           try{
               java.util.Properties properties = new java.util.Properties();
@@ -155,6 +205,10 @@ public class WSQuery {
               throw new Exception("Error: Unable to read file: "+ fileName);
           }
       }
+      
+      /**
+       * Loads the Web Service Transformer
+       */
       private void loadWSTransformer() throws Exception{
           try{
               transformer = new WSTransformer(beanFileName);
