@@ -54,7 +54,7 @@ public class EVSWSClient{
             System.out.println("EVS WEB SERVICE TEST");
             System.out.println("\n--------------------\n");
             
-            String endpointURL = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/ws/@WEBSERVICENAME@";
+            String endpointURL = "http://localhost:8080/cacore32/ws/caCOREService";
             String methodName = "queryObject";
             Service service = new Service();            
             Call call = (Call)service.createCall();
@@ -83,6 +83,7 @@ public class EVSWSClient{
     QName qnQualifier= new QName("urn:ws.domain.evs.nci.nih.gov","Qualifier");
     QName qnAssociation = new QName("urn:ws.domain.evs.nci.nih.gov","Association");
     QName qnSilo = new QName("urn:ws.domain.evs.nci.nih.gov","Silo");
+    QName qnVocabulary = new QName("urn:ws.domain.evs.nci.nih.gov","Vocabulary");
     QName qnHistory = new QName("urn:ws.domain.evs.nci.nih.gov","History");
     QName qnHistoryRecord = new QName("urn:ws.domain.evs.nci.nih.gov","HistoryRecord");
     QName qnEditActionDate = new QName("urn:ws.domain.evs.nci.nih.gov","EditActionDate");
@@ -98,6 +99,7 @@ public class EVSWSClient{
     QName qnHashSet = new QName("urn:ws.domain.evs.nci.nih.gov", "HashSet");
     QName qnStringArr = new QName("EVSWebService","ArrayOf_xsd_string");
     QName qnAnyTypeArr = new QName("EVSWebService","ArrayOf_xsd_anytype");
+    QName qnVocabularyArr = new QName("EVSWebService","ArrayOf_tns1_Vocabulary");
 
 
 
@@ -112,6 +114,7 @@ public class EVSWSClient{
     call.registerTypeMapping(Atom[].class,qnAtomArr, new org.apache.axis.encoding.ser.ArraySerializerFactory(), new org.apache.axis.encoding.ser.ArrayDeserializerFactory());
     call.registerTypeMapping(SemanticType[].class,qnSemanticTypeArr, new org.apache.axis.encoding.ser.ArraySerializerFactory(), new org.apache.axis.encoding.ser.ArrayDeserializerFactory());
     call.registerTypeMapping(Role.class, qnRole, new org.apache.axis.encoding.ser.BeanSerializerFactory(Role.class, qnRole), new org.apache.axis.encoding.ser.BeanDeserializerFactory(Role.class, qnRole));
+    call.registerTypeMapping(Vocabulary.class, qnVocabulary, new org.apache.axis.encoding.ser.BeanSerializerFactory(Vocabulary.class, qnVocabulary), new org.apache.axis.encoding.ser.BeanDeserializerFactory(Vocabulary.class, qnVocabulary));
     call.registerTypeMapping(Property.class, qnProperty, new org.apache.axis.encoding.ser.BeanSerializerFactory(Property.class, qnProperty), new org.apache.axis.encoding.ser.BeanDeserializerFactory(Property.class, qnProperty));
     call.registerTypeMapping(DescLogicConcept.class, qnDLC, new org.apache.axis.encoding.ser.BeanSerializerFactory(DescLogicConcept.class, qnDLC), new org.apache.axis.encoding.ser.BeanDeserializerFactory(DescLogicConcept.class, qnDLC));
     call.registerTypeMapping(TreeNode.class, qnTreeNode, new org.apache.axis.encoding.ser.BeanSerializerFactory(TreeNode.class, qnTreeNode), new org.apache.axis.encoding.ser.BeanDeserializerFactory(TreeNode.class, qnTreeNode));
