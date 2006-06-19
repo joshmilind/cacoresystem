@@ -264,6 +264,7 @@ public class EVSDAOImpl
 	 */
 	private void setVocabulary(String vocabularyName) throws Exception
 	{
+        vocabulary = new Vocabulary();
         if(!StringHelper.hasValue(vocabularyName)){
         	log.error("vocabularyName cannot be null");
         	throw new Exception(getException(" vocabularyName cannot be null"));
@@ -307,11 +308,34 @@ public class EVSDAOImpl
         return vocab;
     }
     
-    private Response getAllVocabularies(HashMap map){
+    private Response getAllVocabularies(HashMap map){                
         List vocabList = new ArrayList();
         Vector names = dtsrpc.getVocabularyNames();
-        for(int i=0; i<names.size(); i++){
+        for(int i=0; i<names.size(); i++){           
             vocabList.add(populateVocabulary((String)names.get(i)));
+        }        
+        return new Response(vocabList);
+    }
+    private Response getVocabularyByName(HashMap map) throws Exception{
+        String vocabularyName = null;
+        Vocabulary vocab = new Vocabulary();
+        List vocabList = new ArrayList();
+        
+        try{
+            for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+            {
+                String key = (String)iter.next();
+                String name = key.substring(key.indexOf("$")+1, key.length());
+                if(name.equalsIgnoreCase("VocabularyName"))
+                    vocabularyName = (String)map.get(key);
+            }
+            if(vocabularyName != null){
+                setVocabulary(vocabularyName);
+                vocabList.add(vocabulary);
+            }
+
+        }catch(Exception ex){
+            throw new Exception(getException(ex.getMessage()));
         }
         return new Response(vocabList);
     }
@@ -1889,6 +1913,85 @@ private boolean validateSource(String source) throws Exception{
 	}
 
 /**
+ * Returns MetaThesaurusConcepts for all sources
+ */
+private Response getMetaConceptsForAllSources(HashMap map) throws Exception{
+    List conceptList = new ArrayList();
+    try{
+        for(Enumeration e = metaphrase.getSources();e.hasMoreElements();){
+            COM.Lexical.Metaphrase.Source metaSource = (COM.Lexical.Metaphrase.Source)e.nextElement();
+            COM.Lexical.Metaphrase.Concept metaConcept = getMetaConceptForSource(metaSource);
+            conceptList.add(buildMetaThesaurusConcept(metaConcept));            
+        } 
+    }catch(Exception ex){
+        throw new Exception(getException(ex.getMessage()));
+    }
+    return new Response(conceptList);
+}
+
+private Response getMetaConceptCodeForSource(HashMap map) throws Exception{
+    List codeList = new ArrayList();
+    String abbreviation = null;
+    try{
+        for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+        {
+            String key = (String)iter.next();
+            String name = key.substring(key.indexOf("$")+1, key.length());
+
+            if(name.equalsIgnoreCase("sourceAbbr")){
+                if(map.get(key)==null){
+                    throw new Exception(getException("Invalid source"));                    
+                    }                
+                abbreviation = (String)map.get(key);
+            }
+        }
+        if(validateSource(abbreviation)){
+            COM.Lexical.Metaphrase.Source metaSource = metaphrase.source(abbreviation);
+            codeList.add(getMetaConceptCodeForSource(metaSource));
+        }
+
+    }catch(Exception ex){
+        throw new Exception(getException(ex.getMessage()));
+    }
+    return new Response(codeList);
+}
+
+private String getMetaConceptCodeForSource(COM.Lexical.Metaphrase.Source metaSource) throws Exception{
+    COM.Lexical.Metaphrase.Concept metaConcept = getMetaConceptForSource(metaSource);
+    return metaConcept.conceptID();
+}
+private COM.Lexical.Metaphrase.Concept getMetaConceptForSource(COM.Lexical.Metaphrase.Source metaSource) throws Exception{
+    COM.Lexical.Metaphrase.Partition metaPartition = metaSource.partition();
+    return metaPartition.concept();    
+}
+private Response getSourceAbbreviation(HashMap map)throws Exception{
+    List sabList = new ArrayList();
+    String cui = null;
+    try{
+        for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+        {
+            String key = (String)iter.next();
+            String name = key.substring(key.indexOf("$")+1, key.length());
+
+            if(name.equalsIgnoreCase("cui")){                                
+                cui = (String)map.get(key);
+            }
+            for(Enumeration e = metaphrase.getSources();e.hasMoreElements();){
+                COM.Lexical.Metaphrase.Source metaSource = (COM.Lexical.Metaphrase.Source)e.nextElement();            
+                if(cui.equals(getMetaConceptCodeForSource(metaSource))){
+                    sabList.add(metaSource.SAB());
+                }            
+            }
+        }
+        
+    }catch(Exception ex){
+        throw new Exception(getException(ex.getMessage()));
+    }
+    return new Response(sabList);
+
+}
+
+/**
  * Converts COM.Lexical.Metaphrase.Concept to MetaThesaurusConcept
  * @param metaConcept
  * @return Returns a MetaThesaurusConcept object
@@ -2018,7 +2121,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
  * @param metaSource
  * @return an EVS source object
  */
-  private  Source convertMetaSource(COM.Lexical.Metaphrase.Source metaSource)
+  private  Source convertMetaSource(COM.Lexical.Metaphrase.Source metaSource) throws Exception
   {
 
 	Source source = null;
@@ -2027,6 +2130,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
   		source = new Source();
   		source.setDescription(metaSource.description());
   		source.setAbbreviation(metaSource.SAB());
+        source.setCode(getMetaConceptCodeForSource(metaSource));
     }
     else
     {

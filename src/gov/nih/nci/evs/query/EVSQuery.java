@@ -238,7 +238,15 @@ public interface EVSQuery extends Serializable{
      */
     public void getVocabularyNames();
 
+    /**
+     * Returns a list of populated Vocabulary objects from the EVS server via the ApplicationService 
+     */
+    public void getAllVocabularies();
 
+    /**
+     * Returns the specified vocabulary in a List  
+     */
+    public void getVocabularyByName(String vocabularyName);
 
     /**
      * Gets the code of the specified concept.
@@ -354,14 +362,26 @@ public interface EVSQuery extends Serializable{
 
 	public void getConceptsBySource(String sourceAbbr);
 
-
-
+    /**
+     * Returns MetaThesaurus concepts for all Sources
+     */
+    public void getMetaConceptsForAllSources();
+    
+    /**
+     * Returns MetaThesaurus concept codes for all Sources
+     */
+    public void getMetaConceptCodeForSource(String sourceAbbr);
+    
 	/**
 	 * gets MetaThesaurusConcept name
 	 * @param conceptCode - specifies the concept code
 	 */
 	public void getMetaConceptNameByCode(String conceptCode);
 
+    /**
+     * Gets the source abbreviation for the given Source Concept unique identifier. 
+     */
+    public void getSourceAbbreviation(String cui);
 
 	/**
 	 * Get all MetaThesaurus Sources

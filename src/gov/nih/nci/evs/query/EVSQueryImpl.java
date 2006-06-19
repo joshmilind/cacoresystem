@@ -327,8 +327,18 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	{
 		descLogicValues.put("getVocabularyNames$name", " ");
 	}
-	
-	
+	/**
+     * @see gov.nih.nci.evs.query.EVSQuery#getAllVocabularies() 
+	 */
+    public void getAllVocabularies(){
+        descLogicValues.put("getAllVocabularies$name", " ");
+    }
+    /**
+     * @see gov.nih.nci.evs.query.EVSQuery#getVocabularyByName(String vocabularyName) 
+     */
+    public void getVocabularyByName(String vocabularyName){
+        descLogicValues.put("getVocabularyByName$vocabularyName",vocabularyName);
+    }
 	/**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getConceptCodeByName(java.lang.String, java.lang.String)
 	 */
@@ -337,8 +347,6 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 		descLogicValues.put("getConceptCodeByName$vocabularyName", vocabularyName);
 		descLogicValues.put("getConceptCodeByName$conceptName", conceptName);
 	}	
-	
-	
 	
 	/**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getConceptByName(java.lang.String, java.lang.String)
@@ -469,12 +477,26 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	/**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getConceptsBySource(java.lang.String)
 	 */
-	public void getConceptsBySource(String sourceAbbr) 
+    public void getConceptsBySource(String sourceAbbr) 
+    {
+        metaThesaurusValues.put("getConceptsBySource$sourceAbbr", sourceAbbr);
+    }
+    
+    public void getMetaConceptCodeForSource(String sourceAbbr) 
 	{
-		metaThesaurusValues.put("getConceptsBySource$sourceAbbr", sourceAbbr);
+		metaThesaurusValues.put("getMetaConceptCodeForSource$sourceAbbr", sourceAbbr);
 	}
 	
-	
+    /**
+     * Returns MetaThesaurus concepts for all Sources
+     */
+    public void getMetaConceptsForAllSources(){
+        metaThesaurusValues.put("getMetaConceptCodessForAllSources$name","");
+    }
+    
+    public void getSourceAbbreviation(String cui){
+        metaThesaurusValues.put("getMetaConceptsForAllSources$cui",cui);
+    }
 	/**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getMetaConceptNameByCode(java.lang.String)
 	 */
