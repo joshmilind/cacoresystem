@@ -126,7 +126,8 @@
 			</extendedfilterset>
 		</SDKcreatecontrol>
 	</target>
-	<target name="-create-output-dirs.custom" if="create-output-dirs.custom.use"/>
+	<target name="-create-output-dirs.custom" if="create-output-dirs.custom.use">
+	</target>
 	<target name="-create-project-dirs.custom" if="create-project-dirs.custom.use"/>
 	<target name="-deploy-server.custom" if="deploy-server.custom.use"/>
 	<target name="-deployWS.custom" if="deployWS.custom.use"/>
@@ -211,6 +212,7 @@
 			</filterset>				
 		</copy>
 	</target>
+	
 	<target name="-package-client.custom" if="package-client.custom.use">
 		<!-- First, create test client files with current project information -->
 		<copy todir="${dir.output.project.client}" overwrite="true">
@@ -231,7 +233,7 @@
 				<filter token="AXIS_SERVICE" value="-l${url.project.axisservice}"/>
 			</filterset>
 		</copy>
-
+		
 		<!-- Create client jar file -->
 		<mkdir dir="${dir.output.project.package.client.lib}"/>
 		<jar destfile="${dir.output.project.package.client.lib}/${file.project.client.jar}" update="yes">
@@ -402,6 +404,13 @@
 		<copy todir="${cacore_home}/output" overwrite="true">
 			<fileset dir="${dir.output.project.package}"/>
 		</copy>	
+		<mkdir dir="${cacore_home}/output/client/log"/>
+		<copy todir="${cacore_home}/output/client/log" overwrite="true">
+			<fileset dir="${dir.output.project.conf}">
+				<include name="client.log"/>
+			</fileset>
+		</copy>	
+		
 	</target>
 	<target name="-rundemo.custom" if="rundemo.custom.use"/>
 	<target name="-runtest.custom" if="runtest.custom.use"/>
