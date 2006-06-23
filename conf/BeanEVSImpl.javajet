@@ -20,7 +20,11 @@ package <%=UML13Utils.getNamespaceName(UML13Utils.getPackage(UML13Utils.getModel
 
 import java.util.*;
 <%
-//import org.omg.uml.modelmanagement.UmlPackage;
+if(klass.getName().endsWith("Vocabulary")){
+%>
+import gov.nih.nci.evs.security.*;
+<%
+}
 %>
 
 /**
