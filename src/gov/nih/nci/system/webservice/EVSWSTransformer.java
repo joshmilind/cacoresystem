@@ -76,8 +76,7 @@ public class EVSWSTransformer {
 
         for (int f = 0; f < wsFields.length; f++) {
             Field wsField = wsFields[f];
-            if (wsField.getName().equalsIgnoreCase("vocabularyName")
-                    || wsField.getName().equalsIgnoreCase("serialVersionUID")) {
+            if (wsField.getName().equalsIgnoreCase("serialVersionUID")) {
                 continue;
             }
             try {
