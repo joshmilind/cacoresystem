@@ -52,20 +52,10 @@ public abstract class DAOFactory {
 	 */
 	public static DAOFactory getFactory(int whichFactory) throws DAOException {
 		switch (whichFactory) {
-			case gov.nih.nci.common.util.Constant.ORM_DAO:
-	
+			case gov.nih.nci.common.util.Constant.ORM_DAO:	
 				return new ORMDAOFactory();
 			case gov.nih.nci.common.util.Constant.EVS_DAO:
-				DAOFactory evsFactory = null;
-				try {
-					evsFactory = (DAOFactory) Class.forName(
-							gov.nih.nci.common.util.Constant.EVS_DAO_NAME)
-							.newInstance();
-				} catch (Exception e) {
-					new DAOException("Couldnot create EVS DAO");
-				}
-				return evsFactory;
-	
+				return new EVSDAOFactory();				
 			default: {
 				throw new DAOException("NO EQUIVALENT DAO FACTORY FOUND");
 			}

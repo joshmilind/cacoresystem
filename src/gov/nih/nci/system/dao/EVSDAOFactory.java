@@ -24,6 +24,7 @@ package gov.nih.nci.system.dao;
  */
 
 import org.apache.log4j.*;
+import gov.nih.nci.system.dao.impl.externalsystem.*;
 
 /**
  * A specific DAOFactory for EVS Datasource
@@ -35,14 +36,19 @@ public class EVSDAOFactory extends DAOFactory {
 
 	private static Logger log = Logger.getLogger(EVSDAOFactory.class.getName());
 
-	private gov.nih.nci.system.dao.impl.externalsystem.EVSDAOImpl evsImpl;
+	private EVSDAO evsImpl;
 
 	private gov.nih.nci.common.net.Response response;
 
-	public EVSDAOFactory() {
+	public EVSDAOFactory()throws DAOException {
 		super();
-		evsImpl = new gov.nih.nci.system.dao.impl.externalsystem.EVSDAOImpl();
-		// hard coded
+		try{
+			evsImpl = (EVSDAO)Class.forName(gov.nih.nci.common.util.Constant.EVS_DAO_NAME).newInstance();
+		}catch(Exception ex){		
+			throw new DAOException(ex.getMessage());
+		}
+		
+		
 	}
 
 	/**
