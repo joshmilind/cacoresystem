@@ -39,7 +39,10 @@ public class Constant {
 	public static int ALIAS_ID = 1;
 	public static String DELEGATE_NAME = "gov.nih.nci.system.delegator.BaseDelegate";
 	public static String PACKAGE_NAME = "gov.nih.nci.cacore.domain";
-	public static String EVS_DAO_NAME ="gov.nih.nci.system.dao.EVSDAOFactory";
+	//public static String EVS_DAO_NAME ="gov.nih.nci.system.dao.EVSDAOFactory";
+	public static String EVS_DAO_NAME ="gov.nih.nci.system.dao.impl.externalsystem.EVSDTSImpl";
+	//public static String EVS_DAO_NAME ="gov.nih.nci.system.dao.impl.externalsystem.EVSLexBigImpl";
+	
 	public static String serialVersionUID = "serialVersionUID";
     public static final String BIOCARTA_STRING = "BioCarta";
     public static final String XLINK_URL = "http://www.w3.org/1999/xlink";
