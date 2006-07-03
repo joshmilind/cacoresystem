@@ -4,6 +4,7 @@ package gov.nih.nci.evs.query;
 import java.util.Date;
 import java.util.Vector;
 import java.io.Serializable;
+import gov.nih.nci.evs.security.*;
 
 /**
   * <!-- LICENSE_TEXT_START -->
@@ -38,6 +39,7 @@ import java.io.Serializable;
 
 public interface EVSQuery extends Serializable{
 
+    public void addSecurityToken(String vocabularyName, SecurityToken token) throws Exception;
 	/**
 	 * Generates a DefaultMutableTreeNode for the specified rootName <br>
 	 * Eeach node is a DescLogicConcept instance

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import org.apache.log4j.*;
+import gov.nih.nci.evs.security.*;
 
 
 /**
@@ -37,6 +38,7 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 
 	public HashMap descLogicValues;
 	public HashMap metaThesaurusValues;
+    private HashMap securityTokenCollection = new HashMap();
 	private  static final long serialVersionUID =  1468599299281466395L;
 	
 	public EVSQueryImpl(){
@@ -44,7 +46,26 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 		metaThesaurusValues = new HashMap();
 	}
 	
+    public void addSecurityToken(String vocabularyName, SecurityToken token)throws Exception{
+        if(vocabularyName == null){
+            throw new Exception("Please specify Vocabulary name");
+        }
+        if(token == null){
+            throw new Exception("Invalid token");
+        }
+        securityTokenCollection.put(vocabularyName, token);
+    }
+    public SecurityToken getSecurityToken(String vocabularyName){
+        return (SecurityToken)securityTokenCollection.get(vocabularyName);
+    }
 
+    public void resetSecurityTokenCollection(){
+        securityTokenCollection = new HashMap();
+    } 
+    public HashMap getSecurityTokenCollection(){
+        return securityTokenCollection;
+    }
+    
 	/**
 	 * get tree for the specified rootName
 	 * @param vocabularyName
