@@ -272,7 +272,7 @@ public String getTargetPackageName(){
  */
 private Object buildSearchCriteria(String packageName, List criteriaList ) throws Exception{
     SearchUtils searchUtils = new SearchUtils();
-    return searchUtils.buildSearchCriteria(packageName, criteriaList , properties);
+    return searchUtils.buildSearchCriteria(packageName, criteriaList);
 }
 
 /**
