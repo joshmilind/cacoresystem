@@ -9,6 +9,7 @@ import gov.nih.nci.system.applicationservice.ApplicationServiceProvider;
 import gov.nih.nci.system.proxy.*;
 import gov.nih.nci.system.servicelocator.ServiceLocator;
 import gov.nih.nci.evs.domain.*;
+import gov.nih.nci.evs.security.*;
 
 import java.lang.reflect.Field;
 
@@ -47,6 +48,7 @@ public class EVSWebService {
 	private int defaultLimit = 100;
 	private String returnClassName;
     private EVSWSTransformer transformer;
+    SecurityToken securityToken = null;
 
 	/**
 	 * Instanciates an EVSWebService instance
@@ -203,6 +205,7 @@ public class EVSWebService {
         dtsrpcList.add("History");
         dtsrpcList.add("HistoryRecord");
         dtsrpcList.add("Vocabulary");
+        dtsrpcList.add("Security");
 
         List metaList = new ArrayList();
         metaList.add("MetaThesaurusConcept");
@@ -289,6 +292,9 @@ public class EVSWebService {
             vocabulary = (Vocabulary)criteria;
             if(vocabulary.getName()!= null && vocabulary.getName().length()>0){                
                 defaultVocabulary = vocabulary.getName();
+                if(vocabulary.getSecurityToken() != null){
+                    securityToken = vocabulary.getSecurityToken();
+                }                                
             }                 
             if(vocabulary.getSiloCollection().size()>0){
                 Silo silo = (Silo)vocabulary.getSiloCollection().get(0);
@@ -487,7 +493,10 @@ public class EVSWebService {
         List resultList = new ArrayList();
         if(returnClassName.endsWith("DescLogicConcept")){
             return conceptList;
-        }
+        } 
+        else if(returnClassName.endsWith("History")|| returnClassName.endsWith("HistoryRecord")){
+            return getHistoryRecords(conceptList);
+        } 
         else if(returnClassName.endsWith("MetaThesaurusConcept")){
             return conceptList;
         }
@@ -804,6 +813,12 @@ public class EVSWebService {
 
     private List query(EVSQuery evsQuery) throws Exception {
         List results = new ArrayList();
+        if(securityToken != null){
+            System.out.println("Adding token");
+            ((EVSQueryImpl)evsQuery).addSecurityToken(defaultVocabulary, securityToken);
+        }
+        
+        
         try {            
             ApplicationService appService = ApplicationServiceProvider.getLocalInstance();
             results = (List)  appService.evsSearch(evsQuery);          
