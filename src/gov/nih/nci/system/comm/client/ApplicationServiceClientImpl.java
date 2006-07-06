@@ -208,6 +208,16 @@ public class ApplicationServiceClientImpl extends ApplicationService
 	{
 		return applicationServiceProxy.evsSearch(getClientInfo(), evsCriterion);
 	}
+    public boolean exist(String bigId) throws ApplicationException
+    {
+        return applicationServiceProxy.exist(bigId);
+    }
+    public Object getDataObjectFromBigId(String bigId) throws ApplicationException
+    {
+        return applicationServiceProxy.getDataObjectFromBigId(getClientInfo(), bigId);
+    }
+
+
 
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.ApplicationService#getObjects(java.lang.Object)

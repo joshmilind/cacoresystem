@@ -367,6 +367,81 @@ public class ApplicationServiceBusinessImpl {
 		return results;
 	}
 
+    public boolean exist(String bigId) throws Exception {
+        boolean exist = false;
+        try {
+            if(getDataObjectFromBigId(bigId)!=null){
+                exist = true;
+            }
+        } catch (Exception ex) {
+            log.error( ex.getMessage());
+            throw new Exception(ex.getMessage());
+        }
+        return exist;
+    }
+    public Object getDataObjectFromBigId(String bigId) throws Exception {
+        Object dataObject = null; 
+//      Generate criteria
+        String className = null;
+        String fieldName = null;
+        String fieldValue = null;
+        if(bigId.indexOf(".")>0){
+            fieldName = bigId.substring(bigId.lastIndexOf(".")+1);
+            className = bigId.substring(0, bigId.indexOf(fieldName)-1);
+        }
+        if(fieldName.indexOf("=")>0){
+            fieldValue = fieldName.substring(fieldName.indexOf("=")+1);
+            fieldName = fieldName.substring(0, fieldName.indexOf("="));
+        }
+        System.out.println("ClassName: "+ className);
+        System.out.println("Field: "+ fieldName);
+        System.out.println("Value: "+ fieldValue);
+        Field dataField = null;
+        try{  
+            Object value = null;
+            gov.nih.nci.common.util.SearchUtils searchUtils = new gov.nih.nci.common.util.SearchUtils();                    
+            dataField = searchUtils.getField(Class.forName(className), fieldName);
+            if(!dataField.getType().getName().endsWith("String")){
+                value = searchUtils.convertValues(dataField, fieldValue);
+            }
+            else{
+                value = fieldValue;
+            }            
+            
+            dataObject = Class.forName(className).newInstance();
+            if(dataField != null && value != null){
+                dataField.set(dataObject, value);
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        //Query database
+        Object result = null;
+        try {
+            List results = search(dataObject.getClass().getName(), dataObject);
+            for(int i=0; i<results.size();i++){
+                result = results.get(i);
+                String resultValue = String.valueOf(dataField.get(result));
+                if(resultValue.equals(fieldValue)){                   
+                   break;
+                }
+                
+            }
+            
+        } catch (LinkageError le) {
+            log.error("LinkageError: Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
+            throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
+        } catch (ClassNotFoundException cnfe) {
+            log.error("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
+            throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
+        } catch (Exception ex) {
+            log.error("Exception evsSearch: " + ex.getMessage());
+            throw new Exception(ex.getMessage());
+        }
+        return result;
+    }
+
+
 	/**
 	 * Prints a list of objects on the Standard Output Device
 	 * 
@@ -803,6 +878,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2006/05/10 19:47:30  connellm
+// Initial check in of code to support the splitting of the SDk from caCORE.
+//
 // Revision 1.5  2006/03/29 21:18:37  masondo
 // Removed HTTPClient
 //

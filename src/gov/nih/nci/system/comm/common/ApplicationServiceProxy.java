@@ -37,6 +37,10 @@ public interface ApplicationServiceProxy
 	public abstract List query(ClientInfo clientInfo, HQLCriteria hqlCriteria, String targetClassName) throws ApplicationException;
 
 	public abstract List evsSearch(ClientInfo clientInfo, EVSQuery evsCriterion) throws ApplicationException;
+    
+    public abstract boolean exist(String bigId) throws ApplicationException;
+    
+    public abstract Object getDataObjectFromBigId(ClientInfo clientInfo, String bigId) throws ApplicationException;
 
 	/*@WRITABLE_API_START@*/
 	public abstract Object createObject(ClientInfo clientInfo, Object domainobject) throws ApplicationException;

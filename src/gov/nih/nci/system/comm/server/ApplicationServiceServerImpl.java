@@ -287,6 +287,28 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 		return list;
 
 	}
+    
+    public boolean exist(String bigId) throws ApplicationException
+    {           
+             return applicationService.exist(bigId);
+
+    }
+    
+    public Object getDataObjectFromBigId(ClientInfo clientInfo, String bigId) throws ApplicationException
+    {
+        
+        ClientInfoThreadVariable.setClientInfo(clientInfo);        
+        Object dataObject = applicationService.getDataObjectFromBigId(bigId);
+        if (securityEnabler.getSecurityLevel() > 0)
+        {
+            String returnObjectName = "";
+            if (dataObject != null)
+                returnObjectName = dataObject.getClass().getName();
+            if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),returnObjectName, "READ"))
+                throw new ApplicationException("User does not have privilege to perform a READ on " + returnObjectName+ " object");
+        }
+        return dataObject;
+    }
 
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.comm.common.ApplicationServiceProxy#createObject(gov.nih.nci.common.util.ClientInfo, java.lang.Object)

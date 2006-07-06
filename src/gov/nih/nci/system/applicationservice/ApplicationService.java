@@ -59,6 +59,9 @@ public abstract class ApplicationService
 	public abstract List query(Object criteria, int firstRow, int resultsPerQuery, String targetClassName) throws ApplicationException;
 
 	public abstract List evsSearch(EVSQuery evsCriterion) throws ApplicationException;
+    
+    public abstract boolean exist(String bigId) throws ApplicationException;
+    public abstract Object getDataObjectFromBigId(String bigId) throws ApplicationException;
 
 	public abstract List search(Class targetClass, Object obj) throws ApplicationException;
 

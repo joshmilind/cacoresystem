@@ -168,6 +168,30 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 	}
 
+    public boolean exist(String bigId) throws ApplicationException
+    {
+        try
+        {
+            return this.applicationServiceBusinessImpl.exist(bigId);
+        }
+        catch (Exception e)
+        {
+            throw new ApplicationException(e.getMessage());
+        }
+    }
+    public Object getDataObjectFromBigId(String bigId) throws ApplicationException
+    {
+        try
+        {
+            return this.applicationServiceBusinessImpl.getDataObjectFromBigId(bigId);
+        }
+        catch (Exception e)
+        {
+            throw new ApplicationException(e.getMessage());
+        }
+    }
+
+
 	/*
 	 * (non-Javadoc)
 	 * 
