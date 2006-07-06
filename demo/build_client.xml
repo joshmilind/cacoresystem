@@ -216,5 +216,27 @@
 				<sysproperty key="log4j.configuration" value="${conf.dir}/client_log4j.properties"/>
 			</java>
 	</target>
+	<!-- ************************************************************************************************-->
+	<!--    Run caBIO Client Demo                                                                        -->
+	<!-- ************************************************************************************************-->
+	<target name="runTestCase">
+		<javac srcdir=".">
+			<include name="TestCase.java" />
+			<classpath refid="cp" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+			</classpath>
+		</javac>
+		<java classname="TestCase" fork="true">
+			<classpath refid="cp" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+			</classpath>
+			<sysproperty key="log4j.configuration" value="${conf.dir}/client_log4j.properties" />
+		</java>
+
+	</target>
+
+
 			
 </project>
