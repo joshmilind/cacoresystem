@@ -155,7 +155,7 @@
 	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
 	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
 	<target name="-init-project.custom" if="init-project.custom.use">
-		<SDKecho message="Inside of -init-project.custom"/>
+		<SDKecho message="Copying files required by caCORE API to SDK directory"/>
 		<copy todir="${dir.src.custom.wsdd}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.wsdd}">
 					<include name="${file.server.config.wsdd}"/>
@@ -210,6 +210,9 @@
 			<filterset>
 		        <filter token="XSLT_PATH" value="${project_name}"/>
 			</filterset>				
+		</copy>
+		<copy todir="${dir.lib}" overwrite="yes" failonerror="true">
+			<fileset dir="${dir.custom.lib}"/>
 		</copy>
 	</target>
 	

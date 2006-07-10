@@ -1,5 +1,6 @@
 * text=auto !eol
 /.project -text
+/README.txt -text
 /build-custom-cacore.properties -text
 /build-custom-cacore.xml -text
 /build.xml -text
