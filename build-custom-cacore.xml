@@ -298,6 +298,7 @@
 				<include name="spring-richclient.jar"/>
 				<include name="xml-apis.jar"/>
 			</zipfileset>
+			<zipfileset dir="${dir.custom. lib}" prefix="lib"/>
 			<zipfileset dir="${dir.conf}" includes="client_log4j.properties" prefix="conf"/>
 			<zipfileset dir="${dir.output.project.conf}" includes="${file.control.remoteservice}" prefix="conf"/>
 			<zipfileset dir="${dir.custom.conf}" includes="ClientREADME.txt" fullpath="README.txt"/>
