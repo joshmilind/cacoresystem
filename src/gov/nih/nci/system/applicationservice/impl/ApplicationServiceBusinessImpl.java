@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+
+import net.handle.server.*;
+import java.net.*;
+import org.apache.axis.encoding.Base64;
+
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 
@@ -380,32 +385,29 @@ public class ApplicationServiceBusinessImpl {
         return exist;
     }
     public Object getDataObjectFromBigId(String bigId) throws Exception {
+        System.out.println("getDataObjectFromBigId: "+ bigId);
+       // IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("/hs/svr_1");
+        IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("C:/gridid/conf/svr_1");
+        
+        ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
+        System.out.println("Resource: "+ info.toString()+ "\tid: " +  info.resourceIdentification);
+        String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));
         Object dataObject = null; 
-//      Generate criteria
-        String className = null;
-        String fieldName = null;
-        String fieldValue = null;
-        if(bigId.indexOf(".")>0){
-            fieldName = bigId.substring(bigId.lastIndexOf(".")+1);
-            className = bigId.substring(0, bigId.indexOf(fieldName)-1);
-        }
-        if(fieldName.indexOf("=")>0){
-            fieldValue = fieldName.substring(fieldName.indexOf("=")+1);
-            fieldName = fieldName.substring(0, fieldName.indexOf("="));
-        }
-        System.out.println("ClassName: "+ className);
-        System.out.println("Field: "+ fieldName);
-        System.out.println("Value: "+ fieldValue);
+        
+        //Generate criteria
+        
         Field dataField = null;
+        
+        
         try{  
             Object value = null;
             gov.nih.nci.common.util.SearchUtils searchUtils = new gov.nih.nci.common.util.SearchUtils();                    
-            dataField = searchUtils.getField(Class.forName(className), fieldName);
+            dataField = searchUtils.getField(Class.forName(className), "bigid");
             if(!dataField.getType().getName().endsWith("String")){
-                value = searchUtils.convertValues(dataField, fieldValue);
+                value = searchUtils.convertValues(dataField, bigId);
             }
             else{
-                value = fieldValue;
+                value = bigId;
             }            
             
             dataObject = Class.forName(className).newInstance();
@@ -415,14 +417,17 @@ public class ApplicationServiceBusinessImpl {
         }catch(Exception ex){
             ex.printStackTrace();
         }
+        
         //Query database
+        
         Object result = null;
+        
         try {
             List results = search(dataObject.getClass().getName(), dataObject);
             for(int i=0; i<results.size();i++){
                 result = results.get(i);
                 String resultValue = String.valueOf(dataField.get(result));
-                if(resultValue.equals(fieldValue)){                   
+                if(resultValue.equals(bigId)){                   
                    break;
                 }
                 
@@ -438,6 +443,7 @@ public class ApplicationServiceBusinessImpl {
             log.error("Exception evsSearch: " + ex.getMessage());
             throw new Exception(ex.getMessage());
         }
+        
         return result;
     }
 
@@ -878,6 +884,10 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2006/07/06 20:56:57  shaziyam
+// method to check if bigId exist
+// method to getDataObjectFromBigId
+//
 // Revision 1.1  2006/05/10 19:47:30  connellm
 // Initial check in of code to support the splitting of the SDk from caCORE.
 //
