@@ -385,12 +385,12 @@ public class ApplicationServiceBusinessImpl {
         return exist;
     }
     public Object getDataObjectFromBigId(String bigId) throws Exception {
-        System.out.println("getDataObjectFromBigId: "+ bigId);
+        
        // IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("/hs/svr_1");
         IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("C:/gridid/conf/svr_1");
         
         ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
-        System.out.println("Resource: "+ info.toString()+ "\tid: " +  info.resourceIdentification);
+        
         String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));
         Object dataObject = null; 
         
@@ -884,6 +884,10 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.3  2006/07/11 17:40:46  shaziyam
+// method to check if bigId exist
+// method to getDataObjectFromBigId
+//
 // Revision 1.2  2006/07/06 20:56:57  shaziyam
 // method to check if bigId exist
 // method to getDataObjectFromBigId
