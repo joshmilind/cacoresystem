@@ -60,15 +60,15 @@ public class TestCase {
 
             Gene gene = new Gene();
             gene.setSymbol("brca*");
+            
             List results = appService.search("gov.nih.nci.cabio.domain.Gene", gene);
             for(int i=0; i<results.size(); i++){
-                Gene g = (Gene)results.get(i);
-                System.out.println("Gene: "+ g.getId() +"\t"+ g.getSymbol() );
-            }
-            
-            System.out.println("Big Id exists: "+appService.exist("gov.nih.nci.cabio.domain.Gene.id=9759"));
-            Gene dataObject = (Gene)appService.getDataObjectFromBigId("gov.nih.nci.cabio.domain.Gene.id=9759");
-            System.out.println("Result: "+ dataObject.getId() +"\t"+dataObject.getSymbol());
+                Gene g = (Gene)results.get(i);            
+                System.out.println("Gene: "+ g.getId() +"\t"+ g.getSymbol() +"\t"+ g.getBigid());
+            }            
+            System.out.println("Big Id exists: "+appService.exist("hdl://123.P/MWE"));
+            Gene dataObject = (Gene)appService.getDataObjectFromBigId("hdl://123.P/MWE");
+            System.out.println("Result: "+ dataObject.getId() +"\t"+dataObject.getSymbol()+"\t"+dataObject.getBigid());
 
 
         } catch (Exception ex) {
