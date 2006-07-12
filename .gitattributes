@@ -67,6 +67,8 @@ documents/caCORE_SDK1.0_notes.txt -text
 documents/caCORE_SDK1.1_notes.txt -text
 documents/oracle-ds.xml -text
 lib/MSSOUserValidator.jar -text
+lib/handle.jar -text
+lib/handlerservice.jar -text
 lib/lbRuntime.jar -text
 lib/lexrpcclient.jar -text
 lib/lexrpcserver.jar -text
