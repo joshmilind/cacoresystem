@@ -25,6 +25,8 @@ conf/evsPackageUtil.xml -text
 conf/hibernate.properties -text
 conf/orm1.cfg.xml -text
 conf/orm2.cfg.xml -text
+conf/resources/NCISystemReleaseHistory.txt -text
+conf/resources/config/config.props -text svneol=unset#application/octet-stream
 conf/svr_1/admpriv.bin -text
 conf/svr_1/admpub.bin -text
 conf/svr_1/config.dct -text svneol=unset#application/octet-stream
