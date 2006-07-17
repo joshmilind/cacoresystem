@@ -1,6 +1,12 @@
 package gov.nih.nci.system.dao;
 
+import java.lang.reflect.Field;
+
 import gov.nih.nci.common.net.*;
+import gov.nih.nci.common.util.Constant;
+import gov.nih.nci.system.dao.impl.*;
+import gov.nih.nci.system.dao.impl.orm.ORMDAOImpl;
+import java.util.*;
 
 /**
  * <!-- LICENSE_TEXT_START -->
@@ -50,15 +56,39 @@ public abstract class DAOFactory {
 	 * @return a specific DAOFactory object
 	 * @throws DAOException
 	 */
-	public static DAOFactory getFactory(int whichFactory) throws DAOException {
-		switch (whichFactory) {
-			case gov.nih.nci.common.util.Constant.ORM_DAO:	
-				return new ORMDAOFactory();
-			case gov.nih.nci.common.util.Constant.EVS_DAO:
-				return new EVSDAOFactory();				
-			default: {
-				throw new DAOException("NO EQUIVALENT DAO FACTORY FOUND");
-			}
-		}
-	}
+	
+    public static DAO getDAOImpl(String dataSource)throws DAOException{       
+        DAO daoImpl = null;
+        String daoImplClassName = null;
+        if(dataSource.startsWith("ORM")){
+            daoImpl = new  gov.nih.nci.system.dao.impl.orm.ORMDAOImpl();
+        }
+        else{
+            try{
+                HashMap daoMap = new HashMap();
+                Field[] fields = Class.forName("gov.nih.nci.common.util.Constant").getDeclaredFields();
+                for(int i=0; i<fields.length; i++){
+                    fields[i].setAccessible(true);
+                    Field field = fields[i];
+                    
+                    if(field.getName().endsWith("_DAO_NAME")){                        
+                        String className = (String)field.get(Constant.class.newInstance());
+                        daoMap.put(field.getName(), className);
+                    }
+                }
+                for(Iterator i = daoMap.keySet().iterator(); i.hasNext();){
+                    String key = (String)i.next();
+                    if(key.startsWith(dataSource)){
+                        daoImplClassName = (String) daoMap.get(key);
+                        daoImpl = (DAO) Class.forName(daoImplClassName).newInstance();
+                        break;
+                    }
+                } 
+
+            }catch(Exception ex){
+                throw new DAOException(ex.getMessage());
+            }
+                    }
+        return daoImpl;
+    }
 }
