@@ -6,19 +6,14 @@ import java.lang.reflect.Method;
 import javax.swing.tree.DefaultMutableTreeNode;
 //internal
 import gov.nih.nci.evs.domain.*;
-import gov.nih.nci.evs.domain.DescLogicConcept;
-import gov.nih.nci.evs.domain.MetaThesaurusConcept;
-import gov.nih.nci.evs.domain.Role;
-import gov.nih.nci.evs.domain.Property;
-import gov.nih.nci.evs.domain.SemanticType;
-import gov.nih.nci.evs.domain.Source;
 import gov.nih.nci.evs.query.EVSQueryImpl;
 
 import gov.nih.nci.common.util.*;
 
 import gov.nih.nci.common.net.*;
 
-import gov.nih.nci.system.dao.DAOException;
+import gov.nih.nci.system.dao.DAOImpl;
+import gov.nih.nci.system.dao.DAOExceptDAOImpl;
 //dtsrpc jar
 import gov.nih.nci.dtsrpc.client.*;
 //metaphrase jar
@@ -65,7 +60,7 @@ import gov.nih.nci.evs.security.*;
  * Results are returned as a Response object.
  */
 
-public class EVSDTSImpl implements EVSDAO
+public class EVSDTSImpl implements DAOImpl
 {
 	private static Logger log = Logger.getLogger(EVSDTSImpl.class.getName());
 	private DTSRPCClient dtsrpc;
@@ -1188,7 +1183,7 @@ private Response getRolesByConceptName(HashMap map) throws Exception
 			{
 				String elem = (String) roles.get(i);
 				StringTokenizer st = new StringTokenizer(elem, "$");
-				Role role = new Role();
+				gov.nih.nci.evs.domain.Role role = new gov.nih.nci.evs.domain.Role();
 				role.setName(st.nextToken());
 				role.setValue(st.nextToken());
 				list.add(role);
@@ -1251,7 +1246,7 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 			{
                 String propertyString = (String)properties.get(i);
                 if(propertyString != null && propertyString.indexOf("$")>0){
-                    Property property = new Property();
+                    gov.nih.nci.evs.domain.Property property = new gov.nih.nci.evs.domain.Property();
                     property.setName(propertyString.substring(0,propertyString.indexOf("$")));
                     property.setValue(propertyString.substring(propertyString.indexOf("$")+1));
                     list.add(property);
@@ -1644,7 +1639,7 @@ private Vector convertProperties(Vector nciProps)
 	for(int i=0 ;i<nciProps.size(); i++)
 	{
 		gov.nih.nci.dtsrpc.client.Property property = (gov.nih.nci.dtsrpc.client.Property)nciProps.get(i);
-		Property p = new Property();
+        gov.nih.nci.evs.domain.Property p = new gov.nih.nci.evs.domain.Property();
 		p.setName(property.getName());
 		p.setValue(property.getValue());
 
@@ -1677,7 +1672,7 @@ private Vector convertRoles(Vector nciRoles)
 	for(int i=0 ;i<nciRoles.size(); i++)
 	{
 		gov.nih.nci.dtsrpc.client.Role dtsRole = (gov.nih.nci.dtsrpc.client.Role)nciRoles.get(i);
-		gov.nih.nci.evs.domain.Role role = new Role();
+		gov.nih.nci.evs.domain.Role role = new gov.nih.nci.evs.domain.Role();
 		role.setName(dtsRole.getName());
 		role.setValue(dtsRole.getValue());
 		roles.add(role);
@@ -3926,7 +3921,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	if(dlc.getSemanticTypeVector() == null){
    		properties = dlc.getPropertyCollection();
    	   	for(int i=0; i< properties.size(); i++){
-   	   		Property p = (Property)properties.get(i);
+        gov.nih.nci.evs.domain.Property p = (gov.nih.nci.evs.domain.Property)properties.get(i);
    	   		if(p.getName().equalsIgnoreCase("Semantic_Type")){
    	   			semanticTypes.add(p.getValue());
    	   			}

@@ -32,9 +32,8 @@ import org.apache.log4j.*;
 
 //Import LexBIG classes
 import gov.nih.nci.lexrpc.client.*;
-import gov.nih.nci.lexrpc.client.AttributeSetDescriptor;
-import gov.nih.nci.lexrpc.client.Property;
 import gov.nih.nci.lexrpc.server.LexAdapter;
+import gov.nih.nci.system.dao.DAO;
 
 
 /**
@@ -68,7 +67,7 @@ import gov.nih.nci.lexrpc.server.LexAdapter;
  * Results are returned as a Response object.
  */
 
-public class EVSLexBigImpl implements EVSDAO
+public class EVSLexBigImpl implements DAO
 {
 	private static Logger log = Logger.getLogger(EVSLexBigImpl.class.getName());
 	//private DTSRPCClient dtsrpc;
@@ -261,8 +260,7 @@ public class EVSLexBigImpl implements EVSDAO
 	 * @throws Exception
 	 */
 	private void setVocabulary(String vocabularyName) throws Exception
-	{
-        System.out.println("Vocabulary name: "+ vocabularyName);
+	{        
         vocabulary = new Vocabulary();
         if(!StringHelper.hasValue(vocabularyName)){
         	log.error("vocabularyName cannot be null");
@@ -291,35 +289,13 @@ public class EVSLexBigImpl implements EVSDAO
                 throw new Exception("Vocabulary error: "+ ex.getMessage());
             }
 
-            System.out.println("Vocabulary found: "+ found);
+            
 
             if(!found){
                 throw new Exception("LexBIG Exception - unable to connect to vocabulary "+ vocabularyName);
             }
-            /*
-            int ping =  dtsrpc.PingServer();
-            if(ping != 0){
-                if( ping == 1){
-                    log.error("adapter Server down");
-                    throw new Exception("DTSRPC Server down");
-                }
-                else if(ping ==2){
-                    log.error("DTS Database server down");
-                    throw new Exception("DTS Database server down");
-                }
-                else if(ping == 3){
-                    log.error("DTS XML-RPC Exception - Unable to connect to the DTSRPC Server");
-                    throw new Exception("DTS XML-RPC Exception - Unable to connect to the DTSRPC Server");
-                }
-                else{
-                    log.error("DTSRPC Exception - Unable to connect to the DTSRPC Server");
-                }
-            }
-            else{
-                vocabulary = populateVocabulary(vocabularyName);
-            }
-            */
-            vocabulary = populateVocabulary(vocabularyName);
+           vocabulary = populateVocabulary(vocabularyName);
+           System.out.println("Vocabulary found: "+ found);
 	}
 
     private Vocabulary populateVocabulary(String vocabularyName){
@@ -432,7 +408,7 @@ public class EVSLexBigImpl implements EVSDAO
 	 */
 	private Response searchDescLogicConcepts(HashMap map) throws Exception
 	{
-
+	    System.out.println("searchDescLogicConcept....");
 		String vocabularyName = null;
 		String searchTerm = null;
 		int limit = 1;
@@ -466,14 +442,27 @@ public class EVSLexBigImpl implements EVSDAO
 			}
 
 			setVocabulary(vocabularyName);
-
+			System.out.println("Search: "+ searchTerm +"\t"+ limit);
 	        if(!StringHelper.hasValue(searchTerm)){
 	        	log.warn("searchTerm cannot be null");
 	        	throw new Exception(getException(" searchTerm cannot be null"));
-	        }
-	        Concept[] concepts =null;
+	        }            
+            System.out.println("====================================");
+            
 			//concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
-            concepts = adapter.searchConcepts(searchTerm, limit);
+            //Concept[]concepts = adapter.searchConcepts(searchTerm, limit);
+            Concept[]concepts = null;
+            try{
+                gov.nih.nci.lexrpc.client.Concept[] lex = adapter.searchConcepts("e*", 1);
+                adapter.se
+                System.out.println("C>>>>>>>>>> oncepts: "+ lex.length);
+                concepts = adapter.searchConcepts(searchTerm, limit);
+                
+            }catch(Exception ex){
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>"+ ex.getMessage());
+                ex.printStackTrace();
+            }
+            
 
             System.out.println(concepts.length + " concepts found");
             if(vocabulary == null){
@@ -489,7 +478,7 @@ public class EVSLexBigImpl implements EVSDAO
 
 		}catch(Exception e){
 		    	log.error(e.getMessage());
-			throw new Exception(getException(e.getMessage()));
+			throw new Exception(getException("SearchConcepts..."+e.getMessage()));
 		}
 
 
@@ -593,16 +582,16 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
                 	depthLevel = (new Integer(levels)).intValue();
             }
 
-            AttributeSetDescriptor attrib = AttributeSetDescriptor.ALL_ATTRIBUTES;
+            gov.nih.nci.lexrpc.client.AttributeSetDescriptor attrib = gov.nih.nci.lexrpc.client.AttributeSetDescriptor.ALL_ATTRIBUTES;
 
-		  	if(attributes == AttributeSetDescriptor.WITH_ALL_ATTRIBUTES)
-		  		attrib = AttributeSetDescriptor.ALL_ATTRIBUTES;
-		  	else if(attributes == AttributeSetDescriptor.WITH_ALL_PROPERTIES)
-		  		attrib = AttributeSetDescriptor.ALL_PROPERTIES;
-		  	else if(attributes == AttributeSetDescriptor.WITH_ALL_ROLES)
-		  		attrib = AttributeSetDescriptor.ALL_ROLES;
-		  	else if(attributes == AttributeSetDescriptor.WITH_NO_ATTRIBUTES)
-		  		attrib = AttributeSetDescriptor.NO_ATTRIBUTES;
+		  	if(attributes == gov.nih.nci.evs.domain.AttributeSetDescriptor.WITH_ALL_ATTRIBUTES)
+		  		attrib = gov.nih.nci.lexrpc.client.AttributeSetDescriptor.ALL_ATTRIBUTES;
+		  	else if(attributes == gov.nih.nci.evs.domain.AttributeSetDescriptor.WITH_ALL_PROPERTIES)
+		  		attrib = gov.nih.nci.lexrpc.client.AttributeSetDescriptor.ALL_PROPERTIES;
+		  	else if(attributes == gov.nih.nci.evs.domain.AttributeSetDescriptor.WITH_ALL_ROLES)
+		  		attrib = gov.nih.nci.lexrpc.client.AttributeSetDescriptor.ALL_ROLES;
+		  	else if(attributes == gov.nih.nci.evs.domain.AttributeSetDescriptor.WITH_NO_ATTRIBUTES)
+		  		attrib = gov.nih.nci.lexrpc.client.AttributeSetDescriptor.NO_ATTRIBUTES;
 
 		  	try
 			{
@@ -1262,7 +1251,7 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 			{
                 String propertyString = (String)properties.get(i);
                 if(propertyString != null && propertyString.indexOf("$")>0){
-                    Property property = new Property();
+                    gov.nih.nci.evs.domain.Property property = new gov.nih.nci.evs.domain.Property();
                     property.setName(propertyString.substring(0,propertyString.indexOf("$")));
                     property.setValue(propertyString.substring(propertyString.indexOf("$")+1));
                     list.add(property);
@@ -1654,7 +1643,7 @@ private Vector convertProperties(Vector nciProps)
 	Vector properties = new Vector();
 	for(int i=0 ;i<nciProps.size(); i++)
 	{
-		Property property = (Property)nciProps.get(i);
+        gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) nciProps.get(i);
 		gov.nih.nci.evs.domain.Property p = new gov.nih.nci.evs.domain.Property();
 		p.setName(property.getName());
 		p.setValue(property.getValue());
@@ -3938,7 +3927,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	if(dlc.getSemanticTypeVector() == null){
    		properties = dlc.getPropertyCollection();
    	   	for(int i=0; i< properties.size(); i++){
-   	   		Property p = (Property)properties.get(i);
+   	   		gov.nih.nci.evs.domain.Property p = (gov.nih.nci.evs.domain.Property)properties.get(i);
    	   		if(p.getName().equalsIgnoreCase("Semantic_Type")){
    	   			semanticTypes.add(p.getValue());
    	   			}

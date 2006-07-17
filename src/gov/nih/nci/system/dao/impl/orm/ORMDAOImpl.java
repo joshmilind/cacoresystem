@@ -6,8 +6,8 @@ import gov.nih.nci.common.util.Constant;
 import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.common.util.NestedCriteria;
 import gov.nih.nci.common.util.NestedCriteria2HQL;
-import gov.nih.nci.system.dao.DAO;
-import gov.nih.nci.system.dao.DAOException;
+import gov.nih.nci.system.dao.DAOImpl;
+import gov.nih.nci.system.dao.DAOExceptDAOImpl;
 import gov.nih.nci.system.servicelocator.ServiceLocator;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ import org.hibernate.criterion.Projections;
   * @author caBIO Team
   * @version 1.0
  */
-public class ORMDAOImpl implements DAO
+public class ORMDAOImpl implements DAOImpl
 {
 	private static Logger log = Logger.getLogger(ORMDAOImpl.class.getName());
     public SessionFactory sf;
