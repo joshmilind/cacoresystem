@@ -79,17 +79,9 @@ public class BaseDelegate implements InterfaceProxy
 		}
 		try
 		{
-		
-			if (dataSource.indexOf("ORM") != -1)
-			{
-				factory =DAOFactory.getFactory(gov.nih.nci.common.util.Constant.ORM_DAO);
-			}
-			else if (dataSource.equalsIgnoreCase("EVS"))
-			{
-				factory = DAOFactory.getFactory(gov.nih.nci.common.util.Constant.EVS_DAO);		
-			}
-
-			response = factory.query(request);
+		    DAOImpl daoImpl = null;
+            daoImpl = DAOFactory.getDAOImpl(dataSource);
+            response = daoImpl.query(request);
 		}
 		catch(DAOException daoException)
 		{
@@ -107,6 +99,9 @@ public class BaseDelegate implements InterfaceProxy
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2006/05/10 19:47:31  connellm
+// Initial check in of code to support the splitting of the SDk from caCORE.
+//
 // Revision 1.12  2006/03/29 21:18:37  masondo
 // Removed HTTPClient
 //
