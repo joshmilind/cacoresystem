@@ -20,7 +20,7 @@
 	 	<param name="database" value="@DATABASE@"/>
 	  <filter name="classifier" className="gov.nih.nci.codegen.core.filter.UML13ClassifierFilter">
 	   <package>
-	    <include>>*.evs*</include>
+	    <include>>.*nci.evs*</include>
 	   </package>
 	  </filter>
 	 </transformer>
