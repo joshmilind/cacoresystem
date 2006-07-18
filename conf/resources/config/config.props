@@ -10,7 +10,7 @@ ITERATOR_IDLE_TIME=5
 
 MAX_RESULT_SIZE=1000
 
-JAR_FILE_LOCATION=C:\\test\\LexBIG\\lib
+JAR_FILE_LOCATION=C:\\temp\\LexBIG\\lib
 
 REGISTRY_FILE=C:\\temp\\LexBIG\\registry.xml
 
