@@ -5,6 +5,6 @@ package gov.nih.nci.system.dao;
  * 
  */
 import gov.nih.nci.common.net.*;
-public interface DAO{
-    public Response query(Request request) throws Exception;
+public interface DAOImpl{
+    public Response query(Request request) throws DAOException;
 }
