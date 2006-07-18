@@ -79,8 +79,8 @@ public class BaseDelegate implements InterfaceProxy
 		}
 		try
 		{
-		    DAOImpl daoImpl = null;
-            daoImpl = DAOFactory.getDAOImpl(dataSource);
+		    DAO daoImpl = null;
+            daoImpl = (DAO)DAOFactory.getDAOImpl(dataSource);
             response = daoImpl.query(request);
 		}
 		catch(DAOException daoException)
@@ -99,6 +99,9 @@ public class BaseDelegate implements InterfaceProxy
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.2  2006/07/17 19:16:26  shaziyam
+// Call getDAOImpl method
+//
 // Revision 1.1  2006/05/10 19:47:31  connellm
 // Initial check in of code to support the splitting of the SDk from caCORE.
 //
