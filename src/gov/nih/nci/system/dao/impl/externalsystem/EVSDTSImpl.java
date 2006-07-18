@@ -13,7 +13,7 @@ import gov.nih.nci.common.util.*;
 import gov.nih.nci.common.net.*;
 
 import gov.nih.nci.system.dao.DAOImpl;
-import gov.nih.nci.system.dao.DAOExceptDAOImpl;
+import gov.nih.nci.system.dao.DAOException;
 //dtsrpc jar
 import gov.nih.nci.dtsrpc.client.*;
 //metaphrase jar

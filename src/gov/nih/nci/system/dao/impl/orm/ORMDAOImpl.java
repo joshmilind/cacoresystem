@@ -7,7 +7,7 @@ import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.common.util.NestedCriteria;
 import gov.nih.nci.common.util.NestedCriteria2HQL;
 import gov.nih.nci.system.dao.DAOImpl;
-import gov.nih.nci.system.dao.DAOExceptDAOImpl;
+import gov.nih.nci.system.dao.DAOException;
 import gov.nih.nci.system.servicelocator.ServiceLocator;
 
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class ORMDAOImpl implements DAOImpl
 
 		try
 		{
-			if (obj instanceof DetachedCriteria) 
+			if (obj instanceof DetachedCriteria)
 			{
 				hCriteria = ((org.hibernate.criterion.DetachedCriteria)request.getRequest()).getExecutableCriteria(session);
 
@@ -142,26 +142,26 @@ public class ORMDAOImpl implements DAOImpl
 //						rs = new ArrayList((Collection)resultSet);
 				        rs = hCriteria.list();
 				    }
-				}				
+				}
 			}
 			else if (obj instanceof NestedCriteria)
 			{
-//System.out.println("ORMDAOImpl.query: it is a NestedCriteria Object ....");		
+//System.out.println("ORMDAOImpl.query: it is a NestedCriteria Object ....");
 				NestedCriteria2HQL converter = new NestedCriteria2HQL((NestedCriteria)obj, ormConn.getConfiguration(counter), session);
 				query = converter.translate();
 				if (query != null)
 				{
 					if(isCount != null && isCount.booleanValue())
-				    {			
+				    {
 //						System.out.println("ORMDAOImpl.  isCount .... .... | converter.getCountQuery() = " + converter.getCountQuery().getQueryString());
 						rowCount = (Integer)converter.getCountQuery().uniqueResult();
-						//System.out.println("ORMDAOImpl HQL ===== count = " + rowCount);					
+						//System.out.println("ORMDAOImpl HQL ===== count = " + rowCount);
 					}
 					else if((isCount != null && !isCount.booleanValue()) || isCount == null)
-				    {	
+				    {
 				    	if(firstRow != null)
 				    	{
-					        query.setFirstResult(firstRow.intValue());				    		
+					        query.setFirstResult(firstRow.intValue());
 				    	}
 				    	if(resultsPerQuery != null)
 				    	{
@@ -174,7 +174,7 @@ public class ORMDAOImpl implements DAOImpl
 					        else
 					        {
 					            query.setMaxResults(resultsPerQuery.intValue());
-					        }				    		
+					        }
 				    	}
 				        else
 				        {
@@ -182,7 +182,7 @@ public class ORMDAOImpl implements DAOImpl
 
 				        }
 				    	rs = query.list();
-				    }				
+				    }
 				}
 			}
 			else if (obj instanceof HQLCriteria)
@@ -193,10 +193,10 @@ public class ORMDAOImpl implements DAOImpl
 					rowCount = new Integer(hqlQuery.list().size());
 				}
 				else if((isCount != null && !isCount.booleanValue()) || isCount == null)
-			    {	
+			    {
 			    	if(firstRow != null)
 			    	{
-			    		hqlQuery.setFirstResult(firstRow.intValue());				    		
+			    		hqlQuery.setFirstResult(firstRow.intValue());
 			    	}
 			    	if(resultsPerQuery != null)
 			    	{
@@ -209,14 +209,14 @@ public class ORMDAOImpl implements DAOImpl
 				        else
 				        {
 				        	hqlQuery.setMaxResults(resultsPerQuery.intValue());
-				        }				    		
+				        }
 			    	}
 			        else
 			        {
 			        	hqlQuery.setMaxResults(recordsPerQuery);
 			        }
 			    	rs = hqlQuery.list();
-			    }				
+			    }
 			}
 		}
 		catch (JDBCException ex)
@@ -285,12 +285,12 @@ public class ORMDAOImpl implements DAOImpl
 		}catch(IOException e)
 		{
 			log.error(e.getMessage());
-			
-			
+
+
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
-			log.error(ex.getMessage());			
+			log.error(ex.getMessage());
 		}
 	}
 }
