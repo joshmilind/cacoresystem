@@ -57,11 +57,11 @@ public abstract class DAOFactory {
 	 * @throws DAOException
 	 */
 	
-    public static DAOImpl getDAOImpl(String dataSource)throws DAOException{       
-        DAOImpl daoImpl = null;
+    public static DAO getDAOImpl(String dataSource)throws DAOException{       
+        DAO daoImpl = null;
         String daoImplClassName = null;
         if(dataSource.startsWith("ORM")){
-            daoImpl = new  gov.nih.nci.system.dao.impl.orm.ORMDAOImpl();
+            daoImpl = new gov.nih.nci.system.dao.impl.orm.ORMDAOImpl();
         }
         else{
             try{
@@ -80,7 +80,7 @@ public abstract class DAOFactory {
                     String key = (String)i.next();
                     if(key.startsWith(dataSource)){
                         daoImplClassName = (String) daoMap.get(key);
-                        daoImpl = (DAOImpl) Class.forName(daoImplClassName).newInstance();
+                        daoImpl = (DAO) Class.forName(daoImplClassName).newInstance();
                         break;
                     }
                 } 

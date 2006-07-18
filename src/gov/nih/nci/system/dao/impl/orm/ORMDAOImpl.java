@@ -21,6 +21,7 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
+import gov.nih.nci.system.dao.*;
 
 /**
   * <!-- LICENSE_TEXT_START -->
@@ -49,7 +50,7 @@ import org.hibernate.criterion.Projections;
   * @author caBIO Team
   * @version 1.0
  */
-public class ORMDAOImpl implements DAOImpl
+public class ORMDAOImpl implements DAO
 {
 	private static Logger log = Logger.getLogger(ORMDAOImpl.class.getName());
     public SessionFactory sf;
@@ -69,7 +70,7 @@ public class ORMDAOImpl implements DAOImpl
 	 * @return an object of gov.nih.nci.common.net.Response that contains the query resultset
 	 * @throws DAOException
 	 */
-	public Response query(Request request) throws DAOException, Exception
+	public Response query(Request request) throws DAOException
 	{
 		List rs = null;
 		int counter = 0;

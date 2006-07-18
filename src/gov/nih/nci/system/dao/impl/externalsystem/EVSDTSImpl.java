@@ -12,8 +12,8 @@ import gov.nih.nci.common.util.*;
 
 import gov.nih.nci.common.net.*;
 
-import gov.nih.nci.system.dao.DAOImpl;
-import gov.nih.nci.system.dao.DAOException;
+import gov.nih.nci.system.dao.*;
+
 //dtsrpc jar
 import gov.nih.nci.dtsrpc.client.*;
 //metaphrase jar
@@ -60,7 +60,7 @@ import gov.nih.nci.evs.security.*;
  * Results are returned as a Response object.
  */
 
-public class EVSDTSImpl implements DAOImpl
+public class EVSDTSImpl implements DAO
 {
 	private static Logger log = Logger.getLogger(EVSDTSImpl.class.getName());
 	private DTSRPCClient dtsrpc;
@@ -80,7 +80,7 @@ public class EVSDTSImpl implements DAOImpl
 	 * @throws DAOException
 	 * @throws Exception
 	 */
-	public Response query(Request r) throws DAOException, Exception
+	public Response query(Request r) throws DAOException
 	{
 		Object obj = r.getRequest();
 		List resultList  = new ArrayList();
@@ -116,7 +116,7 @@ public class EVSDTSImpl implements DAOImpl
 								}
 							else{
 								log.error("DTSRPC Server name is null");
-								throw new Exception(getException("DTSRPC Server name is null"));
+								throw new DAOException(getException("DTSRPC Server name is null"));
 								}
 						}
 						else if(fieldName.equalsIgnoreCase("metaThesaurusValues"))
@@ -136,7 +136,7 @@ public class EVSDTSImpl implements DAOImpl
 
 							if(method == null){
 								log.error("Invalid method name");
-								throw new Exception (getException("Invalid method name"));
+								throw new DAOException (getException("Invalid method name"));
 								}
 							else{
 								try{
@@ -165,7 +165,7 @@ public class EVSDTSImpl implements DAOImpl
 										msg = msg + ex.getMessage();
 										}
 									log.error(msg);
-									throw new Exception(getException(msg));
+									throw new DAOException(getException(msg));
 									}
 
 							}
@@ -178,7 +178,7 @@ public class EVSDTSImpl implements DAOImpl
 		{
 			//e.printStackTrace();
 			//log.error("Exception : query - "+  e.getMessage());
-			throw new Exception (getException( e.getMessage()));
+			throw new DAOException (getException( e.getMessage()));
 		}
         System.out.println("query returning results...");
 		return response;
@@ -238,7 +238,7 @@ public class EVSDTSImpl implements DAOImpl
  		catch(Exception e)
  		{
  			log.error(e.getMessage());
- 			throw new Exception (getException(e.getMessage()));
+ 			throw new DAOException (getException(e.getMessage()));
  		}
 
 
@@ -257,24 +257,24 @@ public class EVSDTSImpl implements DAOImpl
         vocabulary = new Vocabulary();
         if(!StringHelper.hasValue(vocabularyName)){
         	log.error("vocabularyName cannot be null");
-        	throw new Exception(getException(" vocabularyName cannot be null"));
+        	throw new DAOException(getException(" vocabularyName cannot be null"));
 		}
 
         if(vocabularyName.equals("MedDRA")){
             SecurityToken securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
             if(securityToken==null){
-                throw new Exception("Please set SecurityToken for "+ vocabularyName);
+                throw new DAOException("Please set SecurityToken for "+ vocabularyName);
             }
             else{
                 if(securityToken.getAccessToken()==null){
-                    throw new Exception("Please set the access token for "+ vocabularyName);
+                    throw new DAOException("Please set the access token for "+ vocabularyName);
                 }else{
                     String accessToken = securityToken.getAccessToken();
                     msso.validator.MSSOUserValidatorClient validator = new msso.validator.MSSOUserValidatorClient();
                     boolean valid = validator.validateID(accessToken).equalsIgnoreCase("true");
                     System.out.println("Authentication : "+valid );
                     if(!valid){
-                        throw new Exception("Invalid access code: "+ accessToken);
+                        throw new DAOException("Invalid access code: "+ accessToken);
                     }
                 }
             }
@@ -283,21 +283,21 @@ public class EVSDTSImpl implements DAOImpl
             boolean found = dtsrpc.setVocabulary(vocabularyName);
             System.out.println("setVocabulary: "+ vocabularyName);
             if(!found){
-                throw new Exception("DTSRPC Exception - unable to connect to vocabulary "+ vocabularyName);
+                throw new DAOException("DTSRPC Exception - unable to connect to vocabulary "+ vocabularyName);
             }
             int ping =  dtsrpc.PingServer();
             if(ping != 0){
                 if( ping == 1){
                     log.error("DTSRPC Server down");
-                    throw new Exception("DTSRPC Server down");
+                    throw new DAOException("DTSRPC Server down");
                 }
                 else if(ping ==2){
                     log.error("DTS Database server down");
-                    throw new Exception("DTS Database server down");
+                    throw new DAOException("DTS Database server down");
                 }
                 else if(ping == 3){
                     log.error("DTS XML-RPC Exception - Unable to connect to the DTSRPC Server");
-                    throw new Exception("DTS XML-RPC Exception - Unable to connect to the DTSRPC Server");
+                    throw new DAOException("DTS XML-RPC Exception - Unable to connect to the DTSRPC Server");
                 }
                 else{
                     log.error("DTSRPC Exception - Unable to connect to the DTSRPC Server");
@@ -343,7 +343,7 @@ public class EVSDTSImpl implements DAOImpl
             }
 
         }catch(Exception ex){
-            throw new Exception(getException(ex.getMessage()));
+            throw new DAOException(getException(ex.getMessage()));
         }
         return new Response(vocabList);
     }
@@ -404,7 +404,7 @@ public class EVSDTSImpl implements DAOImpl
 
 		}catch(Exception e){
 			log.error(e.getMessage());
-			throw new Exception (getException(e.getMessage()));
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 
@@ -456,7 +456,7 @@ public class EVSDTSImpl implements DAOImpl
 
 	        if(!StringHelper.hasValue(searchTerm)){
 	        	log.warn("searchTerm cannot be null");
-	        	throw new Exception(getException(" searchTerm cannot be null"));
+	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
 	        Concept[] concepts =null;
 			concepts = dtsrpc.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
@@ -473,7 +473,7 @@ public class EVSDTSImpl implements DAOImpl
 
 		}catch(Exception e){
 		    	log.error(e.getMessage());
-			throw new Exception(getException(e.getMessage()));
+			throw new DAOException(getException(e.getMessage()));
 		}
 
 System.out.println("Returning: "+ list.size());
@@ -529,7 +529,7 @@ System.out.println("Returning: "+ list.size());
 		}catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception(getException(" Exception in getTree: "+e.getMessage()));
+			throw new DAOException(getException(" Exception in getTree: "+e.getMessage()));
 		}
 
 		return new gov.nih.nci.common.net.Response(list);
@@ -553,12 +553,12 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
     DefaultMutableTreeNode evsTree = new DefaultMutableTreeNode();
         if(!StringHelper.hasValue(vocabularyName)){
         	log.error("vocabularyName cannot be null");
-        	throw new Exception(getException(" vocabularyName cannot be null"));
+        	throw new DAOException(getException(" vocabularyName cannot be null"));
         }
 
         if(!StringHelper.hasValue(rootName)){
         	log.error("Root Node cannot be null");
-        	throw new Exception(getException(" Root Node cannot be null"));
+        	throw new DAOException(getException(" Root Node cannot be null"));
         }
 
 		setVocabulary(vocabularyName);
@@ -601,7 +601,7 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 				}
 
                 if(tree == null){
-                    throw new Exception(getException("DTSRPC Exception"));
+                    throw new DAOException(getException("DTSRPC Exception"));
 
                 }
 
@@ -622,14 +622,14 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 		  	catch(Exception e)
 			{
 		  		log.error(e.getMessage());
-		  		throw new Exception (getException("Exception - DTSRPC call: \n" + e.getMessage()));
+		  		throw new DAOException (getException("Exception - DTSRPC call: \n" + e.getMessage()));
 			}
 
 		}
 		catch (Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException( e.getMessage()));
+			throw new DAOException (getException( e.getMessage()));
         }
 		return evsTree;
     }
@@ -707,7 +707,7 @@ private Response getConceptWithPropertyMatching(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -766,7 +766,7 @@ private Response getConceptWithSiloMatching(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -812,7 +812,7 @@ private Response getDescLogicConceptNameByCode(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -862,7 +862,7 @@ private Response isSubConcept(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -902,7 +902,7 @@ private Response isRetired(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 	List isList = new ArrayList();
 	isList.add(retired);
@@ -955,7 +955,7 @@ private Response getPropertyValues(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -1014,7 +1014,7 @@ private Response getAncestors(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -1072,7 +1072,7 @@ private Response getSubConcepts(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -1132,7 +1132,7 @@ private Response getSuperConcepts(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException( e.getMessage()));
+		throw new DAOException (getException( e.getMessage()));
 	}
 
 
@@ -1174,7 +1174,7 @@ private Response getRolesByConceptName(HashMap map) throws Exception
 		setVocabulary(vocabularyName);
 
 		if(!StringHelper.hasValue(conceptName))
-        	throw new Exception("conceptName cannot be null");
+        	throw new DAOException("conceptName cannot be null");
 
 		roles = dtsrpc.getRolesByConceptName(conceptName);
 		if(roles != null){
@@ -1194,7 +1194,7 @@ private Response getRolesByConceptName(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -1233,7 +1233,7 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 		setVocabulary(vocabularyName);
 
 		if(!StringHelper.hasValue(conceptName))
-        	throw new Exception(getException("conceptName cannot be null"));
+        	throw new DAOException(getException("conceptName cannot be null"));
 
 
 		properties = dtsrpc.getPropertiesByConceptName(conceptName);
@@ -1263,7 +1263,7 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -1294,7 +1294,7 @@ private Response getVocabularyNames(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 	return (new Response(list));
 }
@@ -1332,7 +1332,7 @@ private Response getConceptCodeByName(HashMap map) throws Exception
 		if(!StringHelper.hasValue(conceptName)){
 			String msg = "conceptName cannot be null";
 			log.error(msg);
-			throw new Exception(msg);
+			throw new DAOException(msg);
 		}
 
 
@@ -1349,7 +1349,7 @@ private Response getConceptCodeByName(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -1388,7 +1388,7 @@ private Response getVocabularyHost(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException( e.getMessage()));
+		throw new DAOException (getException( e.getMessage()));
 	}
 
 	List hostList = new ArrayList();
@@ -1429,7 +1429,7 @@ private Response getVocabularyPort(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException( e.getMessage()));
+		throw new DAOException (getException( e.getMessage()));
 	}
 
 	List portList = new ArrayList();
@@ -1466,7 +1466,7 @@ public Response getVocabularyVersion(HashMap map) throws Exception{
     catch(Exception e)
     {
         log.error(e.getMessage());
-        throw new Exception (getException( e.getMessage()));
+        throw new DAOException (getException( e.getMessage()));
     }
 
 
@@ -1516,7 +1516,7 @@ private Response getConceptEditAction(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException( e.getMessage()));
+		throw new DAOException (getException( e.getMessage()));
 	}
 
 
@@ -1570,7 +1570,7 @@ private Response getConceptEditActionDates(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 	return (new Response(list));
 
@@ -1620,7 +1620,7 @@ private Response getRootConcepts(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException( e.getMessage()));
+		throw new DAOException (getException( e.getMessage()));
 	}
 
 
@@ -1719,7 +1719,7 @@ private Response getConceptByName(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 
@@ -1759,7 +1759,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 				limit = ((Integer)map.get(key)).intValue();
 			else if(name.equalsIgnoreCase("source")) {
 			    if(map.get(key)==null){
-			        //throw new Exception(getException("Invalid source"));
+			        //throw new DAOException(getException("Invalid source"));
 			        source = "*";
 			        }
 				source = (String)map.get(key);
@@ -1783,7 +1783,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 			if(!(source.length() == 0 || source.equals("*"))){
 
 				if(!validateSource(source)){
-				throw new Exception(getException("Invalid source"));
+				throw new DAOException(getException("Invalid source"));
 				}
 
 				checkSource = true;
@@ -1878,7 +1878,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException( e.getMessage()));
+		throw new DAOException (getException( e.getMessage()));
 	}
 
 	return new Response(uList);
@@ -1913,7 +1913,7 @@ private boolean validateSource(String source) throws Exception{
 			    else{
 			        source = e.getMessage();
 			        }
-			throw new Exception(getException(msg));
+			throw new DAOException(getException(msg));
 			}
 
 		return valid;
@@ -1932,7 +1932,7 @@ private Response getMetaConceptsForAllSources(HashMap map) throws Exception{
             conceptList.add(buildMetaThesaurusConcept(metaConcept));
         }
     }catch(Exception ex){
-        throw new Exception(getException(ex.getMessage()));
+        throw new DAOException(getException(ex.getMessage()));
     }
     return new Response(conceptList);
 }
@@ -1948,7 +1948,7 @@ private Response getMetaConceptCodeForSource(HashMap map) throws Exception{
 
             if(name.equalsIgnoreCase("sourceAbbr")){
                 if(map.get(key)==null){
-                    throw new Exception(getException("Invalid source"));
+                    throw new DAOException(getException("Invalid source"));
                     }
                 abbreviation = (String)map.get(key);
             }
@@ -1959,7 +1959,7 @@ private Response getMetaConceptCodeForSource(HashMap map) throws Exception{
         }
 
     }catch(Exception ex){
-        throw new Exception(getException(ex.getMessage()));
+        throw new DAOException(getException(ex.getMessage()));
     }
     return new Response(codeList);
 }
@@ -1993,7 +1993,7 @@ private Response getSourceAbbreviation(HashMap map)throws Exception{
         }
 
     }catch(Exception ex){
-        throw new Exception(getException(ex.getMessage()));
+        throw new DAOException(getException(ex.getMessage()));
     }
     return new Response(sabList);
 
@@ -2060,7 +2060,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	}catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new Exception (getException(e.getMessage()));
+		throw new DAOException (getException(e.getMessage()));
 	}
 
 	return metaThesaurusConcept;
@@ -2089,7 +2089,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	catch(COM.Lexical.Metaphrase.MetaphraseException e)
 	{
 		log.error(e.getMessage());
-		throw new Exception(getException("Exception from Metaphrase Server while getting sources \n"+ e.getMessage()));
+		throw new DAOException(getException("Exception from Metaphrase Server while getting sources \n"+ e.getMessage()));
 	}
 	return sourceList;
   }
@@ -2117,7 +2117,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	catch(COM.Lexical.Metaphrase.MetaphraseException e)
 	{
 		log.error(e.getMessage());
-		throw new Exception(getException( e.getMessage()));
+		throw new DAOException(getException( e.getMessage()));
 	}
 	return synonyms;
   }
@@ -2178,10 +2178,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
 
 			if(!StringHelper.hasValue(code))
-				  throw new Exception(getException(" invalid acode"));
+				  throw new DAOException(getException(" invalid acode"));
 
 			if(!validateSource(sourceAbbr)){
-			    throw new Exception ("invalid source abbreviation - "+ sourceAbbr);
+			    throw new DAOException ("invalid source abbreviation - "+ sourceAbbr);
 			    }
 
 
@@ -2201,7 +2201,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException(e.getMessage()));
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 		return new Response(list);
@@ -2234,7 +2234,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException("Exception occured at : \n"+getClass().getName()+ e.getMessage()));
+			throw new DAOException (getException("Exception occured at : \n"+getClass().getName()+ e.getMessage()));
 		}
 
 		return (new Response(list));
@@ -2266,7 +2266,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 			}
 
 			if(!StringHelper.hasValue(sourceAbbr))
-				  throw new Exception(getException(" Invalid Source"));
+				  throw new DAOException(getException(" Invalid Source"));
 
 
 			Enumeration e  = metaphrase.getConcepts(metaphrase.source(sourceAbbr));
@@ -2279,7 +2279,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException(e.getMessage()));
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 		return (new Response(list));
@@ -2313,7 +2313,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 			}
 
 			if(!StringHelper.hasValue(conceptCode))
-				  throw new Exception(getException(" Invalid concept code"));
+				  throw new DAOException(getException(" Invalid concept code"));
 
 
 			metaConcept =	metaphrase.getConcept(conceptCode);
@@ -2325,7 +2325,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException(e.getMessage()));
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 
@@ -2357,7 +2357,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException( e.getMessage()));
+			throw new DAOException (getException( e.getMessage()));
 		}
 
 		return (new Response(list));
@@ -2395,7 +2395,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException( e.getMessage()));
+			throw new DAOException (getException( e.getMessage()));
 		}
 
 		return (new Response(list));
@@ -2435,7 +2435,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException(e.getMessage()));
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 		return (new Response(list));
@@ -2463,7 +2463,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	  	{
 			if(!StringHelper.hasValue(conceptCode))
 			{
-				throw new Exception(getException(" Invalid code, set concept code"));
+				throw new DAOException(getException(" Invalid code, set concept code"));
 			}
 			if(!StringHelper.hasValue(sourceAbbr))
 			{
@@ -2503,7 +2503,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception(getException(e.getMessage()));
+			throw new DAOException(getException(e.getMessage()));
 		}
         for(int i=0; i<rc.size(); i++)
         {
@@ -2549,7 +2549,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException(e.getMessage()));
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 		return new Response(list);
@@ -2592,7 +2592,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException( e.getMessage()));
+			throw new DAOException (getException( e.getMessage()));
 		}
 		return new Response(list);
    }
@@ -2682,7 +2682,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException(e.getMessage()));
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 
@@ -2729,10 +2729,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
 
 			if(!StringHelper.hasValue(conceptCode))
-				  throw new Exception(getException(" invalid concept code "));
+				  throw new DAOException(getException(" invalid concept code "));
 
 			if(!StringHelper.hasValue(category))
-				  throw new Exception(getException(" Invalid Category - set value"));
+				  throw new DAOException(getException(" Invalid Category - set value"));
 
 
 			metaConcept =	metaphrase.getConcept(conceptCode);
@@ -2761,7 +2761,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new Exception (getException( e.getMessage()));
+			throw new DAOException (getException( e.getMessage()));
 		}
 
 		return new Response(list);
@@ -2807,7 +2807,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		inverseRole = dtsrpc.containsInverseRole(roleName, roleValue, conceptName);
 	}catch(Exception e){
 		log.error(e.getMessage());
-		throw new Exception(getException(e.getMessage()));
+		throw new DAOException(getException(e.getMessage()));
 		}
 	List booleanList = new ArrayList();
 	booleanList.add(inverseRole);
@@ -2854,7 +2854,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		inverseRole = dtsrpc.containsRole(roleName, roleValue, conceptName);
 	}catch(Exception e){
 		log.error(e.getMessage());
-		throw new Exception(getException(e.getMessage()));
+		throw new DAOException(getException(e.getMessage()));
 		}
 	List booleanList = new ArrayList();
 	booleanList.add(inverseRole);
@@ -2901,7 +2901,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	catch(Exception e)
    	{
    		log.error(e.getMessage());
-   		throw new Exception (getException(e.getMessage()));
+   		throw new DAOException (getException(e.getMessage()));
    	}
 
 
@@ -2947,7 +2947,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	catch(Exception e)
    	{
    		log.error(e.getMessage());
-   		throw new Exception (getException( e.getMessage()));
+   		throw new DAOException (getException( e.getMessage()));
    	}
 
 
@@ -2986,7 +2986,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    		}
    		}catch(Exception e){
    			log.error(e.getMessage());
-   			throw new Exception(getException( e.getMessage()));
+   			throw new DAOException(getException( e.getMessage()));
 		}
 
 	return new Response(associationList);
@@ -3027,7 +3027,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    		}
    		}catch(Exception e){
    			log.error(e.getMessage());
-   			throw new Exception(getException(e.getMessage()));
+   			throw new DAOException(getException(e.getMessage()));
 		}
 
 	return new Response(typeList);
@@ -3064,7 +3064,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
       		}
       		}catch(Exception e){
       			log.error(e.getMessage());
-      			throw new Exception(getException( e.getMessage()));
+      			throw new DAOException(getException( e.getMessage()));
    		}
 
    	return new Response(typeList);
@@ -3101,7 +3101,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new Exception(getException( e.getMessage()));
+     			throw new DAOException(getException( e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3139,7 +3139,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new Exception(getException(e.getMessage()));
+     			throw new DAOException(getException(e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3179,7 +3179,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new Exception(getException( e.getMessage()));
+     			throw new DAOException(getException( e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3217,7 +3217,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new Exception(getException(e.getMessage()));
+     			throw new DAOException(getException(e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3256,7 +3256,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new Exception(getException("\nException occured at "+ getClass().getName()+ e.getMessage()));
+     			throw new DAOException(getException("\nException occured at "+ getClass().getName()+ e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3297,7 +3297,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new Exception(getException( e.getMessage()));
+     			throw new DAOException(getException( e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3339,7 +3339,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new Exception(getException( e.getMessage()));
+     			throw new DAOException(getException( e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3377,7 +3377,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	        		}
 	        		}catch(Exception e){
 	        			log.error(e.getMessage());
-	        			throw new Exception(getException(e.getMessage()));
+	        			throw new DAOException(getException(e.getMessage()));
 	     		}
 
 	     	return new Response(typeList);
@@ -3412,7 +3412,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	        		}
 	        		}catch(Exception e){
 	        			log.error(e.getMessage());
-	        			throw new Exception(getException(e.getMessage()));
+	        			throw new DAOException(getException(e.getMessage()));
 	     		}
 
 	     	return new Response(siloList);
@@ -3458,7 +3458,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	        		}
 	        		}catch(Exception e){
 	        			log.error(e.getMessage());
-	        			throw new Exception(getException( e.getMessage()));
+	        			throw new DAOException(getException( e.getMessage()));
 	     		}
 
 	     	return new Response(typeList);
@@ -3496,7 +3496,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    		}
    		}catch(Exception e){
    			log.error(e.getMessage());
-   			throw new Exception(getException( e.getMessage()));
+   			throw new DAOException(getException( e.getMessage()));
 		}
 
 	return new Response(typeList);
@@ -3533,7 +3533,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    		}
    		}catch(Exception e){
    			log.error(e.getMessage());
-   		throw new Exception(getException( e.getMessage()));
+   		throw new DAOException(getException( e.getMessage()));
 		}
 
 	return new Response(typeList);
@@ -3663,7 +3663,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
    		}catch(Exception e){
    			log.error(e.getMessage());
-   		 throw new Exception(getException(e.getMessage()));
+   		 throw new DAOException(getException(e.getMessage()));
 		}
 
 	return new Response(typeList);
@@ -3721,7 +3721,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
    		}catch(Exception e){
    			log.error(e.getMessage());
-   		throw new Exception(getException(e.getMessage()));
+   		throw new DAOException(getException(e.getMessage()));
 		}
 
 	return new Response(typeList);
@@ -3764,7 +3764,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
    	   		}catch(Exception e){
    	   		log.error(e.getMessage());
-   	   		throw new Exception(getException(e.getMessage()));
+   	   		throw new DAOException(getException(e.getMessage()));
    			}
 
    		return new Response(hasList);
@@ -3808,7 +3808,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
    	   		}catch(Exception e){
    	   		log.error(e.getMessage());
-   	   			throw new Exception(getException(e.getMessage()));
+   	   			throw new DAOException(getException(e.getMessage()));
    			}
 
    		return new Response(hasList);
@@ -3829,16 +3829,16 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	try{
    	if(conceptName == null){
    		valid = false;
-   		throw new Exception (getException("Exception : Concept name cannot be a null value"));
+   		throw new DAOException (getException("Exception : Concept name cannot be a null value"));
    			}
    	else if(dtsrpc.getConceptCodeByName(conceptName) == null){
    			valid = false;
-   			throw new Exception (getException("Exception : Invalid concept name - "+conceptName));
+   			throw new DAOException (getException("Exception : Invalid concept name - "+conceptName));
    			}
 	}
    	catch(Exception e){
    		log.error(e.getMessage());
-   		throw new Exception(getException(e.getMessage()));
+   		throw new DAOException(getException(e.getMessage()));
    	}
    		return valid;
    	}
@@ -3863,7 +3863,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    		}
    	if(!valid){
    		log.error(" Invalid relation attribute");
-   		throw new Exception(getException(" Invalid relation attribute "));
+   		throw new DAOException(getException(" Invalid relation attribute "));
    		}
    	return valid;
 
@@ -3900,7 +3900,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
 		if(conceptCode == null){
 			log.error(" Concept code cannot be a null value");
-			throw new Exception (getException(" Invalid concept code"));
+			throw new DAOException (getException(" Invalid concept code"));
 			}
 		conceptName = dtsrpc.getConceptNameByCode(conceptCode);
 		list.add(conceptName);
@@ -3908,7 +3908,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	catch(Exception e)
 	{
 		log.error("Exception - getConceptNameByCode "+e.getMessage());
-		throw new Exception (getException(" Exception - "+  e.getMessage()));
+		throw new DAOException (getException(" Exception - "+  e.getMessage()));
 	}
 
 
@@ -3953,7 +3953,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    		}
    		}catch(Exception e){
    			log.error(e.getMessage());
-   			throw new Exception(getException( e.getMessage()));
+   			throw new DAOException(getException( e.getMessage()));
 		}
 
 	return new Response(propertyList);
@@ -3982,16 +3982,16 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	try{
    	if(code == null){
    		valid = false;
-   		throw new Exception (getException("Exception : Concept code cannot be a null value"));
+   		throw new DAOException (getException("Exception : Concept code cannot be a null value"));
    			}
    	else if(dtsrpc.getConceptNameByCode(code) == null){
    			valid = false;
-   			throw new Exception (getException("Exception : Invalid concept code - "+ code));
+   			throw new DAOException (getException("Exception : Invalid concept code - "+ code));
    			}
 	}
    	catch(Exception e){
    		log.error(e.getMessage());
-   		throw new Exception(getException(e.getMessage()));
+   		throw new DAOException(getException(e.getMessage()));
    	}
    		return valid;
    	}
@@ -4037,7 +4037,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
                 v = dtsrpc.getHistoryRecords(vocabularyName, conceptCode);
                 }
             else{
-                throw new Exception("Exception: Invalid arguments");
+                throw new DAOException("Exception: Invalid arguments");
             }
 
             if(v!=null){
@@ -4065,7 +4065,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
                }
         }
         catch(Exception e){
-            throw new Exception(getException(e));
+            throw new DAOException(getException(e));
 
         }
  return new Response(list);
