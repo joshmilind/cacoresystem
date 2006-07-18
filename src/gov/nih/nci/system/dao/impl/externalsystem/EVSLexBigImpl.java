@@ -453,8 +453,7 @@ public class EVSLexBigImpl implements DAO
             //Concept[]concepts = adapter.searchConcepts(searchTerm, limit);
             Concept[]concepts = null;
             try{
-                gov.nih.nci.lexrpc.client.Concept[] lex = adapter.searchConcepts("e*", 1);
-                adapter.se
+                gov.nih.nci.lexrpc.client.Concept[] lex = adapter.searchConcepts("e*", 1);               
                 System.out.println("C>>>>>>>>>> oncepts: "+ lex.length);
                 concepts = adapter.searchConcepts(searchTerm, limit);
                 
