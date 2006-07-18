@@ -696,7 +696,7 @@ private Response getConceptWithPropertyMatching(HashMap map) throws Exception
 
 		setVocabulary(vocabularyName);
 
-		v=adapter.findConceptWithPropertyMatching(propertyName, propertyValue, limit);
+		v=adapter.findConceptsWithPropertyMatching(propertyName, propertyValue, limit);
 
 		if(v != null){
 
