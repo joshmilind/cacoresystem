@@ -96,9 +96,6 @@ public class EVSLexBigImpl implements DAO
 		gov.nih.nci.common.net.Response response = null;
 		Hashtable configs;
 		String methodName = null;
-
-
-
 		try{
 			configs= r.getConfig();
 			EVSQueryImpl criteria = (EVSQueryImpl)obj;
@@ -117,17 +114,15 @@ public class EVSLexBigImpl implements DAO
 					{
 						if(fieldName.equalsIgnoreCase("descLogicValues"))
 						{
-                            //Setup LexBIG
-                            System.out.println("Instantiating LexAdaptor");
                             try{
                                 adapter = new LexAdapter();
+                                System.out.println("LexBig found");
                             }catch(Exception ex){
                                 throw new DAOException("Unable to connect to LexBIG - "+ ex.getMessage());
                             }
                             if(adapter == null){
                                 throw new DAOException("LexBIG Exception - unable to connect to server");
-                            }
-                            System.out.println("ADAPTOR  : " + adapter.toString());
+                            }                            
 						}
 						else if(fieldName.equalsIgnoreCase("metaThesaurusValues"))
 						{
@@ -137,12 +132,10 @@ public class EVSLexBigImpl implements DAO
 							 String password = (String)configs.get("password");
 							 metaphrase = new RMIMetaphrase("//" + metaServer + "/RemoteMetaphrase",  database , username , password);
 						}
-
 						Iterator iter = mapValues.keySet().iterator();
 						String key = (String)iter.next();
 						methodName = key.substring(0, key.indexOf("$"));
 						Method method = this.getClass().getDeclaredMethod(methodName, new Class[]{HashMap.class});
-
 							if(method == null){
 								log.error("Invalid method name");
 								throw new DAOException (getException("Invalid method name"));
@@ -159,34 +152,25 @@ public class EVSLexBigImpl implements DAO
 										if(pastEx.getMessage()==null){
 											if(fieldName.equalsIgnoreCase("descLogicValues")){
 												msg = msg + "caCORE - LexBIG Server Exception";
-											}
-											else if(fieldName.startsWith("meta")){
+											}else if(fieldName.startsWith("meta")){
 												msg = msg + "caCORE - Metaphrase Exception";
 											}
-
-											}
-										else{
+										}else{
 											msg = msg + pastEx.getMessage();
 										}
-
-										}
-									else{
+									}else{
 										msg = msg + ex.getMessage();
-										}
+									}
 									log.error(msg);
 									throw new DAOException(getException(msg));
-									}
-
+								}
 							}
-
 						}
 				}
 			}
-
 		}catch(Exception e)
-		{
-			//e.printStackTrace();
-			//log.error("Exception : query - "+  e.getMessage());
+		{			
+			log.error("Exception : query - "+  e.getMessage());
 			throw new DAOException (getException( e.getMessage()));
 		}
 		return response;
@@ -275,15 +259,13 @@ public class EVSLexBigImpl implements DAO
                 throw new DAOException("LexBIG Exception - MedDRA token not found - Permission denied");
             }
             MSSOUserValidator validator = new MSSOUserValidator();
-            String code = validator.validateID(accessToken.getAccessToken());
-            System.out.println("Validator token: "+ accessToken.getAccessToken() +"\tValidated code: "+ code);
+            String code = validator.validateID(accessToken.getAccessToken());            
         }
 
 
             boolean found = false;
             try{
                 found = adapter.setVocabularyName(vocabularyName);
-
             }catch(Exception ex){
                 ex.printStackTrace();
                 throw new DAOException("Vocabulary error: "+ ex.getMessage());
@@ -294,8 +276,7 @@ public class EVSLexBigImpl implements DAO
             if(!found){
                 throw new DAOException("LexBIG Exception - unable to connect to vocabulary "+ vocabularyName);
             }
-           vocabulary = populateVocabulary(vocabularyName);
-           System.out.println("Vocabulary found: "+ found);
+           vocabulary = populateVocabulary(vocabularyName);           
 	}
 
     private Vocabulary populateVocabulary(String vocabularyName){
@@ -407,25 +388,21 @@ public class EVSLexBigImpl implements DAO
 	 * @throws Exception
 	 */
 	private Response searchDescLogicConcepts(HashMap map) throws Exception
-	{
-	    System.out.println("searchDescLogicConcept....");
+	{	    
 		String vocabularyName = null;
 		String searchTerm = null;
 		int limit = 1;
 		int matchOption = 0;
 		String matchType = "";
 		int ASDIndex = 1;
-
 		Vector v = new Vector();
 		ArrayList list = new ArrayList();
-
 		try
 		{
 			for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
 			{
 				String key = (String)iter.next();
 				String name = key.substring(key.indexOf("$")+1, key.length());
-
 				if(name.equalsIgnoreCase("VocabularyName"))
 					vocabularyName = (String)map.get(key);
 				else if(name.equalsIgnoreCase("SearchTerm"))
@@ -438,50 +415,27 @@ public class EVSLexBigImpl implements DAO
 					matchType = (String)map.get(key);
 				else if(name.equalsIgnoreCase("ASDIndex"))
 					ASDIndex = ((Integer)map.get(key)).intValue();
-
 			}
-
-			setVocabulary(vocabularyName);
-			System.out.println("Search: "+ searchTerm +"\t"+ limit);
+			setVocabulary(vocabularyName);			
 	        if(!StringHelper.hasValue(searchTerm)){
 	        	log.warn("searchTerm cannot be null");
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
-	        }            
-            System.out.println("====================================");
-            
-			//concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
-            //Concept[]concepts = adapter.searchConcepts(searchTerm, limit);
-            Concept[]concepts = null;
-            try{
-                gov.nih.nci.lexrpc.client.Concept[] lex = adapter.searchConcepts("e*", 1);               
-                System.out.println("C>>>>>>>>>> oncepts: "+ lex.length);
-                concepts = adapter.searchConcepts(searchTerm, limit);
-                
-            }catch(Exception ex){
-                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>"+ ex.getMessage());
-                ex.printStackTrace();
-            }
-            
-
-            System.out.println(concepts.length + " concepts found");
+	        }
+			Concept[]concepts = adapter.searchConcepts(searchTerm, limit);
             if(vocabulary == null){
                 populateVocabulary(vocabularyName);
             }
-
 	        DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
 	        for(int x=0; x<concepts.length; x++){
 	            dlc[x] = new DescLogicConcept();
 	            dlc[x] = buildDescLogicConcept(concepts[x]);
 	            list.add(dlc[x]);
 	        }
-
 		}catch(Exception e){
 		    	log.error(e.getMessage());
 			throw new DAOException(getException("SearchConcepts..."+e.getMessage()));
 		}
-
-
-				return new Response(list);
+		return new Response(list);
 	}
 
 	/**
@@ -4045,7 +3999,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
                 throw new DAOException("Exception: Invalid arguments");
             }
 
-            if(v!=null){
+            if(v!=null && v.size()>0){
                 Vector historyVector= new Vector();
                 String code = ((gov.nih.nci.lexrpc.client.HistoryRecord)v.get(0)).getCode();
                 for(int i=0;i<v.size(); i++){
