@@ -6,7 +6,7 @@ import gov.nih.nci.common.util.Constant;
 import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.common.util.NestedCriteria;
 import gov.nih.nci.common.util.NestedCriteria2HQL;
-import gov.nih.nci.system.dao.DAOImpl;
+import gov.nih.nci.system.dao.DAO;
 import gov.nih.nci.system.dao.DAOException;
 import gov.nih.nci.system.servicelocator.ServiceLocator;
 
