@@ -218,5 +218,26 @@ public class WSQuery {
           }
 
       }
+      
+      public boolean exist(String bigId) throws Exception{
+          ApplicationService app = ApplicationServiceProvider.getLocalInstance();
+          return app.exist(bigId);
+      }
+      
+      public Object getDataObject(String bigId) throws Exception{
+          ApplicationService app = ApplicationServiceProvider.getLocalInstance();
+          Object dataObject = app.getDataObjectFromBigId(bigId);
+          Object wsObject = null;
+          if(dataObject != null){
+              List result = new ArrayList();
+              result.add(dataObject);
+              List wsResults =  transformer.generateWSResults(result);
+              if(wsResults.size()>0){
+                  wsObject = wsResults.get(0);
+              }
+          }
+          return wsObject;
+          
+      }
 
 }
