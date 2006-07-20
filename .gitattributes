@@ -79,6 +79,7 @@ models/caCORE3-1-EVS.eap -text
 models/caCORE3-2-EVS.eap -text
 models/caCORE3-2.eap -text
 models/xmi/caCORE3-2.xmi -text
+models/xmi/cacore3-2.xmi -text svneol=unset#application/octet-stream
 models/xmi/evs3-1.xmi -text
 models/xmi/evs3-2.xmi -text svneol=unset#application/octet-stream
 models/xmi/fixed_evs3-1.xmi -text
