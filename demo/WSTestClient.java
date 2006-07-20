@@ -174,6 +174,37 @@ public class WSTestClient
 
 		}
 
+        /*
+         * Example 6:
+         * Check if bigid = hdl://123.P/MWE exist
+         */
+        call = (Call)service.createCall();
+        call.setTargetEndpointAddress(new java.net.URL(url));
+        call.setOperationName(new QName("caCoreWebService", "exist"));
+        call.addParameter("arg1",org.apache.axis.encoding.XMLType.XSD_STRING,ParameterMode.IN);
+        //call.addParameter("arg2", org.apache.axis.encoding.XMLType.XSD_ANYTYPE, ParameterMode.IN);
+        call.setReturnType(org.apache.axis.encoding.XMLType.XSD_BOOLEAN);
+
+        boolean found = ((Boolean)call.invoke(new Object[] {"hdl://123.P/MWE"})).booleanValue();
+        
+        System.out.println("Big id: hdl://123.P/MWE  - found:"+  found);
+
+        /*
+         * Example 7:
+         * get data object from  bigid = hdl://123.P/MWE 
+         */
+        call = (Call)service.createCall();
+        call.setTargetEndpointAddress(new java.net.URL(url));
+        call.setOperationName(new QName("caCoreWebService", "getDataObject"));
+        call.addParameter("arg1",org.apache.axis.encoding.XMLType.XSD_STRING,ParameterMode.IN);
+        //call.addParameter("arg2", org.apache.axis.encoding.XMLType.XSD_ANYTYPE, ParameterMode.IN);
+        call.setReturnType(org.apache.axis.encoding.XMLType.XSD_ANYTYPE);
+
+        Gene dataObject = (Gene)call.invoke(new Object[] {"hdl://123.P/MWE"});
+        
+        System.out.println("Big id: hdl://123.P/MWE  - "+ dataObject.getId()+"\t"+ dataObject.getSymbol());
+
+
 
 
 	}
