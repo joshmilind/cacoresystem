@@ -335,7 +335,7 @@ private String getSearchClassNames(String searchClasses, String packageName){
  * @return
  */
 
-public List getSearchCriteriaList(String criteria){
+public List getSearchCriteriaList(String criteria) throws Exception{
     List criteriaList = new ArrayList();
     String delimiter = null;
     if(criteria.indexOf("/")>0){
@@ -344,12 +344,48 @@ public List getSearchCriteriaList(String criteria){
     else {
         delimiter = "\\";
         }
+    String critString = new String();
     for(StringTokenizer st = new StringTokenizer(criteria, delimiter); st.hasMoreElements();){
-        String crit = st.nextToken().trim();            
-        criteriaList.add(crit);
+        String crit = st.nextToken().trim();
+        critString += crit;        
+        boolean valid = validateSyntax(critString);
+        if(valid){
+            criteriaList.add(critString);            
+            critString = new String();            
+        }
+        else{
+            int len = critString.length();
+            if(criteria.length()>critString.length()){
+                for(int i = len; i<criteria.length() ; i++){
+                    if(criteria.charAt(i)== delimiter.charAt(0))
+                        critString+=delimiter;
+                    else
+                        break;
+                }               
+            }            
+        }
         }
     return criteriaList;
     }
+
+private boolean validateSyntax(String query) throws Exception{
+    boolean valid = false;
+    int startCounter =0;    
+    int endCounter =0;    
+    for(int i=0; i<query.length(); i++){    
+        if(query.charAt(i)=='['){
+            startCounter++;
+        }
+        else if(query.charAt(i)==']'){
+            endCounter++;
+        }
+    }    
+    if(startCounter == endCounter){
+        valid = true;
+    }
+     return valid;
+}
+
 
 /**
  * Gets all the fields for a given class
