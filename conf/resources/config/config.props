@@ -10,11 +10,11 @@ ITERATOR_IDLE_TIME=5
 
 MAX_RESULT_SIZE=1000
 
-JAR_FILE_LOCATION=C:\\temp\\LexBIG\\lib
+LG_BASE_PATH=C:\jboss-4.0.2\server\default\data\lb
 
-REGISTRY_FILE=C:\\temp\\LexBIG\\registry.xml
+REGISTRY_FILE=./lb/registry.xml
 
-INDEX_LOCATION=C:\\temp\\LexBIG\\lbIndex
+INDEX_LOCATION=./lb/lbIndex
 
 SINGLE_DB_MODE=false
 
@@ -30,7 +30,7 @@ DB_USER=root
 
 DB_PASSWORD=
 
-LOG_FILE_LOCATION=C:\\temp\\LexBIG\\logs
+LOG_FILE_LOCATION=./lb/logs
 
 DEBUG_ENABLED=false
 
