@@ -19,7 +19,6 @@ conf/beanevsgeneration.xml -text
 conf/beanevswsgeneration.xml -text
 conf/core-deploy.properties -text
 conf/daogeneration.xml -text
-conf/evsBeans.properties -text
 conf/evsFormat.xsl -text
 conf/evsPackageUtil.xml -text
 conf/hibernate.properties -text
