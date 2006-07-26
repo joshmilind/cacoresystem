@@ -12,9 +12,9 @@ MAX_RESULT_SIZE=1000
 
 LG_BASE_PATH=C:\jboss-4.0.2\server\default\data\lb
 
-REGISTRY_FILE=./lb/registry.xml
+REGISTRY_FILE=lb/registry.xml
 
-INDEX_LOCATION=./lb/lbIndex
+INDEX_LOCATION=lb/lbIndex
 
 SINGLE_DB_MODE=false
 
@@ -30,7 +30,7 @@ DB_USER=root
 
 DB_PASSWORD=
 
-LOG_FILE_LOCATION=./lb/logs
+LOG_FILE_LOCATION=lb/logs
 
 DEBUG_ENABLED=false
 
