@@ -114,18 +114,7 @@ public class EVSLexBigImpl implements DAO
 					{
 						if(fieldName.equalsIgnoreCase("descLogicValues"))
 						{
-                            try{
-                            	String lbDir = null;
-                            	Properties prop = System.getProperties();
-                            	for(Iterator t = prop.keySet().iterator(); t.hasNext();){
-                            		String key = (String)t.next();
-                            		if(key.equalsIgnoreCase("jboss.server.data.dir")){
-                            			lbDir = (String)prop.get(key);                            			
-                            		}
-                            		//log.info(key +": "+ prop.get(key));
-                            	}                            	
-                            	System.setProperty("LG_BASE_PATH", lbDir);
-                            	//log.info("Location of LexBIG: " + System.getProperty("LG_BASE_PATH"));
+                            try{                            
                                 adapter = new LexAdapter();                                                                
                             }catch(Exception ex){
                                 throw new DAOException("Unable to connect to LexBIG - "+ ex.getMessage());
