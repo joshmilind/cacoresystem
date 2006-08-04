@@ -75,7 +75,7 @@ lib/lexrpcserver.jar -text
 models/caCORE3-0-EVS.eap -text
 models/caCORE3-1-EVS.eap -text
 models/caCORE3-2-EVS.eap -text
-models/caCORE3-2.eap -text
+models/caCORE3-2.eap -text svneol=unset#application/octet-stream
 models/xmi/caCORE3-2.xmi -text
 models/xmi/evs3-1.xmi -text
 models/xmi/evs3-2.xmi -text svneol=unset#application/octet-stream
