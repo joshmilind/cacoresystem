@@ -107,6 +107,7 @@ src/gov/nih/nci/system/dao/DAO.java -text
 src/gov/nih/nci/system/dao/DAOFactory.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSImpl.java -text
+src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigImpl.java -text
 src/gov/nih/nci/system/dao/impl/orm/ORMDAOImpl.java -text
 src/gov/nih/nci/system/delegator/BaseDelegate.java -text
