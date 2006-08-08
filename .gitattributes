@@ -106,6 +106,7 @@ src/gov/nih/nci/system/conf/DAOConfig.xml -text
 src/gov/nih/nci/system/dao/DAO.java -text
 src/gov/nih/nci/system/dao/DAOFactory.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDAOImpl.java -text
+src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigImpl.java -text
