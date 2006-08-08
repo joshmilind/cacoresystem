@@ -76,7 +76,9 @@ MAX_RESULT_SIZE=1000
 # command to set the 'System Property' to the folder 'C:/lb':
 # -DLG_BASE_PATH="c:\lb"
 #LINUX CONFIG
-LG_BASE_PATH=/usr/local/jboss-4.0.2/server/ncicb-core/data/lb
+#LG_BASE_PATH=/usr/local/jboss-4.0.2/server/ncicb-core/data/lb
+LG_BASE_PATH=/usr/local/jboss404/server/ncicb-core/data/lb
+
 #WINDOWS CONFIG
 #LG_BASE_PATH=C:/jboss-4.0.2/server/default/data/lb
 
@@ -127,6 +129,7 @@ SINGLE_DB_MODE=false
 DB_URL=jdbc:mysql://localhost:3625/
 #WINDOWS CONFIG
 #DB_URL=jdbc:mysql://localhost/
+
 #DB_URL=jdbc:postgresql://bmidev/
 #DB_URL=jdbc:hsqldb:file:C:/temp/
 #DB_URL=jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=C:/temp/
