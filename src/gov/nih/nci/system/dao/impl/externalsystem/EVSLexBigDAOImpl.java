@@ -464,7 +464,15 @@ public class EVSLexBigDAOImpl implements DAO
 	        	log.warn("searchTerm cannot be null");
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
-			Concept[] concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
+	        Concept[] concepts = null;
+	        if(matchOption == 0){
+	        	concepts = adapter.searchConcepts(searchTerm, limit);
+	        }
+	        else{
+	        	concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
+	        }
+			
+	        
             if(vocabulary == null){
                 populateVocabulary(vocabularyName);
             }
