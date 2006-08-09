@@ -60,9 +60,9 @@ import gov.nih.nci.evs.security.*;
  * Results are returned as a Response object.
  */
 
-public class EVSDTSImpl implements DAO
+public class EVSDTSDAOImpl implements DAO
 {
-	private static Logger log = Logger.getLogger(EVSDTSImpl.class.getName());
+	private static Logger log = Logger.getLogger(EVSDTSDAOImpl.class.getName());
 	private DTSRPCClient dtsrpc;
 	private Metaphrase  metaphrase;
 	private String server;
@@ -140,8 +140,7 @@ public class EVSDTSImpl implements DAO
 								}
 							else{
 								try{
-								response  = (Response)method.invoke(this, new Object[]{mapValues});
-                                System.out.println("returning response..." + response.getResponse());
+								response  = (Response)method.invoke(this, new Object[]{mapValues});                                
 								}
 								catch(Exception ex){
 									String msg = null;
@@ -179,8 +178,7 @@ public class EVSDTSImpl implements DAO
 			//e.printStackTrace();
 			//log.error("Exception : query - "+  e.getMessage());
 			throw new DAOException (getException( e.getMessage()));
-		}
-        System.out.println("query returning results...");
+		}      
 		return response;
 	}
 
@@ -271,8 +269,7 @@ public class EVSDTSImpl implements DAO
                 }else{
                     String accessToken = securityToken.getAccessToken();
                     msso.validator.MSSOUserValidatorClient validator = new msso.validator.MSSOUserValidatorClient();
-                    boolean valid = validator.validateID(accessToken).equalsIgnoreCase("true");
-                    System.out.println("Authentication : "+valid );
+                    boolean valid = validator.validateID(accessToken).equalsIgnoreCase("true");                    
                     if(!valid){
                         throw new DAOException("Invalid access code: "+ accessToken);
                     }
@@ -280,8 +277,7 @@ public class EVSDTSImpl implements DAO
             }
         }
 
-            boolean found = dtsrpc.setVocabulary(vocabularyName);
-            System.out.println("setVocabulary: "+ vocabularyName);
+            boolean found = dtsrpc.setVocabulary(vocabularyName);            
             if(!found){
                 throw new DAOException("DTSRPC Exception - unable to connect to vocabulary "+ vocabularyName);
             }
@@ -475,9 +471,7 @@ public class EVSDTSImpl implements DAO
 		    	log.error(e.getMessage());
 			throw new DAOException(getException(e.getMessage()));
 		}
-
-System.out.println("Returning: "+ list.size());
-				return new Response(list);
+		return new Response(list);
 	}
 
 	/**
