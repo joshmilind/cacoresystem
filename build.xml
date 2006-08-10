@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="caCOREAPI" default="help" basedir="c:/dev/cacoresdk">
+<project name="caCOREAPI" default="help" basedir="../cacoresdk">
 	<description>Build script for caCORE APIs</description>
 
 	<!--  SET basedir PROPERTY ABOVE TO HOME DIRECTORY OF SDK -->
@@ -17,4 +17,15 @@
 		<antcall target="caCORESDK.build-system"/>
 	</target>
 	
+			
+			<target name="help" description="Default target that lists commonly used targets within this build script">
+					<echo>===============================</echo>
+					<echo>caCORE</echo>
+					<echo>===============================</echo>
+					<echo> </echo>
+					<echo>To run the entire caCORE code generation process, use:</echo>
+					<echo> </echo>
+					<echo>    ant build-system</echo>
+					<echo> </echo>
+				</target>
 </project>
