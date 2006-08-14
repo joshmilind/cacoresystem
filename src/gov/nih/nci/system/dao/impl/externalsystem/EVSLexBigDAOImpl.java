@@ -465,13 +465,25 @@ public class EVSLexBigDAOImpl implements DAO
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
 	        Concept[] concepts = null;
-	        if(matchOption == 0){
-	        	concepts = adapter.searchConcepts(searchTerm, limit);
+	        if(searchTerm.indexOf("*")>0){
+	        	if(searchTerm.startsWith("*")){
+	        		
+	        	}
 	        }
-	        else{
+	        try{
 	        	concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
+	        }catch(Exception ex){
+	        	if(matchOption==0){
+	        		concepts = adapter.searchConcepts(searchTerm, limit);
+		        }
+	        	else{
+	        		throw new Exception("Exception in method call searchDescLogicConcept "+ex.getMessage());
+	        	}
 	        }
-			
+	        
+	        
+	       
+	       	
 	        
             if(vocabulary == null){
                 populateVocabulary(vocabularyName);
