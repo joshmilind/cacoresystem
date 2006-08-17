@@ -12,9 +12,9 @@
   </domainObjects>
   <domainObjects name="gov.nih.nci.evs.query.EVSQueryImpl">
       <DataSource>EVS</DataSource>
-      <dtsrpcServer>ncidts-stage.nci.nih.gov</dtsrpcServer>
+      <dtsrpcServer>ncidts.nci.nih.gov</dtsrpcServer>
       <port>6550</port>
-      <metaphraseServer>ncimeta-api-stage.nci.nih.gov</metaphraseServer>
+      <metaphraseServer>ncimeta-api.nci.nih.gov</metaphraseServer>
       <database>NCI</database>
       <username>Guest</username>
       <password>NCI-EVS</password>
