@@ -25,7 +25,7 @@
 		<copy todir="${dir.output.project.framework.src}">
 			<fileset dir="${dir.output.project.src}"/>
 		</copy>
-		<javac destdir="${dir.output.project.framework.build}">
+		<javac destdir="${dir.output.project.framework.build}" debug="${DEBUG_FLAG}">
 			<src path="${dir.output.project.framework.src}"/>
 			<!--src path="${dir.output.project.src}"/-->
 			<classpath refid="classpath"/>
@@ -35,7 +35,7 @@
 	<target name="-compile-templates.custom" if="compile-templates.custom.use">
 		<jetc template="${dir.output.project.templates}/BeanEVSImpl.javajet" destdir="${dir.output.project.src}"/>
 		<jetc template="${dir.output.project.templates}/BeanEVSWS.javajet" destdir="${dir.output.project.src}"/>
-		<javac srcdir="${dir.output.project.src}" destdir="${dir.output.project.build}">
+		<javac srcdir="${dir.output.project.src}" destdir="${dir.output.project.build}" debug="${DEBUG_FLAG}">
 			<classpath refid="classpath"/>
 		</javac>
 	</target>
