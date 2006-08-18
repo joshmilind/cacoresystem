@@ -4,21 +4,21 @@
 
 	<!--  SET basedir PROPERTY ABOVE TO HOME DIRECTORY OF SDK -->
 	<property name="cacore_home" value="../cacoresystem"/>
-	
-	<property name="file.build.custom" value="${cacore_home}/build-custom-cacore.xml"/>
+    <property name="file.build.custom" value="${cacore_home}/build-custom-cacore.xml"/>
 	<property name="file.properties.custom" value="${cacore_home}/build-custom-cacore.properties"/>
 	<property name="file.conf" value="${cacore_home}/conf/core-deploy.properties"/>
-	<property file="${file.conf}"/>
+    <property file="${file.conf}"/>
 
-	<import file="${basedir}/build.xml"/>
+    <!-- The DEBUG_FLAG property has value on or off. Set off to hide any debugging information -->
+    <property name="DEBUG_FLAG" value="on"/>
+    <import file="${basedir}/build.xml"/>
 
 	<target name="build-system">
 		<SDKecho message="BUILDING caCORE"/>
-		<antcall target="caCORESDK.build-system"/>
+        <antcall target="caCORESDK.build-system"/>
 	</target>
-	
-			
-			<target name="help" description="Default target that lists commonly used targets within this build script">
+
+            <target name="help" description="Default target that lists commonly used targets within this build script">
 					<echo>===============================</echo>
 					<echo>caCORE</echo>
 					<echo>===============================</echo>
