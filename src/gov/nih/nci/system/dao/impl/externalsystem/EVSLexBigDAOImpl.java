@@ -465,14 +465,11 @@ public class EVSLexBigDAOImpl implements DAO
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
 	        Concept[] concepts = null;
-	        if(searchTerm.indexOf("*")>0){
-	        	if(searchTerm.startsWith("*")){
-	        		
-	        	}
-	        }
+	    
 	        try{
 	        	concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
 	        }catch(Exception ex){
+	        	System.out.println("Exception in searchOptions: "+ ex.getMessage());
 	        	if(matchOption==0){
 	        		concepts = adapter.searchConcepts(searchTerm, limit);
 		        }
@@ -3647,6 +3644,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	String vocabularyName = null;
    	String conceptName = null;
    	boolean inputFlag = false;
+   	int asdIndex = 1;
 
    	List typeList = new ArrayList();
    	try{
@@ -3661,28 +3659,28 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
  				conceptName = (String)map.get(key);
    			else if(name.equalsIgnoreCase("inputFlag"))
 				inputFlag = ((Boolean)map.get(key)).booleanValue();
+   			else if(name.equalsIgnoreCase("ASDIndex"))
+				asdIndex = ((Integer)map.get(key)).intValue();
 
    		}
    		setVocabulary(vocabularyName);
 
-
    		Vector conceptNames = new Vector();
 
+   		Concept[] superConcepts =  null;
    		if(!inputFlag){
-   		   	if(validateConceptName(conceptName)){
-   		   	    conceptNames = adapter.getSuperConcepts(conceptName,false,false);
+   		   	if(validateConceptName(conceptName)){   		   	   
+   		   		superConcepts = adapter.getDirectSups(conceptName, false, asdIndex);
    		   	    }
    		   	}
    		else{
-   		    if(validateDLConceptCode(conceptName)){
-		   	    conceptNames = adapter.getSuperConcepts(conceptName,true,false);
+   		    if(validateDLConceptCode(conceptName)){		   	    
+   		    	superConcepts = adapter.getDirectSups(conceptName, false, asdIndex);
 		   	    }
-		   	}
-   		//Concept[] superConcepts = adapter.getConcepts(conceptNames);
+		   	}	
 
-
-   	   		for(int i=0 ;i<conceptNames.size(); i++)   	   		{
-   	   		    DescLogicConcept dlc = buildDescLogicConcept(adapter.getConcept((String)conceptNames.get(i),false,1));
+   	   		for(int i=0 ;i<superConcepts.length; i++)   	   		{
+   	   		    DescLogicConcept dlc = buildDescLogicConcept(superConcepts[i]);
    	   			typeList.add(dlc);
    	   		}
 
@@ -3708,6 +3706,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    	String vocabularyName = null;
    	String conceptName = null;
    	boolean inputFlag = false;
+   	int asdIndex = 1;
 
    	List typeList = new ArrayList();
    	try{
@@ -3722,7 +3721,9 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
  				conceptName = (String)map.get(key);
    			else if(name.equalsIgnoreCase("inputFlag"))
 				inputFlag = ((Boolean)map.get(key)).booleanValue();
-
+   			else if(name.equalsIgnoreCase("ASDIndex"))
+				asdIndex = ((Integer)map.get(key)).intValue();  			
+   		 
 
    		}
    		setVocabulary(vocabularyName);
@@ -3731,11 +3732,11 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
    		   if(!inputFlag){
    		   		validateConceptName(conceptName);
-   		   		concepts = adapter.getDirectSubs(conceptName,false);
+   		   		concepts = adapter.getDirectSubs(conceptName,false, asdIndex);
    		   	}
    		   	else{
 				validateDLConceptCode(conceptName);
-				concepts = adapter.getDirectSubs(conceptName,true);
+				concepts = adapter.getDirectSubs(conceptName,true, asdIndex);
 			}
 
 			for(int i=0; i<concepts.length; i++){
