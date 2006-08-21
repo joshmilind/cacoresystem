@@ -603,6 +603,17 @@ public interface EVSQuery extends Serializable{
 	 */
 	public void getParentConcepts(String vocabularyName, String conceptName, boolean inputFlag);
 
+	
+	 /**
+	 * Gets a parent DescLogicConcept for a given concept name
+	 * @param vocabularyName - Specifies the namespace
+	 * @param conceptName - Specifies the concept name
+	 * @param inputFlag		 - If the input parameter is a concpeName inputFlag should be false <br>
+	 * 						   If the input parameter is a conceptCode this value should be true. <br>
+	 * @param ASDIndex	- Sets the AttributeSetDescriptor value
+	 */
+	public void getParentConcepts(String vocabularyName, String conceptName, boolean inputFlag, int ASDIndex);
+
 	 /**
 	 * Gets a child DescLogicConcept for a given concept name
 	 * @param vocabularyName - Specifies the namespace
@@ -611,6 +622,16 @@ public interface EVSQuery extends Serializable{
 	 * 						   If the input parameter is a conceptCode this value should be true. <br>
 	 */
 	public void getChildConcepts(String vocabularyName, String conceptName, boolean inputFlag);
+
+	 /**
+	 * Gets a child DescLogicConcept for a given concept name
+	 * @param vocabularyName - Specifies the namespace
+	 * @param conceptName - Specifies the concept name
+	 * @param inputFlag		 - If the input parameter is a concpeName inputFlag should be false <br>
+	 * 						   If the input parameter is a conceptCode this value should be true. <br>
+	 * @param ASDIndex	- Sets the AttributeSetDescriptor value
+	 */
+	public void getChildConcepts(String vocabularyName, String conceptName, boolean inputFlag, int ASDIndex);
 
 	 /**
 	 * Returns true if the specified concept has a parent concept

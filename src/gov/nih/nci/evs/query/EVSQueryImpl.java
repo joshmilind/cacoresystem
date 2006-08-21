@@ -790,6 +790,37 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 		}
 	
 	/**
+	 * Retrievs all the parent DescLogicConcepts for a given conceptName
+	 * @param vocabularyName - Specifies the vocabulary name 
+	 * @param conceptName 	 - Specifies the conceptName
+	 * @param inputFlag		 - If the input parameter is a concpeName inputFlag should be false 
+	 * 						   If the input parameter is a conceptCode this value should be true.
+	 * @param ASDIndex	- Sets the AttributeSetDescriptor value
+	 */
+	public void getParentConcepts(String vocabularyName, String conceptName, boolean inputFlag, int ASDIndex){		
+		descLogicValues.put("getParentConcepts$vocabularyName",vocabularyName);
+		descLogicValues.put("getParentConcepts$conceptName",conceptName);
+		descLogicValues.put("getParentConcepts$inputFlag", new Boolean(inputFlag));
+		descLogicValues.put("getParentConcepts$ASDIndex", new Integer(ASDIndex));
+		}
+	
+	/**
+	 * Retrievs all the child DescLogicConcepts for a given conceptName
+	 * @param vocabularyName - Specifies the vocabulary name 
+	 * @param conceptName 	 - Specifies the conceptName
+	 * @param inputFlag		 - If the input parameter is a concpeName inputFlag should be false 
+	 * 						   If the input parameter is a conceptCode this value should be true.
+	 * @param ASDIndex	- Sets the AttributeSetDescriptor value
+	 */
+	
+	public void getChildConcepts(String vocabularyName, String conceptName, boolean inputFlag, int ASDIndex){
+		descLogicValues.put("getChildConcepts$vocabularyName",vocabularyName);
+		descLogicValues.put("getChildConcepts$conceptName",conceptName);
+		descLogicValues.put("getChildConcepts$inputFlag", new Boolean(inputFlag));
+		descLogicValues.put("getChildConcepts$ASDIndex", new Integer(ASDIndex));
+		}
+	
+	/**
 	 * Retrievs all the child DescLogicConcepts for a given conceptName
 	 * @param vocabularyName - Specifies the vocabulary name 
 	 * @param conceptName 	 - Specifies the conceptName
