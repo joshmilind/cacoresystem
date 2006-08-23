@@ -4110,5 +4110,54 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
      return history;
    }
+   
+   private Response getHistoryStartDate(HashMap map){
+	   String vocabularyName = null;
+	   	List dateList = new ArrayList();
+	   	try{
+	   		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+	   		{
+	   			String key = (String)iter.next();
+	   			String name = key.substring(key.indexOf("$")+1, key.length());
+
+	   			if(name.equalsIgnoreCase("vocabularyName"))
+	   				vocabularyName = (String)map.get(key);
+
+	   		}
+
+	   		setVocabulary(vocabularyName);
+	   		Date startDate = adapter.getHistoryStartDate();
+	   		dateList.add(startDate);
+	   		}catch(Exception e){
+	   			log.error(e.getMessage());
+	   			throw new DAOException(getException( e.getMessage()));
+			}
+
+		return new Response(dateList); 
+   }
+   
+   private Response getHistoryEndDate(HashMap map){
+	   String vocabularyName = null;
+	   	List dateList = new ArrayList();
+	   	try{
+	   		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+	   		{
+	   			String key = (String)iter.next();
+	   			String name = key.substring(key.indexOf("$")+1, key.length());
+
+	   			if(name.equalsIgnoreCase("vocabularyName"))
+	   				vocabularyName = (String)map.get(key);
+
+	   		}
+
+	   		setVocabulary(vocabularyName);
+	   		Date endDate = adapter.getHistoryEnd();
+	   		dateList.add(endDate);
+	   		}catch(Exception e){
+	   			log.error(e.getMessage());
+	   			throw new DAOException(getException( e.getMessage()));
+			}
+		return new Response(dateList); 
+   }
 
  }
