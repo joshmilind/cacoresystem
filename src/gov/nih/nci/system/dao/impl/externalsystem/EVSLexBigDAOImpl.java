@@ -4111,7 +4111,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
      return history;
    }
    
-   private Response getHistoryStartDate(HashMap map){
+   private Response getHistoryStartDate(HashMap map) throws Exception{
 	   String vocabularyName = null;
 	   	List dateList = new ArrayList();
 	   	try{
@@ -4136,7 +4136,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		return new Response(dateList); 
    }
    
-   private Response getHistoryEndDate(HashMap map){
+   private Response getHistoryEndDate(HashMap map)throws Exception{
 	   String vocabularyName = null;
 	   	List dateList = new ArrayList();
 	   	try{
