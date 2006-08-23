@@ -699,4 +699,7 @@ public interface EVSQuery extends Serializable{
      * @param finalDate
      */
     public void getHistoryRecords(String vocabularyName, String initialDate, String finalDate);
+    public void getHistoryStartDate(String vocabularyName);
+    public void getHistoryEndDate(String vocabularyName);
+    
 }

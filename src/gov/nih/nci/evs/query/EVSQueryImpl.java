@@ -907,4 +907,11 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
         descLogicValues.put("getHistoryRecords$initialDate", initialDate);
         descLogicValues.put("getHistoryRecords$finalDate", finalDate);
     }
+    public void getHistoryStartDate(String vocabularyName){
+        descLogicValues.put("getHistoryStartDate$vocabularyName", vocabularyName);       
+    }
+    public void getHistoryEndDate(String vocabularyName){
+        descLogicValues.put("getHistoryEndDate$vocabularyName", vocabularyName);       
+    }
+    
 }
