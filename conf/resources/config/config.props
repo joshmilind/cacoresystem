@@ -77,10 +77,10 @@ MAX_RESULT_SIZE=1000
 # -DLG_BASE_PATH="c:\lb"
 #LINUX CONFIG
 #LG_BASE_PATH=/usr/local/jboss-4.0.2/server/ncicb-core/data/lb
-LG_BASE_PATH=/usr/local/jboss404/server/ncicb-core/data/lb
+#LG_BASE_PATH=/usr/local/jboss404/server/ncicb-core/data/lb
 
 #WINDOWS CONFIG
-#LG_BASE_PATH=C:/jboss-4.0.2/server/default/data/lb
+LG_BASE_PATH=C:/jboss-4.0.2/server/default/data/lb
 
 # The location of the folder that contains the jar libraries.  This folder
 # and its subfolders will be scanned for SQL Drivers and extensions. 
@@ -126,9 +126,9 @@ SINGLE_DB_MODE=false
 #
 # Examples for 'SINGLE_DB_MODE=false'
 #LINUX 
-DB_URL=jdbc:mysql://localhost:3625/
+#DB_URL=jdbc:mysql://localhost:3625/
 #WINDOWS CONFIG
-#DB_URL=jdbc:mysql://localhost/
+DB_URL=jdbc:mysql://localhost/
 
 #DB_URL=jdbc:postgresql://bmidev/
 #DB_URL=jdbc:hsqldb:file:C:/temp/
@@ -175,10 +175,10 @@ DB_DRIVER=org.gjt.mm.mysql.Driver
 # If SINGLE_DB_MODE is set to true, the specified account MUST HAVE permission
 # to create and remove tables, indexes, and foreign keys in the database
 # environment.
-#DB_USER=root
-#DB_PASSWORD=
-DB_USER=lexgrid
-DB_PASSWORD=lex#adm167
+DB_USER=root
+DB_PASSWORD=
+#DB_USER=lexgrid
+#DB_PASSWORD=lex#adm167
 
 ############# Logging Configuration
 
