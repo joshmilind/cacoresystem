@@ -296,6 +296,17 @@ public interface EVSQuery extends Serializable{
 	 */
 	public void getConceptEditAction(String vocabularyName, String code);
 
+    /**
+     * Gets all EditAction of the specified concept. A EditAction contains a edit date
+     * and an editing action. The method searches for all editing actions and the corresponding
+     * editing dates on the specified concept.
+     *
+     * @param vocabularyName
+     * @param code
+     * @param editActionDate
+     */
+    public void getConceptEditAction(String vocabularyName, String code, Date editActionDate);
+
 	/**
 	 * Gets EditActionDate that match with the given concept code and edit action.
 	 *

@@ -414,6 +414,16 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 		descLogicValues.put("getConceptEditAction$conceptCode", code);		
 	}
 	
+    /**
+     * @see gov.nih.nci.evs.query.EVSQuery#getConceptEditAction(java.lang.String, java.lang.String)
+     */
+    public void getConceptEditAction(String vocabularyName, String code, Date editActionDate) 
+    {
+        descLogicValues.put("getConceptEditAction$vocabularyName", vocabularyName);
+        descLogicValues.put("getConceptEditAction$conceptCode", code);
+        descLogicValues.put("getConceptEditAction$editActionDate", editActionDate);
+    }
+    
 	
 	/**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getConceptEditActionDates(java.lang.String, java.lang.String, java.lang.String)
@@ -482,8 +492,9 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	 */
 	public void searchSourceByCode(String code, String sourceAbbr) 
 	{
-		metaThesaurusValues.put("searchSourceByCode$code", code);
-		metaThesaurusValues.put("searchSourceByCode$sourceAbbr", sourceAbbr);
+		//metaThesaurusValues.put("searchSourceByCode$code", code);
+		//metaThesaurusValues.put("searchSourceByCode$sourceAbbr", sourceAbbr);
+        searchMetaThesaurus(code, 100, sourceAbbr, true, false, false);
 	}
 
 	/**
