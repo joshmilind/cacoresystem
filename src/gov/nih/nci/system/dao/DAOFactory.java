@@ -37,26 +37,8 @@ import java.util.*;
  * @author caBIO Team
  * @version 1.0
  */
-public abstract class DAOFactory {
+public class DAOFactory {
 
-	/**
-	 * Abstract method for querying
-	 * 
-	 * @param request -
-	 *            Request object passed from Delegator
-	 * @return
-	 * @throws DAOException
-	 */
-	public abstract Response query(Request request) throws DAOException;
-
-	/**
-	 * Return a specific DAOFactory object based on the datasource
-	 * 
-	 * @param whichFactory
-	 * @return a specific DAOFactory object
-	 * @throws DAOException
-	 */
-	
     public static DAO getDAOImpl(String dataSource)throws DAOException{       
         DAO daoImpl = null;
         String daoImplClassName = null;
