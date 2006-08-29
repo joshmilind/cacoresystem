@@ -1,5 +1,7 @@
 package gov.nih.nci.system.dao.impl.externalsystem;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -219,7 +221,7 @@ public class EVSDTSDAOImpl implements DAO
  			}
 
  			setVocabulary(vocabularyName);
- 			descendants = dtsrpc.getDescendantCodes(conceptCode, flag, StringHelper.stringToDate(iBaseLineDate), StringHelper.stringToDate(fBaseLineDate));
+ 			descendants = dtsrpc.getDescendantCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate));
  			if(descendants == null){
  				//log.info("No descendants found");
  				}
@@ -995,7 +997,7 @@ private Response getAncestors(HashMap map) throws Exception
 
 		setVocabulary(vocabularyName);
 
-		ancestors = dtsrpc.getAncestorCodes(conceptCode, flag, StringHelper.stringToDate(iBaseLineDate), StringHelper.stringToDate(fBaseLineDate));
+		ancestors = dtsrpc.getAncestorCodes(conceptCode, flag, stringToDate(iBaseLineDate),stringToDate(fBaseLineDate));
 
 		if(ancestors != null){
 			for(int i=0; i<ancestors.size(); i++)
@@ -1482,6 +1484,7 @@ private Response getConceptEditAction(HashMap map) throws Exception
 	String vocabularyName = null;
 	String conceptCode = null;
 	Vector editActions = new Vector();
+    Date editActionDate = null;
 	ArrayList list = new ArrayList();
 	try
 	{
@@ -1494,11 +1497,18 @@ private Response getConceptEditAction(HashMap map) throws Exception
 				vocabularyName = (String)map.get(key);
 			else if(name.equalsIgnoreCase("conceptCode"))
 				conceptCode = (String)map.get(key);
+            else if(name.equalsIgnoreCase("editActionDate"))
+                editActionDate = (Date)map.get(key);
 		}
 
 		setVocabulary(vocabularyName);
-
-		editActions = dtsrpc.getConceptEditAction(conceptCode);
+        
+        if(editActionDate == null){
+            editActions = dtsrpc.getConceptEditAction(conceptCode);
+        }else{
+            editActions = dtsrpc.getConceptEditAction(conceptCode, editActionDate);            
+        }        
+		
 		if(editActions != null){
 			for(int i=0; i<editActions.size(); i++)
 			{
@@ -4076,5 +4086,79 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
      return history;
    }
+   
+   private Response getHistoryStartDate(HashMap map) throws Exception{
+       String vocabularyName = null;
+        List dateList = new ArrayList();
+        try{
+            for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+            {
+                String key = (String)iter.next();
+                String name = key.substring(key.indexOf("$")+1, key.length());
 
+                if(name.equalsIgnoreCase("vocabularyName"))
+                    vocabularyName = (String)map.get(key);
+
+            }
+
+            setVocabulary(vocabularyName);
+            Date startDate = dtsrpc.getHistoryStartDate();
+            dateList.add(startDate);
+            }catch(Exception e){
+                log.error(e.getMessage());
+                throw new DAOException(getException( e.getMessage()));
+            }
+
+        return new Response(dateList); 
+   }
+   
+   private Response getHistoryEndDate(HashMap map)throws Exception{
+       String vocabularyName = null;
+        List dateList = new ArrayList();
+        try{
+            for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+            {
+                String key = (String)iter.next();
+                String name = key.substring(key.indexOf("$")+1, key.length());
+
+                if(name.equalsIgnoreCase("vocabularyName"))
+                    vocabularyName = (String)map.get(key);
+            }
+
+            setVocabulary(vocabularyName);
+            Date endDate = dtsrpc.getHistoryEndDate();
+            dateList.add(endDate);
+            }catch(Exception e){
+                log.error(e.getMessage());
+                throw new DAOException(getException( e.getMessage()));
+            }
+        return new Response(dateList); 
+   }
+   private Response getHistoryDates(HashMap map) throws Exception {
+       List dateList = new ArrayList();
+       Vector dates = dtsrpc.getHistoryDates();
+       for(int i=0; i< dates.size(); i++){
+           dateList.add(dates.get(i));
+       }
+       return new Response(dateList);
+   }
+   private Date stringToDate(String aString) throws Exception
+    {
+       Date theDate = null;
+        try
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");            
+            theDate = sdf.parse(aString);            
+        }
+        catch(Exception e)
+        {
+            log.error("Exception: " + e.getMessage());
+            throw new Exception(getException(e.getMessage()));
+        }
+        return theDate;
+
+    }
+  
+
+   
  }
