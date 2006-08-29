@@ -1512,6 +1512,7 @@ private Response getConceptEditAction(HashMap map) throws Exception
 		if(editActions != null){
 			for(int i=0; i<editActions.size(); i++)
 			{
+                System.out.println("Edit action class: "+editActions.get(i).getClass().getName());
 				list.add(editActions.get(i));
 			}
 		}
