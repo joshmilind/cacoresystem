@@ -997,7 +997,7 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
                      fieldElement.setText(strValue);
                  }
                }else{
-                 String strValue = "null";  
+                 String strValue = " - ";  
                  if(fields[f].get(result)!=null){
                      value = fields[f].get(result);             
                  }
