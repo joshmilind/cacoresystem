@@ -147,7 +147,7 @@ public class EVSWebService {
 		try {
 			if (queryType.equals("dtsrpc")) {
                 if(searchObject.getClass().getName().endsWith("History") && returnClassName.endsWith("History")){
-                    results = getHistoryRecords(searchObject);
+                    results = getHistoryRecord(searchObject);
                 }else  if(searchObject.getClass().getName().endsWith("Vocabulary") && returnClassName.endsWith("Vocabulary")){
                     Vocabulary vocabulary = (Vocabulary)searchObject;
                     if(vocabulary.getName() != null && vocabulary.getName().length()>0){
@@ -614,7 +614,10 @@ public class EVSWebService {
     private List getHistoryRecords(List concepts) throws Exception {
         List results = new ArrayList();
         for (int i = 0; i < concepts.size(); i++) {
-                results = getHistoryRecords(concepts.get(i));
+                List result = getHistoryRecord(concepts.get(i));
+                if(result != null && result.size()>0){
+                    results.add(result.get(0));
+                }
           }
         return results;
     }
@@ -625,8 +628,9 @@ public class EVSWebService {
      * @return
      * @throws Exception
      */
-  private List getHistoryRecords(Object criteria)throws Exception{
+  private List getHistoryRecord(Object criteria)throws Exception{
       EVSQuery evsQuery = new EVSQueryImpl();
+      List result = null;
       String conceptCode = null;
       if(criteria.getClass().getName().endsWith("DescLogicConcept")){
               DescLogicConcept dlc = (DescLogicConcept)criteria;
@@ -645,10 +649,10 @@ public class EVSWebService {
           }
       }
       if(conceptCode != null){
-          evsQuery.getHistoryRecords(defaultVocabulary, conceptCode);
+         evsQuery.getHistoryRecords(defaultVocabulary, conceptCode);         
+         result = query(evsQuery);        
       }
-
-      return query(evsQuery);
+      return result;
   }
 
   /**
