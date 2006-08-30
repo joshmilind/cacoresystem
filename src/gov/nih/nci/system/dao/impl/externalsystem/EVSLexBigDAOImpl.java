@@ -1765,11 +1765,9 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 	boolean score = false;
 
 	ArrayList list = new ArrayList();
-	List uList = new ArrayList();
-	Concept[] concepts = null;
+	List uList = new ArrayList();	
 	try
 	{
-
 		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
 		{
 			String key = (String)iter.next();
@@ -1811,18 +1809,34 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
         
 		if(cui)
 		{
-            concepts = adapter.searchConcepts(searchTerm, limit, 9, source, 1);            
+            //concepts = adapter.searchConcepts(searchTerm, limit, 9, source, 1);
+            Concept concept  = adapter.findConceptByCode(searchTerm, 1);
+            list.add(buildMetaThesaurusConcept(concept));
 		}
 		else
 		{
-            concepts = adapter.searchConcepts(searchTerm, limit, 0, source, 1);		    
+            Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, source, 1);	
+            for(int i=0; i<concepts.length; i++){
+                list.add(buildMetaThesaurusConcept(concepts[i]));
+             }
+           
 		}
         
-        boolean match = false;
-        
-        for(int i=0; i<concepts.length; i++){
-            list.add(buildMetaThesaurusConcept(concepts[i]));
-         }	          
+        /**
+        if(cui && checkSource && concepts[0]!=null ){
+            MetaThesaurusConcept mtc = buildMetaThesaurusConcept(concepts[0]);
+            ArrayList sourceList = mtc.getSourceCollection();
+            for(int i=0; i<sourceList.size(); i++){
+                if(((Source)sourceList.get(i)).getAbbreviation().equalsIgnoreCase(source)){
+                    list.add(mtc);
+                    break;
+                }
+            }
+        }
+        */
+            
+       
+        	          
     }
 	catch(Exception e)
 	{
@@ -1952,11 +1966,15 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
         ArrayList<Atom> atomCollection = new ArrayList();
         ArrayList<Source> sourceCollection = new ArrayList();
         ArrayList synonymCollection = new ArrayList();
+        
+        HashMap sourceMap = new HashMap();
+        
        
         Vector propertyCollection = metaConcept.getPropertyCollection();
         try{
             for(int p=0; p<propertyCollection.size(); p++){
-                Property property = (Property) propertyCollection.get(p);                
+                Property property = (Property) propertyCollection.get(p);         
+                //System.out.println("Property: "+ property.getName() +"\t"+ property.getValue());
                 if(property.getName().toUpperCase().equalsIgnoreCase("FULL_SYN")){
                     gov.nih.nci.evs.domain.Atom atom = new gov.nih.nci.evs.domain.Atom();
                     atom.setName(property.getValue());
@@ -1971,7 +1989,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                         }                    
                     }
                     atom.setSource(source);
-                    sourceCollection.add(source);        
+                    //sourceCollection.add(source);
+                    sourceMap.put(source.getAbbreviation(), source);
                     synonymCollection.add(property.getValue());  
                     atomCollection.add(atom);
                 }else if(property.getName().toUpperCase().equalsIgnoreCase("SEMANTIC_TYPE")){
@@ -1993,22 +2012,34 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                     }
                     definition.setSource(source);
                     definitionsCollection.add(definition);             
-                    sourceCollection.add(source);
+                    //sourceCollection.add(source);
+                    sourceMap.put(source.getAbbreviation(), source);
                 }else if(property.getName().toUpperCase().equalsIgnoreCase("SOURCE")){
                     Source source = new Source();  
                     source.setAbbreviation(property.getValue());
-                    sourceCollection.add(source);                
+                    //sourceCollection.add(source);
+                    sourceMap.put(source.getAbbreviation(), source);
                 }
             }
            
             
         }catch(Exception ex){
             throw new Exception(getException("\nException: buildMetaConcept: "+ ex.getMessage()));
+        }   
+        
+        for(Iterator i = sourceMap.keySet().iterator();i.hasNext();){
+            String key = (String)i.next();
+            Source src = (Source)sourceMap.get(key);
+            if(key.length()>0 && key!=null){
+                sourceCollection.add(src);
+            }
         }
+        
+        System.out.println("Map: "+ sourceMap.size() +"\t"+ sourceCollection.size());
         metaThesaurusConcept.setSemanticTypeCollection(semanticTypesCollection);        
 	    metaThesaurusConcept.setSynonymCollection((ArrayList)synonymCollection);
         metaThesaurusConcept.setDefinitionCollection(definitionsCollection);
-	    metaThesaurusConcept.setSourceCollection(sourceCollection);
+	    metaThesaurusConcept.setSourceCollection(sourceCollection);        
 	    metaThesaurusConcept.setAtomCollection(atomCollection);
 
 
