@@ -117,12 +117,16 @@ public class EVSLexBigDAOImpl implements DAO
                         }						
 						if(fieldName.equalsIgnoreCase("metaThesaurusValues"))
 						{
-							if(adapter.setVocabulary("NCI MetaThesaurus")){
-								setVocabulary("NCI MetaThesaurus");
-							}
-							else{
-								setVocabulary(defaultVocabularyName);
-							}                                                      
+                            try{
+                                if(adapter.setVocabulary("NCI MetaThesaurus")){
+                                    setVocabulary("NCI MetaThesaurus");
+                                    log.info("connecting to NCI MetaThesaurus");
+                                } 
+                            }catch(Exception ex){
+                                setVocabulary(defaultVocabularyName);
+                                log.info("connecting to NCI Thesaurus");
+                            }		
+							                                                      
 						}
 						Iterator iter = mapValues.keySet().iterator();
 						String key = (String)iter.next();
@@ -1962,7 +1966,6 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	MetaThesaurusConcept metaThesaurusConcept = new MetaThesaurusConcept();
 	try
 	{
-
 		metaThesaurusConcept.setName(metaConcept.getName());
 		metaThesaurusConcept.setCui(metaConcept.getCode());        
 
