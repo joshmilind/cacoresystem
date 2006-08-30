@@ -2031,7 +2031,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
         }catch(Exception ex){
             throw new Exception(getException("\nException: buildMetaConcept: "+ ex.getMessage()));
         }   
-        
+        /*
         for(Iterator i = sourceMap.keySet().iterator();i.hasNext();){
             String key = (String)i.next();
             Source src = (Source)sourceMap.get(key);
@@ -2039,8 +2039,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                 sourceCollection.add(src);
             }
         }
-        
-        System.out.println("Map: "+ sourceMap.size() +"\t"+ sourceCollection.size());
+        */
+        //System.out.println("Map: "+ sourceMap.size() +"\t"+ sourceCollection.size());
         metaThesaurusConcept.setSemanticTypeCollection(semanticTypesCollection);        
 	    metaThesaurusConcept.setSynonymCollection((ArrayList)synonymCollection);
         metaThesaurusConcept.setDefinitionCollection(definitionsCollection);
