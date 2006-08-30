@@ -117,7 +117,12 @@ public class EVSLexBigDAOImpl implements DAO
                         }						
 						if(fieldName.equalsIgnoreCase("metaThesaurusValues"))
 						{
-                            setVocabulary(defaultVocabularyName);                          
+							if(adapter.setVocabulary("NCI MetaThesaurus")){
+								setVocabulary("NCI MetaThesaurus");
+							}
+							else{
+								setVocabulary(defaultVocabularyName);
+							}                                                      
 						}
 						Iterator iter = mapValues.keySet().iterator();
 						String key = (String)iter.next();
