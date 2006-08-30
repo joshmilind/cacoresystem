@@ -1001,8 +1001,14 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
                  if(fields[f].get(result)!=null){
                      value = fields[f].get(result);             
                  }
-                 if(value != null){
-                     strValue = String.valueOf(value);
+                 if(value != null){ 
+                     if(fieldType.equalsIgnoreCase("java.util.Date")){
+                         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                         strValue = sdf.format((Date)value);
+                     }
+                     else{
+                         strValue = String.valueOf(value);
+                     }                     
                  }
                  fieldElement.setText(strValue);            
              }
