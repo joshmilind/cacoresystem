@@ -1,11 +1,14 @@
 package gov.nih.nci.system.dao.impl.externalsystem;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import javax.swing.tree.DefaultMutableTreeNode;
 //internal
+
 import gov.nih.nci.evs.domain.*;
+import gov.nih.nci.evs.domain.HistoryRecord;
 import gov.nih.nci.evs.query.EVSQueryImpl;
 import gov.nih.nci.evs.security.SecurityToken;
 
@@ -15,23 +18,16 @@ import gov.nih.nci.common.util.*;
 import gov.nih.nci.common.net.*;
 
 
-//dtsrpc jar
-//import gov.nih.nci.dtsrpc.client.*;
-//metaphrase jar
-import COM.Lexical.Metaphrase.Cooccurrence;
-import COM.Lexical.Metaphrase.Match;
-import COM.Lexical.Metaphrase.Metaphrase;
-import COM.Lexical.Metaphrase.Partition;
-import COM.Lexical.Metaphrase.RMIMetaphrase;
-import COM.Lexical.Metaphrase.Relationship;
-import COM.Lexical.Metaphrase.SearchSpec;
-import COM.Lexical.Metaphrase.Term;
 import msso.validator.MSSOUserValidator;
 
+import org.LexGrid.LexBIG.admin.ListSchemes;
 import org.apache.log4j.*;
 
 //Import LexBIG classes
 import gov.nih.nci.lexrpc.client.*;
+import gov.nih.nci.lexrpc.client.EditActionDate;
+import gov.nih.nci.lexrpc.client.Property;
+import gov.nih.nci.lexrpc.client.Qualifier;
 import gov.nih.nci.lexrpc.server.LexAdapter;
 import gov.nih.nci.system.dao.*;
 
@@ -69,15 +65,14 @@ import gov.nih.nci.system.dao.*;
 
 public class EVSLexBigDAOImpl implements DAO
 {
-	private static Logger log = Logger.getLogger(EVSLexBigDAOImpl.class.getName());
-	//private DTSRPCClient dtsrpc;
-    private LexAdapter adapter;
-	private Metaphrase  metaphrase;
+	private static Logger log = Logger.getLogger(EVSLexBigDAOImpl.class.getName());	
+    private LexAdapter adapter;	
 	private String server;
 	private String port;
 	private Exception pastEx = new Exception();
     private Vocabulary vocabulary = null;
     private HashMap tokenCollection = new HashMap();
+    private String defaultVocabularyName = "NCI_Thesaurus";
 
 
 
@@ -112,24 +107,17 @@ public class EVSLexBigDAOImpl implements DAO
 					HashMap mapValues = (HashMap)fields[i].get(criteria);
 					if((mapValues != null) && (mapValues.size() > 0))
 					{
-						if(fieldName.equalsIgnoreCase("descLogicValues"))
+                        try{
+                            adapter = new LexAdapter();
+                        }catch(Exception ex){
+                            throw new DAOException("Unable to connect to LexBIG - "+ ex.getMessage());
+                        }
+                        if(adapter == null){
+                            throw new DAOException("LexBIG Exception - unable to connect to server");
+                        }						
+						if(fieldName.equalsIgnoreCase("metaThesaurusValues"))
 						{
-                            try{
-                                adapter = new LexAdapter();
-                            }catch(Exception ex){
-                                throw new DAOException("Unable to connect to LexBIG - "+ ex.getMessage());
-                            }
-                            if(adapter == null){
-                                throw new DAOException("LexBIG Exception - unable to connect to server");
-                            }
-						}
-						else if(fieldName.equalsIgnoreCase("metaThesaurusValues"))
-						{
-							 String metaServer = (String)configs.get("metaphraseServer");
-							 String database = (String) configs.get("database");
-							 String username = (String)configs.get("username");
-							 String password = (String)configs.get("password");
-							 metaphrase = new RMIMetaphrase("//" + metaServer + "/RemoteMetaphrase",  database , username , password);
+                            setVocabulary(defaultVocabularyName);                          
 						}
 						Iterator iter = mapValues.keySet().iterator();
 						String key = (String)iter.next();
@@ -212,7 +200,7 @@ public class EVSLexBigDAOImpl implements DAO
  			}
 
  			setVocabulary(vocabularyName);
- 			descendants = adapter.getDescendantCodes(conceptCode, flag, StringHelper.stringToDate(iBaseLineDate), StringHelper.stringToDate(fBaseLineDate));
+ 			descendants = adapter.getDescendantCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate));
  			if(descendants == null){
  				//log.info("No descendants found");
  				}
@@ -243,7 +231,8 @@ public class EVSLexBigDAOImpl implements DAO
 	 * @throws Exception
 	 */
 	private void setVocabulary(String vocabularyName) throws Exception
-	{
+	{  
+        
         vocabulary = new Vocabulary();
         if(!StringHelper.hasValue(vocabularyName)){
         	log.error("vocabularyName cannot be null");
@@ -267,7 +256,7 @@ public class EVSLexBigDAOImpl implements DAO
                 found = adapter.setVocabularyName(vocabularyName);
             }catch(Exception ex){
                 ex.printStackTrace();
-                throw new DAOException("Vocabulary error: "+ ex.getMessage());
+                throw new DAOException("Vocabulary error: "+ ex.getMessage()+ vocabularyName);
             }
 
 
@@ -468,8 +457,7 @@ public class EVSLexBigDAOImpl implements DAO
 	    
 	        try{
 	        	concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
-	        }catch(Exception ex){
-	        	System.out.println("Exception in searchOptions: "+ ex.getMessage());
+	        }catch(Exception ex){	        	
 	        	if(matchOption==0){
 	        		concepts = adapter.searchConcepts(searchTerm, limit);
 		        }
@@ -1014,7 +1002,7 @@ private Response getAncestors(HashMap map) throws Exception
 
 		setVocabulary(vocabularyName);
 
-		ancestors = adapter.getAncestorCodes(conceptCode, flag, StringHelper.stringToDate(iBaseLineDate), StringHelper.stringToDate(fBaseLineDate));
+		ancestors = adapter.getAncestorCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate));
 
 		if(ancestors != null){
 			for(int i=0; i<ancestors.size(); i++)
@@ -1502,6 +1490,7 @@ private Response getConceptEditAction(HashMap map) throws Exception
 	String conceptCode = null;
 	Vector editActions = new Vector();
 	ArrayList list = new ArrayList();
+    Date editActionDate = null;
 	try
 	{
 		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
@@ -1513,15 +1502,35 @@ private Response getConceptEditAction(HashMap map) throws Exception
 				vocabularyName = (String)map.get(key);
 			else if(name.equalsIgnoreCase("conceptCode"))
 				conceptCode = (String)map.get(key);
+            else if(name.equalsIgnoreCase("editActionDate"))
+                editActionDate = (Date)map.get(key);
 		}
 
 		setVocabulary(vocabularyName);
 
-		editActions = adapter.getConceptEditAction(conceptCode);
+        if(editActionDate == null){
+            editActions = adapter.getConceptEditAction(conceptCode);
+        }
+        else{
+            //editActions = adapter.getConceptEditAction(conceptCode, editActionDate);
+            editActions = adapter.getConceptEditAction(conceptCode);
+        }
+		
 		if(editActions != null){
 			for(int i=0; i<editActions.size(); i++)
-			{
-				list.add(editActions.get(i));
+			{                
+                if(editActionDate != null){
+                    StringTokenizer st = new StringTokenizer((String)editActions.get(i),"|");
+                    String action = st.nextToken();
+                    Date date = stringToDate(st.nextToken());
+                    if(date.equals(editActionDate)){
+                        list.add(action);
+                    }
+                }
+                else{
+                    list.add(editActions.get(i));
+                }
+               
 			}
 		}
 
@@ -1750,14 +1759,14 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 
 	String searchTerm = null;
 	int limit = 10;
-	String source = null;
+	String source = "";
 	boolean cui = true;
 	boolean shortResult = false;
 	boolean score = false;
 
 	ArrayList list = new ArrayList();
 	List uList = new ArrayList();
-	COM.Lexical.Metaphrase.Concept metaConcept = null;
+	Concept[] concepts = null;
 	try
 	{
 
@@ -1771,13 +1780,12 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("limit"))
 				limit = ((Integer)map.get(key)).intValue();
 			else if(name.equalsIgnoreCase("source")) {
-			    if(map.get(key)==null){
-			        //throw new DAOException(getException("Invalid source"));
-			        source = "*";
+			    if(map.get(key)==null){			       
+			        source = "";
 			        }
 				source = (String)map.get(key);
 				if (source.toLowerCase().equals("all sources")) {
-					source = "*";
+					source = "";
 				}
 			}
 			else if(name.equalsIgnoreCase("cui"))
@@ -1787,114 +1795,42 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("score"))
 				score = ((Boolean)map.get(key)).booleanValue();
 		}
-
-
-		int index = 0;
 		boolean checkSource = false;
 
-		if(source!=null){
-			if(!(source.length() == 0 || source.equals("*"))){
-
-				if(!validateSource(source)){
+		if(!source.equals("*")){            
+			if(!(source.length() == 0 || source.indexOf("*") > 0)){				
+                if(!validateSource(source)){
 				throw new DAOException(getException("Invalid source"));
 				}
-
 				checkSource = true;
 			}
-
 		}
-
-
+        if(!checkSource){
+            source = "";
+        }
+        
 		if(cui)
 		{
-
-			metaConcept = metaphrase.getConcept(searchTerm);
-
-				COM.Lexical.Metaphrase.Source[] sources = metaConcept.sources();
-
-				if(!(checkSource)){
-					//log.info("Searching all sources");
-					MetaThesaurusConcept concept  = buildMetaThesaurusConcept(metaConcept);
-					list.add(concept);
-					}
-				else{
-
-					for(int i=0; i<sources.length; i++){
-						String sourceSAB = sources[i].SAB().toUpperCase();
-						if( sourceSAB.equalsIgnoreCase(source)){
-							MetaThesaurusConcept concept  = buildMetaThesaurusConcept(metaConcept);
-							list.add(concept);
-							break;
-							}
-						}
-
-				}
-					}
+            concepts = adapter.searchConcepts(searchTerm, limit, 9, source, 1);            
+		}
 		else
 		{
-
-			SearchSpec spec=new SearchSpec();
-			spec.setLimit(limit);
-
-			if(source!=null){
-				spec.setSource(metaphrase.source(source));
-				}
-
-			spec.setShortSearch(shortResult);
-			spec.setByScore(score);
-		    Enumeration e  = metaphrase.matches(searchTerm, spec);
-
-		    int counter = 0;
-		    while (e.hasMoreElements())
-		    {
-		    	metaConcept = ((Match)e.nextElement()).concept();
-
-		    	counter++;
-		    	if(!checkSource){
-		    		list.add(buildMetaThesaurusConcept(metaConcept));
-		    		//log.info("Searching all sources");
-		    		}
-		    	else{
-		    		COM.Lexical.Metaphrase.Source[] sources = metaConcept.sources();
-					for(int i=0; i<sources.length; i++){
-						String sourceSAB = sources[i].SAB().toUpperCase();
-						if( sourceSAB.equalsIgnoreCase(source)){
-							MetaThesaurusConcept concept  = buildMetaThesaurusConcept(metaConcept);
-							list.add(concept);
-							break;
-							}
-						}
-
-
-		    		}
-   			    }
-		    log.info(counter+ " concepts found");
+            concepts = adapter.searchConcepts(searchTerm, limit, 0, source, 1);		    
 		}
-
-		Hashtable hashTable = new Hashtable();
-
-	    for (int i = 0; i < list.size(); i++)
-	    {
-	      MetaThesaurusConcept mConcept =  (MetaThesaurusConcept)list.get(i);
-	      hashTable.put(mConcept.getCui(), mConcept);
-
-	    }
-	   Iterator iterator = hashTable.keySet().iterator();
-	   while(iterator.hasNext())
-	    {
-	      String key = (String)iterator.next();
-	      uList.add((MetaThesaurusConcept)hashTable.get(key));
-	    }
-
-
-	}
+        
+        boolean match = false;
+        
+        for(int i=0; i<concepts.length; i++){
+            list.add(buildMetaThesaurusConcept(concepts[i]));
+         }	          
+    }
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
 		throw new DAOException (getException( e.getMessage()));
 	}
 
-	return new Response(uList);
+	return new Response(list);
 }
 
 
@@ -1934,22 +1870,6 @@ private boolean validateSource(String source) throws Exception{
 	}
 
 /**
- * Returns MetaThesaurusConcepts for all sources
- */
-private Response getMetaConceptsForAllSources(HashMap map) throws Exception{
-    List conceptList = new ArrayList();
-    try{
-        for(Enumeration e = metaphrase.getSources();e.hasMoreElements();){
-            COM.Lexical.Metaphrase.Source metaSource = (COM.Lexical.Metaphrase.Source)e.nextElement();
-            COM.Lexical.Metaphrase.Concept metaConcept = getMetaConceptForSource(metaSource);
-            conceptList.add(buildMetaThesaurusConcept(metaConcept));
-        }
-    }catch(Exception ex){
-        throw new DAOException(getException(ex.getMessage()));
-    }
-    return new Response(conceptList);
-}
-
 private Response getMetaConceptCodeForSource(HashMap map) throws Exception{
     List codeList = new ArrayList();
     String abbreviation = null;
@@ -2011,62 +1931,84 @@ private Response getSourceAbbreviation(HashMap map)throws Exception{
     return new Response(sabList);
 
 }
+*/
 
 /**
- * Converts COM.Lexical.Metaphrase.Concept to MetaThesaurusConcept
+ * Converts gov.nih.nci.lexrpc.client.Concept to gov.nih.nci.evs.domain.MetaThesaurusConcept
  * @param metaConcept
  * @return Returns a MetaThesaurusConcept object
  */
-private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Concept metaConcept) throws Exception
+private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) throws Exception
 {
 	MetaThesaurusConcept metaThesaurusConcept = new MetaThesaurusConcept();
 	try
 	{
 
-		metaThesaurusConcept.setName(metaConcept.preferredName());
-		metaThesaurusConcept.setCui(metaConcept.conceptID());
-		COM.Lexical.Metaphrase.Definition[] metaDefinitions = metaConcept.definitions();
+		metaThesaurusConcept.setName(metaConcept.getName());
+		metaThesaurusConcept.setCui(metaConcept.getCode());        
 
-
-		ArrayList definitionsList = new ArrayList();
-		for (int i = 0; i < metaDefinitions.length; ++i)
-		{
-		    gov.nih.nci.evs.domain.Definition definition  = new gov.nih.nci.evs.domain.Definition();
-			definition.setSource(convertMetaSource(metaDefinitions[i].source()));
-			definition.setDefinition(metaDefinitions[i].text());
-			definitionsList.add(definition);
-		}
-
-		metaThesaurusConcept.setDefinitionCollection(definitionsList);
-
-	    COM.Lexical.Metaphrase.SemanticType[] semanticTypes = metaConcept.semanticTypes();
-
-	    ArrayList semanticTypesList = new ArrayList();
-	    int j = 0;
-	    for (int i = 0; i < semanticTypes.length; ++i)
-	    {
-	        SemanticType semType = new SemanticType();
-	        semType.setName((String)semanticTypes[i].name());
-	        semType.setId((String)semanticTypes[i].TUI());
-	        semanticTypesList.add(semType);
-	    }
-
-	    ArrayList atomCollection = new ArrayList();
-	    COM.Lexical.Metaphrase.Atom[] atoms = metaConcept.atoms();
-	    //log.info("Number of atoms found = "+ atoms.length);
-	    for(int i=0; i< atoms.length; i++){
-	        gov.nih.nci.evs.domain.Atom atom = new Atom();
-	        atom.setCode(atoms[i].code());
-	        atom.setLui(atoms[i].LUI());
-	        atom.setName(atoms[i].name());
-	        atom.setOrigin(atoms[i].origin());
-	        atom.setSource(convertMetaSource(atoms[i].source()));
-	        atomCollection.add(atom);
-	        }
-
-	    metaThesaurusConcept.setSemanticTypeCollection(semanticTypesList);
-	    metaThesaurusConcept.setSynonymCollection(getSynonyms(metaConcept));
-	    metaThesaurusConcept.setSourceCollection(getSources(metaConcept));
+        ArrayList<Definition> definitionsCollection = new ArrayList();
+        ArrayList<SemanticType> semanticTypesCollection = new ArrayList();
+        ArrayList<Atom> atomCollection = new ArrayList();
+        ArrayList<Source> sourceCollection = new ArrayList();
+        ArrayList synonymCollection = new ArrayList();
+       
+        Vector propertyCollection = metaConcept.getPropertyCollection();
+        try{
+            for(int p=0; p<propertyCollection.size(); p++){
+                Property property = (Property) propertyCollection.get(p);                
+                if(property.getName().toUpperCase().equalsIgnoreCase("FULL_SYN")){
+                    gov.nih.nci.evs.domain.Atom atom = new gov.nih.nci.evs.domain.Atom();
+                    atom.setName(property.getValue());
+                    Vector qCollection = property.getQualifierCollection();
+                    gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();                
+                    for(int q=0; q< qCollection.size(); q++){
+                        Qualifier qualifier = (Qualifier)qCollection.get(q);
+                        if(qualifier.getName().toLowerCase().equalsIgnoreCase("source")){
+                            source.setAbbreviation(qualifier.getValue());                        
+                        }else if(qualifier.getName().toLowerCase().equalsIgnoreCase("source-code")){
+                            source.setCode(qualifier.getValue());                        
+                        }                    
+                    }
+                    atom.setSource(source);
+                    sourceCollection.add(source);        
+                    synonymCollection.add(property.getValue());  
+                    atomCollection.add(atom);
+                }else if(property.getName().toUpperCase().equalsIgnoreCase("SEMANTIC_TYPE")){
+                    SemanticType sType = new SemanticType();
+                    sType.setName(property.getValue());
+                    semanticTypesCollection.add(sType);                
+                }else if(property.getName().toUpperCase().equalsIgnoreCase("DEFINITION")){
+                    Definition definition = new Definition();
+                    definition.setDefinition(property.getValue());
+                    Vector qCollection = property.getQualifierCollection();
+                    gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();                
+                    for(int q=0; q< qCollection.size(); q++){
+                        Qualifier qualifier = (Qualifier)qCollection.get(q);
+                        if(qualifier.getName().toLowerCase().equalsIgnoreCase("source")){
+                            source.setAbbreviation(qualifier.getValue());                        
+                        }else if(qualifier.getName().toLowerCase().equalsIgnoreCase("source-code")){
+                            source.setCode(qualifier.getValue());                      
+                        }                    
+                    }
+                    definition.setSource(source);
+                    definitionsCollection.add(definition);             
+                    sourceCollection.add(source);
+                }else if(property.getName().toUpperCase().equalsIgnoreCase("SOURCE")){
+                    Source source = new Source();  
+                    source.setAbbreviation(property.getValue());
+                    sourceCollection.add(source);                
+                }
+            }
+           
+            
+        }catch(Exception ex){
+            throw new Exception(getException("\nException: buildMetaConcept: "+ ex.getMessage()));
+        }
+        metaThesaurusConcept.setSemanticTypeCollection(semanticTypesCollection);        
+	    metaThesaurusConcept.setSynonymCollection((ArrayList)synonymCollection);
+        metaThesaurusConcept.setDefinitionCollection(definitionsCollection);
+	    metaThesaurusConcept.setSourceCollection(sourceCollection);
 	    metaThesaurusConcept.setAtomCollection(atomCollection);
 
 
@@ -2087,17 +2029,13 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    * @return List of Sources
    * @throws Exception
    */
-  private ArrayList getSources(COM.Lexical.Metaphrase.Concept metaphraseConcept)
+  private ArrayList getSources(Concept metaphraseConcept)
   throws Exception
   {
     ArrayList sourceList = new ArrayList();
   	try
 	{
-          COM.Lexical.Metaphrase.Source[] sources = metaphraseConcept.sources();
-          for (int i = 0; i < sources.length; ++i)
-          {
-		    sourceList.add(convertMetaSource(sources[i]));
-          }
+       sourceList = buildMetaThesaurusConcept(metaphraseConcept).getSourceCollection();
 	}
 	catch(COM.Lexical.Metaphrase.MetaphraseException e)
 	{
@@ -2115,50 +2053,19 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    * @return Returns a list of Synonyms
    * @throws Exception
    */
-  private ArrayList getSynonyms(COM.Lexical.Metaphrase.Concept metaConcept) throws Exception
+  private ArrayList getSynonyms(Concept metaConcept) throws Exception
   {
     ArrayList synonyms = new ArrayList();
   	try
 	{
-  	      Term[] terms = metaConcept.synonyms();
-          for (int i = 0; i < terms.length; ++i)
-          {
-            synonyms.add(terms[i].preferredForm());
-          }
-
+       synonyms = buildMetaThesaurusConcept(metaConcept).getSynonymCollection();
 	}
-	catch(COM.Lexical.Metaphrase.MetaphraseException e)
+	catch(Exception e)
 	{
 		log.error(e.getMessage());
 		throw new DAOException(getException( e.getMessage()));
 	}
 	return synonyms;
-  }
-
-
-
-/**
- * Converts Metaphrase Source to evs source
- * @param metaSource
- * @return an EVS source object
- */
-  private  Source convertMetaSource(COM.Lexical.Metaphrase.Source metaSource) throws Exception
-  {
-
-	Source source = null;
-  	if(metaSource!=null)
-    {
-  		source = new Source();
-  		source.setDescription(metaSource.description());
-  		source.setAbbreviation(metaSource.SAB());
-        source.setCode(getMetaConceptCodeForSource(metaSource));
-    }
-    else
-    {
-    	source = null;
-    }
-
-    return source;
   }
 
 
@@ -2172,9 +2079,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	{
 		String code = null;
 		String sourceAbbr = null;
+        int limit = 100;
 
 		ArrayList list = new ArrayList();
-		COM.Lexical.Metaphrase.Concept metaConcept = null;
+		Vector metaConcepts = new Vector();
 		try
 		{
 
@@ -2187,6 +2095,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 					code = (String)map.get(key);
 				else if(name.equalsIgnoreCase("sourceAbbr"))
 					sourceAbbr = (String)map.get(key);
+                else if(name.equalsIgnoreCase("limit"))
+                    limit = ((Integer)map.get(key)).intValue();
 			}
 
 
@@ -2198,18 +2108,12 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 			    }
 
 
-			COM.Lexical.Metaphrase.Source source = metaphrase.source(sourceAbbr);
-			Partition thePartition = source.partition(code);
+            metaConcepts = adapter.findConceptsWithSourceCodeMatching(sourceAbbr, code, limit);
+            for(int i=0; i<metaConcepts.size(); i++ ){
+                list.add(this.buildMetaThesaurusConcept((Concept)metaConcepts.get(i)));
+            }
 
-			if(thePartition != null)
-			{
-				COM.Lexical.Metaphrase.Atom[] atoms = thePartition.atoms();
-				for(int i=0; i<atoms.length; i++)
-				{
-				  metaConcept = atoms[i].concept();
-				   list.add(buildMetaThesaurusConcept(metaConcept));
-				}
-			}
+
 		}
 		catch(Exception e)
 		{
@@ -2231,18 +2135,17 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	private Response getSemanticTypes(HashMap map) throws Exception
 	{
 		ArrayList list = new ArrayList();
+        setVocabulary(defaultVocabularyName);
 		try
 		{
-
-		    Enumeration e = metaphrase.getSemanticTypes();
-		    while (e.hasMoreElements())
-		    {
-		      COM.Lexical.Metaphrase.SemanticType type = (COM.Lexical.Metaphrase.SemanticType)e.nextElement();
-		      SemanticType semType = new SemanticType();
-		      semType.setName(type.name());
-		      semType.setId(type.TUI());
-		      list.add(semType);
-		    }
+		    HashMap types = adapter.getSemanticTypes();
+		    for(Iterator i = types.keySet().iterator(); i.hasNext();){
+                String key = (String) i.next();
+		        SemanticType semanticType = new SemanticType();
+                semanticType.setId(key);
+                semanticType.setName((String)types.get(key));
+                list.add(semanticType);
+            }
 		}
 		catch(Exception e)
 		{
@@ -2265,7 +2168,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	{
 		ArrayList list = new ArrayList();
 		String sourceAbbr = null;
-		COM.Lexical.Metaphrase.Concept metaConcept = null;
+        String conceptCode = null;
+		Vector metaConcepts = new Vector();
 		try
 		{
 
@@ -2276,18 +2180,24 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
 				if(name.equalsIgnoreCase("sourceAbbr"))
 					sourceAbbr = (String)map.get(key);
+                if(name.equalsIgnoreCase("conceptCode"))
+                    conceptCode = (String)map.get(key);
 			}
 
 			if(!StringHelper.hasValue(sourceAbbr))
 				  throw new DAOException(getException(" Invalid Source"));
 
-
-			Enumeration e  = metaphrase.getConcepts(metaphrase.source(sourceAbbr));
-		     while (e.hasMoreElements())
-		     {
-		     	metaConcept = (COM.Lexical.Metaphrase.Concept)e.nextElement();
-				list.add(buildMetaThesaurusConcept(metaConcept));
-		      }
+            if(conceptCode == null){
+                throw new Exception("Please specify conceptCode");
+            }
+     /** check this ***/
+			metaConcepts = adapter.findConceptsWithSourceCodeMatching(sourceAbbr, conceptCode, 1);
+            for(int i=0; i<metaConcepts.size(); i++){
+                Concept concept = (Concept)metaConcepts.get(i);
+                list.add(this.buildMetaThesaurusConcept(concept));
+                
+            }
+			
 		}
 		catch(Exception e)
 		{
@@ -2309,7 +2219,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	{
 		ArrayList list = new ArrayList();
 		String conceptCode = null;
-		COM.Lexical.Metaphrase.Concept metaConcept = null;
+		Concept metaConcept = null;
 		String conceptName = null;
 		List conceptList = new ArrayList();
 
@@ -2329,9 +2239,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 				  throw new DAOException(getException(" Invalid concept code"));
 
 
-			metaConcept =	metaphrase.getConcept(conceptCode);
-			conceptName =   metaConcept.preferredName();
-			conceptList.add(conceptName);
+			metaConcept =	adapter.findConceptByCode(conceptCode, 1);
+			conceptList.add(metaConcept.getName());
 
 
 		}
@@ -2356,14 +2265,16 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 	 */
 	private Response getMetaSources(HashMap map) throws Exception
 	{
-		ArrayList list = new ArrayList();
+        ArrayList list = new ArrayList();
+       // setVocabulary(defaultVocabularyName);
 		try
-		{
-	 		Vector sv= new Vector();
-	  		Enumeration e = metaphrase.getSources();
-	  		while (e.hasMoreElements())
-			{
-				 list.add(convertMetaSource((COM.Lexical.Metaphrase.Source)e.nextElement()));
+		{            
+	 		Vector sources= adapter.getSupportedSources();	  		
+	  		for(int i=0; i< sources.size(); i++ )
+			{                
+                Source source =  new Source();
+                source.setAbbreviation((String)sources.get(i));
+				list.add(source);
 			}
 
 		}
@@ -2467,8 +2378,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    private ArrayList getRelatedConcepts(String conceptCode, String sourceAbbr, String relation) throws Exception
 	 {
 		 ArrayList uniqueList = new ArrayList();
-         Set list = new HashSet();
-         COM.Lexical.Metaphrase.Concept metaConcept = null;
+         Set list = new HashSet();         
          Vector rc = new Vector();
 
 
@@ -2482,46 +2392,42 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 			{
 				sourceAbbr = "*";
 			}
-
-
-
-            metaConcept =   metaphrase.getConcept(conceptCode);
-            Relationship[] relationships = metaConcept.relationships();
-            COM.Lexical.Metaphrase.Concept relatedConcept = null;
-            Vector temp = new Vector();
-            String conceptId = "";
-
-            for(int i=0;i<relationships.length;i++)
-            {
-                if(relation != null){
-                    if(validateRelation(relation)){
-                        if(relationships[i].rel().equalsIgnoreCase(relation)){
-                            if(sourceAbbr != null && !sourceAbbr.equals("*")){
-                                if(relationships[i].source().SAB().equalsIgnoreCase(sourceAbbr)){
-                                    relatedConcept = relationships[i].concept2();
-                                    rc.add(relatedConcept);
-                                    }
-                            }
-                            else{
-                                relatedConcept = relationships[i].concept2();
-                                rc.add(relatedConcept);
-                            }
-
-                            }
-                        }
-                    }
+            adapter.setVocabulary("NCI_Thesaurus");
+            if(sourceAbbr.equals("*")){
+                if(relation.equalsIgnoreCase("RN") || relation.toUpperCase().equalsIgnoreCase("PAR")){
+                    rc = adapter.getRelatedConcepts(conceptCode, false, relation);
+                }
+                else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
+                    rc = adapter.getRelatedConcepts(conceptCode, true, relation);
+                }
+                else{
+                    rc = adapter.getRelatedConcepts(conceptCode, true,null);
+                }
+            }else{
+                if(relation.equalsIgnoreCase("RN") || relation.toUpperCase().equalsIgnoreCase("PAR")){
+                    rc = adapter.getRelatedConceptsBySource(conceptCode, false, relation, sourceAbbr);
+                }
+                else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
+                    rc = adapter.getRelatedConceptsBySource(conceptCode, true, relation, sourceAbbr);
+                }else{
+                    rc = adapter.getRelatedConceptsBySource(conceptCode, true, null, sourceAbbr);
+                }
+                
             }
 
+			
+			
+            for(int i=0; i< rc.size(); i++){
+                list.add(this.buildMetaThesaurusConcept((Concept)rc.get(i)));
+            }
 	  	}
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
 			throw new DAOException(getException(e.getMessage()));
 		}
-        for(int i=0; i<rc.size(); i++)
-        {
-            list.add(buildMetaThesaurusConcept((COM.Lexical.Metaphrase.Concept)rc.get(i)));
-        }
+        
+       
         for(Iterator i=list.iterator(); i.hasNext();){
             uniqueList.add(i.next());
         }
@@ -2580,8 +2486,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    {
 		ArrayList list = new ArrayList();
 		String conceptCode = null;
-		String sourceAbbr = null;
-		COM.Lexical.Metaphrase.Concept metaConcept = null;
+		String sourceAbbr = null;		
         Vector rn = new Vector();
 
 		try
@@ -2624,7 +2529,6 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
 		String conceptCode = null;
 		String sourceAbbr = null;
-		COM.Lexical.Metaphrase.Concept metaConcept = null;
 		Vector rc = new Vector();
 		String relation = null;
 
@@ -2642,71 +2546,15 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 					sourceAbbr = (String)map.get(key);
 				else if(name.equalsIgnoreCase("relation"))
 					relation = (String)map.get(key);
-
 			}
-
-			metaConcept =	metaphrase.getConcept(conceptCode);
-			Relationship[] relationships = metaConcept.relationships();
-			COM.Lexical.Metaphrase.Concept relatedConcept = null;
-
-			String conceptId = "";
-
-			for(int i=0;i<relationships.length;i++)
-			{
-				if(relation != null){
-					if(validateRelation(relation)){
-						if(relationships[i].rel().equalsIgnoreCase(relation)){
-                            if(sourceAbbr != null && !sourceAbbr.equals("*")){
-                                if(relationships[i].source().SAB().equalsIgnoreCase(sourceAbbr)){
-                                    relatedConcept = relationships[i].concept2();
-                                    rc.add(relatedConcept);
-                                    }
-                                }
-                            else{
-                                relatedConcept = relationships[i].concept2();
-                                rc.add(relatedConcept);
-                                }
-
-						 }
-						}
-					}
-				else{
-				relatedConcept = relationships[i].concept2();
-
-					if(sourceAbbr != null && !sourceAbbr.equals("*"))
-					{
-						if(relationships[i].source().SAB().equalsIgnoreCase(sourceAbbr))
-						{
-							conceptId = relatedConcept.conceptID();
-
-							   rc.add(relatedConcept);
-
-						}
-					}
-					else
-					{
-						conceptId = relatedConcept.conceptID();
-						   rc.add(relatedConcept);
-
-					}
-				}
-			}
+			
+			uniqueList = this.getRelatedConcepts(conceptCode, sourceAbbr, relation);
 		}
 		catch(Exception e)
 		{
 			log.error(e.getMessage());
 			throw new DAOException (getException(e.getMessage()));
 		}
-
-
-		for(int i=0; i<rc.size(); i++)
-		{
-			list.add(buildMetaThesaurusConcept((COM.Lexical.Metaphrase.Concept)rc.get(i)));
-		}
-        for(Iterator i=list.iterator(); i.hasNext();){
-            uniqueList.add(i.next());
-        }
-
 		return new Response(uniqueList);
    }
 
@@ -2724,7 +2572,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 		ArrayList list = new ArrayList();
 		String conceptCode = null;
 		String category = null;
-		COM.Lexical.Metaphrase.Concept metaConcept = null;
+		Concept[] metaConcepts = null;
 
 		try
 		{
@@ -2747,10 +2595,11 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 			if(!StringHelper.hasValue(category))
 				  throw new DAOException(getException(" Invalid Category - set value"));
 
+/**** check code ****/
+            metaConcepts = adapter.searchConcepts(conceptCode, 100, 1, category, 1);
+			
 
-			metaConcept =	metaphrase.getConcept(conceptCode);
-
-
+/*
 			Cooccurrence[] categoryValues = null;
 			if(category.equalsIgnoreCase("Medications"))
 				categoryValues = metaConcept.cooccurs(Cooccurrence.MED, metaphrase.defaultCooccurClassifier);
@@ -2760,14 +2609,12 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 				categoryValues = metaConcept.cooccurs(Cooccurrence.LAB, metaphrase.defaultCooccurClassifier);
 			else if(category.equalsIgnoreCase("Diagnosis"))
 				categoryValues = metaConcept.cooccurs(Cooccurrence.DIAG, metaphrase.defaultCooccurClassifier);
+*/
 
 
-
-			for(int i=0; i<categoryValues.length; i++)
+			for(int i=0; i<metaConcepts.length; i++)
 			{
-				metaConcept = categoryValues[i].concept2();
-
-				list.add(buildMetaThesaurusConcept(metaConcept));
+				list.add(buildMetaThesaurusConcept(metaConcepts[i]));
 			}
 
 		}
@@ -4062,34 +3909,41 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
                 v = adapter.getHistoryRecords(vocabularyName, initialDate, finalDate);
                 }
             else if(vocabularyName != null && initialDate == null && finalDate == null && conceptCode !=null){
-                v = adapter.getHistoryRecords(vocabularyName, conceptCode);
+                v = adapter.getConceptEditAction(conceptCode);        
                 }
             else{
                 throw new DAOException("Exception: Invalid arguments");
             }
 
             if(v!=null && v.size()>0){
-                Vector historyVector= new Vector();
-                String code = ((gov.nih.nci.lexrpc.client.HistoryRecord)v.get(0)).getCode();
-                for(int i=0;i<v.size(); i++){
-                    gov.nih.nci.lexrpc.client.HistoryRecord dtsHistory = (gov.nih.nci.lexrpc.client.HistoryRecord)v.get(i);
-                    if(!((gov.nih.nci.lexrpc.client.HistoryRecord)v.get(i)).getCode().equals(code)){
-                        gov.nih.nci.evs.domain.HistoryRecord historyRecord = new gov.nih.nci.evs.domain.HistoryRecord();
-                        historyRecord.setDescLogicConceptCode(code);
-                        historyRecord.setHistoryCollection(historyVector);
-                        list.add(historyRecord);
-                        code = ((gov.nih.nci.lexrpc.client.HistoryRecord)v.get(i)).getCode();
+                HistoryRecord hr = new HistoryRecord();
+                hr.setDescLogicConceptCode(conceptCode);
+                Vector historyVector = new Vector();
+                
+                for(int i=0; i<v.size(); i++){           
+                    String actionDate = (String)v.get(i);                    
+                    StringTokenizer st = new StringTokenizer(actionDate, "|");
+                    while(st.hasMoreTokens()){
+                        String action = st.nextToken();
+                        Date aDate = stringToDate(st.nextToken());                        
+                        History h = new History();
+                        h.setEditAction(action);
+                        h.setEditActionDate(aDate);
+                        if(action.equalsIgnoreCase("split") ||action.equalsIgnoreCase("merge")){                            
+                            Vector ref = adapter.getAncestorCodes(conceptCode, false, aDate, aDate);
+                            String refCodes = "";                            
+                            for(int r=0; r<ref.size(); r++){
+                                refCodes += (String)ref.get(r);
+                            }
+                            if(refCodes.length()>0){
+                                h.setReferenceCode(refCodes);
+                            }                            
+                        }
+                        historyVector.add(h);                        
                     }
-                    gov.nih.nci.evs.domain.History history = convertHistory(dtsHistory);
-                    historyVector.add(history);
-                    }
-                if(code != null){
-                    gov.nih.nci.evs.domain.HistoryRecord historyRecord = new gov.nih.nci.evs.domain.HistoryRecord();
-                    historyRecord.setDescLogicConceptCode(code);
-                    historyRecord.setHistoryCollection(historyVector);
-                    list.add(historyRecord);
+                    hr.setHistoryCollection(historyVector);                    
                 }
-
+                list.add(hr);                
                }
         }
         catch(Exception e){
@@ -4100,17 +3954,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
    }
 
-   private gov.nih.nci.evs.domain.History convertHistory(gov.nih.nci.lexrpc.client.HistoryRecord dtsHistory){
-      // log.info("Date: "+dtsHistory.getEditDate().toString() +"\tAction: " + dtsHistory.getEditAction()+"\tRefCode : " + dtsHistory.getReference());
-       gov.nih.nci.evs.domain.History history = new gov.nih.nci.evs.domain.History();
-       history.setEditAction(dtsHistory.getEditAction());
-       history.setEditActionDate(dtsHistory.getEditDate());
-       history.setReferenceCode(dtsHistory.getReference());
-       history.setNamespaceId(dtsHistory.getNamespaceId());
 
-     return history;
-   }
-   
    private Response getHistoryStartDate(HashMap map) throws Exception{
 	   String vocabularyName = null;
 	   	List dateList = new ArrayList();
@@ -4147,17 +3991,58 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
 
 	   			if(name.equalsIgnoreCase("vocabularyName"))
 	   				vocabularyName = (String)map.get(key);
-
 	   		}
 
 	   		setVocabulary(vocabularyName);
-	   		Date endDate = adapter.getHistoryEnd();
+	   		Date endDate = adapter.getHistoryEndDate();
 	   		dateList.add(endDate);
 	   		}catch(Exception e){
 	   			log.error(e.getMessage());
 	   			throw new DAOException(getException( e.getMessage()));
 			}
 		return new Response(dateList); 
+   }
+   private Response getHistoryDates(HashMap map) throws Exception {
+       List dateList = new ArrayList();
+       Vector dates = adapter.getHistoryDates();
+       for(int i=0; i< dates.size(); i++){
+           dateList.add(dates.get(i));
+       }
+       return new Response(dateList);
+   }
+   private Response getHistoryEndBaseLineDate(HashMap map) throws Exception {
+       List dateList = new ArrayList();
+       Date date = adapter.getHistoryEndBaselineDate();
+       if(date!=null){
+           dateList.add(date);
+       }
+       return new Response(dateList);
+   }
+   private Date stringToDate(String aString) throws Exception
+   {
+      Date theDate = null;
+       try
+       {
+           SimpleDateFormat sdf = null;
+           if(aString.indexOf("-")>3){
+               sdf = new SimpleDateFormat("yyyy-MM-dd");
+           }
+           else if(aString.indexOf("/")>3){
+               sdf = new SimpleDateFormat("yyyy/MM/dd");
+           }
+           else{
+               sdf = new SimpleDateFormat("MM/dd/yyyy");
+           }
+                       
+           theDate = sdf.parse(aString);            
+       }
+       catch(Exception e)
+       {
+           log.error("Exception: " + e.getMessage());
+           throw new Exception(getException(e.getMessage()));
+       }
+       return theDate;
+
    }
 
  }
