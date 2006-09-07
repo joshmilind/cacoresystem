@@ -89,7 +89,6 @@ orm/gov/nih/nci/common/provenance/domain/impl/ProvenanceImpl.hbm.xml -text
 src/gov/nih/nci/codegen/core/handler/ResourceFileHandler.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13DAOTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13WSDDTransformerForEVS.java -text
-src/gov/nih/nci/common/util/Constant.java -text
 src/gov/nih/nci/common/util/HTTPUtils.java -text
 src/gov/nih/nci/common/util/PrintUtils.java -text
 src/gov/nih/nci/common/util/SearchUtils.java -text
