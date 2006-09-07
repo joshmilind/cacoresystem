@@ -86,13 +86,11 @@ orm/gov/nih/nci/cabio/domain/Location.hbm.xml -text
 orm/gov/nih/nci/cabio/domain/impl/LocationImpl.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/Provenance.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/impl/ProvenanceImpl.hbm.xml -text
-src/gov/nih/nci/codegen/core/handler/ResourceFileHandler.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13DAOTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13WSDDTransformerForEVS.java -text
 src/gov/nih/nci/common/util/HTTPUtils.java -text
 src/gov/nih/nci/common/util/PrintUtils.java -text
 src/gov/nih/nci/common/util/SearchUtils.java -text
-src/gov/nih/nci/common/util/StringHelper.java -text
 src/gov/nih/nci/evs/query/EVSQuery.java -text
 src/gov/nih/nci/evs/query/EVSQueryImpl.java -text
 src/gov/nih/nci/system/applicationservice/ApplicationService.java -text
