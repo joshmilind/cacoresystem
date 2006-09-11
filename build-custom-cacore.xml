@@ -9,7 +9,10 @@
 		</and>
 	</condition>
 	
-	
+	<target name="-copy-custom-lib.custom" if="build-system.custom.use"/>
+	<target name="-generate-system.custom" if="generate-system.custom.use"/>
+	<target name="-copy-framework.custom" if="copy-framework.custom.use"/>
+	<target name="-generate-templates.custom" if="generate-templates.custom.use"/>
 	<target name="-build-artifacts.custom" if="build-artifacts.custom.use"/>
 	<target name="-build-beans.custom" if="build-beans.custom.use"/>
 	<target name="-build-framework.custom" if="build-framework.custom.use"/>
