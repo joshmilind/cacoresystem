@@ -401,8 +401,9 @@
 			<classes file="${dir.output.project.xmlmapping}/xml-mapping.xml" />
 			<classes file="${dir.conf}/xml.properties"/>
 			<classes file="${dir.output.project}/log4j.properties"/>
-			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/conf">
+			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/classes">
 				<include name="DAOConfig.xml"/>
+				
 				<!--
 				<include name="log4j.properties"/>
 				<include name="roleLookup.properties"/>
@@ -437,7 +438,9 @@
 			<zipfileset dir="${dir.custom.conf}/resources" prefix="WEB-INF/resources">
 				<include name="**/**"/>
 			</zipfileset>
-						
+			<zipfileset dir="${dir.custom.conf}/spring/" prefix="WEB-INF/classes">
+				<include name="**/**"/>
+			</zipfileset>
 		</war>
 	</target>
 	<target name="-package-system.custom" if="package-system.custom.use">
