@@ -3,17 +3,25 @@ package gov.nih.nci.system.applicationservice.impl;
 import gov.nih.nci.common.net.Request;
 import gov.nih.nci.common.net.Response;
 import gov.nih.nci.common.util.ClientInfoThreadVariable;
+import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.common.util.Constant;
 import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.common.util.ListProxy;
 import gov.nih.nci.common.util.NestedCriteria;
+import gov.nih.nci.common.util.ObjectFactory;
 import gov.nih.nci.common.util.PrintUtils;
 import gov.nih.nci.common.util.SearchUtils;
+import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.evs.query.EVSQuery;
-import gov.nih.nci.system.proxy.InterfaceProxy;
+import gov.nih.nci.system.dao.DAO;
+import gov.nih.nci.system.dao.DAOException;
+import gov.nih.nci.system.dao.QueryException;
+import gov.nih.nci.system.servicelocator.ServiceLocator;
+import gov.nih.nci.system.servicelocator.ServiceLocatorException;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +38,8 @@ import org.apache.axis.encoding.Base64;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * <!-- LICENSE_TEXT_START -->
@@ -63,21 +73,21 @@ import org.hibernate.criterion.DetachedCriteria;
 
 public class ApplicationServiceBusinessImpl {
 
-	private static String httpAddress = null;
+	private static String httpAddress;
 
 	private static ApplicationServiceBusinessImpl applicationService = new ApplicationServiceBusinessImpl();
 
-	private static int firstRow = 0;
+	private static int firstRow;
 
-	private static int maxRecordsCount = 0;
+	private static int maxRecordsCount;
 
-	private static int recordsCount = 0;
+	private static int recordsCount;
 
-	private boolean inputImplFlag = false;
+	private boolean inputImplFlag;
 
 	private static Logger log = Logger.getLogger(ApplicationServiceBusinessImpl.class.getName());
 
-	private boolean caseSensitivityFlag = false; // by default it is case
+	private boolean caseSensitivityFlag; // by default it is case
 
 	/**
 	 * Creates a new ApplicationService instance with the HTTP server address
@@ -121,15 +131,14 @@ public class ApplicationServiceBusinessImpl {
 
 	/**
 	 * @param i
-	 * @throws Exception
+	 * @throws ApplicationException
 	 */
-	public void setRecordsCount(int i) throws Exception {
+	public void setRecordsCount(int i) throws ApplicationException {
 		if (i > maxRecordsCount) {
-			log
-					.error("Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
+			log.error("Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
 							+ i + " MAXRECORDSPERQUERY = " + maxRecordsCount);
 
-			throw new Exception(
+			throw new QueryException(
 					"Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
 							+ i + " MAXRECORDSPERQUERY = " + maxRecordsCount);
 
@@ -145,8 +154,8 @@ public class ApplicationServiceBusinessImpl {
 			_properties.load(Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream("CORESystem.properties"));
 
-			String rsPerQuery = (String) _properties.getProperty("RECORDSPERQUERY");
-			String maxRsPerQuery = (String) _properties.getProperty("MAXRECORDSPERQUERY");
+			String rsPerQuery = _properties.getProperty("RECORDSPERQUERY");
+			String maxRsPerQuery = _properties.getProperty("MAXRECORDSPERQUERY");
 			if (rsPerQuery != null) {
 				recordsCount = new Integer(rsPerQuery).intValue();
 			} else {
@@ -161,59 +170,43 @@ public class ApplicationServiceBusinessImpl {
 			}
 
 		} catch (IOException e) {
-			log.error("IOException: " + e.getMessage());
-			System.out.println("IOException occured: " + e.getMessage());
+			log.error("IOException: ", e);
 		} catch (Exception ex) {
-			log.error("Exception: " + ex.getMessage());
-			System.out.println("Exception - " + ex.getMessage());
+			log.error("Exception: ", ex);
 		}
 	}
 
 	/**
 	 * @param criteria
 	 * @return total count for the query
-	 * @throws Exception
+	 * @throws ApplicationException
 	 * 
 	 */
-	public int getQueryRowCount(Object criteria, String targetClassName) throws Exception {
+	public int getQueryRowCount(Object criteria, String targetClassName) throws ApplicationException {
 		Integer count = null;
 		Response response = new Response();
 		Request request = new Request(criteria);
-		request.setIsCount(new Boolean(true));
+		request.setIsCount(Boolean.TRUE);
 		request.setDomainObjectName(targetClassName);
-		try {
-			InterfaceProxy client = (InterfaceProxy) Class.forName(gov.nih.nci.common.util.Constant.DELEGATE_NAME)
-					.newInstance();
-			response = (Response) client.query(request);
-			count = (Integer) response.getRowCount();
 
-		} catch (LinkageError le) {
-			log.error("LinkageError: " + le.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-		} catch (ClassNotFoundException cnfe) {
-			log.error("ClassNotFoundException: " + cnfe.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
-		}
+		response = query(request);
+		count = response.getRowCount();
 
-		catch (Exception ex) {
-			log.error("Exception in query: " + ex.getMessage());
-			System.out.println("Exception in query(): " + ex.getMessage());
-		}
 		if (count != null)
 			return count.intValue();
 		else
 			return 0;
 	}
 
-	public List query(DetachedCriteria detachedCriteria, String targetClassName) throws Exception {
+	public List query(DetachedCriteria detachedCriteria, String targetClassName) throws ApplicationException {
 		return privateQuery((Object) detachedCriteria, targetClassName);
 	}
 
-	private List query(NestedCriteria nestedCriteria, String targetClassName) throws Exception {
+	private List query(NestedCriteria nestedCriteria, String targetClassName) throws ApplicationException {
 		return privateQuery((Object) nestedCriteria, targetClassName);
 	}
 
-	public List query(HQLCriteria hqlCriteria, String targetClassName) throws Exception {
+	public List query(HQLCriteria hqlCriteria, String targetClassName) throws ApplicationException {
 		return privateQuery((Object) hqlCriteria, targetClassName);
 	}
 
@@ -224,18 +217,18 @@ public class ApplicationServiceBusinessImpl {
 	 * @param criteria
 	 *            Specified Hibernate criteria
 	 * @return gets the result list
-	 * @throws Exception
+	 * @throws ApplicationException
 	 */
 
 	// public List query(Object criteria, String targetClassName) throws
 	// Exception{
-	private List privateQuery(Object criteria, String targetClassName) throws Exception {
+	private List privateQuery(Object criteria, String targetClassName) throws ApplicationException {
 
 		List results = null;
 		List resultList = new ListProxy();
 		Response response = new Response();
 		Request request = new Request(criteria);
-		request.setIsCount(new Boolean(false));
+		request.setIsCount(Boolean.FALSE);
 		request.setFirstRow(new Integer(firstRow));
 
 		int localRecordsCount = recordsCount;
@@ -243,10 +236,9 @@ public class ApplicationServiceBusinessImpl {
 			localRecordsCount = ClientInfoThreadVariable.getRecordsCount();
 
 		if ((maxRecordsCount > 0) && (localRecordsCount > maxRecordsCount)) {
-			log
-					.error("Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
+			log.error("Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
 							+ localRecordsCount + " MAXRECORDSPERQUERY = " + maxRecordsCount);
-			throw new Exception(
+			throw new QueryException(
 					"Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
 							+ localRecordsCount + " MAXRECORDSPERQUERY = " + maxRecordsCount);
 		} else if (localRecordsCount <= 0) {
@@ -256,30 +248,13 @@ public class ApplicationServiceBusinessImpl {
 			request.setRecordsCount(new Integer(localRecordsCount));
 		}
 		request.setDomainObjectName(targetClassName);
-		try {
-			InterfaceProxy client = (InterfaceProxy) Class.forName(gov.nih.nci.common.util.Constant.DELEGATE_NAME)
-					.newInstance();
-
-			response = (Response) client.query(request);
-			results = (List) response.getResponse();
-
-		} catch (LinkageError le) {
-			log.error("LinkageError: Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-		} catch (ClassNotFoundException cnfe) {
-			log.error("ClassNotFoundException: Having problem in instantiating Delegate as LOCAL TYPE\n"
-					+ cnfe.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
-		} catch (Exception ex) {
-			log.error("Exception \n" + ex.getMessage());
-			throw new Exception("Exception " + ex.getMessage());
-		}
+		
+		response = query(request);
+		results = (List) response.getResponse();
 
 		resultList.clear();
 		// Set the value for ListProxy
 		if (results != null) {
-			// System.out.println("results not null, add to listProxy.addAll() "
-			// + results.size());
 			resultList.addAll(results);
 		}
 		ListProxy myProxy = (ListProxy) resultList;
@@ -299,43 +274,30 @@ public class ApplicationServiceBusinessImpl {
 	 * @param resultsPerQuery
 	 * @param targetClassName
 	 * @return List
-	 * @throws Exception
+	 * @throws ApplicationException
 	 */
-	public List query(Object criteria, int firstRow, int resultsPerQuery, String targetClassName) throws Exception {
-		// List myList = new ListProxy();
+	public List query(Object criteria, int firstRow, int resultsPerQuery, String targetClassName) throws ApplicationException {
 		List results = null;
 		Response response = new Response();
 		Request request = new Request(criteria);
-		request.setIsCount(new Boolean(false));
+		request.setIsCount(Boolean.valueOf(false));
 		request.setFirstRow(new Integer(firstRow));
 
 		if (resultsPerQuery > 0 && resultsPerQuery < maxRecordsCount) {
 			request.setRecordsCount(new Integer(resultsPerQuery));
 		}
 		if ((maxRecordsCount > 0) && (resultsPerQuery > maxRecordsCount)) {
-			log
-					.error("Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
+			log.error("Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
 							+ resultsPerQuery + " MAXRECORDSPERQUERY = " + maxRecordsCount);
-			throw new Exception(
+			throw new QueryException(
 					"Illegal Value for RecordsCount: RECORDSPERQUERY cannot be greater than MAXRECORDSPERQUERY. RECORDSPERQUERY = "
 							+ resultsPerQuery + " MAXRECORDSPERQUERY = " + maxRecordsCount);
 		}
 		request.setDomainObjectName(targetClassName);
-		try {
-			InterfaceProxy client = (InterfaceProxy) Class.forName(gov.nih.nci.common.util.Constant.DELEGATE_NAME)
-					.newInstance();
-			response = (Response) client.query(request);
-			results = (List) response.getResponse();
 
-		} catch (LinkageError le) {
-			log.error("LinkageError: Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-		} catch (ClassNotFoundException cnfe) {
-			log.error("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
-		} catch (Exception ex) {
-			log.error("Exception in query(Object, int, int, String): " + ex.getMessage());
-		}
+		response = query(request);
+		results = (List) response.getResponse();
+	
 		return results;
 	}
 
@@ -353,22 +315,9 @@ public class ApplicationServiceBusinessImpl {
 		Request request = new Request(evsCriterion);
 		request.setDomainObjectName(evsCriterion.getClass().getName());
 
-		try {
-			InterfaceProxy client = (InterfaceProxy) Class.forName(gov.nih.nci.common.util.Constant.DELEGATE_NAME)
-					.newInstance();
-			response = (Response) client.query(request);
-			results = (List) response.getResponse();
-
-		} catch (LinkageError le) {
-			log.error("LinkageError: Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-		} catch (ClassNotFoundException cnfe) {
-			log.error("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
-			throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
-		} catch (Exception ex) {
-			log.error("Exception evsSearch: " + ex.getMessage());
-			throw new Exception(ex.getMessage());
-		}
+		response = query(request);
+		results = (List) response.getResponse();
+		
 		return results;
 	}
 
@@ -432,21 +381,14 @@ public class ApplicationServiceBusinessImpl {
                 }
                 
             }
-            
-        } catch (LinkageError le) {
-            log.error("LinkageError: Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-            throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE \n" + le.getMessage());
-        } catch (ClassNotFoundException cnfe) {
-            log.error("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
-            throw new Exception("Having problem in instantiating Delegate as LOCAL TYPE\n" + cnfe.getMessage());
+         
         } catch (Exception ex) {
-            log.error("Exception evsSearch: " + ex.getMessage());
+            log.error("Exception " + ex.getMessage());
             throw new Exception(ex.getMessage());
         }
         
         return result;
     }
-
 
 	/**
 	 * Prints a list of objects on the Standard Output Device
@@ -457,7 +399,7 @@ public class ApplicationServiceBusinessImpl {
 
 	public void printResults(List resultList) {
 		if (resultList.size() < 1) {
-			System.out.println("No records found");
+			log.debug("No records found");
 		} else {
 			PrintUtils printer = new PrintUtils();
 			printer.printResults(resultList);
@@ -482,6 +424,7 @@ public class ApplicationServiceBusinessImpl {
 	 */
 	public void printTree(List resultList) {
 		if (resultList.size() < 1) {
+			log.debug("resultList.size < 1");
 		} else {
 			PrintUtils printer = new PrintUtils();
 			printer.printTree(resultList);
@@ -497,55 +440,61 @@ public class ApplicationServiceBusinessImpl {
 	 * @param className
 	 *            Specifies the class name
 	 * @return Returns a class
-	 * @throws Exception
+	 * @throws ApplicationException
 	 *             Throws ClassNotFoundException
 	 */
 
-	private Collection getAssociation(Object criterionClassObj, String searchClassName) throws Exception {
-		// Use reflection to find the method in critionClassObject and then get
-		// the result
-		Class objKlass = criterionClassObj.getClass();
-		// Method[] objMethods = objKlass.getDeclaredMethods();
-		Method[] objMethods = objKlass.getMethods();
-
-		String searchBeanName = searchClassName.substring(searchClassName.lastIndexOf(".") + 1, searchClassName
-				.indexOf("Impl"));
-		for (int i = 0; i < objMethods.length; i++) {
-			String methodName = objMethods[i].getName();
-
-			// if (methodName.indexOf(searchBeanName) != -1)
-			String associationName = methodName.substring(3);
-			if (associationName.equals(searchBeanName) || associationName.equals(searchBeanName + "Collection")) {
-				// if the methodName matches the searchBeanName, the method
-				// definitely return Collection or Object type
-				Class returnType = objMethods[i].getReturnType();
-				Object returnObject = objMethods[i].invoke(criterionClassObj, new Object[] {});
-				if (returnObject == null) {
-					return null;
-				} else {
-					if (returnObject instanceof java.util.Collection) {
-						return (java.util.Collection) returnObject;
+	private Collection getAssociation(Object criterionClassObj, String searchClassName) throws ApplicationException {
+		try {
+			// Use reflection to find the method in critionClassObject and then get
+			// the result
+			Class objKlass = criterionClassObj.getClass();
+			// Method[] objMethods = objKlass.getDeclaredMethods();
+			Method[] objMethods = objKlass.getMethods();
+	
+			String searchBeanName = searchClassName.substring(searchClassName.lastIndexOf(Constant.DOT) + 1, searchClassName
+					.indexOf("Impl"));
+			for (int i = 0; i < objMethods.length; i++) {
+				String methodName = objMethods[i].getName();
+	
+				// if (methodName.indexOf(searchBeanName) != -1)
+				String associationName = methodName.substring(3);
+				if (associationName.equals(searchBeanName) || associationName.equals(searchBeanName + "Collection")) {
+					// if the methodName matches the searchBeanName, the method
+					// definitely return Collection or Object type
+					Class returnType = objMethods[i].getReturnType();
+					Object returnObject = objMethods[i].invoke(criterionClassObj, new Object[] {});
+					if (returnObject == null) {
+						return null;
 					} else {
-						java.util.Collection result = new HashSet();
-						result.add(returnObject);
-						return result;
+						if (returnObject instanceof java.util.Collection) {
+							return (java.util.Collection) returnObject;
+						} else {
+							java.util.Collection result = new HashSet();
+							result.add(returnObject);
+							return result;
+						}
 					}
+	
 				}
-
 			}
+		} catch(InvocationTargetException ite){
+			throw new QueryException("InvocationTargetException: ", ite);
+		} catch(IllegalAccessException iae){
+			throw new QueryException("InvocationTargetException: ", iae);
 		}
 		return null;
 	}
 
-	public List search(Class targetClass, Object obj) throws Exception {
+	public List search(Class targetClass, Object obj) throws ApplicationException {
 		return search(targetClass.getName(), obj);
 	}
 
-	public List search(Class targetClass, List objList) throws Exception {
+	public List search(Class targetClass, List objList) throws ApplicationException {
 		return search(targetClass.getName(), objList);
 	}
 
-	public List search(String path, Object obj) throws Exception {
+	public List search(String path, Object obj) throws ApplicationException {
 		// check if it is a nested query
 		List pathList = new ArrayList();
 		// parse path -> arraylist
@@ -575,7 +524,7 @@ public class ApplicationServiceBusinessImpl {
 		return results;
 	}
 
-	public List search(String path, List objList) throws Exception {
+	public List search(String path, List objList) throws ApplicationException {
 		// check if it is a nested query
 		List pathList = new ArrayList();
 		// parse path -> arraylist
@@ -604,86 +553,89 @@ public class ApplicationServiceBusinessImpl {
 		return results;
 	}
 
-	private NestedCriteria createNestedCriteria(List pathList, Object obj) throws Exception {
+	private NestedCriteria createNestedCriteria(List pathList, Object obj) throws ApplicationException {
 		List objList = new ArrayList();
 		objList.add(obj);
 		return createNestedCriteria(pathList, objList);
 	}
 
-	private NestedCriteria createNestedCriteria(List pathList, List objList) throws Exception {
-		SearchUtils searchUtil = new SearchUtils();
-		String target, source;
-
-		List newObjList = new ArrayList();
-		log.debug("ApplicationService.createNestedCriteria(): objList class name = "
-				+ objList.get(0).getClass().getName());
-		if ((objList.get(0)).getClass().getName().indexOf(".impl.") > 0) {
-			for (Iterator iter = objList.iterator(); iter.hasNext();) {
-				Object obj = iter.next();
-				newObjList.add(convertImpl(obj));
-			}
-		} else {
-			newObjList = objList;
-		}
-
-		String sourceName = (newObjList.get(0)).getClass().getName();
-		String targetName = "";
-
+	private NestedCriteria createNestedCriteria(List pathList, List objList) throws ApplicationException {
 		NestedCriteria criteria = null;
-		NestedCriteria internalCriteria = null;
-		for (int i = pathList.size() - 1; i >= 0; i--) {
-			// targetName = getFullQName((String)pathList.get(i));
-			targetName = (String) pathList.get(i);
-			log.debug("ApplicationService.createNestedCriteria(): new targetName = " + targetName);
-			// if the target and the source are the same class, ignore the
-			// association
-			criteria = new NestedCriteria();
-			criteria.setSourceObjectName(sourceName);
-			criteria.setTargetObjectName(targetName);
-			log.debug("ApplicationService.createNestedCriteria(): sourceName = " + sourceName + " | targetName = "
-					+ targetName);
-			if (!targetName.equals(sourceName) && !noInheritent(sourceName, targetName)) {
-				String roleName = searchUtil.getRoleName(Class.forName(sourceName), Class.forName(targetName)
-						.newInstance());
-				if (roleName == null) {
-					log.error("No association found from " + sourceName + " to " + targetName
-							+ ", please double check your query path.");
-					throw new Exception("No association found from " + sourceName + " to " + targetName
-							+ ", please double check your query path.");
+		try {
+			SearchUtils searchUtil = new SearchUtils();
+			String target, source;
+	
+			List newObjList = new ArrayList();
+			log.debug("ApplicationService.createNestedCriteria(): objList class name = "
+					+ objList.get(0).getClass().getName());
+			if ((objList.get(0)).getClass().getName().indexOf(".impl.") > 0) {
+				for (Iterator iter = objList.iterator(); iter.hasNext();) {
+					Object obj = iter.next();
+					newObjList.add(convertImpl(obj));
 				}
-				criteria.setRoleName(roleName);
+			} else {
+				newObjList = objList;
 			}
-			// if the obj is the same type of source(that means it the first
-			// criterion), add Map, otherwise, skip
-			// if (sourceName.equals((objList.get(0)).getClass().getName()))
-			if (sourceName.equals((newObjList.get(0)).getClass().getName())) {
-				// criteria.setSourceObject(obj);
-				criteria.setSourceObjectList(newObjList);
-				criteria.setInternalNestedCriteria(internalCriteria);
-			} else
-			// it is not the
-			{
-				criteria.setInternalNestedCriteria(internalCriteria);
+	
+			String sourceName = (newObjList.get(0)).getClass().getName();
+			String targetName = "";
+	
+			NestedCriteria internalCriteria = null;
+			for (int i = pathList.size() - 1; i >= 0; i--) {
+				// targetName = getFullQName((String)pathList.get(i));
+				targetName = (String) pathList.get(i);
+				log.debug("ApplicationService.createNestedCriteria(): new targetName = " + targetName);
+				// if the target and the source are the same class, ignore the
+				// association
+				criteria = new NestedCriteria();
+				criteria.setSourceObjectName(sourceName);
+				criteria.setTargetObjectName(targetName);
+				log.debug(new StringBuffer("ApplicationService.createNestedCriteria(): sourceName = ").append(sourceName).append(" | targetName = ").append(targetName));
+				if (!targetName.equals(sourceName) && !noInheritent(sourceName, targetName)) {
+					String roleName = searchUtil.getRoleName(Class.forName(sourceName), Class.forName(targetName)
+							.newInstance());
+					if (roleName == null) {
+						log.error("No association found from " + sourceName + " to " + targetName
+								+ ", please double check your query path.");
+						throw new QueryException("No association found from " + sourceName + " to " + targetName
+								+ ", please double check your query path.");
+					}
+					criteria.setRoleName(roleName);
+				}
+				// if the obj is the same type of source(that means it the first
+				// criterion), add Map, otherwise, skip
+				// if (sourceName.equals((objList.get(0)).getClass().getName()))
+				if (sourceName.equals((newObjList.get(0)).getClass().getName())) {
+					// criteria.setSourceObject(obj);
+					criteria.setSourceObjectList(newObjList);
+					criteria.setInternalNestedCriteria(internalCriteria);
+				} else
+				// it is not the
+				{
+					criteria.setInternalNestedCriteria(internalCriteria);
+				}
+				internalCriteria = criteria;
+				sourceName = targetName;
 			}
-			internalCriteria = criteria;
-			sourceName = targetName;
-		}
-		if (criteria != null) {
-			if (ClientInfoThreadVariable.isClientRequest())
-				criteria.setSearchCaseSensitivity(ClientInfoThreadVariable.getSearchCaseSensitivity());
-			else
-				criteria.setSearchCaseSensitivity(caseSensitivityFlag);
+			if (criteria != null) {
+				if (ClientInfoThreadVariable.isClientRequest())
+					criteria.setSearchCaseSensitivity(ClientInfoThreadVariable.getSearchCaseSensitivity());
+				else
+					criteria.setSearchCaseSensitivity(caseSensitivityFlag);
+			}
+		} catch(Exception e) {
+			throw new QueryException("Exception: ", e);
 		}
 		return criteria;
 	}
 
 	// Assume the passing name is either Interface or Impl class's name
-	public static String getFullQName(String name) throws Exception {
+	public static String getFullQName(String name) throws ApplicationException {
 		try {
 			Class.forName(name);
 		} catch (ClassNotFoundException e) {
 			log.error("ERROR: Class " + name + " does not exist.  Please check the package and class name.");
-			throw new Exception("ERROR: Class " + name + " does not exist.  Please check the package and class name.");
+			throw new QueryException("ERROR: Class " + name + " does not exist.  Please check the package and class name.");
 		}
 
 		// assume it is already a full qualified name if the name contains
@@ -691,8 +643,8 @@ public class ApplicationServiceBusinessImpl {
 		if ((name.indexOf(".impl.") > 0) && (name.indexOf("Impl") > 0)) {
 			return name;
 		} else {
-			String full = name.substring(0, name.lastIndexOf(".")) + ".impl."
-					+ name.substring(name.lastIndexOf(".") + 1) + "Impl";
+			String full = name.substring(0, name.lastIndexOf(Constant.DOT)) + ".impl."
+					+ name.substring(name.lastIndexOf(Constant.DOT) + 1) + "Impl";
 			return full;
 		}
 	}
@@ -708,7 +660,7 @@ public class ApplicationServiceBusinessImpl {
 				return true;
 			return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Exception: ", e);
 			return false;
 		}
 	}
@@ -727,7 +679,7 @@ public class ApplicationServiceBusinessImpl {
 			copyValue(newObject, implObject, objKlass.getSuperclass());
 			return newObject;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Exception: ", e);
 			return null;
 		}
 
@@ -756,7 +708,7 @@ public class ApplicationServiceBusinessImpl {
 				String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				String setterMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				// orig's getter method
-				Method getterMethod = objKlass.getMethod(getterMethodName);
+				Method getterMethod = objKlass.getMethod(getterMethodName, null);
 				// new object setter method
 				Method setterMethod = newObject.getClass().getMethod(setterMethodName,
 						new Class[] { getterMethod.getReturnType() });
@@ -770,7 +722,7 @@ public class ApplicationServiceBusinessImpl {
 						}
 					}
 				} else {
-					fieldValue = getterMethod.invoke(obj);
+					fieldValue = getterMethod.invoke(obj,null);
 					if (fieldValue instanceof Collection) {
 						Collection oldValue = (Collection) fieldValue;
 						Collection newValue = new ArrayList();
@@ -785,8 +737,7 @@ public class ApplicationServiceBusinessImpl {
 						fieldValue = newValue;
 					}
 				}
-				// System.out.println("ApplicationService.copyValue(): field
-				// name = " + fieldName + " | fieldValue = " + fieldValue);
+				log.debug("ApplicationService.copyValue(): fieldname = " + fieldName + " | fieldValue = " + fieldValue);
 
 				setterMethod.invoke(newObject, new Object[] { fieldValue });
 			}
@@ -798,8 +749,7 @@ public class ApplicationServiceBusinessImpl {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("ApplicationService.copyValue: ApplicationService Error" + e.getMessage());
+			log.error("ApplicationService.copyValue: ApplicationService Error", e);
 			return null;
 		}
 		return newObject;
@@ -815,8 +765,8 @@ public class ApplicationServiceBusinessImpl {
 				log.debug("ApplicationService.copyValue: objKlass.getName = " + objKlass.getName());
 				String resultObjName = objKlass.getName();
 				log.debug("ApplicationService.convertToImpl(): resultObjName = " + resultObjName);
-				String newImplObjName = resultObjName.substring(0, resultObjName.lastIndexOf(".")) + ".impl."
-						+ resultObjName.substring(resultObjName.lastIndexOf(".") + 1) + "Impl";
+				String newImplObjName = resultObjName.substring(0, resultObjName.lastIndexOf(Constant.DOT)) + ".impl."
+						+ resultObjName.substring(resultObjName.lastIndexOf(Constant.DOT) + 1) + "Impl";
 				Class newObjClass = Class.forName(newImplObjName);
 				log.debug("ApplicationService.copyValue(): new object name = " + newObjClass.getName());
 
@@ -826,7 +776,7 @@ public class ApplicationServiceBusinessImpl {
 				copyValueToImpl(newObject, resultObj, objKlass);
 				newList.add(newObject);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("Exception: ", e);
 			}
 		}
 		return newList;
@@ -847,7 +797,7 @@ public class ApplicationServiceBusinessImpl {
 				String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				String setterMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				// orig's getter method
-				Method getterMethod = objKlass.getMethod(getterMethodName);
+				Method getterMethod = objKlass.getMethod(getterMethodName,null);
 				// new object setter method
 				Method setterMethod = newObject.getClass().getMethod(setterMethodName,
 						new Class[] { getterMethod.getReturnType() });
@@ -864,8 +814,7 @@ public class ApplicationServiceBusinessImpl {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("ApplicationService.copyValue: ApplicationService Error" + e.getMessage());
+			log.error("ApplicationService.copyValue: ApplicationService Error", e);
 			return null;
 		}
 		return newObject;
@@ -873,7 +822,7 @@ public class ApplicationServiceBusinessImpl {
 
 	private String convertPathName(String oldName) {
 		log.debug("ApplicationService.convertPathName(): oldName = " + oldName);
-		String temp = oldName.replace(".impl.", ".");
+		String temp = oldName.replaceAll(".impl.", ".");
 		if (temp.endsWith("Impl")) {
 			temp = temp.substring(0, temp.length() - 4);
 		}
@@ -881,18 +830,98 @@ public class ApplicationServiceBusinessImpl {
 		return temp;
 
 	}
+	
+	private Response query(gov.nih.nci.common.net.Request request) throws ApplicationException
+	{
+
+		String dataSource;
+		String domainObjectName = request.getDomainObjectName();
+		Response response;
+		try{
+			request.setConfig(ServiceLocator.getDataSourceCollection(domainObjectName));
+			dataSource = ServiceLocator.getDataSourceCollectionValue(ServiceLocator.getDataSourceCollection(domainObjectName), "DataSource");
+		}
+		catch(ServiceLocatorException slEx)
+		{
+			log.error("No data source found");
+			throw new ApplicationException(" No data source was found " , slEx);
+		}
+		catch(Exception exception)
+		{
+			log.error("Exception while getting datasource information "+ exception.getMessage());
+			throw new ApplicationException("Exception in Base Delegate while getting datasource information: ", exception);
+		}
+
+		if (dataSource == null)
+		{
+			log.error("No Data Source could be found for the specified domain object");
+			throw new ApplicationException("No Data Source could be found for the specified domain object");
+		}
+		
+		try
+		{
+			DAO dao = (DAO) ObjectFactory.getObject(dataSource);
+				
+			log.debug("DAO found");
+			response = dao.query(request);
+		}
+		catch(DAOException daoException)
+		{
+			log.error(daoException.getMessage());
+			throw daoException;
+		}
+		catch(Exception exception)
+		{
+			log.error(exception.getMessage());
+			throw new ApplicationException("Exception in the query:  " + exception.getMessage());
+		}
+
+		return response;
+	}
 }
 
 // $Log: not supported by cvs2svn $
-// Revision 1.3  2006/07/11 17:40:46  shaziyam
-// method to check if bigId exist
-// method to getDataObjectFromBigId
+// Revision 1.8  2006/09/13 20:26:06  satish79
+// Modified exception handling mechanism
 //
-// Revision 1.2  2006/07/06 20:56:57  shaziyam
-// method to check if bigId exist
-// method to getDataObjectFromBigId
+// Revision 1.7  2006/09/13 05:19:45  ddumitru
+// *** empty log message ***
 //
-// Revision 1.1  2006/05/10 19:47:30  connellm
+// Revision 1.6  2006/09/12 18:35:26  satish79
+// Changes made for Removing BaseDelegate and Introducing Spring
+//
+// Revision 1.5  2006/09/12 00:25:27  ddumitru
+// Simplified interaction between Application Service and Persistence layers.
+//
+// The following files were deleted:
+//
+// DAOFactory
+// ORMDAOFactory
+// BaseDelegate
+// DelegateException
+// InterfaceProxy
+//
+// The ApplicationServiceBusinessImpl now gets a handle to the appropriate DAO implementation using the Spring Framework.
+//
+// Revision 1.4  2006/09/11 17:10:30  ddumitru
+// Replaced calls to InterfaceProxy (BaseDelegate), which was deleted along with 
+// DAO Factory related classes in order to simplify interaction between the Application
+// Service and Persistence layers.
+//
+// Revision 1.4  2006/09/05 23:01:30  ddumitru
+// Performance Enhancements:
+// 	Removed unnecessary casting.
+// 	Removed unnecessary field initialization.
+// 	Removed unnecessary object creation.
+// 	Used char vs. String where appropriate, as char is more efficient.
+//
+// Revision 1.3  2006/08/15 07:13:11  ddumitru
+// Exception Handling Changes
+//
+// Revision 1.2  2006/06/14 14:01:18  connellm
+// Replaced "replace" with "replaceAll" for JDK 1.4 compatability.
+//
+// Revision 1.1  2006/05/10 19:26:51  connellm
 // Initial check in of code to support the splitting of the SDk from caCORE.
 //
 // Revision 1.5  2006/03/29 21:18:37  masondo

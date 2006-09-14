@@ -1,15 +1,17 @@
 package gov.nih.nci.system.applicationservice.impl;
 
 import gov.nih.nci.common.util.HQLCriteria;
-import gov.nih.nci.evs.query.EVSQuery;
 import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 import gov.nih.nci.system.applicationservice.ApplicationServiceProvider;
 import gov.nih.nci.system.dao.WritableDAO;
+import gov.nih.nci.evs.query.EVSQuery;
 
 import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author Kunal Modi (Ekagra Software Technologies Ltd.)
@@ -19,7 +21,7 @@ import org.hibernate.criterion.DetachedCriteria;
  */
 public class ApplicationServiceImpl extends ApplicationService
 {
-
+	private static Logger log = Logger.getLogger(ApplicationServiceImpl.class.getName());
 	private ApplicationServiceBusinessImpl applicationServiceBusinessImpl = null;
 	private WritableDAO writableDAO = null;
 
@@ -38,7 +40,7 @@ public class ApplicationServiceImpl extends ApplicationService
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.ApplicationService#getBeanInstance()
 	 */
-	@Override
+	//@Override
 	protected ApplicationService getBeanInstance()
 	{
 		// TODO Auto-generated method stub
@@ -48,7 +50,7 @@ public class ApplicationServiceImpl extends ApplicationService
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.ApplicationService#getBeanInstance(java.lang.String)
 	 */
-	@Override
+	//@Override
 	protected ApplicationService getBeanInstance(String URL)
 	{
 		// TODO Auto-generated method stub
@@ -58,7 +60,7 @@ public class ApplicationServiceImpl extends ApplicationService
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.ApplicationService#setRecordsCount(int)
 	 */
-	@Override
+	//@Override
 	public void setRecordsCount(int recordsCount) throws ApplicationException
 	{
 		try
@@ -67,7 +69,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 	
@@ -93,7 +96,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 
@@ -111,7 +115,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 	
@@ -129,7 +134,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}	
 
@@ -147,7 +153,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 
@@ -206,7 +213,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 
@@ -224,7 +232,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 
@@ -242,7 +251,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 
@@ -260,7 +270,8 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 		catch (Exception e)
 		{
-			throw new ApplicationException(e.getMessage());
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
 		}
 	}
 
