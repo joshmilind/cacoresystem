@@ -29,12 +29,8 @@ conf/spring/SDKSpringBeanConfig.xml -text
 conf/svr_1/admpriv.bin -text
 conf/svr_1/admpub.bin -text
 conf/svr_1/config.dct -text svneol=unset#application/octet-stream
-conf/svr_1/contactdata.dct -text svneol=unset#application/octet-stream
-conf/svr_1/handles.jdb -text
-conf/svr_1/nas.jdb -text
 conf/svr_1/privkey.bin -text
 conf/svr_1/pubkey.bin -text
-conf/svr_1/sitebndl.zip -text
 conf/svr_1/siteinfo.bin -text
 conf/web.xml -text
 conf/wsddEVSUtil.xml -text
