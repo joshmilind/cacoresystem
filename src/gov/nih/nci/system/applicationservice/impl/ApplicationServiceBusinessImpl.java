@@ -333,10 +333,9 @@ public class ApplicationServiceBusinessImpl {
         }
         return exist;
     }
+    
     public Object getDataObjectFromBigId(String bigId) throws Exception {
-        
-       // IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("/hs/svr_1");
-        IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("C:/gridid/conf/svr_1");
+        IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("./conf/svr_1");
         
         ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
         
@@ -344,10 +343,7 @@ public class ApplicationServiceBusinessImpl {
         Object dataObject = null; 
         
         //Generate criteria
-        
-        Field dataField = null;
-        
-        
+        Field dataField = null;       
         try{  
             Object value = null;
             gov.nih.nci.common.util.SearchUtils searchUtils = new gov.nih.nci.common.util.SearchUtils();                    
@@ -367,10 +363,8 @@ public class ApplicationServiceBusinessImpl {
             ex.printStackTrace();
         }
         
-        //Query database
-        
+        //Query database   
         Object result = null;
-        
         try {
             List results = search(dataObject.getClass().getName(), dataObject);
             for(int i=0; i<results.size();i++){
@@ -378,10 +372,8 @@ public class ApplicationServiceBusinessImpl {
                 String resultValue = String.valueOf(dataField.get(result));
                 if(resultValue.equals(bigId)){                   
                    break;
-                }
-                
+                }            
             }
-         
         } catch (Exception ex) {
             log.error("Exception " + ex.getMessage());
             throw new Exception(ex.getMessage());
@@ -881,6 +873,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.5  2006/09/14 20:33:04  masondo
+// Fixed to match the SDK.  Now using the spring framework configuration files
+//
 // Revision 1.8  2006/09/13 20:26:06  satish79
 // Modified exception handling mechanism
 //
