@@ -217,10 +217,10 @@
 			</fileset>
 		</copy>
 
-		<copy todir="${dir.src.custom.orm}" overwrite="yes" failonerror="true">
+		<copy todir="${dir.src.custom.orm}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.orm}"/>
 		</copy>
-		<copy todir="${dir.src.custom.beans}" overwrite="yes" failonerror="true">
+		<copy todir="${dir.src.custom.beans}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.beans}">
 				<include name="**/evs/domain/*.java" />
 			</fileset>
