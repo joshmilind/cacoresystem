@@ -441,6 +441,10 @@
 			<zipfileset dir="${dir.custom.conf}/spring/" prefix="WEB-INF/classes">
 				<include name="**/**"/>
 			</zipfileset>
+			<!-- configuration files for the grid identifier framework -->
+			<zipfileset dir="${dir.custom.conf}/svr_1/" prefix="WEB-INF/classes/conf/svr_1/">
+					<include name="**/**"/>
+			</zipfileset>
 		</war>
 	</target>
 	<target name="-package-system.custom" if="package-system.custom.use">
