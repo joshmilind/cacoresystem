@@ -492,9 +492,9 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	 */
 	public void searchSourceByCode(String code, String sourceAbbr) 
 	{
-		//metaThesaurusValues.put("searchSourceByCode$code", code);
-		//metaThesaurusValues.put("searchSourceByCode$sourceAbbr", sourceAbbr);
-        searchMetaThesaurus(code, 100, sourceAbbr, true, false, false);
+		metaThesaurusValues.put("searchSourceByCode$code", code);
+		metaThesaurusValues.put("searchSourceByCode$sourceAbbr", sourceAbbr);
+        //searchMetaThesaurus(code, 100, sourceAbbr, true, false, false);
 	}
 
 	/**
