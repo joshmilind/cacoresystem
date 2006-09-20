@@ -123,7 +123,16 @@
 				        <filter token="EVS_MODEL" value="${dir.model}/${fixed_evs_model_filename}"/>				
 					</extendedfilterset>
 				</SDKcreatecontrol>
-			
+		<SDKcreatecontrol outputdir="${dir.output.project.xmlschema}">
+			<controlfileset>
+				<fileset dir="${dir.custom.conf}">
+					<include name="${file.control.evs_schemageneration}"/>
+				</fileset>
+			</controlfileset>
+			<extendedfilterset>
+		       <filter token="EVS_MODEL" value="${dir.model}/${fixed_evs_model_filename}"/>				
+			</extendedfilterset>
+		</SDKcreatecontrol>	
 		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
 			<controlfileset>
 				<fileset dir="${dir.custom.conf}">
@@ -179,7 +188,10 @@
 	<target name="-generate-junit.custom" if="generate-junit.custom.use"/>
 	<target name="-generate-OR-mapping.custom" if="generate-OR-mapping.custom.use"/>
 	<target name="-generate-orm-conf.custom" if="generate-orm-conf.custom.use"/>
-	<target name="-generate-schemas.custom" if="generate-schemas.custom.use"/>
+	<target name="-generate-schemas.custom" if="generate-schemas.custom.use">
+		<SDKecho message="Generating EVS XML schemas"/>
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evs_schemageneration}"/>		
+	</target>
 	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
 	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
 	<target name="-init-project.custom" if="init-project.custom.use">
