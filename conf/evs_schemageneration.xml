@@ -11,7 +11,7 @@
 	
 	<transformer-chain>
 	 <transformer name="schema"
-	 	className="gov.nih.nci.codegen.core.transformer.UML13SchemaTransformer">
+	 	className="gov.nih.nci.codegen.core.transformer.UML13SchemaTransformerForEVS">
 	 	<param name="basePackage" value="Logical View.Logical Model"/>
 	  <filter name="classifier" className="gov.nih.nci.codegen.core.filter.UML13ClassifierFilter">
 	   <package>
