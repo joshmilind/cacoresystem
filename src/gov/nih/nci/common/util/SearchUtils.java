@@ -1,16 +1,5 @@
 package gov.nih.nci.common.util;
 
-
-//import org.hibernate.criterion.*;
-//import org.hibernate.impl.*;
-//import org.hibernate.impl.*;
-//
-//import org.hibernate.*;
-
-//import net.sf.hibernate.expression.*;
-//import net.sf.hibernate.*;
-//import net.sf.hibernate.impl.*;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.lang.reflect.*;
@@ -18,9 +7,9 @@ import java.lang.reflect.*;
 import org.apache.log4j.*;
 /**
   * <!-- LICENSE_TEXT_START -->
-The caBIO Software License, Version 3.1 Copyright 2001-2006 Science Applications International Corporation (SAIC)  
-Copyright Notice.  The software subject to this notice and license includes both human readable source code form and machine readable, binary, object code form (the caBIO Software).  The caBIO Software was developed in conjunction with the National Cancer Institute (NCI) by NCI employees and employees of SAIC.  To the extent government employees are authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.    
-This caBIO Software License (the License) is between NCI and You.  You (or Your) shall mean a person or an entity, and all other entities that control, are controlled by, or are under common control with the entity.  Control for purposes of this definition means (i) the direct or indirect power to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.  
+The caBIO Software License, Version 3.1 Copyright 2001-2006 Science Applications International Corporation (SAIC)
+Copyright Notice.  The software subject to this notice and license includes both human readable source code form and machine readable, binary, object code form (the caBIO Software).  The caBIO Software was developed in conjunction with the National Cancer Institute (NCI) by NCI employees and employees of SAIC.  To the extent government employees are authors, any rights in such works shall be subject to Title 17 of the United States Code, section 105.
+This caBIO Software License (the License) is between NCI and You.  You (or Your) shall mean a person or an entity, and all other entities that control, are controlled by, or are under common control with the entity.  Control for purposes of this definition means (i) the direct or indirect power to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
 This License is granted provided that You agree to the conditions described below.  NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, no-charge, irrevocable, transferable and royalty-free right and license in its rights in the caBIO Software to (i) use, install, access, operate, execute, copy, modify, translate, market, publicly display, publicly perform, and prepare derivative works of the caBIO Software; (ii) distribute and have distributed to and by third parties the caBIO Software and any modifications and derivative works thereof; and (iii) sublicense the foregoing rights set out in (i) and (ii) to third parties, including the right to license such rights to further third parties.  For sake of clarity, and not by way of limitation, NCI shall have no right of accounting or right of payment from You or Your sublicensees for the rights granted under this License.  This License is granted at no charge to You.
 1.	Your redistributions of the source code for the Software must retain the above copyright notice, this list of conditions and the disclaimer and limitation of liability of Article 6, below.  Your redistributions in object code form must reproduce the above copyright notice, this list of conditions and the disclaimer of Article 6 in the documentation and/or other materials provided with the distribution, if any.
 2.	Your end-user documentation included with the redistribution, if any, must include the following acknowledgment: This product includes software developed by SAIC and the National Cancer Institute.  If You do not include such end-user documentation, You shall include this acknowledgment in the Software itself, wherever such third-party acknowledgments normally appear.
@@ -38,19 +27,19 @@ This License is granted provided that You agree to the conditions described belo
  */
 
 public class SearchUtils {
-    
+
     private static Logger log= Logger.getLogger(SearchUtils.class.getName());
-    
+
 	private static Properties roleLookupProp;
-	 
+
 	{
-		try{	
-			
+		try{
+
 			roleLookupProp = RoleLookupProperties.getInstance().getProperties();
 		}
 		catch(Exception e)
 		{
-		    log.error("IOException: " + e.getMessage());			
+		    log.error("IOException: " + e.getMessage());
 		}
 	}
 
@@ -76,14 +65,14 @@ public class SearchUtils {
 			        	Class superClass = searchClass.getSuperclass();
 			        	roleName = getRoleName(searchClass.getSuperclass(), criterion);
 			        }
-			        
+
 			        // if the superclass has association with the criterionobject,
 			        // use the superclass's asscoiation as the subclass.
 			        if (roleName != null)
 			        {
 			        	return roleName;
 			        }
-			        
+
 			        try{
 			            for (int i = 0; i < fields.length; i++) {
 			                fields[i].setAccessible(true);
@@ -113,7 +102,7 @@ public class SearchUtils {
 			                                	break;
 			                                }
 
-			                            } 
+			                            }
 			                            else
 			                            {
 			                            	if (fieldType.equals(criterionClassName))
@@ -165,7 +154,7 @@ public class SearchUtils {
 					flag = true;
 					break;
 				}
-			}			
+			}
 		}
 		return flag;
 	}
@@ -176,7 +165,7 @@ public class SearchUtils {
  * @param criteriaList
  * @return
  * @throws Exception
- */    
+ */
     private Object buildCriteria(String packageName, List criteriaList) throws Exception{
 
 
@@ -186,12 +175,12 @@ public class SearchUtils {
             criteriaObject = getCriteria((String)criteriaList.get(0),packageName);
             if(criteriaList.size()>0){
                 for(int i=1; i<criteriaList.size(); i++){
-                    String critString = (String)criteriaList.get(i);                    
+                    String critString = (String)criteriaList.get(i);
                     Object assObject = getCriteria(critString, packageName);
                     if(criteriaObject.getClass().getName().equals(assObject.getClass().getName())){
                         throw new Exception( critString +" is not an association of "+ criteriaObject.getClass().getName());
                     }
-                    Method method = getRoleMethod(criteriaObject, assObject);                   
+                    Method method = getRoleMethod(criteriaObject, assObject);
                      if(method != null){
                             method.invoke(criteriaObject, new Object[]{assObject});
                             }
@@ -207,9 +196,9 @@ public class SearchUtils {
 
        return criteriaObject;
         }
-    
+
     /**
-     * Returns the criteria value 
+     * Returns the criteria value
      * @param assObject
      * @param critObject
      * @return
@@ -218,28 +207,28 @@ public class SearchUtils {
     public Object getCriteriaValue(Object assObject, Object critObject) throws Exception{
         if(critObject.getClass().getName().equals(assObject.getClass().getName())){
             Field[] assFields = getAllFields(assObject.getClass());
-            for(int i=0; i<assFields.length; i++){                
+            for(int i=0; i<assFields.length; i++){
                 if(assFields[i].getName().equalsIgnoreCase("serialVersionUID")){
                     continue;
                 }
                 try{
-                    if(assFields[i].get(assObject)!=null){                        
+                    if(assFields[i].get(assObject)!=null){
                         Object value = assFields[i].get(assObject);
                         Field critField = getField(critObject.getClass(), assFields[i].getName());
-                        if(value != null){                           
-                           critField.set(critObject, value);                           
+                        if(value != null){
+                           critField.set(critObject, value);
                         }
-                    }  
+                    }
                 }catch(Exception ex){
                     log.error(ex.getMessage());
                 }
-                
+
             }
         }
-        
+
         return critObject;
     }
-    
+
 
 /**
  * Generates nested search criteria
@@ -258,11 +247,11 @@ public class SearchUtils {
              if(criteriaList.size()>1){
                  criteriaObject = getCriteria((String)criteriaList.get(counter-1),packageName);
                  for(int i=counter-2; i>=0; i--){
-                     assObject = criteriaObject;                    
-                     String critString = (String)criteriaList.get(i);                     
+                     assObject = criteriaObject;
+                     String critString = (String)criteriaList.get(i);
                      criteriaObject= getCriteria(critString, packageName);
                      if(criteriaObject.getClass().getName().equals(assObject.getClass().getName())){
-                         criteriaObject = getCriteriaValue(criteriaObject, assObject);                         
+                         criteriaObject = getCriteriaValue(criteriaObject, assObject);
                      }
                      else{
                          Method method = null;
@@ -273,20 +262,20 @@ public class SearchUtils {
                              else{
                                  method = getRoleMethod(criteriaObject, assObject);
                              }
-                             
+
                          }catch(Exception ex){
                              throw new Exception( critString +" is not an association of "+ criteriaObject.getClass().getName());
                          }
-                         
-                         
-                         if(method != null){                          
+
+
+                         if(method != null){
                              Class[] types = method.getParameterTypes();
-                             
-                             if(types.length > 0){                                 
+
+                             if(types.length > 0){
                                  if(method.getName().endsWith("Collection")){
-                                     Object arg = types[0].newInstance();                                 
+                                     Object arg = types[0].newInstance();
                                      if(types[0].getName().endsWith("Vector")){
-                                         ((Vector)arg).add(assObject);                                      
+                                         ((Vector)arg).add(assObject);
                                      }else if(types[0].getName().endsWith("Set")){
                                          ((Set)arg).add(assObject);
                                      }else{
@@ -297,10 +286,10 @@ public class SearchUtils {
                                  else{
                                      method.invoke(criteriaObject, new Object[]{assObject});
                                  }
-                             }                               
-                            }                         
+                             }
+                            }
                      }
-                     
+
                        }
 
                      }
@@ -326,7 +315,7 @@ public class SearchUtils {
  * @throws Exception
  */
     private Object getCriteria(String criteriaString, String packageName) throws Exception{
-      
+
         Object critObject = null;
         try{
             String critClassName = null;
@@ -336,14 +325,17 @@ public class SearchUtils {
             else{
                 critClassName = criteriaString;
             }
-            
+
             if(critClassName.indexOf(".")>0){
                 critObject = Class.forName(critClassName).newInstance();
             }
             else{
+            	if(packageName.indexOf("nih.nci.evs")>0 && criteriaString.startsWith("Security")){
+            		packageName = "gov.nih.nci.evs.security";
+            	}
                 critObject = Class.forName(packageName +"."+critClassName).newInstance();
             }
-            
+
             String attString = null;
             List attList = new ArrayList();
             if(criteriaString.indexOf("[")>=0){
@@ -355,7 +347,7 @@ public class SearchUtils {
                 }
 
             for(int i=0; i<attList.size(); i++){
-                String att = (String)attList.get(i);               
+                String att = (String)attList.get(i);
                 critObject = getAttributeCriteria(att, critObject, packageName);
             }
            }catch(Exception ex){
@@ -387,7 +379,7 @@ public class SearchUtils {
         Method roleMethod = null;
         String assClassName = association.getClass().getName();
         String assName = assClassName.substring(assClassName.lastIndexOf("."));
-        
+
         Field[] fields = criteria.getClass().getDeclaredFields();
         for(int i=0; i<fields.length; i++){
             fields[i].setAccessible(true);
@@ -407,13 +399,13 @@ public class SearchUtils {
                         break;
                     }
                 }
-            }            
+            }
         }
         if(roleName != null){
             String setMethod = "set"+roleName.substring(0,1).toUpperCase() + roleName.substring(1);
-            roleMethod = getMethod(criteria.getClass(), setMethod);        
+            roleMethod = getMethod(criteria.getClass(), setMethod);
             }
-        return roleMethod;        
+        return roleMethod;
     }
     /**
      * Returns the method specified by the method name
@@ -426,7 +418,7 @@ public class SearchUtils {
         Method method = null;
         for(int i=0; i<methods.length; i++){
             if(methods[i].getName().equalsIgnoreCase(methodName)){
-                method = methods[i];            
+                method = methods[i];
                 break;
             }
         }
@@ -440,7 +432,7 @@ public class SearchUtils {
      * @throws Exception
      */
     private List getAttributeCollection(String attString) throws Exception{
-        
+
         List attList = new ArrayList();
         int startCounter =0;
         int startIndex =0;
@@ -458,11 +450,11 @@ public class SearchUtils {
         }
         try{
             if(attString.indexOf("][")<1){
-                String att = attString.substring(1,attString.lastIndexOf("]"));           
+                String att = attString.substring(1,attString.lastIndexOf("]"));
                 attList.add(att);
             }
             else{
-                if(attString.charAt(0)=='['){                
+                if(attString.charAt(0)=='['){
                     startCounter = 1;
                     endCounter =0;
                     startIndex = 1;
@@ -472,12 +464,12 @@ public class SearchUtils {
                 }
 
                 int count = attString.length();
-                for(int i=1; i<count;i++){                
+                for(int i=1; i<count;i++){
                     if(attString.charAt(i)==']'){
                         endCounter++;
-                        if(startCounter == endCounter){                        
+                        if(startCounter == endCounter){
                             String att = attString.substring(startIndex,i);
-                            attList.add(att);                        
+                            attList.add(att);
                             startIndex = i+2;
                             if(startIndex < count){
                                 startCounter = 0;
@@ -488,7 +480,7 @@ public class SearchUtils {
                     }
                     else if(attString.charAt(i)=='['){
                         startCounter++;
-                    }                
+                    }
                 }
             }
 
@@ -501,17 +493,17 @@ public class SearchUtils {
     /**
      * Generates a criteria object
      * @param att - specifies the attribute
-     * @param critObject - specifies the criteria 
+     * @param critObject - specifies the criteria
      * @param packageName - specifies the package name
      * @return
      * @throws Exception
      */
     private Object getAttributeCriteria(String att, Object critObject, String packageName)throws Exception{
-        
+
         try{
             String attRole = null;
             if(att.indexOf("[")>1){
-                attRole = att.substring(0,att.indexOf("["));    
+                attRole = att.substring(0,att.indexOf("["));
             }
 
             Method critAttMethod = null;
@@ -519,11 +511,11 @@ public class SearchUtils {
                     String attName = att.substring(att.indexOf("@")+1, att.indexOf("="));
                     String attValue = att.substring(att.indexOf("=")+1);
                     Field critField = getField(critObject.getClass(), attName);
-                    critAttMethod = getAttributeSetMethodName(critObject, attName);                
+                    critAttMethod = getAttributeSetMethodName(critObject, attName);
                     Object value = getFieldValue(critField, attValue);
-                    if( critAttMethod!= null){                    
+                    if( critAttMethod!= null){
                         critAttMethod.invoke(critObject,new Object[]{value});
-                        }                
+                        }
                 }
                 else{
                     String ontologyRole = null;
@@ -531,26 +523,26 @@ public class SearchUtils {
                     if(attRole.indexOf("Ontology")>0 && (attRole.startsWith("parent")|| attRole.startsWith("child"))){
                         Object ontologyObject = buildOntology(att, packageName);
                         Method ontologyMethod = getMethod(critObject.getClass(), "set" + attRole.substring(0,1).toUpperCase() + attRole.substring(1));
-                        
+
                         if(ontologyMethod != null){
                             if(attRole.endsWith("Collection")){
                                 List ontologyList = new ArrayList();
                                 ontologyList.add(ontologyObject);
-                                ontologyMethod.invoke(critObject,new Object[]{ontologyList});                                                               
+                                ontologyMethod.invoke(critObject,new Object[]{ontologyList});
                             }
                             else{
                                 ontologyMethod.invoke(critObject,new Object[]{ontologyObject});
                             }
-                        }                                           
+                        }
                     }
                     else{
                         String roleClassName = getRoleClassName(attRole);
 
                         if(roleClassName.indexOf(".")<0){
-                            roleClassName = packageName +"." + roleClassName;                            
-                        }                
+                            roleClassName = packageName +"." + roleClassName;
+                        }
                         Method roleMethod = null;
-                        if(ontologyRole != null){                    
+                        if(ontologyRole != null){
                             roleMethod = getMethod(critObject.getClass(), "set"+ attRole.substring(0,1).toUpperCase() + attRole.substring(1));
                             }
                         else{
@@ -565,10 +557,10 @@ public class SearchUtils {
                                 count++;
                             }
                         }
-                        if(count>1){                    
+                        if(count>1){
                             List attList = getAttributeCollection(att.substring(att.indexOf("[")));
                             for(int i=0; i<attList.size(); i++){
-                                String critAtt = (String)attList.get(i);                        
+                                String critAtt = (String)attList.get(i);
                                 String attName = critAtt.substring(1, critAtt.indexOf("="));
                                 String attValue = critAtt.substring(critAtt.indexOf("=")+1);
                                 Field roleAttField = getField(Class.forName(roleClassName), attName);
@@ -601,16 +593,16 @@ public class SearchUtils {
                                 roleAttMethod.invoke(roleObject,new Object[]{value});
                                 roleClassCollection.add(roleObject);
                             }
-                            else{                        
+                            else{
                                 Object value = getFieldValue(roleAttField, attValue);
                                 roleAttMethod.invoke(roleObject,new Object[]{value});
                             }
 
                         }
 
-                        if(attRole.indexOf("Collection")<1 && roleObject != null){                    
-                                roleMethod.invoke(critObject, new Object[]{roleObject});                        
-                        }else if(roleClassCollection.size()>0){                    
+                        if(attRole.indexOf("Collection")<1 && roleObject != null){
+                                roleMethod.invoke(critObject, new Object[]{roleObject});
+                        }else if(roleClassCollection.size()>0){
                             try{
                                 Class types[] = roleMethod.getParameterTypes();
                                 if(types[0] != null){
@@ -618,7 +610,7 @@ public class SearchUtils {
                                         Vector vector = new Vector();
                                        for(int i=0; i<roleClassCollection.size(); i++){
                                            vector.add(roleClassCollection.get(i));
-                                       } 
+                                       }
                                        roleMethod.invoke(critObject, new Object[] {vector});
                                     }
                                     else{
@@ -628,7 +620,7 @@ public class SearchUtils {
                                 else{
                                     throw new Exception("Invalid arguments passed over to method : "+ roleMethod);
                                 }
-                                
+
                             }catch(Exception ex){
                                 throw new Exception("Cannot invoke method - " + roleMethod.getName());
                             }
@@ -653,10 +645,10 @@ public class SearchUtils {
      * @return
      * @throws Exception
      */
-    public Field getField(Class className, String attributeName)throws Exception{  
+    public Field getField(Class className, String attributeName)throws Exception{
         Field attribute = null;
             Field[] fields = getAllFields(className);
-            for(int i=0; i<fields.length; i++){           
+            for(int i=0; i<fields.length; i++){
                 if(fields[i].getName().equalsIgnoreCase(attributeName)){
                     fields[i].setAccessible(true);
                     attribute = fields[i];
@@ -671,11 +663,11 @@ public class SearchUtils {
 
     /**
      * Returns a Method for a given attribute in the specified class
-     * @param attObject 
+     * @param attObject
      * @param attName
      * @return
      */
-    private Method getAttributeSetMethodName(Object attObject, String attName){    
+    private Method getAttributeSetMethodName(Object attObject, String attName){
         Method m = getMethod(attObject.getClass(), "set"+ attName.substring(0,1).toUpperCase() + attName.substring(1));
         return m;
     }
@@ -687,7 +679,7 @@ public class SearchUtils {
      * @return
      * @throws Exception
      */
-    private Object getFieldValue(Field field, String attValue) throws Exception{       
+    private Object getFieldValue(Field field, String attValue) throws Exception{
         Object value = null;
         if(field.getType().getName().equalsIgnoreCase("java.lang.String")){
             value = attValue;
@@ -698,7 +690,7 @@ public class SearchUtils {
     return value;
     }
 
-    
+
     /**
     * Converts the specified value to the filed class type
     * @param field  Specifies the field
@@ -761,7 +753,7 @@ public class SearchUtils {
      * @param attRole
      * @return
      */
-    public String getOntologyRoleName (String attRole){    
+    public String getOntologyRoleName (String attRole){
         String ontologyRole = null;
         if(attRole.startsWith("child")){
             ontologyRole = attRole.substring("child".length());
@@ -787,20 +779,20 @@ public class SearchUtils {
      * @return
      */
     public String getRoleClassName(String attRole){
-        
+
         String attClassName = null;
-        if(attRole.indexOf("Ontology")>=0 && (attRole.startsWith("child")|| attRole.startsWith("parent"))){        
+        if(attRole.indexOf("Ontology")>=0 && (attRole.startsWith("child")|| attRole.startsWith("parent"))){
             attClassName  = getOntologyRoleName(attRole);
             }
         else if(attRole.indexOf("Collection")>0){
             attClassName = attRole.substring(0,1).toUpperCase() + attRole.substring(1,attRole.indexOf("Collection"));
         }else{
             attClassName = attRole.substring(0,1).toUpperCase() + attRole.substring(1);
-        }        
+        }
       return attClassName;
     }
 
-  
+
     /**
      * Gets all the fields for a given class
      * @param resultClass - Specifies the class name
@@ -876,8 +868,8 @@ public class SearchUtils {
         return methods;
         }
 
-   
-   
+
+
     /**
      * Generates ontology search criteria
      * @param queryString - Specifies the query string
@@ -886,15 +878,15 @@ public class SearchUtils {
      * @throws Exception
      */
     public Object buildOntology(String queryString, String packageName) throws Exception{
-        
+
         String attName = queryString.substring(queryString.indexOf("@")+1,queryString.indexOf("="));
         String attValue = queryString.substring(queryString.indexOf("=")+1,queryString.lastIndexOf("]"));
         String setMethodName = "set"+attName.substring(0,1).toUpperCase() + attName.substring(1);
         String roleName = queryString.substring(0, queryString.indexOf("["));
-        
+
         Object ontologyCriteria = null;
         String ontologyClassName = null;
-        
+
         if(roleName.startsWith("child")){
             ontologyClassName = roleName.substring("child".length());
         }
@@ -908,11 +900,11 @@ public class SearchUtils {
         if(ontologyClassName.indexOf(".")<1){
             ontologyClassName = packageName +"."+ontologyClassName;
         }
-        
+
         Field field = getField(Class.forName(ontologyClassName), attName);
-        
+
         Method method = getMethod(Class.forName(ontologyClassName), setMethodName);
-        
+
         Object value = null;
         if(method != null){
             if(!field.getType().getName().endsWith("String")){
@@ -923,8 +915,8 @@ public class SearchUtils {
             }
             ontologyCriteria = Class.forName(ontologyClassName).newInstance();
             method.invoke(ontologyCriteria, new Object[]{value});
-            
-            Field[] ofields = this.getAllFields(Class.forName(ontologyClassName)); 
+
+            Field[] ofields = this.getAllFields(Class.forName(ontologyClassName));
             for(int i=0; i<ofields.length; i++){
                 Field ofield = ofields[i];
                 ofield.setAccessible(true);
@@ -945,48 +937,48 @@ public class SearchUtils {
         Set roles = roleLookupProp.keySet();
         if(roleLookupProp.getProperty(roleName+className)!= null){
             String searchName = roleName+className;
-            targetClassName = roleLookupProp.getProperty(searchName);            
+            targetClassName = roleLookupProp.getProperty(searchName);
             if(targetClassName == null){
                 for(Iterator i= roles.iterator(); i.hasNext();){
                     String key = (String)i.next();
                     String value = (String)roleLookupProp.get(key);
                     if(key.equals(searchName)){
-                        targetClassName = value;                        
+                        targetClassName = value;
                         break;
                     }
                 }
             }
         }
-                    
+
             String searchBean = roleName;
-            if(targetClassName == null){            
+            if(targetClassName == null){
                 if(roleName.indexOf("Collction")>0){
                     searchBean = searchBean.substring(0,searchBean.lastIndexOf("Collection"));
                 }
                 searchBean = searchBean.substring(0,1).toUpperCase() + searchBean.substring(1);
-                    
+
                     for(Iterator i= roles.iterator(); i.hasNext();){
                         String key = (String)i.next();
                         String value = (String)roleLookupProp.get(key);
                         if(key.endsWith(searchBean) && value.equals(className)){
-                            target= key;                            
+                            target= key;
                             break;
                         }
-                    }             
+                    }
             }
             if(target != null){
                 if(target.indexOf("Collection")>0){
-                    targetClassName = target.substring(target.indexOf("Collection")+"Collection".length());                    
+                    targetClassName = target.substring(target.indexOf("Collection")+"Collection".length());
                 }
-            }      
+            }
             if(targetClassName == null){
                 Class superClass = Class.forName(className).getSuperclass();
                 if(!superClass.getName().endsWith("Object") && superClass != null){
                     targetClassName = getTargetClassName(superClass.getName(), roleName);
                 }
-            }  
+            }
         return targetClassName;
-        
+
     }
 
 }
