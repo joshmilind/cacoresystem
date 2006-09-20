@@ -71,7 +71,7 @@ public class EVSWebService {
 		int startIndex, int recordCounter) throws Exception {
 		Object searchObject = null;
 		if (wsObject.getClass().getName().indexOf(".ws.") > 0) {
-			searchObject = transformer.convertWStoEVS(wsObject);			
+			searchObject = transformer.convertWStoEVS(wsObject);
 		} else {
 			searchObject = wsObject;
 		}
@@ -108,7 +108,7 @@ public class EVSWebService {
 		List finalResults = new ArrayList();
 		if (wsObject.getClass().getName().indexOf(".ws.") > 0) {
 			for (int i = 0; i < evsResults.size(); i++) {
-				Object wsResult = transformer.convertEVStoWS(evsResults.get(i));				
+				Object wsResult = transformer.convertEVStoWS(evsResults.get(i));
 				results.add(wsResult);
 			}
 		} else {
@@ -126,7 +126,7 @@ public class EVSWebService {
 	 * @throws Exception
 	 */
 	public List evsSearch(String parameterList, Object searchObject)
-			throws Exception {        
+			throws Exception {
 	    List dtsrpcList = new ArrayList();
         String queryType = getQueryType(searchObject);
         List results = new ArrayList();
@@ -143,7 +143,7 @@ public class EVSWebService {
         if(!(returnClassName.indexOf(".")>0)){
             returnClassName = transformer.locateClass(returnClassName);
         }
-       
+
 		try {
 			if (queryType.equals("dtsrpc")) {
                 if(searchObject.getClass().getName().endsWith("History") && returnClassName.endsWith("History")){
@@ -155,14 +155,14 @@ public class EVSWebService {
                     }
                     else{
                         results = getVocabularies();
-                    }  
-                   
+                    }
+
                 } else if(searchObject.getClass().getName().endsWith("Silo")&& returnClassName.endsWith("Silo")){
                     results = getMatchFromList(getAllSilos(),searchObject, "name");
                 } else if(searchObject.getClass().getName().endsWith("Association")&& returnClassName.endsWith("Association")){
                     results = getMatchFromList(getAllAssociations(),searchObject, "name");
                 } else if(searchObject.getClass().getName().endsWith("Property")&& returnClassName.endsWith("Property")){
-                    results = getMatchFromList(getAllProperties(),searchObject, "name");                                        
+                    results = getMatchFromList(getAllProperties(),searchObject, "name");
                 } else if(searchObject.getClass().getName().endsWith("Qualifier")&& returnClassName.endsWith("Qualifier")){
                     results = getMatchFromList(getAllQualifiers(),searchObject, "name");
                 } else if(searchObject.getClass().getName().endsWith("Role")&& returnClassName.endsWith("Role")){
@@ -171,29 +171,29 @@ public class EVSWebService {
                     results = searchDTSRPC(searchObject);
                 }
 			} else if(queryType.equals("meta")) {
-                if(searchObject.getClass().getName().endsWith("Source")&& returnClassName.endsWith("Source")){                    
-                    results = getMatchFromList(getAllMetaSources(), searchObject, "abbreviation");                                       
+                if(searchObject.getClass().getName().endsWith("Source")&& returnClassName.endsWith("Source")){
+                    results = getMatchFromList(getAllMetaSources(), searchObject, "abbreviation");
                 }else if(searchObject.getClass().getName().endsWith("SemanticType")&& returnClassName.endsWith("SemanticType")){
                     results = getMatchFromList(getAllSemanticTypes(),searchObject, "name");
                 }else{
                     results = searchMetaphrase(searchObject);
-                }   
+                }
  			} else {
 				throw new Exception("Invalid search class " + searchObject.getClass().getName());
 			}
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
-          
+
 		return results;
 	}
-    
+
      /**
      * Returns the EVS Query type for the specified object
      * @param searchObject An instance of gov.nih.nci.evs.domain.* domain object
      * @return
      */
-    private String getQueryType(Object searchObject)throws Exception{        
+    private String getQueryType(Object searchObject)throws Exception{
         String queryType = null;
         List dtsrpcList = new ArrayList();
         dtsrpcList.add("DescLogicConcept");
@@ -226,12 +226,12 @@ public class EVSWebService {
                 break;
             }
         }
-        
+
         return queryType;
     }
-    
+
     /**
-     * Returns the EVS query type for a given class name. 
+     * Returns the EVS query type for a given class name.
      * @param specifies the class name
      * @return returns a String that represents a vocabulary type.
      */
@@ -242,7 +242,7 @@ public class EVSWebService {
                 name = transformer.locateClass(className);
             }catch(Exception ex){
                 throw new Exception("Class not found: "+ returnClassName);
-            }            
+            }
         }
         else{
             name = className;
@@ -282,30 +282,43 @@ public class EVSWebService {
             }
             if (concept.getRoleCollection().size() > 0) {
                 criteria = concept.getRoleCollection().get(0);
-            }            
-            if(concept.getVocabulary()!=null){                
-                criteria = concept.getVocabulary();                
-            }            
-
-        }
+            }
+            if(concept.getVocabulary()!=null){
+                criteria = concept.getVocabulary();
+            }
+            if(concept.getAssociationCollection().size() >0){
+				criteria = concept.getAssociationCollection().get(0);
+			}
+        }        
         if(criteria.getClass().getName().endsWith("Vocabulary")){
             vocabulary = (Vocabulary)criteria;
-            if(vocabulary.getName()!= null && vocabulary.getName().length()>0){                
+            if(vocabulary.getName()!= null && vocabulary.getName().length()>0){
                 defaultVocabulary = vocabulary.getName();
                 if(vocabulary.getSecurityToken() != null){
                     securityToken = vocabulary.getSecurityToken();
-                }                                
-            }                 
+                }
+            }
             if(vocabulary.getSiloCollection().size()>0){
                 Silo silo = (Silo)vocabulary.getSiloCollection().get(0);
                 if(silo.getName()!=null){
                     siloName = silo.getName();
-                    matchOption = 4;
+                    matchOption = 3;
+                    matchType = siloName;
                 }
             }
-        } 
-        if(conceptCode == null && conceptName == null){
-            if(criteria.getClass().getName().endsWith("Property")){
+        }
+
+        if(conceptCode == null){
+            if(criteria.getClass().getName().endsWith("Role")){
+                Role role = (Role) criteria;
+                if (role.getName() != null && role.getName().length() > 0) {
+                    matchOption = 1;
+                    matchType = role.getName();
+                    if (role.getValue() != null && role.getValue().length() > 0) {
+                        searchValue = role.getValue();
+                    }
+                }
+            } else if(criteria.getClass().getName().endsWith("Property")){
                 Property property = (Property) criteria;
                 if (property.getName() != null && property.getName().length() > 0) {
                     matchOption = 2;
@@ -319,7 +332,7 @@ public class EVSWebService {
                 if (association.getName() != null && association.getName().length() > 0) {
                     matchOption = 4;
                     matchType = association.getName();
-                    if (association.getValue() != null || association.getValue().length() > 0) {
+                    if (association.getValue() != null && association.getValue().length() > 0) {
                         searchValue = association.getValue();
                     }
                 }
@@ -328,6 +341,7 @@ public class EVSWebService {
                 Silo silo = (Silo) criteria;
                 if (silo.getName() != null && silo.getName().length() > 0) {
                     siloName = silo.getName();
+                    matchType = siloName;
                 }
             }
             else if(criteria.getClass().getName().endsWith("History")){
@@ -343,9 +357,9 @@ public class EVSWebService {
                 if(history.getDescLogicConceptCode()!=null){
                     conceptCode = history.getDescLogicConceptCode();
                 }
-            }          
+            }
         }
-        EVSQuery evsQuery = new EVSQueryImpl();
+        EVSQuery evsQuery = new EVSQueryImpl();        
         if (conceptCode != null) {
            evsQuery.getDescLogicConcept(defaultVocabulary, conceptCode, true);
         } else if (conceptName != null && matchOption == 0) {
@@ -355,8 +369,7 @@ public class EVSWebService {
                 searchValue = conceptName;
             }
             if (searchValue == null) {
-                throw new Exception("Search value for " + matchType
-                        + " not specified");
+                throw new Exception("Search value not specified");
             }
             evsQuery.searchDescLogicConcepts(defaultVocabulary, searchValue, defaultLimit,
                     matchOption, matchType, 1);
@@ -368,16 +381,16 @@ public class EVSWebService {
             throw new Exception("Invalid search");
         }
         results = query(evsQuery);
-        
-        if (results.size() > 0) {            
-            if(results.get(0).getClass().getName().endsWith("DescLogicConcept")){                
+
+        if (results.size() > 0) {
+            if(results.get(0).getClass().getName().endsWith("DescLogicConcept")){
                 if(getQueryType(returnClassName).equals("meta")){
-                    return getConceptProperties(convertConcepts(results));                
+                    return getConceptProperties(convertConcepts(results));
                 }
                 else{
                     return getConceptProperties(results);
                 }
-            }            
+            }
          }
 
         return results;
@@ -415,7 +428,7 @@ public class EVSWebService {
                     source = "*";
                 }
                 if (metaConcept.getAtomCollection() != null) {
-                    atomList = metaConcept.getAtomCollection();                   
+                    atomList = metaConcept.getAtomCollection();
                 }
 
             }
@@ -444,7 +457,7 @@ public class EVSWebService {
                 results =  searchMetaphraseByAtoms(atomList, source);
                 }
             else{
-                
+
                 if (conceptCode != null && source == null) {
                     evsQuery.searchMetaThesaurus(conceptCode);
                 } else if (conceptCode != null && source != null) {
@@ -459,23 +472,23 @@ public class EVSWebService {
                 results = query(evsQuery);
             }
 
-            
-              
-            
+
+
+
             if(results.size()>0){
-                
+
                 if(results.get(0).getClass().getName().endsWith("MetaThesaurusConcept")){
-                    
+
                     if(getQueryType(returnClassName).endsWith("dtsrpc")){
                         List dtsResults = convertConcepts(results);
                         return getConceptProperties(dtsResults);
-                    }      
+                    }
                     else{
                         return getConceptProperties(results);
                     }
-                }                
-            }            
-            
+                }
+            }
+
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -493,27 +506,27 @@ public class EVSWebService {
         List resultList = new ArrayList();
         if(returnClassName.endsWith("DescLogicConcept")){
             return conceptList;
-        } 
+        }
         else if(returnClassName.endsWith("History")|| returnClassName.endsWith("HistoryRecord")){
             return getHistoryRecords(conceptList);
-        } 
+        }
         else if(returnClassName.endsWith("MetaThesaurusConcept")){
             return conceptList;
         }
-        else{            
+        else{
             String className = conceptList.get(0).getClass().getName();
             Field[] fields = conceptList.get(0).getClass().getDeclaredFields();
             Field field = null;
             String fieldType = null;
             for(int f=0; f<fields.length; f++){
-                fields[f].setAccessible(true);                
+                fields[f].setAccessible(true);
                 fieldType = fields[f].getType().getName();
                 String beanName = null;
                 if(returnClassName.indexOf(".")>0){
                     beanName = returnClassName.substring(returnClassName.lastIndexOf(".")+1);
                     beanName = beanName.substring(0,1).toLowerCase() + beanName.substring(1);
                 }
-                if(fields[f].getName().startsWith(beanName)){                    
+                if(fields[f].getName().startsWith(beanName)){
                     field = fields[f];
                     break;
                 }
@@ -522,7 +535,7 @@ public class EVSWebService {
                 throw new Exception("Cannot locate "+returnClassName +" in " + className);
             }
             Set values = new HashSet();
-            for(int i=0; i<conceptList.size(); i++){        
+            for(int i=0; i<conceptList.size(); i++){
                 Object concept = conceptList.get(i);
                 if(fieldType.endsWith("Collection")|| fieldType.endsWith("HashSet")|| fieldType.endsWith("Vector")|| fieldType.endsWith("ArrayList")){
                     for(Iterator it = ((Collection)field.get(concept)).iterator(); it.hasNext();){
@@ -541,14 +554,14 @@ public class EVSWebService {
         return resultList;
     }
     private List searchMetaphraseByAtoms(List atomList, String sourceAbbr) throws Exception{
-        
+
         List conceptList = new ArrayList();
         for(int i=0; i<atomList.size(); i++){
-            Atom atom = (Atom) atomList.get(i); 
+            Atom atom = (Atom) atomList.get(i);
             String code = atom.getCode();
             String source = null;
-            
-            if (code != null) {                
+
+            if (code != null) {
                 if(atom.getSource()!= null){
                     try{
                         source = atom.getSource().getAbbreviation();
@@ -559,13 +572,13 @@ public class EVSWebService {
                 if(source == null){
                     source = sourceAbbr;
                 }
-                EVSQuery evsQuery = new EVSQueryImpl();                
+                EVSQuery evsQuery = new EVSQueryImpl();
                 evsQuery.searchSourceByCode(code, source);
-                
+
                 List results = query(evsQuery);
                 for(int r=0; r<results.size(); r++){
                     conceptList.add(results.get(r));
-                }                
+                }
             }
         }
         return conceptList;
@@ -579,17 +592,17 @@ public class EVSWebService {
 
     private List getVocabularies() throws Exception{
       EVSQuery evsQuery = new EVSQueryImpl();
-      evsQuery.getAllVocabularies();      
+      evsQuery.getAllVocabularies();
       return query(evsQuery);
     }
-    
+
     /**
      * Returns the specified vocabulary
-     * @name specifies the vocabulary name 
+     * @name specifies the vocabulary name
      */
     private List getVocabulary(String name) throws Exception{
         EVSQuery evsQuery = new EVSQueryImpl();
-        evsQuery.getVocabularyByName(name);        
+        evsQuery.getVocabularyByName(name);
         return query(evsQuery);
     }
 
@@ -649,8 +662,8 @@ public class EVSWebService {
           }
       }
       if(conceptCode != null){
-         evsQuery.getHistoryRecords(defaultVocabulary, conceptCode);         
-         result = query(evsQuery);        
+         evsQuery.getHistoryRecords(defaultVocabulary, conceptCode);
+         result = query(evsQuery);
       }
       return result;
   }
@@ -663,7 +676,7 @@ public class EVSWebService {
       evsQuery.getSemanticTypes();
       return query(evsQuery);
   }
-  
+
   /**
    * Returns all Sources from the Metaphrase
    */
@@ -672,7 +685,7 @@ public class EVSWebService {
       evsQuery.getMetaSources();
       return query(evsQuery);
   }
-  
+
   /**
    * Returns the specified Source from Metaphrase
    */
@@ -776,7 +789,7 @@ public class EVSWebService {
       }
       return qList;
   }
-  
+
   /**
    * Returns all the Role names from the NCI_Thesaurus
    */
@@ -792,7 +805,7 @@ public class EVSWebService {
       }
       return roleList;
   }
-  
+
   /**
    * Returns all Association names from the NCI_Thesaurus
    */
@@ -804,7 +817,7 @@ public class EVSWebService {
       for(int i=0; i< results.size(); i++){
           Association ass = new Association();
           ass.setName((String)results.get(i));
-          assList.add(ass);          
+          assList.add(ass);
       }
       return assList;
   }
@@ -817,15 +830,14 @@ public class EVSWebService {
 
     private List query(EVSQuery evsQuery) throws Exception {
         List results = new ArrayList();
-        if(securityToken != null){
-            System.out.println("Adding token");
+        if(securityToken != null){           
             ((EVSQueryImpl)evsQuery).addSecurityToken(defaultVocabulary, securityToken);
         }
-        
-        
-        try {            
+
+
+        try {
             ApplicationService appService = ApplicationServiceProvider.getLocalInstance();
-            results = (List)  appService.evsSearch(evsQuery);          
+            results = (List)  appService.evsSearch(evsQuery);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception(ex.getMessage());
@@ -960,72 +972,72 @@ public class EVSWebService {
         }
         return convertedResults;
     }
-    
+
     private List getMatchFromList(List resultList, Object criteria, String fieldName) throws Exception{
         List matchList = new ArrayList();
         if(resultList.size()>0){
             try{
-                
+
                 Field matchField = null;
                 String matchName = null;
                 try{
                     if(criteria.getClass().getName().equals(resultList.get(0).getClass().getName())){
                         matchField = criteria.getClass().getDeclaredField(fieldName);
-                        matchField.setAccessible(true);   
+                        matchField.setAccessible(true);
                         if(matchField.get(criteria) != null){
                             matchName = ((String)matchField.get(criteria)).toLowerCase();
-                        }                        
-                    }                    
+                        }
+                    }
                 }catch(Exception ex){
                     log.error(ex.getMessage());
                 }
-                
+
                 int starIndex = -1;
                 if(matchName != null && matchField !=null ){
                     if(matchName.indexOf("*")>-1){
                         starIndex = matchName.indexOf("*");
                     }
-                    
-                   
+
+
                     for(int i=0; i< resultList.size(); i++){
                         String match = matchName;
                         Object result = resultList.get(i);
-                        String value = ((String)matchField.get(result)).toLowerCase();                       
+                        String value = ((String)matchField.get(result)).toLowerCase();
                         if(match.length()>1){
-                            if(starIndex == 0){                                
+                            if(starIndex == 0){
                                 match = match.substring(1);
                                 if(value.endsWith(match)){
                                     matchList.add(result);
-                                }                                
+                                }
                             }
-                            else if(starIndex > 0 ){                                
-                                match = match.substring(0,starIndex);                                
-                                if(value.startsWith(match)){                                    
+                            else if(starIndex > 0 ){
+                                match = match.substring(0,starIndex);
+                                if(value.startsWith(match)){
                                     matchList.add(result);
-                                }                                
+                                }
                             }
-                            else if(starIndex == -1){                                
+                            else if(starIndex == -1){
                                 if(value.equalsIgnoreCase(match)){
                                     matchList.add(result);
-                                }                                
-                            }                             
+                                }
+                            }
                         }
                         else if(starIndex == 0){
                             matchList =  resultList;
                         }
                     }
-                    
+
                 }
                 else{
                     matchList =  resultList;
                 }
-                
-               
+
+
             }catch(Exception ex){
                 throw new Exception(ex.getMessage());
             }
         }
-        
+
         return matchList;
     }
 
