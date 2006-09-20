@@ -2,9 +2,6 @@
 import gov.nih.nci.system.applicationservice.*;
 import java.util.*;
 
-import gov.nih.nci.camod.domain.*;
-import gov.nih.nci.camod.domain.impl.*;
-
 import gov.nih.nci.cadsr.domain.*;
 import gov.nih.nci.cadsr.domain.impl.*;
 

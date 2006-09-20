@@ -1,7 +1,6 @@
 import gov.nih.nci.system.applicationservice.*;
 import java.util.*;
 
-import gov.nih.nci.camod.domain.*;
 import gov.nih.nci.cadsr.domain.*;
 import gov.nih.nci.cabio.domain.*;
 import gov.nih.nci.common.util.*;
@@ -70,9 +69,9 @@ public class TestClient {
 					System.out
 							.println("Scenario 1: Using basic search.  Retrieving Genes based on symbol and using Gene class as the Target.");
 					Gene gene = new Gene();
-					gene.setSymbol("brca*"); // searching for all gene’s
+					gene.setSymbol("brca*"); // searching for all gene?s
 												// whose symbol start with
-												// brac*”;
+												// brac*?;
 
 					try {
 						List resultList = appService.search(Gene.class, gene);
@@ -563,55 +562,7 @@ public class TestClient {
 					}
 				}
 
-				// Test Case 17: One-to-Many Unidirectional relationship (Use
-				// CellLine to get Publication)
-				System.out
-						.println("\n\n\nTest Case 17: search(\"Publication\", CellLine),One-to-Many Unidirectional relationship... ...");
-				CellLine _cellLine = new CellLine();
-				_cellLine.setId(new Long(2220));
-				List resultList17 = appService.search(
-						"gov.nih.nci.camod.domain.Publication", _cellLine);
-				if (resultList17.size() < 1) {
-					System.out
-							.println("\n(Test case 17: one-to-many Unidirectional) No records found");
-				} else {
-					System.out
-							.println("\n(Test case 17: One-to-Many Unidirectional) Total # of  records = "
-									+ resultList17.size());
-					Iterator iterator = resultList17.iterator();
-					while (iterator.hasNext()) {
-						Publication pub = (Publication) iterator.next();
-						System.out.println(" result id = " + pub.getId()
-								+ " | result authors = " + pub.getAuthors());
-					}
-				}
-
-				// Test Case 18: Many-to-One Unidirectional relationship (Use
-				// Publication to get PublicationStatus)
-				System.out
-						.println("\n\n\nTest Case 18: search(\"PublicationStatus\", Publication),Many-to-One Unidirectional relationship... ...");
-				Publication _publication1 = new Publication();
-				_publication1.setId(new Long(1371));
-				List resultList18 = appService.search(
-						"gov.nih.nci.camod.domain.PublicationStatus",
-						_publication1);
-				if (resultList18.size() < 1) {
-					System.out
-							.println("\n(Test Case 18: many-to-one Unidirectional) No records found");
-				} else {
-					System.out
-							.println("\n(Test Case 18: Many-to-One Unidirectional) Total # of  records = "
-									+ resultList18.size());
-					Iterator iterator = resultList18.iterator();
-					while (iterator.hasNext()) {
-						PublicationStatus pub = (PublicationStatus) iterator
-								.next();
-						System.out.println(" result id = " + pub.getId()
-								+ " | result name = " + pub.getName());
-					}
-				}
-
-				// Test Case 19: Many-to-Many Unidirectional relationship (Use
+				// Test Case 17: Many-to-Many Unidirectional relationship (Use
 				// Pathway to get Histopathology)
 				System.out
 						.println("\n\n\nTest Case 19: search(\"Histopathology\", Pathway),Many-to-Many Unidirectional relationship... ...");
@@ -635,7 +586,7 @@ public class TestClient {
 					}
 				}
 
-				// Test Case 20: Two level test
+				// Test Case 18: Two level test
 				// Use Chromosome number "Y" get 290 Genes back, it will work
 				// Use Chromosome number "1" get 5749 Genes back, then it will
 				// NOT work to get SNP
