@@ -21,6 +21,7 @@ conf/core-deploy.properties -text
 conf/daogeneration.xml -text
 conf/evsFormat.xsl -text
 conf/evsPackageUtil.xml -text
+conf/evs_schemageneration.xml -text
 conf/hibernate.properties -text
 conf/orm1.cfg.xml -text
 conf/orm2.cfg.xml -text
