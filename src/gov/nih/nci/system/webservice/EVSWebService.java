@@ -54,7 +54,7 @@ public class EVSWebService {
 	 * Instanciates an EVSWebService instance
 	 * @throws Exception
 	 */
-	public EVSWebService() throws Exception {
+	public EVSWebService() throws Exception {		
 		transformer = new EVSWSTransformer();
 	}
 
@@ -219,14 +219,16 @@ public class EVSWebService {
                 break;
             }
         }
-
         for(int i=0; i<metaList.size(); i++){
             if(searchObject.getClass().getName().endsWith((String)metaList.get(i))){
                 queryType = "meta";
                 break;
             }
         }
-
+        if(queryType == null){
+        	throw new Exception("Invalid search criteria");
+        }
+       
         return queryType;
     }
 
