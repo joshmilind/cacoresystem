@@ -8,7 +8,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 //internal
 
 import gov.nih.nci.evs.domain.*;
-import gov.nih.nci.evs.domain.HistoryRecord;
 import gov.nih.nci.evs.query.EVSQueryImpl;
 import gov.nih.nci.evs.security.SecurityToken;
 
@@ -25,9 +24,6 @@ import org.apache.log4j.*;
 
 //Import LexBIG classes
 import gov.nih.nci.lexrpc.client.*;
-import gov.nih.nci.lexrpc.client.EditActionDate;
-import gov.nih.nci.lexrpc.client.Property;
-import gov.nih.nci.lexrpc.client.Qualifier;
 import gov.nih.nci.lexrpc.server.LexAdapter;
 import gov.nih.nci.system.dao.*;
 
@@ -123,8 +119,10 @@ public class EVSLexBigDAOImpl implements DAO
                                     log.info("connecting to NCI MetaThesaurus");
                                 } 
                             }catch(Exception ex){
-                                setVocabulary(defaultVocabularyName);
-                                log.info("connecting to NCI Thesaurus");
+                            	throw new Exception(getException(ex.getMessage()));
+                            	//log.info("Unable to connect to NCI MetaThesaurus");
+                               // setVocabulary(defaultVocabularyName);
+                                //log.info("connecting to NCI Thesaurus");
                             }		
 							                                                      
 						}
@@ -1981,7 +1979,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
         Vector propertyCollection = metaConcept.getPropertyCollection();
         try{
             for(int p=0; p<propertyCollection.size(); p++){
-                Property property = (Property) propertyCollection.get(p);         
+                gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) propertyCollection.get(p);         
                 //System.out.println("Property: "+ property.getName() +"\t"+ property.getValue());
                 if(property.getName().toUpperCase().equalsIgnoreCase("FULL_SYN")){
                     gov.nih.nci.evs.domain.Atom atom = new gov.nih.nci.evs.domain.Atom();
@@ -1989,7 +1987,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                     Vector qCollection = property.getQualifierCollection();
                     gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();                
                     for(int q=0; q< qCollection.size(); q++){
-                        Qualifier qualifier = (Qualifier)qCollection.get(q);
+                    	gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
                         if(qualifier.getName().toLowerCase().equalsIgnoreCase("source")){
                             source.setAbbreviation(qualifier.getValue());                        
                         }else if(qualifier.getName().toLowerCase().equalsIgnoreCase("source-code")){
@@ -2011,7 +2009,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                     Vector qCollection = property.getQualifierCollection();
                     gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();                
                     for(int q=0; q< qCollection.size(); q++){
-                        Qualifier qualifier = (Qualifier)qCollection.get(q);
+                    	gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
                         if(qualifier.getName().toLowerCase().equalsIgnoreCase("source")){
                             source.setAbbreviation(qualifier.getValue());                        
                         }else if(qualifier.getName().toLowerCase().equalsIgnoreCase("source-code")){
@@ -3941,49 +3939,52 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                 validateDLConceptCode(conceptCode);
             }
             int namespaceId = adapter.getNamespaceId(vocabularyName);
-            if(vocabularyName != null && initialDate != null && finalDate != null && conceptCode !=null){
-            	v = adapter.getHistoryRecords(vocabularyName, initialDate, finalDate, conceptCode);
-                }
-            else if(vocabularyName != null && initialDate != null && finalDate != null && conceptCode ==null){
-                v = adapter.getHistoryRecords(vocabularyName, initialDate, finalDate);
-                }
-            else if(vocabularyName != null && initialDate == null && finalDate == null && conceptCode !=null){
-                v = adapter.getConceptEditAction(conceptCode);        
-                }
-            else{
-                throw new DAOException("Exception: Invalid arguments");
+            
+            if(conceptCode == null){
+            	v = adapter.getHistoryDates();
             }
-
-            if(v!=null && v.size()>0){
-                HistoryRecord hr = new HistoryRecord();
-                hr.setDescLogicConceptCode(conceptCode);
-                Vector historyVector = new Vector();
-                
-                for(int i=0; i<v.size(); i++){           
-                    String actionDate = (String)v.get(i);                    
-                    StringTokenizer st = new StringTokenizer(actionDate, "|");
-                    while(st.hasMoreTokens()){
-                        String action = st.nextToken();
-                        Date aDate = stringToDate(st.nextToken());                        
-                        History h = new History();
-                        h.setEditAction(action);
-                        h.setEditActionDate(aDate);
-                        if(action.equalsIgnoreCase("split") ||action.equalsIgnoreCase("merge")){                            
-                            Vector ref = adapter.getAncestorCodes(conceptCode, false, aDate, aDate);
+            else{
+            	if(initialDate != null){
+            		v = adapter.getConceptEditAction(conceptCode, initialDate);
+            	}else{
+            		v = adapter.getConceptEditAction(conceptCode);
+            	}
+                if(v!=null && v.size()>0){
+                    gov.nih.nci.evs.domain.HistoryRecord hr = new gov.nih.nci.evs.domain.HistoryRecord();
+                    hr.setDescLogicConceptCode(conceptCode);
+                    Vector historyVector = new Vector();                    
+                    for(int i=0; i<v.size(); i++){           
+                        String actionDate = (String)v.get(i);                    
+                        StringTokenizer st = new StringTokenizer(actionDate, "|");
+                        while(st.hasMoreTokens()){
+                            String action = st.nextToken();
+                            Date aDate = stringToDate(st.nextToken());                        
+                            gov.nih.nci.evs.domain.History h = new gov.nih.nci.evs.domain.History();
+                            h.setEditAction(action);
+                            h.setEditActionDate(aDate);
+                            Vector ref = new Vector();
+                            if(action.equalsIgnoreCase("retire") ||action.equalsIgnoreCase("merge")){                            
+                                ref = adapter.getCodeActionChildren(conceptCode, aDate);                                                         
+                            }else if(action.equalsIgnoreCase("split")){
+                            	ref = adapter.getCodeActionParents(conceptCode, aDate);
+                            }
                             String refCodes = "";                            
                             for(int r=0; r<ref.size(); r++){
                                 refCodes += (String)ref.get(r);
                             }
                             if(refCodes.length()>0){
                                 h.setReferenceCode(refCodes);
-                            }                            
+                            } 
+                            historyVector.add(h);                        
                         }
-                        historyVector.add(h);                        
+                        hr.setHistoryCollection(historyVector);                    
                     }
-                    hr.setHistoryCollection(historyVector);                    
-                }
-                list.add(hr);                
-               }
+                    list.add(hr);                
+                   }
+            }
+            
+
+        
         }
         catch(Exception e){
             throw new DAOException(getException(e));
@@ -4083,5 +4084,99 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
        return theDate;
 
    }
+   /**
+    * Gets all child concept codes for the specified concept based on the action.
+    * @param map - Specifies the input parameters
+    * @return - Returns a response that holds a list of concept codes
+    * @throws Exception
+    */
+   private Response getCodeActionChildren(HashMap map) throws Exception
+   {
+   	String vocabularyName = null;
+   	String conceptCode = null;
+   	String action = null;
+    Date baseLineDate = null;
+    Vector children = new Vector();
+   	ArrayList list = new ArrayList();
+   	try
+   	{
+   		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+   		{
+   			String key = (String)iter.next();
+   			String name = key.substring(key.indexOf("$")+1, key.length());
+
+   			if(name.equalsIgnoreCase("vocabularyName"))
+   				vocabularyName = (String)map.get(key);
+   			else if(name.equalsIgnoreCase("conceptCode"))
+   				conceptCode = (String)map.get(key);
+            else if(name.equalsIgnoreCase("baseLineDate"))
+                baseLineDate = (Date)map.get(key);
+            else if(name.equalsIgnoreCase("action"))
+                action = (String)map.get(key);
+   		}
+
+   		setVocabulary(vocabularyName);
+   		if(action == null){
+   			children = adapter.getCodeActionChildren(conceptCode, baseLineDate);
+   		}
+   		
+   		for(int i=0; i<children.size(); i++)
+			{                
+				list.add(children.get(i));
+			}
+   	}
+   	catch(Exception e)
+   	{
+   		log.error(e.getMessage());
+   		throw new DAOException (getException( e.getMessage()));
+   	}
+   	return (new Response(list));
+
+   }
+
+   /**
+    * Gets all parent concept codes for the specified concept.
+    * @param map - Specifies the input parameters
+    * @return - Returns a response that holds a list of concept codes
+    * @throws Exception
+    */
+   private Response getCodeActionParents(HashMap map) throws Exception
+   {
+   	String vocabularyName = null;
+   	String conceptCode = null;   
+    Date baseLineDate = null;
+    Vector parents = new Vector();
+   	ArrayList list = new ArrayList();
+   	try
+   	{
+   		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+   		{
+   			String key = (String)iter.next();
+   			String name = key.substring(key.indexOf("$")+1, key.length());
+
+   			if(name.equalsIgnoreCase("vocabularyName"))
+   				vocabularyName = (String)map.get(key);
+   			else if(name.equalsIgnoreCase("conceptCode"))
+   				conceptCode = (String)map.get(key);
+            else if(name.equalsIgnoreCase("baseLineDate"))
+                baseLineDate = (Date)map.get(key);           
+   		}
+
+   		setVocabulary(vocabularyName);
+   		parents = adapter.getCodeActionParents(conceptCode, baseLineDate);
+   		for(int i=0; i<parents.size(); i++)
+			{                
+				list.add(parents.get(i));
+			}
+   	}
+   	catch(Exception e)
+   	{
+   		log.error(e.getMessage());
+   		throw new DAOException (getException( e.getMessage()));
+   	}
+   	return (new Response(list));
+
+   }
+ 
 
  }

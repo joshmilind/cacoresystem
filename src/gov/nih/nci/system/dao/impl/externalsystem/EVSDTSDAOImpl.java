@@ -4144,22 +4144,127 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
        return new Response(dateList);
    }
    private Date stringToDate(String aString) throws Exception
-    {
-       Date theDate = null;
-        try
-        {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");            
-            theDate = sdf.parse(aString);            
-        }
-        catch(Exception e)
-        {
-            log.error("Exception: " + e.getMessage());
-            throw new Exception(getException(e.getMessage()));
-        }
-        return theDate;
+   {
+      Date theDate = null;
+       try
+       {
+           SimpleDateFormat sdf = null;
+           if(aString.indexOf("-")>3){
+               sdf = new SimpleDateFormat("yyyy-MM-dd");
+           }
+           else if(aString.indexOf("/")>3){
+               sdf = new SimpleDateFormat("yyyy/MM/dd");
+           }
+           else{
+               sdf = new SimpleDateFormat("MM/dd/yyyy");
+           }
+                       
+           theDate = sdf.parse(aString);            
+       }
+       catch(Exception e)
+       {
+           log.error("Exception: " + e.getMessage());
+           throw new Exception(getException(e.getMessage()));
+       }
+       return theDate;
 
-    }
+   }
   
+   /**
+    * Gets all child concept codes for the specified concept based on the action.
+    * @param map - Specifies the input parameters
+    * @return - Returns a response that holds a list of concept codes
+    * @throws Exception
+    */
+   private Response getCodeActionChildren(HashMap map) throws Exception
+   {
+   	String vocabularyName = null;
+   	String conceptCode = null;
+   	String action = null;
+    Date baseLineDate = null;
+    Vector children = new Vector();
+   	ArrayList list = new ArrayList();
+   	try
+   	{
+   		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+   		{
+   			String key = (String)iter.next();
+   			String name = key.substring(key.indexOf("$")+1, key.length());
 
-   
+   			if(name.equalsIgnoreCase("vocabularyName"))
+   				vocabularyName = (String)map.get(key);
+   			else if(name.equalsIgnoreCase("conceptCode"))
+   				conceptCode = (String)map.get(key);
+            else if(name.equalsIgnoreCase("baseLineDate"))
+                baseLineDate = (Date)map.get(key);
+            else if(name.equalsIgnoreCase("action"))
+                action = (String)map.get(key);
+   		}
+
+   		setVocabulary(vocabularyName);
+   		if(action == null){
+   			children = dtsrpc.getCodeActionChildren(conceptCode, baseLineDate);
+   		}
+   		else{
+   			children = dtsrpc.getCodeActionChildren(conceptCode, baseLineDate);
+   		}
+   		
+   		for(int i=0; i<children.size(); i++)
+			{                
+				list.add(children.get(i));
+			}
+   	}
+   	catch(Exception e)
+   	{
+   		log.error(e.getMessage());
+   		throw new DAOException (getException( e.getMessage()));
+   	}
+   	return (new Response(list));
+
+   }
+
+   /**
+    * Gets all parent concept codes for the specified concept.
+    * @param map - Specifies the input parameters
+    * @return - Returns a response that holds a list of concept codes
+    * @throws Exception
+    */
+   private Response getCodeActionParents(HashMap map) throws Exception
+   {
+   	String vocabularyName = null;
+   	String conceptCode = null;   
+    Date baseLineDate = null;
+    Vector parents = new Vector();
+   	ArrayList list = new ArrayList();
+   	try
+   	{
+   		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+   		{
+   			String key = (String)iter.next();
+   			String name = key.substring(key.indexOf("$")+1, key.length());
+
+   			if(name.equalsIgnoreCase("vocabularyName"))
+   				vocabularyName = (String)map.get(key);
+   			else if(name.equalsIgnoreCase("conceptCode"))
+   				conceptCode = (String)map.get(key);
+            else if(name.equalsIgnoreCase("baseLineDate"))
+                baseLineDate = (Date)map.get(key);           
+   		}
+
+   		setVocabulary(vocabularyName);
+   		parents = dtsrpc.getCodeActionParents(conceptCode, baseLineDate);
+   		for(int i=0; i<parents.size(); i++)
+			{                
+				list.add(parents.get(i));
+			}
+   	}
+   	catch(Exception e)
+   	{
+   		log.error(e.getMessage());
+   		throw new DAOException (getException( e.getMessage()));
+   	}
+   	return (new Response(list));
+
+   }
+ 
  }
