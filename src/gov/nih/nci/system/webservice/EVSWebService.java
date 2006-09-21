@@ -436,30 +436,30 @@ public class EVSWebService {
             }
             else if(criteria.getClass().getName().endsWith("Atom")){
                 atomList.add(criteria);
-                Atom atom = (Atom)criteria;
-                if(atom.getSource().getAbbreviation() != null){
-                    source = atom.getSource().getAbbreviation();
+                Atom atom = (Atom)criteria;                
+                try{
+                	if(atom.getSource()!= null){
+                        source = atom.getSource().getAbbreviation();
+                    }
                 }
+                catch(Exception ex){
+                	log.error("Exception thrown in Atom: "+ex.getMessage());
+                }                
             }
             else if(criteria.getClass().getName().endsWith("Source")){
                 source = ((Source)criteria).getAbbreviation();
             }
-
-
         } catch (Exception e) {
             throw new Exception("getMetaThesaurus method throws Exception ="
                     + e.getMessage());
         }
-
         EVSQuery evsQuery = new EVSQueryImpl();
-        List results = new ArrayList();
-
+        List results = new ArrayList();        
         try {
             if (conceptName == null && conceptCode == null && atomList.size()>0) {
                 results =  searchMetaphraseByAtoms(atomList, source);
                 }
             else{
-
                 if (conceptCode != null && source == null) {
                     evsQuery.searchMetaThesaurus(conceptCode);
                 } else if (conceptCode != null && source != null) {
@@ -473,14 +473,8 @@ public class EVSWebService {
                 }
                 results = query(evsQuery);
             }
-
-
-
-
             if(results.size()>0){
-
                 if(results.get(0).getClass().getName().endsWith("MetaThesaurusConcept")){
-
                     if(getQueryType(returnClassName).endsWith("dtsrpc")){
                         List dtsResults = convertConcepts(results);
                         return getConceptProperties(dtsResults);
@@ -555,15 +549,40 @@ public class EVSWebService {
         }
         return resultList;
     }
+    /**
+     * Returns a list of MetaThesaurusConcepts for the given atoms
+     * @param atomList
+     * @param sourceAbbr
+     * @return
+     * @throws Exception
+     */
     private List searchMetaphraseByAtoms(List atomList, String sourceAbbr) throws Exception{
-
         List conceptList = new ArrayList();
         for(int i=0; i<atomList.size(); i++){
             Atom atom = (Atom) atomList.get(i);
-            String code = atom.getCode();
+            String code = null;
+            String name = null;
+            String origin = null;
             String source = null;
-
-            if (code != null) {
+            if(atom.getCode() != null){
+            	code = atom.getCode();
+            }
+            if(atom.getName()!= null){
+            	name = atom.getName();
+            }            
+            if(atom.getOrigin()!=null){
+            	try{
+            		origin = atom.getOrigin();
+                	if(origin.indexOf("/")>0){
+                		source = origin.substring(0, origin.indexOf("/"));
+                	}else{
+                		source = origin;
+                	}
+            	}catch(Exception ex){
+            		throw new Exception("Atom: "+ex.getMessage());
+            	}            	
+            }
+            if (source == null) {
                 if(atom.getSource()!= null){
                     try{
                         source = atom.getSource().getAbbreviation();
@@ -571,11 +590,17 @@ public class EVSWebService {
                         log.error(ex.getMessage());
                     }
                 }
-                if(source == null){
+                if(source == null){                	
                     source = sourceAbbr;
                 }
                 EVSQuery evsQuery = new EVSQueryImpl();
-                evsQuery.searchSourceByCode(code, source);
+                if(code != null && source != null){
+                	evsQuery.searchSourceByCode(code, source);
+                }else if(name != null && source != null){                	
+                	evsQuery.searchMetaThesaurus(name, defaultLimit, source,false, false, true);
+                }else if(name != null && source == null){
+                	evsQuery.searchMetaThesaurus(name, defaultLimit, "*",false, false, true);
+                }              
 
                 List results = query(evsQuery);
                 for(int r=0; r<results.size(); r++){
