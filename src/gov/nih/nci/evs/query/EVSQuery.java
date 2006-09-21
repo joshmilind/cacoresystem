@@ -712,5 +712,6 @@ public interface EVSQuery extends Serializable{
     public void getHistoryRecords(String vocabularyName, String initialDate, String finalDate);
     public void getHistoryStartDate(String vocabularyName);
     public void getHistoryEndDate(String vocabularyName);
-    
+    public void getCodeActionChildren(String vocabularyName, String conceptCode, String action);
+    public void getCodeActionParents(String vocabularyName, String conceptCode, String baseLineDate );
 }

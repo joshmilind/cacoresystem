@@ -924,5 +924,14 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
     public void getHistoryEndDate(String vocabularyName){
         descLogicValues.put("getHistoryEndDate$vocabularyName", vocabularyName);       
     }
-    
+    public void getCodeActionChildren(String vocabularyName, String conceptCode, String action){
+    	 descLogicValues.put("getCodeActionChildren$vocabularyName", vocabularyName);
+    	 descLogicValues.put("getCodeActionChildren$conceptCode", conceptCode);
+    	 descLogicValues.put("getCodeActionChildren$action", action);    	 
+    }
+    public void getCodeActionParents(String vocabularyName, String conceptCode, String baseLineDate ){
+    	descLogicValues.put("getCodeActionParents$vocabularyName", vocabularyName);
+    	descLogicValues.put("getCodeActionParents$conceptCode", conceptCode);
+    	descLogicValues.put("getCodeActionParents$baseLineDate", baseLineDate);
+    }
 }
