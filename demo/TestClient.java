@@ -565,17 +565,17 @@ public class TestClient {
 				// Test Case 17: Many-to-Many Unidirectional relationship (Use
 				// Pathway to get Histopathology)
 				System.out
-						.println("\n\n\nTest Case 19: search(\"Histopathology\", Pathway),Many-to-Many Unidirectional relationship... ...");
+						.println("\n\n\nTest Case 17: search(\"Histopathology\", Pathway),Many-to-Many Unidirectional relationship... ...");
 				Pathway _pathway1 = new Pathway();
 				_pathway1.setName("h_C*");
 				List resultList19 = appService.search(
 						"gov.nih.nci.cabio.domain.Histopathology", _pathway1);
 				if (resultList19.size() < 1) {
 					System.out
-							.println("\n(Test Case 19: many-to-many Unidirectional) No records found");
+							.println("\n(Test Case 17: many-to-many Unidirectional) No records found");
 				} else {
 					System.out
-							.println("\n(Test Case 19: Many-to-many Unidirectional) Total # of  records = "
+							.println("\n(Test Case 17: Many-to-many Unidirectional) Total # of  records = "
 									+ resultList19.size());
 					Iterator iterator = resultList19.iterator();
 					while (iterator.hasNext()) {
@@ -591,7 +591,7 @@ public class TestClient {
 				// Use Chromosome number "1" get 5749 Genes back, then it will
 				// NOT work to get SNP
 				System.out
-						.println("\n\n\nTest Case 20: search(\"GeneOntology, Gene\", Chromosome), two level nested query... ...");
+						.println("\n\n\nTest Case 18: search(\"GeneOntology, Gene\", Chromosome), two level nested query... ...");
 				Chromosome _chrom2 = new Chromosome();
 				_chrom2.setNumber("Y");
 				List resultList20 = appService
@@ -600,10 +600,10 @@ public class TestClient {
 								_chrom2); // return total 87
 				if (resultList20.size() < 1) {
 					System.out
-							.println("\n(Test Case 20: two levels Chromosome->Gene->GeneOntology) No records found");
+							.println("\n(Test Case 18: two levels Chromosome->Gene->GeneOntology) No records found");
 				} else {
 					System.out
-							.println("\n(Test Case 20: two levels Chromosome->Gene->GeneOntology) Total # of  records = "
+							.println("\n(Test Case 18: two levels Chromosome->Gene->GeneOntology) Total # of  records = "
 									+ resultList20.size());
 					Iterator iterator = resultList20.iterator();
 					while (iterator.hasNext()) {
