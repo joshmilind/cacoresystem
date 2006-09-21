@@ -918,17 +918,37 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
         descLogicValues.put("getHistoryRecords$initialDate", initialDate);
         descLogicValues.put("getHistoryRecords$finalDate", finalDate);
     }
+    /**
+     * Gets the History start date
+     */
     public void getHistoryStartDate(String vocabularyName){
         descLogicValues.put("getHistoryStartDate$vocabularyName", vocabularyName);       
     }
+    /**
+     * Gets the History end date
+     */
     public void getHistoryEndDate(String vocabularyName){
         descLogicValues.put("getHistoryEndDate$vocabularyName", vocabularyName);       
     }
-    public void getCodeActionChildren(String vocabularyName, String conceptCode, String action){
+    /**
+     * Gets child concept codes for the specified concept.
+     * @param vocabularyName
+     * @param conceptCode
+     * @param baseLineDate
+     * @param action    
+     */
+    public void getCodeActionChildren(String vocabularyName, String conceptCode, String baseLineDate, String action){
     	 descLogicValues.put("getCodeActionChildren$vocabularyName", vocabularyName);
     	 descLogicValues.put("getCodeActionChildren$conceptCode", conceptCode);
+    	 descLogicValues.put("getCodeActionChildren$baseLineDate", baseLineDate);   
     	 descLogicValues.put("getCodeActionChildren$action", action);    	 
     }
+    /**
+     * Gets parent concept codes for the specified concept.
+     * @param vocabularyName
+     * @param conceptCode
+     * @param baseLineDate      
+     */
     public void getCodeActionParents(String vocabularyName, String conceptCode, String baseLineDate ){
     	descLogicValues.put("getCodeActionParents$vocabularyName", vocabularyName);
     	descLogicValues.put("getCodeActionParents$conceptCode", conceptCode);

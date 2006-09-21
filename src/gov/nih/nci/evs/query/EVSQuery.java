@@ -712,6 +712,19 @@ public interface EVSQuery extends Serializable{
     public void getHistoryRecords(String vocabularyName, String initialDate, String finalDate);
     public void getHistoryStartDate(String vocabularyName);
     public void getHistoryEndDate(String vocabularyName);
-    public void getCodeActionChildren(String vocabularyName, String conceptCode, String action);
+    /**
+     * Gets child concept codes for the specified concept.
+     * @param vocabularyName
+     * @param conceptCode
+     * @param baseLineDate
+     * @param action    
+     */
+    public void getCodeActionChildren(String vocabularyName, String conceptCode, String baseLineDate, String action);
+    /**
+     * Gets parent concept codes for the specified concept.
+     * @param vocabularyName
+     * @param conceptCode
+     * @param baseLineDate      
+     */
     public void getCodeActionParents(String vocabularyName, String conceptCode, String baseLineDate );
 }
