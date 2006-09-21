@@ -336,13 +336,14 @@
 				<include name="log4j*.jar"/>
 				<include name="commons-logging.jar"/>
 				<include name="commons-discovery-0.2.jar"/>
-				<include name="wsdl4j-1.5.1.jar"/>
+				<include name="wsdl4j-*.jar"/>
 				<include name="cglib-full*.jar"/>
-				<include name="castor-0.9.9.jar"/>
+				<include name="castor-*.jar"/>
 				<include name="xercesImpl.jar"/>
 				<include name="spring.jar"/>
 				<include name="spring-richclient.jar"/>
 				<include name="xml-apis.jar"/>
+				<include name="antlr-*.jar"/>
 			</zipfileset>
 			<zipfileset dir="${dir.custom.lib}" prefix="lib"/>
 			<zipfileset dir="${dir.conf}" includes="client_log4j.properties" prefix="conf"/>
@@ -369,7 +370,7 @@
 		<war destfile="${dir.output.project.package.server}/${file.project.server.war}"
 			webxml="${dir.custom.conf}/web.xml" update="yes" duplicate="preserve">
 			<lib dir="${dir.lib}">
-				<exclude name="log4j-1.2.8.jar"/>
+				<exclude name="log4j-*.jar"/>
 				<exclude name="commons-logging*.*"/>
 				<exclude name="spring-richclient.jar"/>
 			</lib>
