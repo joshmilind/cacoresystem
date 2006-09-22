@@ -1511,8 +1511,7 @@ private Response getConceptEditAction(HashMap map) throws Exception
 		
 		if(editActions != null){
 			for(int i=0; i<editActions.size(); i++)
-			{
-                System.out.println("Edit action class: "+editActions.get(i).getClass().getName());
+			{                
 				list.add(editActions.get(i));
 			}
 		}
@@ -1763,8 +1762,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("limit"))
 				limit = ((Integer)map.get(key)).intValue();
 			else if(name.equalsIgnoreCase("source")) {
-			    if(map.get(key)==null){
-			        //throw new DAOException(getException("Invalid source"));
+			    if(map.get(key)==null){			       
 			        source = "*";
 			        }
 				source = (String)map.get(key);
@@ -1786,11 +1784,9 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 
 		if(source!=null){
 			if(!(source.length() == 0 || source.equals("*"))){
-
 				if(!validateSource(source)){
 				throw new DAOException(getException("Invalid source"));
 				}
-
 				checkSource = true;
 			}
 
@@ -1801,7 +1797,6 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 		{
 
 			metaConcept = metaphrase.getConcept(searchTerm);
-
 				COM.Lexical.Metaphrase.Source[] sources = metaConcept.sources();
 
 				if(!(checkSource)){
@@ -4196,11 +4191,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    			else if(name.equalsIgnoreCase("conceptCode"))
    				conceptCode = (String)map.get(key);
             else if(name.equalsIgnoreCase("baseLineDate"))
-                baseLineDate = (Date)map.get(key);
+                baseLineDate = stringToDate((String)map.get(key));
             else if(name.equalsIgnoreCase("action"))
                 action = (String)map.get(key);
    		}
-
    		setVocabulary(vocabularyName);
    		if(action == null){
    			children = dtsrpc.getCodeActionChildren(conceptCode, baseLineDate);
@@ -4248,9 +4242,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(COM.Lexical.Metaphrase.Co
    			else if(name.equalsIgnoreCase("conceptCode"))
    				conceptCode = (String)map.get(key);
             else if(name.equalsIgnoreCase("baseLineDate"))
-                baseLineDate = (Date)map.get(key);           
+                baseLineDate = stringToDate((String)map.get(key));;           
    		}
-
    		setVocabulary(vocabularyName);
    		parents = dtsrpc.getCodeActionParents(conceptCode, baseLineDate);
    		for(int i=0; i<parents.size(); i++)

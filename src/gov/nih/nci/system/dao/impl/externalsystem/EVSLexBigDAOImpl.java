@@ -1980,7 +1980,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
         try{
             for(int p=0; p<propertyCollection.size(); p++){
                 gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) propertyCollection.get(p);         
-                //System.out.println("Property: "+ property.getName() +"\t"+ property.getValue());
+               
                 if(property.getName().toUpperCase().equalsIgnoreCase("FULL_SYN")){
                     gov.nih.nci.evs.domain.Atom atom = new gov.nih.nci.evs.domain.Atom();
                     atom.setName(property.getValue());
@@ -2032,16 +2032,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
         }catch(Exception ex){
             throw new Exception(getException("\nException: buildMetaConcept: "+ ex.getMessage()));
         }   
-        /*
-        for(Iterator i = sourceMap.keySet().iterator();i.hasNext();){
-            String key = (String)i.next();
-            Source src = (Source)sourceMap.get(key);
-            if(key.length()>0 && key!=null){
-                sourceCollection.add(src);
-            }
-        }
-        */
-        //System.out.println("Map: "+ sourceMap.size() +"\t"+ sourceCollection.size());
+      
         metaThesaurusConcept.setSemanticTypeCollection(semanticTypesCollection);        
 	    metaThesaurusConcept.setSynonymCollection((ArrayList)synonymCollection);
         metaThesaurusConcept.setDefinitionCollection(definitionsCollection);
@@ -4110,7 +4101,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			else if(name.equalsIgnoreCase("conceptCode"))
    				conceptCode = (String)map.get(key);
             else if(name.equalsIgnoreCase("baseLineDate"))
-                baseLineDate = (Date)map.get(key);
+                baseLineDate = stringToDate((String)map.get(key));
             else if(name.equalsIgnoreCase("action"))
                 action = (String)map.get(key);
    		}
@@ -4159,7 +4150,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			else if(name.equalsIgnoreCase("conceptCode"))
    				conceptCode = (String)map.get(key);
             else if(name.equalsIgnoreCase("baseLineDate"))
-                baseLineDate = (Date)map.get(key);           
+                baseLineDate = stringToDate((String)map.get(key));           
    		}
 
    		setVocabulary(vocabularyName);

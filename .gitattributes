@@ -99,7 +99,6 @@ src/gov/nih/nci/system/comm/client/ApplicationServiceClientImpl.java -text
 src/gov/nih/nci/system/comm/common/ApplicationServiceProxy.java -text
 src/gov/nih/nci/system/comm/server/ApplicationServiceServerImpl.java -text
 src/gov/nih/nci/system/conf/DAOConfig.xml -text
-src/gov/nih/nci/system/dao/impl/externalsystem/EVSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigDAOImpl.java -text
 src/gov/nih/nci/system/proxy/HTTPQuery.java -text
