@@ -295,13 +295,16 @@
 				<exclude name="gov/nih/nci/system/applicationservice/impl/**"/>
 				<exclude name="gov/nih/nci/system/comm/server/**"/>
 				<exclude name="gov/nih/nci/system/dao/**"/>
-				<exclude name="gov/nih/nci/system/delegator/BaseDelegate.class"/>
 				<exclude name="gov/nih/nci/system/proxy/LocalProxy.class"/>
 				<exclude name="gov/nih/nci/system/proxy/HTTPQuery.class"/>
 				<exclude name="gov/nih/nci/system/server/**"/>
 				<exclude name="gov/nih/nci/system/servicelocator/**"/>
 				<exclude name="gov/nih/nci/system/webservice/**"/>
 				<exclude name="**/impl/test/*.class"/>
+			</fileset>
+			<!-- pick up the exceptions classes -->
+			<fileset dir="${dir.output.project.framework.build}">				
+					<include name="**/*Exception.class"/>
 			</fileset>
 			<fileset dir="${dir.generator.build}">
 				<include name="gov/nih/nci/common/**"/>
@@ -326,6 +329,7 @@
 		<zip destfile="${dir.output.project.package}/${file.project.client.zip}">
 			<zipfileset dir="${dir.output.project.package.client.lib}" includes="${file.project.client.jar}" prefix="lib"/>
 			<zipfileset dir="${dir.lib}" prefix="lib">
+				<include name="asm.jar"/>
 				<include name="axis.jar"/>
 				<include name="saaj.jar"/>
 				<include name="mail.jar"/>
@@ -337,7 +341,7 @@
 				<include name="commons-logging.jar"/>
 				<include name="commons-discovery-0.2.jar"/>
 				<include name="wsdl4j-*.jar"/>
-				<include name="cglib-full*.jar"/>
+				<include name="cglib*.jar"/>
 				<include name="castor-*.jar"/>
 				<include name="xercesImpl.jar"/>
 				<include name="spring.jar"/>
