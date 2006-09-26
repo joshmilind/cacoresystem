@@ -14,10 +14,10 @@
     <property name="supplyingSourceId" type="java.lang.Long" column="SUPPLYING_SOURCE_ID" insert="false" update="false" />
     <property name="originalSourceId" type="java.lang.Long" column="ORIGINAL_SOURCE_ID" insert="false" update="false"/>
     <property name="immediateSourceId" type="java.lang.Long" column="IMMEDIATE_SOURCE_ID" insert="false" update="false"/>
-    <many-to-one name="supplyingSource" class="gov.nih.nci.common.provenance.domain.Source" column="SUPPLYING_SOURCE_ID" lazy="proxy" />
-    <many-to-one name="sourceReference" class="gov.nih.nci.common.provenance.domain.SourceReference" column="SOURCE_REFERENCE_ID" lazy="proxy" />
-    <many-to-one name="immediateSource" class="gov.nih.nci.common.provenance.domain.Source" column="IMMEDIATE_SOURCE_ID" lazy="proxy" />
-    <many-to-one name="originalSource" class="gov.nih.nci.common.provenance.domain.Source" column="ORIGINAL_SOURCE_ID" lazy="proxy" />
+    <many-to-one name="supplyingSource" class="gov.nih.nci.common.provenance.domain.Source" column="SUPPLYING_SOURCE_ID" lazy="true" />
+    <many-to-one name="sourceReference" class="gov.nih.nci.common.provenance.domain.SourceReference" column="SOURCE_REFERENCE_ID" lazy="true" />
+    <many-to-one name="immediateSource" class="gov.nih.nci.common.provenance.domain.Source" column="IMMEDIATE_SOURCE_ID" lazy="true" />
+    <many-to-one name="originalSource" class="gov.nih.nci.common.provenance.domain.Source" column="ORIGINAL_SOURCE_ID" lazy="true" />
   </class>
 </hibernate-mapping>
 
