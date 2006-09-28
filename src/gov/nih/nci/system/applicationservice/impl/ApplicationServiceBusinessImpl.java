@@ -829,13 +829,24 @@ public class ApplicationServiceBusinessImpl {
 		String dataSource;
 		String domainObjectName = request.getDomainObjectName();
 		Response response;
+
+		ServiceLocator serviceLocator = null;
+		try
+		{
+			serviceLocator = (ServiceLocator)ObjectFactory.getObject("ServiceLocator");
+		} catch (ApplicationException e1)
+		{
+			log.fatal("Unable to locate Service Locator :",e1);
+			throw new ApplicationException("Unable to locate Service Locator :",e1);
+		}
+		
 		try{
-			request.setConfig(ServiceLocator.getDataSourceCollection(domainObjectName));
-			dataSource = ServiceLocator.getDataSourceCollectionValue(ServiceLocator.getDataSourceCollection(domainObjectName), "DataSource");
+			request.setConfig(serviceLocator.getDataSourceCollection(domainObjectName));
+			dataSource = serviceLocator.getDataSource(domainObjectName);
 		}
 		catch(ServiceLocatorException slEx)
 		{
-			log.error("No data source found");
+			log.error("No data source found",slEx);
 			throw new ApplicationException(" No data source was found " , slEx);
 		}
 		catch(Exception exception)
@@ -853,19 +864,18 @@ public class ApplicationServiceBusinessImpl {
 		try
 		{
 			DAO dao = (DAO) ObjectFactory.getObject(dataSource);
-				
 			log.debug("DAO found");
 			response = dao.query(request);
 		}
 		catch(DAOException daoException)
 		{
-			log.error(daoException.getMessage());
+			log.error("Error while getting and querying DAO",daoException);
 			throw daoException;
 		}
 		catch(Exception exception)
 		{
 			log.error(exception.getMessage());
-			throw new ApplicationException("Exception in the query:  " + exception.getMessage());
+			throw new ApplicationException("Exception in the query:  ", exception);
 		}
 
 		return response;
@@ -873,6 +883,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.6  2006/09/15 19:46:27  masondo
+// removed the hardcoded path used by the grid id.
+//
 // Revision 1.5  2006/09/14 20:33:04  masondo
 // Fixed to match the SDK.  Now using the spring framework configuration files
 //
