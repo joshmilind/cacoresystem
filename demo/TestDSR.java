@@ -107,7 +107,7 @@ public class TestDSR {
             System.out
             .println("Scenario 4: Retrieving attributes named *id, display attribute information");
             UMLAttributeMetadata umlAttr = new UMLAttributeMetadata();
-            umlAttr.setName("*:id");
+            umlAttr.setName("*id");
             resultList = appService.search(UMLAttributeMetadata.class, umlAttr);
             System.out.println(resultList.size() + " attributes retrieved..");
 
