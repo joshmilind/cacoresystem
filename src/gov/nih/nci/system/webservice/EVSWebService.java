@@ -450,8 +450,7 @@ public class EVSWebService {
                 source = ((Source)criteria).getAbbreviation();
             }
         } catch (Exception e) {
-            throw new Exception("getMetaThesaurus method throws Exception ="
-                    + e.getMessage());
+            throw new Exception(e.getMessage());
         }
         EVSQuery evsQuery = new EVSQueryImpl();
         List results = new ArrayList();        
@@ -482,6 +481,8 @@ public class EVSWebService {
                     else{
                         return getConceptProperties(results);
                     }
+                }else{
+                	return results;
                 }
             }
 
@@ -557,13 +558,16 @@ public class EVSWebService {
      * @throws Exception
      */
     private List searchMetaphraseByAtoms(List atomList, String sourceAbbr) throws Exception{
+        List resultSet = new ArrayList();
         List conceptList = new ArrayList();
+        HashMap atomSet = new HashMap();
         for(int i=0; i<atomList.size(); i++){
             Atom atom = (Atom) atomList.get(i);
             String code = null;
             String name = null;
             String origin = null;
             String source = null;
+            
             if(atom.getCode() != null){
             	code = atom.getCode();
             }
@@ -581,7 +585,7 @@ public class EVSWebService {
             	}catch(Exception ex){
             		throw new Exception("Atom: "+ex.getMessage());
             	}            	
-            }
+            }            
             if (source == null) {
                 if(atom.getSource()!= null){
                     try{
@@ -592,23 +596,62 @@ public class EVSWebService {
                 }
                 if(source == null){                	
                     source = sourceAbbr;
-                }
-                EVSQuery evsQuery = new EVSQueryImpl();
-                if(code != null && source != null){
-                	evsQuery.searchSourceByCode(code, source);
-                }else if(name != null && source != null){                	
-                	evsQuery.searchMetaThesaurus(name, defaultLimit, source,false, false, true);
-                }else if(name != null && source == null){
-                	evsQuery.searchMetaThesaurus(name, defaultLimit, "*",false, false, true);
-                }              
-
-                List results = query(evsQuery);
-                for(int r=0; r<results.size(); r++){
-                    conceptList.add(results.get(r));
-                }
+                }                
             }
+            EVSQuery evsQuery = new EVSQueryImpl();
+            if(code != null && source != null){
+            	evsQuery.searchSourceByCode(code, source);
+            }else if(name != null && source != null){                	
+            	evsQuery.searchMetaThesaurus(name, defaultLimit, source,false, false, true);
+            }else if(name != null && source == null){
+            	evsQuery.searchMetaThesaurus(name, defaultLimit, "*",false, false, true);
+            }else if(code != null && source == null){
+            	evsQuery.searchSourceByCode(code, "*");
+            }else {
+            	throw new Exception("Invalid search criteria - please specify atom name or code");
+            }
+            conceptList = query(evsQuery);
+            if(source != null){
+                if(source.equals("*")){
+                    source = null;
+                }
+            }            
+            if(returnClassName.endsWith("Atom")){            	
+            	for(int y=0; y<conceptList.size();y++){
+            		List atoms = ((MetaThesaurusConcept)conceptList.get(y)).getAtomCollection();
+            		for(int a=0; a<atoms.size(); a++){
+            			Atom atomConcept = (Atom)atoms.get(a);            			
+            			String atomCode = atomConcept.getCode();
+            			String atomOrigin = atomConcept.getOrigin();  
+                        if(code != null && source != null){
+                            if(atomOrigin.startsWith(source) && code.equals(atomCode)){
+                                atomSet.put(source + atomCode, atomConcept);
+                            }                            
+                        }else if(code != null && source == null){
+                            if(code.equals(atomCode)){
+                                atomSet.put(atomCode, atomConcept);
+                            }                            
+                        }else if(code == null && source != null){
+                            if(atomOrigin.startsWith(source)){
+                                atomSet.put(source + atomCode, atomConcept);
+                            }
+                        }
+            			System.out.println("done");
+            		}
+            		
+            	}            	
+            }           
         }
-        return conceptList;
+        if(atomSet.size()>0){
+    		for(Iterator iterator = atomSet.keySet().iterator(); iterator.hasNext();){
+    			String key = (String)iterator.next();
+    			resultSet.add(atomSet.get(key));
+    		}            		
+    	}
+        else{
+        	resultSet = conceptList;
+        }
+        return resultSet;
     }
 
     /**
