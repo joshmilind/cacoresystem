@@ -636,7 +636,6 @@ public class EVSWebService {
                                 atomSet.put(source + atomCode, atomConcept);
                             }
                         }
-            			System.out.println("done");
             		}
             		
             	}            	
