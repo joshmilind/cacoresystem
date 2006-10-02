@@ -34,7 +34,24 @@
 			<classpath refid="classpath"/>
 		</javac>
 	</target>	
-	<target name="-compile-generator.custom" if="compile-generator.custom.use"/>
+	<target name="-compile-generator.custom" if="compile-generator.custom.use">
+		<SDKecho message="Compiling generated custom code ${dir.custom.framework.src}"/>
+		<mkdir dir="${dir.output.generator.src}"/>
+		<copy todir="${dir.output.generator.src}">
+			<fileset dir="${dir.custom.framework.src}">
+				<include name="gov/nih/nci/codegen/**/*.java"/>
+				<include name="gov/nih/nci/common/exception/*.java"/>
+				<include name="gov/nih/nci/common/util/*marshall*.java"/>
+			</fileset>
+		</copy>
+		<javac destdir="${dir.generator.build}" debug = "on">
+			<src path="${dir.output.generator.src}"/>
+			<classpath refid="classpath"/>
+		</javac>
+	</target>			
+		
+		
+		
 	<target name="-compile-templates.custom" if="compile-templates.custom.use">
 		<jetc template="${dir.output.project.templates}/BeanEVSImpl.javajet" destdir="${dir.output.project.src}"/>
 		<jetc template="${dir.output.project.templates}/BeanEVSWS.javajet" destdir="${dir.output.project.src}"/>
