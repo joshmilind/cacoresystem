@@ -330,6 +330,9 @@ public class UML13SchemaTransformerForEVS implements Transformer, XMLConfigurabl
             //Do properties
             for (Iterator i = UML13Utils.getAttributes(klass).iterator(); i.hasNext();) {
                 org.omg.uml.foundation.core.Attribute att = (org.omg.uml.foundation.core.Attribute) i.next();
+                if(klass.getName().endsWith("AttributeSetDescriptor") && att.getName().startsWith("WITH_")){
+                    continue;
+                }
                 Element attributeElement = new Element("attribute", w3cNS);
                 attributeElement.setAttribute("name", att.getName());
                 if (getName(att.getType()).equals("xs:collection")) {
@@ -353,21 +356,23 @@ public class UML13SchemaTransformerForEVS implements Transformer, XMLConfigurabl
         for (Iterator i = UML13Utils.getAttributes(klass).iterator(); i.hasNext();) {
         	boolean attrib = true;
             org.omg.uml.foundation.core.Attribute att = (org.omg.uml.foundation.core.Attribute) i.next();
+            if(klass.getName().endsWith("AttributeSetDescriptor") && att.getName().startsWith("WITH_")){
+                continue;
+            }
             Element attributeElement = new Element("attribute", w3cNS);
             attributeElement.setAttribute("name", att.getName());
             if (getName(att.getType()).equals("xs:collection")) {
                 attributeElement.setAttribute("type","xs:string");
-            }else if (getName(att.getType()).equals("xs:vector")) {
+            }else if (getName(att.getType()).equals("xs:vector") ||getName(att.getType()).equals("xs:hashset")||getName(att.getType()).equals("xs:arraylist")) {
             	if(att.getName().startsWith("inverse") && att.getName().endsWith("Collection")){
             		attrib = false;
             		String newRole = att.getName().substring(7);
             		AssociationEnd otherEnd = getAssociationForAttribute(klass, newRole);
             		addSequenceAssociationElement(klass, sequence,att.getName(),otherEnd, w3cNS );
-            	}else
-                attributeElement.setAttribute("type","xs:string");
-            }else if (getName(att.getType()).equals("xs:hashset")) {
-                attributeElement.setAttribute("type","xs:string");
-            }else if (getName(att.getType()).equals("xs:arraylist")) {
+            	}else if((att.getName().equals("semanticTypeVector")||att.getName().equals("synonymCollection") ||att.getName().equals("links"))){
+                    attrib = false;
+                    addSequenceAssociationElement(klass, sequence,att.getName(),w3cNS );
+                }else
                 attributeElement.setAttribute("type","xs:string");
             }else {
                 attributeElement.setAttribute("type", getName(att.getType()));
@@ -381,6 +386,12 @@ public class UML13SchemaTransformerForEVS implements Transformer, XMLConfigurabl
         for (Iterator i = UML13Utils.getAssociationEnds(klass).iterator(); i.hasNext();) {
             AssociationEnd thisEnd = (AssociationEnd) i.next();
             AssociationEnd otherEnd = UML13Utils.getOtherAssociationEnd(thisEnd);
+            if(otherEnd.getName() != null){
+                if(otherEnd.getName().equals("DescLogicConcept.code")){
+                    continue;
+                }
+            }
+
             addSequenceAssociationElement(sequence, klass,thisEnd, otherEnd,w3cNS);
         }
        }
@@ -403,6 +414,15 @@ public class UML13SchemaTransformerForEVS implements Transformer, XMLConfigurabl
     	 return found;
 
     }
+    private void addSequenceAssociationElement(UmlClass klass, Element sequence, String attName,  Namespace w3cNS) {
+        Element associationElement = new Element("element", w3cNS);
+        sequence.addContent(associationElement);
+        associationElement.setAttribute("name", attName);
+        associationElement.setAttribute("type", "xs:string");
+        associationElement.setAttribute("minOccurs","0");
+        associationElement.setAttribute("maxOccurs","unbounded");
+    }
+
     private void addSequenceAssociationElement(UmlClass klass, Element sequence, String attName, AssociationEnd otherEnd, Namespace w3cNS) {
         if (otherEnd.isNavigable()) {
 
