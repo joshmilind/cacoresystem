@@ -1793,7 +1793,7 @@ public class EVSDTSDAOImpl implements DAO {
 			if (e.getMessage() == null) {
 				msg = "Invalid source - " + source;
 			} else {
-				source = e.getMessage();
+				msg = e.getMessage();
 			}
 			throw new DAOException(getException(msg));
 		}
