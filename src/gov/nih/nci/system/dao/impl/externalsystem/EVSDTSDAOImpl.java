@@ -2043,29 +2043,46 @@ public class EVSDTSDAOImpl implements DAO {
 
 				if (name.equalsIgnoreCase("code"))
 					code = (String) map.get(key);
-				else if (name.equalsIgnoreCase("sourceAbbr"))
-					sourceAbbr = (String) map.get(key);
-			}
-
-			if (!StringHelper.hasValue(code))
-				throw new DAOException(getException(" invalid acode"));
-
-			if (!validateSource(sourceAbbr)) {
-				throw new DAOException("invalid source abbreviation - "
-						+ sourceAbbr);
-			}
-
-			COM.Lexical.Metaphrase.Source source = metaphrase
-					.source(sourceAbbr);
-			Partition thePartition = source.partition(code);
-
-			if (thePartition != null) {
-				COM.Lexical.Metaphrase.Atom[] atoms = thePartition.atoms();
-				for (int i = 0; i < atoms.length; i++) {
-					metaConcept = atoms[i].concept();
-					list.add(buildMetaThesaurusConcept(metaConcept));
+				else if (name.equalsIgnoreCase("sourceAbbr")){
+					if(map.get(key)==null)
+						sourceAbbr = "*";
+					else
+						sourceAbbr = (String) map.get(key);
 				}
+					
 			}
+
+
+			List sourceAbbrList = new ArrayList();
+			
+
+			if(!StringHelper.hasValue(code))
+				  throw new DAOException(getException(" invalid acode"));
+			if(sourceAbbr.equals("*") || sourceAbbr == null){
+				List sourceList = getMetaSources();	
+				for(int i=0; i<sourceList.size(); i++){
+					gov.nih.nci.evs.domain.Source src = (gov.nih.nci.evs.domain.Source)sourceList.get(i);
+					sourceAbbrList.add(src.getAbbreviation());
+				}				
+			}else{
+				if(!validateSource(sourceAbbr)){
+				    throw new DAOException ("invalid source abbreviation - "+ sourceAbbr);
+				    }
+				sourceAbbrList.add(sourceAbbr);
+			}
+			for(int s=0; s<sourceAbbrList.size(); s++){
+				COM.Lexical.Metaphrase.Source source = metaphrase.source((String)sourceAbbrList.get(s));
+				Partition thePartition = source.partition(code);
+				if(thePartition != null)
+				{
+					COM.Lexical.Metaphrase.Atom[] atoms = thePartition.atoms();
+					for(int i=0; i<atoms.length; i++)
+					{
+					  metaConcept = atoms[i].concept();
+					   list.add(buildMetaThesaurusConcept(metaConcept));
+					}
+				}
+			}	
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw new DAOException(getException(e.getMessage()));
@@ -2182,27 +2199,31 @@ public class EVSDTSDAOImpl implements DAO {
 
 	/**
 	 * Gets all MetaThesaurus sources
-	 * 
 	 * @param map
 	 * @return
 	 * @throws Exception
 	 */
-	private Response getMetaSources(HashMap map) throws Exception {
+	private Response getMetaSources(HashMap map) throws Exception
+	{		
+		return (new Response(getMetaSources()));
+	}
+	/**
+	 * Returns all meta sources
+	 */
+
+	private List getMetaSources() throws Exception{
 		ArrayList list = new ArrayList();
-		try {
-			Vector sv = new Vector();
-			Enumeration e = metaphrase.getSources();
-			while (e.hasMoreElements()) {
-				list.add(convertMetaSource((COM.Lexical.Metaphrase.Source) e
-						.nextElement()));
+		try{	 		
+	  		Enumeration e = metaphrase.getSources();
+	  		while (e.hasMoreElements())
+			{
+				 list.add(convertMetaSource((COM.Lexical.Metaphrase.Source)e.nextElement()));
 			}
-
-		} catch (Exception e) {
+		}catch(Exception e){
 			log.error(e.getMessage());
-			throw new DAOException(getException(e.getMessage()));
+			throw new DAOException (getException( e.getMessage()));
 		}
-
-		return (new Response(list));
+		return list;
 	}
 
 	/**
