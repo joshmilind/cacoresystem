@@ -226,7 +226,7 @@ public class EVSWebService {
             }
         }
         if(queryType == null){
-        	throw new Exception("Invalid search criteria");
+        	throw new Exception("Invalid search object - no search defined for "+searchObject.getClass().getName());
         }
        
         return queryType;
