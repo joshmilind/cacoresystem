@@ -2051,13 +2051,7 @@ public class EVSDTSDAOImpl implements DAO {
 				}
 					
 			}
-
-
-			List sourceAbbrList = new ArrayList();
-			
-
-			if(!StringHelper.hasValue(code))
-				  throw new DAOException(getException(" invalid acode"));
+            List sourceAbbrList = new ArrayList();			
 			if(sourceAbbr.equals("*") || sourceAbbr == null){
 				List sourceList = getMetaSources();	
 				for(int i=0; i<sourceList.size(); i++){
