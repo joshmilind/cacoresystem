@@ -15,7 +15,7 @@ import gov.nih.nci.common.util.*;
 import gov.nih.nci.common.net.*;
 
 import gov.nih.nci.system.dao.*;
-
+import gov.nih.nci.system.dao.security.*;
 //dtsrpc jar
 import gov.nih.nci.dtsrpc.client.*;
 //metaphrase jar
@@ -117,12 +117,8 @@ public class EVSDTSDAOImpl implements DAO {
 						if (fieldName.equalsIgnoreCase("descLogicValues")) {
 							// Check for overwritting system properties; else
 							// use request parameters
-							server = System.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs
-									.get("dtsrpcServer")
-									: System.getProperty("EVS_DTSRCP_SERVER");
-							port = System.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs
-									.get("port")
-									: System.getProperty("EVS_DTSRCP_PORT");
+							server = System.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
+							port = System.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): System.getProperty("EVS_DTSRCP_PORT");
 
 							if (server != null && port != null) {
 								dtsrpc = new DTSRPCClient(server, port);
@@ -168,20 +164,15 @@ public class EVSDTSDAOImpl implements DAO {
 								response = (Response) method.invoke(this,
 										new Object[] { mapValues });
 							} catch (Exception ex) {
-								String msg = null;
-								msg = "Invoke Exception in method - "
-										+ methodName + ": ";
+								String msg = " - ";
+                                log.error( methodName + " throws Exception "+);
 								if (ex.getMessage() == null) {
 									if (pastEx.getMessage() == null) {
-										if (fieldName
-												.equalsIgnoreCase("descLogicValues")) {
-											msg = msg
-													+ "caCORE - DTSRPC Exception";
+										if (fieldName.equalsIgnoreCase("descLogicValues")) {
+											msg = msg + "caCORE - DTSRPC Exception";
 										} else if (fieldName.startsWith("meta")) {
-											msg = msg
-													+ "caCORE - Metaphrase Exception";
+											msg = msg + "caCORE - Metaphrase Exception";
 										}
-
 									} else {
 										msg = msg + pastEx.getMessage();
 									}
@@ -263,45 +254,110 @@ public class EVSDTSDAOImpl implements DAO {
 
 	}
 
+    /**
+     * Validates vocabulary token
+     * @param vocabularyName
+     * @param token 
+     * @return response 
+     */
+    private Response validateToken(HashMap map)throws SecurityException{
+        List validList = new ArrayList();
+        String vocabularyName = null;
+        SecurityToken securityToken = null;
+        boolean valid = true;
+        for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+        {
+            String key = (String)iter.next();
+            String name = key.substring(key.indexOf("$")+1, key.length());
+
+            if(name.equalsIgnoreCase("vocabularyName"))
+                vocabularyName = (String)map.get(key);
+            else if(name.equalsIgnoreCase("token"))
+                securityToken = (SecurityToken)map.get(key);
+        }
+        DAOSecurity security = getSecurityAdapter(vocabularyName);
+        if(security != null){
+            if(securityToken == null){
+                throw new SecurityException("Please specify security token to access "+ vocabularyName);
+            }
+            try{
+                valid = validateToken(security, securityToken);                
+            }
+            catch(Exception ex){
+                valid = false;
+            }
+            validList.add(valid);
+        }else{
+            throw new SecurityException("Token not required to access " + vocabularyName );
+        }
+        return new Response(valid);
+    }
+    /**
+     * Validates token 
+     * @param security
+     * @param securityToken
+     * @return valid
+     */
+    private boolean validateToken(DAOSecurity security, SecurityToken securityToken) throws SecurityException{                
+        boolean valid = false;                
+        try{
+            if(getAuthenticationCode(security, securityToken) != null){
+                valid = true;
+            }            
+        }catch(Exception ex){
+        }       
+        return valid;       
+    }
+    
+    private Object getAuthenticationCode(DAOSecurity security, SecurityToken securityToken){
+        Object token = null;        
+        try{
+            token = security.getAuthenticationCode(securityToken.getAccessToken());            
+        }catch(Exception ex){            
+            throw new SecurityException(getException(ex.getMessage()));
+        }       
+        return token;
+    }
+    /**
+     * Returns the Security implementation class for the specified vocabulary
+     */
+    private DAOSecurity getSecurityAdapter(String vocabularyName){
+        DAOSecurity security = null;
+        try{
+            security = (DAOSecurity)ObjectFactory.getObject(vocabularyName);
+        }catch(Exception ex){  
+            return null;
+        }
+        return security;
+    }
 	/**
 	 * Sets Vocabulary
 	 * 
 	 * @param vocabularyName
 	 * @throws Exception
 	 */
-	private void setVocabulary(String vocabularyName) throws Exception {
-
-		vocabulary = new Vocabulary();
+	private void setVocabulary(String vocabularyName) throws Exception {		
 		if (!StringHelper.hasValue(vocabularyName)) {
 			log.error("vocabularyName cannot be null");
 			throw new DAOException(
 					getException(" vocabularyName cannot be null"));
 		}
 
-		if (vocabularyName.equals("MedDRA")) {
-			SecurityToken securityToken = (SecurityToken) tokenCollection
-					.get(vocabularyName);
-			if (securityToken == null) {
-				throw new DAOException("Please set SecurityToken for "
-						+ vocabularyName);
-			} else {
-				if (securityToken.getAccessToken() == null) {
-					throw new DAOException("Please set the access token for "
-							+ vocabularyName);
-				} else {
-					String accessToken = securityToken.getAccessToken();
-					msso.validator.MSSOUserValidatorClient validator = new msso.validator.MSSOUserValidatorClient();
-					boolean valid = validator.validateID(accessToken)
-							.equalsIgnoreCase("true");
-					if (!valid) {
-						throw new DAOException("Invalid access code: "
-								+ accessToken);
-					}
-				}
-			}
-		}
-
-		boolean found = dtsrpc.setVocabulary(vocabularyName);
+        DAOSecurity security = null;
+        if(getSecurityAdapter(vocabularyName)!= null){
+            security = getSecurityAdapter(vocabularyName);
+        }       
+        if(security != null){
+            SecurityToken securityToken = null;
+            if(tokenCollection.size()>0){
+                securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
+            }  
+            if(securityToken==null){
+                throw new SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+             }       
+            getAuthenticationCode(security, securityToken);
+        }
+        boolean found = dtsrpc.setVocabulary(vocabularyName);
 		if (!found) {
 			throw new DAOException(
 					"DTSRPC Exception - unable to connect to vocabulary "

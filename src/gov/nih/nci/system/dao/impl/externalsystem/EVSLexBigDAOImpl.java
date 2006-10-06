@@ -1,31 +1,23 @@
 package gov.nih.nci.system.dao.impl.externalsystem;
 
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-//internal
-
-import gov.nih.nci.evs.domain.*;
-import gov.nih.nci.evs.query.EVSQueryImpl;
-import gov.nih.nci.evs.security.SecurityToken;
-
-
-import gov.nih.nci.common.util.*;
-
-import gov.nih.nci.common.net.*;
-
-
-import msso.validator.MSSOUserValidator;
-
-import org.LexGrid.LexBIG.admin.ListSchemes;
 import org.apache.log4j.*;
 
-//Import LexBIG classes
+import gov.nih.nci.evs.domain.*;
+import gov.nih.nci.evs.security.*;
+import gov.nih.nci.evs.query.*;
+import gov.nih.nci.common.util.*;
+import gov.nih.nci.common.net.*;
+import gov.nih.nci.system.dao.*;
+import gov.nih.nci.system.dao.security.*;
+
+import msso.validator.MSSOUserValidator;
+import org.LexGrid.LexBIG.admin.*;
 import gov.nih.nci.lexrpc.client.*;
 import gov.nih.nci.lexrpc.server.LexAdapter;
-import gov.nih.nci.system.dao.*;
 
 
 /**
@@ -232,6 +224,83 @@ public class EVSLexBigDAOImpl implements DAO
 
  	}
 
+      /**
+     * Validates vocabulary token
+     * @param vocabularyName
+     * @param token 
+     * @return response 
+     */
+    private Response validateToken(HashMap map)throws SecurityException{
+        List validList = new ArrayList();
+        String vocabularyName = null;
+        SecurityToken securityToken = null;
+        boolean valid = true;
+        for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+        {
+            String key = (String)iter.next();
+            String name = key.substring(key.indexOf("$")+1, key.length());
+
+            if(name.equalsIgnoreCase("vocabularyName"))
+                vocabularyName = (String)map.get(key);
+            else if(name.equalsIgnoreCase("token"))
+                securityToken = (SecurityToken)map.get(key);
+        }
+        DAOSecurity security = getSecurityAdapter(vocabularyName);
+        if(security != null){
+            if(securityToken == null){
+                throw new SecurityException("Please specify security token to access "+ vocabularyName);
+            }
+            try{
+                valid = validateToken(security, securityToken);                
+            }
+            catch(Exception ex){
+                valid = false;
+            }
+            validList.add(valid);
+        }else{
+            throw new SecurityException("Token not required to access " + vocabularyName );
+        }
+        return new Response(valid);
+    }
+    /**
+     * Validates token 
+     * @param security
+     * @param securityToken
+     * @return valid
+     */
+    private boolean validateToken(DAOSecurity security, SecurityToken securityToken) throws SecurityException{                
+        boolean valid = false;                
+        try{
+            if(getAuthenticationCode(security, securityToken) != null){
+                valid = true;
+            }            
+        }catch(Exception ex){
+        }       
+        return valid;       
+    }
+    
+    private Object getAuthenticationCode(DAOSecurity security, SecurityToken securityToken){
+        Object token = null;        
+        try{
+            token = security.getAuthenticationCode(securityToken.getAccessToken());            
+        }catch(Exception ex){            
+            throw new SecurityException(getException(ex.getMessage()));
+        }       
+        return token;
+    }
+    /**
+     * Returns the Security implementation class for the specified vocabulary
+     */
+    private DAOSecurity getSecurityAdapter(String vocabularyName){
+        DAOSecurity security = null;
+        try{
+            security = (DAOSecurity)ObjectFactory.getObject(vocabularyName);
+        }catch(Exception ex){  
+            return null;
+        }
+        return security;
+    }
+
 	/**
 	 * Sets Vocabulary
 	 * @param vocabularyName
@@ -245,18 +314,24 @@ public class EVSLexBigDAOImpl implements DAO
         	log.error("vocabularyName cannot be null");
         	throw new DAOException(getException(" vocabularyName cannot be null"));
 		}
-		if(vocabularyName.equals("MedDRA")){
-            SecurityToken accessToken = null;
+        DAOSecurity security = null;
+        if(getSecurityAdapter(vocabularyName)!= null){
+            security = getSecurityAdapter(vocabularyName);
+        }       
+        if(security != null){
+            SecurityToken securityToken = null;
             if(tokenCollection.size()>0){
-                accessToken = (SecurityToken)tokenCollection.get(vocabularyName);
+                securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
+            }  
+            if(securityToken==null){
+                throw new SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+             }  
+            System.out.println("Access Token: "+ securityToken.getAccessToken());
+            boolean valid = validateToken(security, securityToken);
+            if(!valid){
+                throw new Exception("Permission denied - Invalid access token for "+ vocabularyName);
             }
-            if(accessToken.getAccessToken() == null){
-                throw new DAOException("LexBIG Exception - MedDRA token not found - Permission denied");
-            }
-            MSSOUserValidator validator = new MSSOUserValidator();
-            String code = validator.validateID(accessToken.getAccessToken());
         }
-
 
             boolean found = false;
             try{
