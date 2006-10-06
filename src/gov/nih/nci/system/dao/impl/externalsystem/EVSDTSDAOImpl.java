@@ -1639,7 +1639,7 @@ public class EVSDTSDAOImpl implements DAO {
 
 		String searchTerm = null;
 		int limit = 10;
-		String source = null;
+		String source = "*";
 		boolean cui = true;
 		boolean shortResult = false;
 		boolean score = false;
@@ -1658,10 +1658,9 @@ public class EVSDTSDAOImpl implements DAO {
 				else if (name.equalsIgnoreCase("limit"))
 					limit = ((Integer) map.get(key)).intValue();
 				else if (name.equalsIgnoreCase("source")) {
-					if (map.get(key) == null) {
-						source = "*";
-					}
-					source = (String) map.get(key);
+					if (map.get(key) != null) {
+                        source = (String) map.get(key);
+					}					
 					if (source.toLowerCase().equals("all sources")) {
 						source = "*";
 					}
@@ -1774,7 +1773,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 	private boolean validateSource(String source) throws Exception {
-
+	    log.info("validate source: "+ source);
 		boolean valid = false;
 		HashMap map = new HashMap();
 
@@ -1853,9 +1852,9 @@ public class EVSDTSDAOImpl implements DAO {
 		return metaConcept.conceptID();
 	}
 
-	private COM.Lexical.Metaphrase.Concept getMetaConceptForSource(
-			COM.Lexical.Metaphrase.Source metaSource) throws Exception {
-		COM.Lexical.Metaphrase.Partition metaPartition = metaSource.partition();
+	private COM.Lexical.Metaphrase.Concept getMetaConceptForSource(           
+		COM.Lexical.Metaphrase.Source metaSource) throws Exception {
+		COM.Lexical.Metaphrase.Partition metaPartition = metaSource.partition();        
 		return metaPartition.concept();
 	}
 
@@ -2008,18 +2007,20 @@ public class EVSDTSDAOImpl implements DAO {
 	 */
 	private Source convertMetaSource(COM.Lexical.Metaphrase.Source metaSource)
 			throws Exception {
-
+        log.info("converMetaSource...");
 		Source source = null;
 		if (metaSource != null) {
 			source = new Source();
 			source.setDescription(metaSource.description());
 			source.setAbbreviation(metaSource.SAB());
-			source.setCode(getMetaConceptCodeForSource(metaSource));
+            try{
+                source.setCode(getMetaConceptCodeForSource(metaSource));
+            }catch(Exception ex){}
+			
 		} else {
 			source = null;
 		}
-
-		return source;
+        return source;
 	}
 
 	/**
@@ -2031,7 +2032,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 */
 	private Response searchSourceByCode(HashMap map) throws Exception {
 		String code = null;
-		String sourceAbbr = null;
+		String sourceAbbr = "*";
 
 		ArrayList list = new ArrayList();
 		COM.Lexical.Metaphrase.Concept metaConcept = null;
@@ -2044,10 +2045,8 @@ public class EVSDTSDAOImpl implements DAO {
 				if (name.equalsIgnoreCase("code"))
 					code = (String) map.get(key);
 				else if (name.equalsIgnoreCase("sourceAbbr")){
-					if(map.get(key)==null)
-						sourceAbbr = "*";
-					else
-						sourceAbbr = (String) map.get(key);
+					if(map.get(key)!=null)
+                        sourceAbbr = (String) map.get(key);					
 				}
 					
 			}
@@ -2205,18 +2204,19 @@ public class EVSDTSDAOImpl implements DAO {
 	 * Returns all meta sources
 	 */
 
-	private List getMetaSources() throws Exception{
-		ArrayList list = new ArrayList();
-		try{	 		
-	  		Enumeration e = metaphrase.getSources();
+	private List getMetaSources() throws Exception{       
+		List list = new ArrayList();
+		try{
+	  		Enumeration e = metaphrase.getSources();            
 	  		while (e.hasMoreElements())
 			{
-				 list.add(convertMetaSource((COM.Lexical.Metaphrase.Source)e.nextElement()));
+                gov.nih.nci.evs.domain.Source src = convertMetaSource((COM.Lexical.Metaphrase.Source)e.nextElement());                
+				list.add(src);
 			}
 		}catch(Exception e){
 			log.error(e.getMessage());
 			throw new DAOException (getException( e.getMessage()));
-		}
+		}        
 		return list;
 	}
 
@@ -3207,11 +3207,10 @@ public class EVSDTSDAOImpl implements DAO {
 	}
 
 	private gov.nih.nci.evs.domain.Silo convertSilo(
-			gov.nih.nci.dtsrpc.client.Silo dtsSilo) {
+		gov.nih.nci.dtsrpc.client.Silo dtsSilo) {
 		gov.nih.nci.evs.domain.Silo silo = new gov.nih.nci.evs.domain.Silo();
 		silo.setId(dtsSilo.getId());
-		silo.setName(dtsSilo.getName());
-		// log.info("Silo name = "+ silo.getName() +"\t"+ silo.getId());
+		silo.setName(dtsSilo.getName());		
 		return silo;
 	}
 
@@ -3370,9 +3369,7 @@ public class EVSDTSDAOImpl implements DAO {
 			gov.nih.nci.dtsrpc.client.ConceptAssociation dtsAssociation = (gov.nih.nci.dtsrpc.client.ConceptAssociation) dtsrpcAssociations
 					.get(i);
 			association.setName(dtsAssociation.getName());
-			association.setValue(dtsAssociation.getValue());
-			// log.info("Number of qualifiers = "+
-			// dtsAssociation.getQualifiers().size());
+			association.setValue(dtsAssociation.getValue());			
 			association.setQualifierCollection(convertQualifiers(dtsAssociation
 					.getQualifiers()));
 			associationVector.add(association);
@@ -3858,10 +3855,7 @@ public class EVSDTSDAOImpl implements DAO {
 	}
 
 	private gov.nih.nci.evs.domain.History convertHistory(
-			gov.nih.nci.dtsrpc.client.HistoryRecord dtsHistory) {
-		// log.info("Date: "+dtsHistory.getEditDate().toString() +"\tAction: " +
-		// dtsHistory.getEditAction()+"\tRefCode : " +
-		// dtsHistory.getReference());
+		gov.nih.nci.dtsrpc.client.HistoryRecord dtsHistory) {
 		gov.nih.nci.evs.domain.History history = new gov.nih.nci.evs.domain.History();
 		history.setEditAction(dtsHistory.getEditAction());
 		history.setEditActionDate(dtsHistory.getEditDate());
