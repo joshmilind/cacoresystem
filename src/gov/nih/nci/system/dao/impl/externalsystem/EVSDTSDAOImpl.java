@@ -165,7 +165,7 @@ public class EVSDTSDAOImpl implements DAO {
 										new Object[] { mapValues });
 							} catch (Exception ex) {
 								String msg = " - ";
-                                log.error( methodName + " throws Exception "+);
+                                log.error( methodName + " throws Exception ");
 								if (ex.getMessage() == null) {
 									if (pastEx.getMessage() == null) {
 										if (fieldName.equalsIgnoreCase("descLogicValues")) {
