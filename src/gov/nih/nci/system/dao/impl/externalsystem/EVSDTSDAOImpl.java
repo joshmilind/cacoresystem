@@ -73,7 +73,7 @@ public class EVSDTSDAOImpl implements DAO {
 
 	private String port;
 
-	private Exception pastEx = new Exception();
+	private Exception pastEx = new DAOException();
 
 	private Vocabulary vocabulary = null;
 
@@ -181,7 +181,7 @@ public class EVSDTSDAOImpl implements DAO {
 									msg = msg + ex.getMessage();
 								}
 								log.error(msg);
-								throw new DAOException(getException(msg));
+								throw new DAOException(msg);
 							}
 
 						}
@@ -193,7 +193,7 @@ public class EVSDTSDAOImpl implements DAO {
 		} catch (Exception e) {
 			// e.printStackTrace();
 			// log.error("Exception : query - "+ e.getMessage());
-			throw new DAOException(getException(e.getMessage()));
+			throw new DAOException(e.getMessage());
 		}
 		return response;
 	}
@@ -314,7 +314,7 @@ public class EVSDTSDAOImpl implements DAO {
         try{
             token = security.getAuthenticationCode(securityToken.getAccessToken());            
         }catch(Exception ex){            
-            throw new SecurityException(getException(ex.getMessage()));
+            throw new SecurityException(getException(ex));
         }       
         return token;
     }
@@ -353,7 +353,8 @@ public class EVSDTSDAOImpl implements DAO {
                 securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
             }  
             if(securityToken==null){
-                throw new SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+                Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+                throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
              }       
             getAuthenticationCode(security, securityToken);
         }
@@ -3792,18 +3793,24 @@ public class EVSDTSDAOImpl implements DAO {
 	}
 
 	private Exception getException(String msg) {
-		Exception ex = new Exception(msg);
+		Exception ex = null;
 		if (msg == null) {
-			ex = new Exception(pastEx.getMessage());
+			ex = pastEx;
 		} else {
-			pastEx = new Exception(msg);
+			pastEx = new DAOException(msg);
 		}
 		return ex;
 	}
 
 	private Exception getException(Exception ex) {
-		String msg = ex.getMessage();
-		return getException(msg);
+        String msg = null;
+        if(ex.getMessage() == null){
+            ex = pastEx;
+        }
+        else{
+            pastEx = ex;
+        } 		
+		return ex;
 	}
 
 	private boolean validateDLConceptCode(String code) throws Exception {

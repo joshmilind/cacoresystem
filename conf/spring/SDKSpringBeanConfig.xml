@@ -4,6 +4,6 @@
 	  <bean name="ORM1" class="gov.nih.nci.system.dao.impl.orm.ORMDAOImpl" singleton="false"/>
 	  <bean name="ORM2" class="gov.nih.nci.system.dao.impl.orm.ORMDAOImpl" singleton="false"/> 
 	  <bean name="EVS" class="gov.nih.nci.system.dao.impl.externalsystem.EVSDTSDAOImpl" singleton="false"/> 
-	  <bean name="EVS" class="gov.nih.nci.system.dao.security.MedDRASecurity" singleton="true"/> 
+	  <bean name="MedDRA" class="gov.nih.nci.system.dao.security.MedDRASecurity" singleton="true"/> 
 	  <bean name="ServiceLocator" class="gov.nih.nci.system.servicelocator.ServiceLocator" singleton="true"/>	
 </beans>
