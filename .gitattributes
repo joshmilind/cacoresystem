@@ -102,6 +102,8 @@ src/gov/nih/nci/system/comm/server/ApplicationServiceServerImpl.java -text
 src/gov/nih/nci/system/conf/DAOConfig.xml -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigDAOImpl.java -text
+src/gov/nih/nci/system/dao/security/DAOSecurity.java -text
+src/gov/nih/nci/system/dao/security/MedDRASecurity.java -text
 src/gov/nih/nci/system/proxy/HTTPQuery.java -text
 src/gov/nih/nci/system/webservice/EVSWSTransformer.java -text
 src/gov/nih/nci/system/webservice/EVSWebService.java -text
