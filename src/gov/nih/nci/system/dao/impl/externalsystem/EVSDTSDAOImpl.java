@@ -1740,8 +1740,7 @@ public class EVSDTSDAOImpl implements DAO {
 						}
 
 					}
-				}
-				log.info(counter + " concepts found");
+				}				
 			}
 
 			Hashtable hashTable = new Hashtable();
@@ -1772,8 +1771,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @return
 	 * @throws Exception
 	 */
-	private boolean validateSource(String source) throws Exception {
-	    log.info("validate source: "+ source);
+	private boolean validateSource(String source) throws Exception {	   
 		boolean valid = false;
 		HashMap map = new HashMap();
 
@@ -2006,8 +2004,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @return an EVS source object
 	 */
 	private Source convertMetaSource(COM.Lexical.Metaphrase.Source metaSource)
-			throws Exception {
-        log.info("converMetaSource...");
+			throws Exception {        
 		Source source = null;
 		if (metaSource != null) {
 			source = new Source();

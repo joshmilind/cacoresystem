@@ -2293,7 +2293,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	 */
 	private Response getMetaSources(HashMap map) throws Exception
 	{
-        ArrayList list = new ArrayList();
+        List list = new ArrayList();
        // setVocabulary(defaultVocabularyName);
 		try
 		{            
