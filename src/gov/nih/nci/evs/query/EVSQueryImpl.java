@@ -521,6 +521,7 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	
     /**
      * Returns MetaThesaurus concepts for all Sources
+     * @deprecated
      */
     public void getMetaConceptsForAllSources(){
         metaThesaurusValues.put("getMetaConceptCodessForAllSources$name","");

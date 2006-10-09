@@ -377,6 +377,7 @@ public interface EVSQuery extends Serializable{
 
     /**
      * Returns MetaThesaurus concepts for all Sources
+     * @deprecated
      */
     public void getMetaConceptsForAllSources();
     
