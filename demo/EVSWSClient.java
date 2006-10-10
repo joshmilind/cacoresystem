@@ -54,7 +54,7 @@ public class EVSWSClient{
             System.out.println("EVS WEB SERVICE TEST");
             System.out.println("\n--------------------\n");
             
-            String endpointURL = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/ws/caCOREService";
+            String endpointURL = "http://localhost:8080/cacore32/ws/caCOREService";
             String methodName = "queryObject";
             Service service = new Service();            
             Call call = (Call)service.createCall();
@@ -141,11 +141,11 @@ public class EVSWSClient{
 
 
 /************* Metaphrase Test **********************************************************/
-//1. Search a MetaThesaurusConcept by Atom and Source
+//1. Search a MetaThesaurusConcept by Atom
 /***************************************************************************************/
            
     System.out.println("\n----------------------------------------------------------------");
-            System.out.println("1.Search Metaphrase by Atom and Source ");
+            System.out.println("1.Search Metaphrase by Atom");
             System.out.println("\n----------------------------------------------------------------\n");
 
             MetaThesaurusConcept mtc = new MetaThesaurusConcept();
@@ -153,15 +153,8 @@ public class EVSWSClient{
             ArrayList atoms = new ArrayList();
             Atom atom = new Atom();
             atom.setCode("1256-5501");
-            atoms.add(atom);
-            Source source = new Source();
-            source.setAbbreviation("CSP2004");
-            ArrayList sourceList = new ArrayList();
-            sourceList.add(source);
+            atoms.add(atom);            
             mtc.setAtomCollection(atoms);
-            mtc.setSourceCollection((ArrayList)sourceList);
-
-
             call.setReturnType(qnMTCArr);
             Object[] metaParams = new Object[]{"MetaThesaurusConcept",mtc};
             System.out.println("Mtc: "+ mtc.getClass().getName());
@@ -208,7 +201,7 @@ public class EVSWSClient{
 //2. Search for a matching DescLogicConcept based on a MetaThesaurusConcept. 
 /***************************************************************************************/
 
-            System.out.println("2. Search matching DescLogicConcepts for a MetaThesaurusConcept.");
+            System.out.println("2. Search matching DescLogicConcepts by a MetaThesaurusConcept.");
             System.out.println("\n----------------------------------------------------------------\n");
             call.setReturnType(qnDLCArr);
             Object[] metaParams1 = new Object[]{"DescLogicConcept",mtc};
@@ -345,7 +338,7 @@ public class EVSWSClient{
 //4. Search for a matching MetaThesaurusConcept based on a DescLogicConcept
 /***************************************************************************************/
 
-            System.out.println  ("4. Search matching MetaThesaurusConcepts for a DescLogicConcept");
+            System.out.println  ("4. Search matching MetaThesaurusConcepts by a DescLogicConcept");
             System.out.println("\n----------------------------------------------------------------\n");
 
             call.setReturnType(qnMTCArr);
@@ -379,8 +372,8 @@ public class EVSWSClient{
                     System.out.println("\tSynonyms -----> count = "+ synList.size());
                     for(int i=0; i< synList.size(); i++){
                         System.out.println("\t - "+ (String) synList.get(i));
-                        }                    
-                }
+                        }
+                    }
                 
             }
 
