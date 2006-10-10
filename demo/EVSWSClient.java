@@ -54,7 +54,7 @@ public class EVSWSClient{
             System.out.println("EVS WEB SERVICE TEST");
             System.out.println("\n--------------------\n");
             
-            String endpointURL = "http://localhost:8080/cacore32/ws/caCOREService";
+            String endpointURL = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/ws/caCOREService";
             String methodName = "queryObject";
             Service service = new Service();            
             Call call = (Call)service.createCall();
