@@ -51,7 +51,7 @@ public class WSTestClient
 
 		/****************************************************************************************************************/
 
-		String url = "http://localhost:8080/cacore32/ws/caCOREService";
+		String url = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/ws/caCOREService";
         System.out.println("Connecting to " + url);
 		call.setTargetEndpointAddress(new java.net.URL(url));
 
