@@ -379,9 +379,7 @@ public class EVSWSClient{
                     System.out.println("\tSynonyms -----> count = "+ synList.size());
                     for(int i=0; i< synList.size(); i++){
                         System.out.println("\t - "+ (String) synList.get(i));
-                        }
-
-                    
+                        }                    
                 }
                 
             }
