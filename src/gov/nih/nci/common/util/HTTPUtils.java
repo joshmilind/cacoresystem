@@ -1102,9 +1102,10 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
        if(startIndex != null || !startIndex.equals("0")){
            index = Integer.parseInt(startIndex);
        }           
-       if(resultCounter != null){
+       if(resultCounter != null && !resultCounter.equals("0")){    	   
            counter = Integer.parseInt(resultCounter);
        }
+      
        if(targetPackageName.indexOf(".nci.evs.")>0){
            WSQuery evsQuery = new WSQuery();
            results = evsQuery.query(searchPath, criteria, index, counter );           
@@ -1119,9 +1120,11 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
        throw new Exception(ex.getMessage());
     }
    
-   if(counter == 0){
+   if(resultCounter.equals("0") || counter == 0){
+	   resultCounter = "1000";
 	   counter = 1000;
    }
+   
    if((counter + index) > results.size()){
        counter = results.size();
    }
