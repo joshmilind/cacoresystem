@@ -9,6 +9,7 @@ import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.common.util.ListProxy;
 import gov.nih.nci.common.util.NestedCriteria;
 import gov.nih.nci.common.util.ObjectFactory;
+import gov.nih.nci.common.util.Path2NestedCriteria;
 import gov.nih.nci.common.util.PrintUtils;
 import gov.nih.nci.common.util.SearchUtils;
 import gov.nih.nci.system.applicationservice.ApplicationException;
@@ -424,60 +425,6 @@ public class ApplicationServiceBusinessImpl {
 
 	}
 
-	/**
-	 * Returns the class in the specified package.
-	 * 
-	 * @param packageName
-	 *            Specifies the package name for the class
-	 * @param className
-	 *            Specifies the class name
-	 * @return Returns a class
-	 * @throws ApplicationException
-	 *             Throws ClassNotFoundException
-	 */
-
-	private Collection getAssociation(Object criterionClassObj, String searchClassName) throws ApplicationException {
-		try {
-			// Use reflection to find the method in critionClassObject and then get
-			// the result
-			Class objKlass = criterionClassObj.getClass();
-			// Method[] objMethods = objKlass.getDeclaredMethods();
-			Method[] objMethods = objKlass.getMethods();
-	
-			String searchBeanName = searchClassName.substring(searchClassName.lastIndexOf(Constant.DOT) + 1, searchClassName
-					.indexOf("Impl"));
-			for (int i = 0; i < objMethods.length; i++) {
-				String methodName = objMethods[i].getName();
-	
-				// if (methodName.indexOf(searchBeanName) != -1)
-				String associationName = methodName.substring(3);
-				if (associationName.equals(searchBeanName) || associationName.equals(searchBeanName + "Collection")) {
-					// if the methodName matches the searchBeanName, the method
-					// definitely return Collection or Object type
-					Class returnType = objMethods[i].getReturnType();
-					Object returnObject = objMethods[i].invoke(criterionClassObj, new Object[] {});
-					if (returnObject == null) {
-						return null;
-					} else {
-						if (returnObject instanceof java.util.Collection) {
-							return (java.util.Collection) returnObject;
-						} else {
-							java.util.Collection result = new HashSet();
-							result.add(returnObject);
-							return result;
-						}
-					}
-	
-				}
-			}
-		} catch(InvocationTargetException ite){
-			throw new QueryException("InvocationTargetException: ", ite);
-		} catch(IllegalAccessException iae){
-			throw new QueryException("InvocationTargetException: ", iae);
-		}
-		return null;
-	}
-
 	public List search(Class targetClass, Object obj) throws ApplicationException {
 		return search(targetClass.getName(), obj);
 	}
@@ -487,138 +434,53 @@ public class ApplicationServiceBusinessImpl {
 	}
 
 	public List search(String path, Object obj) throws ApplicationException {
-		// check if it is a nested query
-		List pathList = new ArrayList();
-		// parse path -> arraylist
-		StringTokenizer tokens = new StringTokenizer(path, ",");
-		// Check if the target name is with Impl, and set the flag then add the
-		// target name in the pathlist
-		if (tokens.hasMoreTokens()) {
-			String target = tokens.nextToken();
-			if (target.indexOf(".impl.") > 0) {
-				inputImplFlag = true;
-			} else {
-				inputImplFlag = false;
-			}
-			pathList.add(convertPathName(target.trim()));
-		}
-		// add the rest of the path in the pathlist if there is any
-		while (tokens.hasMoreTokens()) {
-			// pathList.add(tokens.nextToken().trim());
-			pathList.add(convertPathName(tokens.nextToken().trim()));
-		}
-		NestedCriteria crit = createNestedCriteria(pathList, obj);
-		List results = query(crit, crit.getTargetObjectName());
-		log.debug("ApplicationService.search(): inputImplFlag = " + inputImplFlag);
-		if (inputImplFlag) {
-			return convertToImpl(results);
-		}
-		return results;
+		List list = new ArrayList();
+		list.add(obj);
+		return search(path, list);
 	}
 
 	public List search(String path, List objList) throws ApplicationException {
-		// check if it is a nested query
-		List pathList = new ArrayList();
-		// parse path -> arraylist
-		StringTokenizer tokens = new StringTokenizer(path, ",");
-		// Check if the target name is with Impl, and set the flag then add the
-		// target name in the pathlist
-		if (tokens.hasMoreTokens()) {
-			String target = tokens.nextToken();
-			if (target.indexOf(".impl.") > 0) {
-				inputImplFlag = true;
-			} else {
-				inputImplFlag = false;
-			}
-			pathList.add(convertPathName(target.trim()));
+
+		try{
+			boolean inputImplFlag = containsImplInTarget(path);
+			List pathList = preparePathList(path);
+			
+			NestedCriteria crit = Path2NestedCriteria.createNestedCriteria(pathList, convertImpl(objList));
+			crit.setSearchCaseSensitivity(caseSensitivityFlag);
+			List results = query(crit, crit.getTargetObjectName());
+			if (inputImplFlag) 
+				return convertToImpl(results);
+			
+			return results;
 		}
-		// add the rest of the path in the pathlist if there is any
+		catch(Exception e)
+		{
+			String msg = "Error while executing nested search criteria query";
+			log.error(msg,e);
+			throw new ApplicationException(msg,e); 
+		}
+	}
+	
+	private List preparePathList(String path)
+	{
+		List pathList = new ArrayList();
+		
+		StringTokenizer tokens = new StringTokenizer(path, ",");
 		while (tokens.hasMoreTokens()) {
-			// pathList.add(tokens.nextToken());
 			pathList.add(convertPathName(tokens.nextToken().trim()));
 		}
-		NestedCriteria crit = createNestedCriteria(pathList, objList);
-		List results = query(crit, crit.getTargetObjectName());
-		if (inputImplFlag) {
-			return convertToImpl(results);
-		}
-		return results;
+		return pathList;
 	}
-
-	private NestedCriteria createNestedCriteria(List pathList, Object obj) throws ApplicationException {
-		List objList = new ArrayList();
-		objList.add(obj);
-		return createNestedCriteria(pathList, objList);
-	}
-
-	private NestedCriteria createNestedCriteria(List pathList, List objList) throws ApplicationException {
-		NestedCriteria criteria = null;
-		try {
-			SearchUtils searchUtil = new SearchUtils();
-			String target, source;
 	
-			List newObjList = new ArrayList();
-			log.debug("ApplicationService.createNestedCriteria(): objList class name = "
-					+ objList.get(0).getClass().getName());
-			if ((objList.get(0)).getClass().getName().indexOf(".impl.") > 0) {
-				for (Iterator iter = objList.iterator(); iter.hasNext();) {
-					Object obj = iter.next();
-					newObjList.add(convertImpl(obj));
-				}
-			} else {
-				newObjList = objList;
-			}
-	
-			String sourceName = (newObjList.get(0)).getClass().getName();
-			String targetName = "";
-	
-			NestedCriteria internalCriteria = null;
-			for (int i = pathList.size() - 1; i >= 0; i--) {
-				// targetName = getFullQName((String)pathList.get(i));
-				targetName = (String) pathList.get(i);
-				log.debug("ApplicationService.createNestedCriteria(): new targetName = " + targetName);
-				// if the target and the source are the same class, ignore the
-				// association
-				criteria = new NestedCriteria();
-				criteria.setSourceObjectName(sourceName);
-				criteria.setTargetObjectName(targetName);
-				log.debug(new StringBuffer("ApplicationService.createNestedCriteria(): sourceName = ").append(sourceName).append(" | targetName = ").append(targetName));
-				if (!targetName.equals(sourceName) && !noInheritent(sourceName, targetName)) {
-					String roleName = searchUtil.getRoleName(Class.forName(sourceName), Class.forName(targetName)
-							.newInstance());
-					if (roleName == null) {
-						log.error("No association found from " + sourceName + " to " + targetName
-								+ ", please double check your query path.");
-						throw new QueryException("No association found from " + sourceName + " to " + targetName
-								+ ", please double check your query path.");
-					}
-					criteria.setRoleName(roleName);
-				}
-				// if the obj is the same type of source(that means it the first
-				// criterion), add Map, otherwise, skip
-				// if (sourceName.equals((objList.get(0)).getClass().getName()))
-				if (sourceName.equals((newObjList.get(0)).getClass().getName())) {
-					// criteria.setSourceObject(obj);
-					criteria.setSourceObjectList(newObjList);
-					criteria.setInternalNestedCriteria(internalCriteria);
-				} else
-				// it is not the
-				{
-					criteria.setInternalNestedCriteria(internalCriteria);
-				}
-				internalCriteria = criteria;
-				sourceName = targetName;
-			}
-			if (criteria != null) {
-				if (ClientInfoThreadVariable.isClientRequest())
-					criteria.setSearchCaseSensitivity(ClientInfoThreadVariable.getSearchCaseSensitivity());
-				else
-					criteria.setSearchCaseSensitivity(caseSensitivityFlag);
-			}
-		} catch(Exception e) {
-			throw new QueryException("Exception: ", e);
+	private boolean containsImplInTarget(String path)
+	{
+		StringTokenizer tokens = new StringTokenizer(path, ",");
+		if (tokens.hasMoreTokens()) {
+			String target = tokens.nextToken();
+			if (target.indexOf(".impl.") > 0) 
+				return true;
 		}
-		return criteria;
+			return false;
 	}
 
 	// Assume the passing name is either Interface or Impl class's name
@@ -626,8 +488,8 @@ public class ApplicationServiceBusinessImpl {
 		try {
 			Class.forName(name);
 		} catch (ClassNotFoundException e) {
-			log.error("ERROR: Class " + name + " does not exist.  Please check the package and class name.");
-			throw new QueryException("ERROR: Class " + name + " does not exist.  Please check the package and class name.");
+			log.error("ERROR: Class " + name + " does not exist.  Please check the package and class name.",e);
+			throw new QueryException("ERROR: Class " + name + " does not exist.  Please check the package and class name.",e);
 		}
 
 		// assume it is already a full qualified name if the name contains
@@ -645,20 +507,11 @@ public class ApplicationServiceBusinessImpl {
 		this.caseSensitivityFlag = caseSensitivity;
 	}
 
-	private boolean noInheritent(String sourceName, String targetName) {
-		try {
-			if (Class.forName(sourceName).getSuperclass().getName().equals(targetName)
-					|| Class.forName(targetName).getSuperclass().getName().equals(sourceName))
-				return true;
-			return false;
-		} catch (Exception e) {
-			log.error("Exception: ", e);
-			return false;
-		}
-	}
 
 	private Object convertImpl(Object implObject) {
 		try {
+			if(implObject.getClass().getName().indexOf(".impl.") <= 0) return implObject;
+			
 			Class objKlass = implObject.getClass();
 
 			log.debug("ApplicationService.copyValue: objKlass.getName = " + objKlass.getName());
@@ -690,7 +543,6 @@ public class ApplicationServiceBusinessImpl {
 			Field[] newObjFields = objKlass.getDeclaredFields();
 			for (int i = 0; i < newObjFields.length; i++) {
 				Object fieldValue = null;
-				Object newFieldValue = null;
 				Field field = newObjFields[i];
 				field.setAccessible(true);
 				String fieldName = field.getName();
@@ -779,7 +631,6 @@ public class ApplicationServiceBusinessImpl {
 			Field[] newObjFields = objKlass.getDeclaredFields();
 			for (int i = 0; i < newObjFields.length; i++) {
 				Object fieldValue = null;
-				Object newFieldValue = null;
 				Field field = newObjFields[i];
 				field.setAccessible(true);
 				String fieldName = field.getName();
@@ -825,64 +676,43 @@ public class ApplicationServiceBusinessImpl {
 	
 	private Response query(gov.nih.nci.common.net.Request request) throws ApplicationException
 	{
-
-		String dataSource;
-		String domainObjectName = request.getDomainObjectName();
-		Response response;
-
 		ServiceLocator serviceLocator = null;
 		try
 		{
+			String domainObjectName = request.getDomainObjectName();
 			serviceLocator = (ServiceLocator)ObjectFactory.getObject("ServiceLocator");
-		} catch (ApplicationException e1)
-		{
-			log.fatal("Unable to locate Service Locator :",e1);
-			throw new ApplicationException("Unable to locate Service Locator :",e1);
-		}
-		
-		try{
 			request.setConfig(serviceLocator.getDataSourceCollection(domainObjectName));
-			dataSource = serviceLocator.getDataSource(domainObjectName);
-		}
+			String dataSource = serviceLocator.getDataSource(domainObjectName);
+			DAO dao = (DAO) ObjectFactory.getObject(dataSource);
+			return dao.query(request);
+		} 
 		catch(ServiceLocatorException slEx)
 		{
 			log.error("No data source found",slEx);
 			throw new ApplicationException(" No data source was found " , slEx);
-		}
-		catch(Exception exception)
-		{
-			log.error("Exception while getting datasource information "+ exception.getMessage());
-			throw new ApplicationException("Exception in Base Delegate while getting datasource information: ", exception);
-		}
-
-		if (dataSource == null)
-		{
-			log.error("No Data Source could be found for the specified domain object");
-			throw new ApplicationException("No Data Source could be found for the specified domain object");
-		}
-		
-		try
-		{
-			DAO dao = (DAO) ObjectFactory.getObject(dataSource);
-			log.debug("DAO found");
-			response = dao.query(request);
 		}
 		catch(DAOException daoException)
 		{
 			log.error("Error while getting and querying DAO",daoException);
 			throw daoException;
 		}
+		catch (ApplicationException e1)
+		{
+			log.fatal("Unable to locate Service Locator :",e1);
+			throw new ApplicationException("Unable to locate Service Locator :",e1);
+		}		
 		catch(Exception exception)
 		{
-			log.error(exception.getMessage());
-			throw new ApplicationException("Exception in the query:  ", exception);
+			log.error("Exception while getting datasource information "+ exception.getMessage());
+			throw new ApplicationException("Exception in Base Delegate while getting datasource information: ", exception);
 		}
-
-		return response;
 	}
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.7  2006/09/28 23:10:58  masondo
+// GF1524: Fixed the SDK ServiceLocator
+//
 // Revision 1.6  2006/09/15 19:46:27  masondo
 // removed the hardcoded path used by the grid id.
 //
