@@ -9,7 +9,7 @@
 		<filter name="classifier-filter"
 			className="gov.nih.nci.codegen.core.filter.UML13ClassifierFilter">
 			<package>
-				<include>@INCLUDE_PACKAGE@</include>
+				<include>.*.nci.evs.*</include>
 			</package>
 			<name>
 				<exclude>@EXCLUDE_NAME@</exclude>
