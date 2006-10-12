@@ -69,15 +69,11 @@ public class EVSDTSDAOImpl implements DAO {
 
 	private Metaphrase metaphrase;
 
-	private String server;
-
-	private String port;
-
 	private Exception pastEx = new DAOException();
 
-	private Vocabulary vocabulary = null;
-
 	private HashMap tokenCollection = new HashMap();
+	
+	private static HashMap vocabularyCollection = new HashMap();
 
 	/**
 	 * Creates a connection to the EVS datasource and generates a query based on
@@ -117,8 +113,8 @@ public class EVSDTSDAOImpl implements DAO {
 						if (fieldName.equalsIgnoreCase("descLogicValues")) {
 							// Check for overwritting system properties; else
 							// use request parameters
-							server = System.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
-							port = System.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): System.getProperty("EVS_DTSRCP_PORT");
+							String server = System.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
+							String port = System.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): System.getProperty("EVS_DTSRCP_PORT");
 
 							if (server != null && port != null) {
 								dtsrpc = new DTSRPCClient(server, port);
@@ -191,8 +187,6 @@ public class EVSDTSDAOImpl implements DAO {
 			}
 
 		} catch (Exception e) {
-			// e.printStackTrace();
-			// log.error("Exception : query - "+ e.getMessage());
 			throw new DAOException(e.getMessage());
 		}
 		return response;
@@ -287,11 +281,11 @@ public class EVSDTSDAOImpl implements DAO {
                 valid = false;
             }
             validList.add(valid);
-        }else{
-            throw new SecurityException("Token not required to access " + vocabularyName );
         }
+        
         return new Response(valid);
     }
+    
     /**
      * Validates token 
      * @param security
@@ -318,6 +312,7 @@ public class EVSDTSDAOImpl implements DAO {
         }       
         return token;
     }
+    
     /**
      * Returns the Security implementation class for the specified vocabulary
      */
@@ -330,6 +325,7 @@ public class EVSDTSDAOImpl implements DAO {
         }
         return security;
     }
+    
 	/**
 	 * Sets Vocabulary
 	 * 
@@ -381,16 +377,25 @@ public class EVSDTSDAOImpl implements DAO {
 				log
 						.error("DTSRPC Exception - Unable to connect to the DTSRPC Server");
 			}
-		} else {
-			vocabulary = populateVocabulary(vocabularyName);
-		}
+		} 
 	}
 
-	private Vocabulary populateVocabulary(String vocabularyName) {
-		Vocabulary vocab = new Vocabulary();
-		vocab.setName(vocabularyName);
-		vocab.setNamespaceId(dtsrpc.getNamespaceId(vocabularyName));
-		vocab.setDescription(dtsrpc.getVocabularyDescription(vocabularyName));
+	/**
+	 * getVocabulary returns the cached version of the Vocabulary object, if exists,
+	 * others it returns a newly constructed on from the DTS server.
+	 * 
+	 * @param vocabularyName
+	 * @return Vocabulary
+	 */
+	private Vocabulary getVocabulary(String vocabularyName) {
+		Vocabulary vocab = (Vocabulary)vocabularyCollection.get(vocabularyName);
+		if (vocabularyCollection.get(vocabularyName) == null) {
+			vocab = new Vocabulary();
+			vocab.setName(vocabularyName);
+			vocab.setNamespaceId(dtsrpc.getNamespaceId(vocabularyName));
+			vocab.setDescription(dtsrpc.getVocabularyDescription(vocabularyName));
+			vocabularyCollection.put(vocabularyName, vocab);
+		}
 		return vocab;
 	}
 
@@ -398,14 +403,13 @@ public class EVSDTSDAOImpl implements DAO {
 		List vocabList = new ArrayList();
 		Vector names = dtsrpc.getVocabularyNames();
 		for (int i = 0; i < names.size(); i++) {
-			vocabList.add(populateVocabulary((String) names.get(i)));
+			vocabList.add(getVocabulary((String) names.get(i)));
 		}
 		return new Response(vocabList);
 	}
 
 	private Response getVocabularyByName(HashMap map) throws Exception {
 		String vocabularyName = null;
-		Vocabulary vocab = new Vocabulary();
 		List vocabList = new ArrayList();
 
 		try {
@@ -417,7 +421,7 @@ public class EVSDTSDAOImpl implements DAO {
 			}
 			if (vocabularyName != null) {
 				setVocabulary(vocabularyName);
-				vocabList.add(vocabulary);
+				vocabList.add(getVocabulary(vocabularyName));
 			}
 
 		} catch (Exception ex) {
@@ -472,7 +476,7 @@ public class EVSDTSDAOImpl implements DAO {
 				// concept = dtsrpc.findConceptByCode(conceptName, true);
 			}
 			dlc = buildDescLogicConcept(dtsrpc.getConcept(conceptName,
-					inputFlag, 1));
+					inputFlag, 1), getVocabulary(vocabularyName));
 			// dlc = buildDescLogicConcept(concept);
 			list.add(dlc);
 
@@ -535,14 +539,11 @@ public class EVSDTSDAOImpl implements DAO {
 			Concept[] concepts = null;
 			concepts = dtsrpc.searchConcepts(searchTerm, limit, matchOption,
 					matchType, ASDIndex);
-			if (vocabulary == null) {
-				populateVocabulary(vocabularyName);
-			}
 
 			DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
 			for (int x = 0; x < concepts.length; x++) {
 				dlc[x] = new DescLogicConcept();
-				dlc[x] = buildDescLogicConcept(concepts[x]);
+				dlc[x] = buildDescLogicConcept(concepts[x], getVocabulary(vocabularyName));
 				list.add(dlc[x]);
 			}
 
@@ -637,7 +638,7 @@ public class EVSDTSDAOImpl implements DAO {
 		}
 
 		setVocabulary(vocabularyName);
-		int namespace = dtsrpc.getNamespaceId(vocabularyName);
+		int namespace = getVocabulary(vocabularyName).getNamespaceId();
 		DefaultMutableTreeNode tree = null;
 
 		Vector v = null;
@@ -681,14 +682,13 @@ public class EVSDTSDAOImpl implements DAO {
 				DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
 						.getRoot();
 				Concept rootConcept = (Concept) root.getUserObject();
-				DescLogicConcept dlRoot = buildDescLogicConcept(rootConcept);
+				DescLogicConcept dlRoot = buildDescLogicConcept(rootConcept, getVocabulary(vocabularyName));
 
-				DefaultMutableTreeNode dlTree = new DefaultMutableTreeNode(
-						buildDescLogicConcept(rootConcept), true);
+				DefaultMutableTreeNode dlTree = new DefaultMutableTreeNode(dlRoot, true);
 				int childCounter = tree.getChildCount();
 
 				if (root.getChildCount() > 0) {
-					dlTree = getChildNodes(dlTree, root);
+					dlTree = getChildNodes(dlTree, root, getVocabulary(vocabularyName));
 				}
 				evsTree = dlTree;
 
@@ -707,25 +707,24 @@ public class EVSDTSDAOImpl implements DAO {
 	}
 
 	public DefaultMutableTreeNode getChildNodes(DefaultMutableTreeNode dlNode,
-			DefaultMutableTreeNode dtsrpcNode) {
+			DefaultMutableTreeNode dtsrpcNode, Vocabulary vocabulary) {
 		int childCounter = dtsrpcNode.getChildCount();
 		for (int i = 0; i < childCounter; i++) {
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode();
 			DefaultMutableTreeNode conceptNode = (DefaultMutableTreeNode) dtsrpcNode
 					.getChildAt(i);
 			Concept childConcept = (Concept) conceptNode.getUserObject();
-			DescLogicConcept dlc = new DescLogicConcept();
-			dlc = buildDescLogicConcept(childConcept);
+			DescLogicConcept dlc = buildDescLogicConcept(childConcept, vocabulary);
 
 			Vector vecProperties = childConcept.getProperties();
 
 			node.setUserObject(dlc);
 			if (conceptNode.getChildCount() > 0) {
-				node = getChildNodes(node, conceptNode);
+				node = getChildNodes(node, conceptNode, vocabulary);
 			}
 			dlNode.add(node);
-
 		}
+		
 		return dlNode;
 	}
 
@@ -1574,7 +1573,7 @@ public class EVSDTSDAOImpl implements DAO {
 			if (concepts.length > 0) {
 
 				for (int i = 0; i < concepts.length; i++) {
-					list.add(buildDescLogicConcept(concepts[i]));
+					list.add(buildDescLogicConcept(concepts[i], getVocabulary(vocabularyName)));
 				}
 
 			}
@@ -1673,7 +1672,7 @@ public class EVSDTSDAOImpl implements DAO {
 				Vector conceptVector = new Vector();
 				conceptVector.add(conceptName);
 				DescLogicConcept dlc = buildDescLogicConcept(dtsrpc
-						.findConcept(conceptName));
+						.findConcept(conceptName), getVocabulary(vocabularyName));
 				dlcList.add(dlc);
 			}
 		} catch (Exception e) {
@@ -3388,7 +3387,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 */
 
 	private DescLogicConcept buildDescLogicConcept(
-			gov.nih.nci.dtsrpc.client.Concept concept) {
+			gov.nih.nci.dtsrpc.client.Concept concept, Vocabulary vocabulary) {
 		DescLogicConcept dlc = new DescLogicConcept();
 		dlc.setName(concept.getName());
 		dlc.setCode(concept.getCode());
@@ -3410,9 +3409,8 @@ public class EVSDTSDAOImpl implements DAO {
 		}
 
 		dlc.setSemanticTypeVector(getDLSemanticTypes(dlc));
-		if (vocabulary != null) {
-			dlc.setVocabulary(vocabulary);
-		}
+		dlc.setVocabulary(vocabulary);
+
 		return dlc;
 	}
 
@@ -3498,7 +3496,7 @@ public class EVSDTSDAOImpl implements DAO {
 			Concept[] superConcepts = dtsrpc.getConcepts(conceptNames);
 
 			for (int i = 0; i < superConcepts.length; i++) {
-				DescLogicConcept dlc = buildDescLogicConcept(superConcepts[i]);
+				DescLogicConcept dlc = buildDescLogicConcept(superConcepts[i], getVocabulary(vocabularyName));
 				typeList.add(dlc);
 			}
 
@@ -3553,7 +3551,7 @@ public class EVSDTSDAOImpl implements DAO {
 
 			for (int i = 0; i < concepts.length; i++) {
 				DescLogicConcept dlc = new DescLogicConcept();
-				dlc = buildDescLogicConcept(concepts[i]);
+				dlc = buildDescLogicConcept(concepts[i], getVocabulary(vocabularyName));
 				typeList.add(dlc);
 			}
 
