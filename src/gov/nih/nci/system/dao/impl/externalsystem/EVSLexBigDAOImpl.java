@@ -111,10 +111,10 @@ public class EVSLexBigDAOImpl implements DAO
                                     log.info("connecting to NCI MetaThesaurus");
                                 } 
                             }catch(Exception ex){
-                            	throw new Exception(getException(ex.getMessage()));
-                            	//log.info("Unable to connect to NCI MetaThesaurus");
-                               // setVocabulary(defaultVocabularyName);
-                                //log.info("connecting to NCI Thesaurus");
+                            	//throw new Exception(getException(ex.getMessage()));
+                            	log.error("Unable to connect to NCI MetaThesaurus. Connecting to NCI Thesaurus");
+                                setVocabulary(defaultVocabularyName);
+                                log.info("NCI Thesaurus - found");
                             }		
 							                                                      
 						}
@@ -157,7 +157,7 @@ public class EVSLexBigDAOImpl implements DAO
 		}catch(Exception e)
 		{
 			log.error("Exception : query - "+  e.getMessage());
-			throw new DAOException (getException( e.getMessage()));
+			throw new DAOException (getException(e));
 		}
 		return response;
 	}
@@ -2181,7 +2181,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	private Response searchSourceByCode(HashMap map) throws Exception
 	{
 		String code = null;
-		String sourceAbbr = null;
+		String sourceAbbr = "*";
         int limit = 100;
 
 		ArrayList list = new ArrayList();
@@ -2196,27 +2196,34 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 
 				if(name.equalsIgnoreCase("code"))
 					code = (String)map.get(key);
-				else if(name.equalsIgnoreCase("sourceAbbr"))
-					sourceAbbr = (String)map.get(key);
-                else if(name.equalsIgnoreCase("limit"))
-                    limit = ((Integer)map.get(key)).intValue();
+				else if(name.equalsIgnoreCase("sourceAbbr")){
+					if(map.get(key)!=null){
+						sourceAbbr = (String)map.get(key);
+					}					
+				}else if(name.equalsIgnoreCase("limit"))
+					if(map.get(key)!=null){
+						try{
+							limit = ((Integer)map.get(key)).intValue();
+						}catch(Exception ex){}						
+					}                    
+				}
+			List sourceList = new ArrayList();
+			if(sourceAbbr.equals("*") || sourceAbbr.length()<1){
+				sourceList = getMetaSources();
 			}
+			else{
+				if(!validateSource(sourceAbbr)){
+				    throw new DAOException ("invalid source abbreviation - "+ sourceAbbr);
+				    }
+				sourceList.add(sourceAbbr);
 
-
-			if(!StringHelper.hasValue(code))
-				  throw new DAOException(getException(" invalid acode"));
-
-			if(!validateSource(sourceAbbr)){
-			    throw new DAOException ("invalid source abbreviation - "+ sourceAbbr);
-			    }
-
-
-            metaConcepts = adapter.findConceptsWithSourceCodeMatching(sourceAbbr, code, limit);
-            for(int i=0; i<metaConcepts.size(); i++ ){
-                list.add(this.buildMetaThesaurusConcept((Concept)metaConcepts.get(i)));
-            }
-
-
+			}	
+			for(int s=0; s<sourceList.size(); s++){
+				metaConcepts = adapter.findConceptsWithSourceCodeMatching((String)sourceList.get(s), code, limit);
+	            for(int i=0; i<metaConcepts.size(); i++ ){
+	                list.add(this.buildMetaThesaurusConcept((Concept)metaConcepts.get(i)));
+	            }
+			}          
 		}
 		catch(Exception e)
 		{
@@ -2358,6 +2365,27 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		return (new Response(conceptList));
 	}
 
+	private List getMetaSources() throws Exception{
+		 List list = new ArrayList();	     
+			try
+			{            
+		 		Vector sources= adapter.getSupportedSources();	  		
+		  		for(int i=0; i< sources.size(); i++ )
+				{                
+	                Source source =  new Source();
+	                source.setAbbreviation((String)sources.get(i));
+					list.add(source);
+				}
+
+			}
+			catch(Exception e)
+			{
+				log.error(e.getMessage());
+				throw new DAOException (getException( e.getMessage()));
+			}
+
+			return list;
+	}
 
 
 	/**
@@ -2367,27 +2395,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	 * @throws Exception
 	 */
 	private Response getMetaSources(HashMap map) throws Exception
-	{
-        List list = new ArrayList();
-       // setVocabulary(defaultVocabularyName);
-		try
-		{            
-	 		Vector sources= adapter.getSupportedSources();	  		
-	  		for(int i=0; i< sources.size(); i++ )
-			{                
-                Source source =  new Source();
-                source.setAbbreviation((String)sources.get(i));
-				list.add(source);
-			}
-
-		}
-		catch(Exception e)
-		{
-			log.error(e.getMessage());
-			throw new DAOException (getException( e.getMessage()));
-		}
-
-		return (new Response(list));
+	{       
+		return (new Response(getMetaSources()));
 	}
 
 
