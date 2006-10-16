@@ -481,10 +481,7 @@
 			</zipfileset>
 			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/classes/xslt">
 				<include name="*.xsl"/>
-			</zipfileset>
-			<zipfileset dir="${dir.custom.conf}/resources" prefix="WEB-INF/resources">
-				<include name="**/**"/>
-			</zipfileset>
+			</zipfileset>			
 			<zipfileset dir="${dir.custom.conf}/spring/" prefix="WEB-INF/classes">
 				<include name="**/**"/>
 			</zipfileset>
