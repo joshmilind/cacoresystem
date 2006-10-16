@@ -81,6 +81,24 @@ public class EVSLexBigDAOImpl implements DAO
 		String methodName = null;
 		try{
 			configs= r.getConfig();
+			//Setting property file value for LexBIG
+			Properties sysProps = System.getProperties();			
+			String lg_config_file = null;
+			boolean found = false;
+			for(Iterator i = sysProps.keySet().iterator(); i.hasNext();){				
+				String key = (String)i.next();
+				String value = (String) sysProps.get(key);
+				if(key.equalsIgnoreCase("LG_CONFIG_FILE")){					
+					found = true;
+				}
+				if(key.equalsIgnoreCase("jboss.server.data.dir")){
+					lg_config_file = value +"\\lb\\config.props";
+				}				
+			}
+			if(!found){
+				System.setProperty("LG_CONFIG_FILE", lg_config_file);
+				log.info("Setting config property value: "+ System.getProperty("LG_CONFIG_FILE"));
+			}
 			EVSQueryImpl criteria = (EVSQueryImpl)obj;
 			if(criteria.getSecurityTokenCollection().size()>0){
 	            tokenCollection = criteria.getSecurityTokenCollection();
