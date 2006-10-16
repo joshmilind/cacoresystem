@@ -560,14 +560,13 @@ public class EVSWebService {
     private List searchMetaphraseByAtoms(List atomList, String sourceAbbr) throws Exception{
         List resultSet = new ArrayList();
         List conceptList = new ArrayList();
-        HashMap atomSet = new HashMap();
-        for(int i=0; i<atomList.size(); i++){
-            Atom atom = (Atom) atomList.get(i);
-            String code = null;
-            String name = null;
-            String origin = null;
-            String source = null;
-            
+        HashMap atomSet = new HashMap();        
+        String code = null;
+        String name = null;
+        String origin = null;
+        String source = null;        
+        for(int i=0; i<atomList.size(); i++){   
+        	Atom atom = (Atom) atomList.get(i);
             if(atom.getCode() != null){
             	code = atom.getCode();
             }
@@ -635,6 +634,17 @@ public class EVSWebService {
                             if(atomOrigin.startsWith(source)){
                                 atomSet.put(source + atomCode, atomConcept);
                             }
+                        }else if(atomConcept.getName()!=null && source != null){
+                        	String srcAbbr = atomOrigin;
+                        	if(atomConcept.getSource()!= null){
+                        		if(atomConcept.getSource().getAbbreviation()!=null)
+                        			srcAbbr = atomConcept.getSource().getAbbreviation();
+                        	}
+                        	if(srcAbbr != null){
+                        		if(srcAbbr.equalsIgnoreCase(source)){                        			
+                            		atomSet.put(srcAbbr + atomConcept.getName(), atomConcept);
+                        		}
+                        	}                        	
                         }
             		}
             		
@@ -647,7 +657,7 @@ public class EVSWebService {
     			resultSet.add(atomSet.get(key));
     		}            		
     	}
-        else{
+        else if(source == null && code == null){
         	resultSet = conceptList;
         }
         return resultSet;
