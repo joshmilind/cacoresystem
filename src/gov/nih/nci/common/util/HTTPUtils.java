@@ -1147,19 +1147,16 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
  public Object[] getCachedResultSet() throws Exception{
      int counter = 1000;
      int index = 0;
-     if(resultCounter != null){
+     if(resultCounter != null && !resultCounter.equals("0")){    	 
          counter = Integer.parseInt(resultCounter);
      }
      if(startIndex != null){
          index = Integer.parseInt(startIndex);
-     }
-     
-     int size = index + counter;
-     
+     }   
+     int size = index + counter;     
      if(size > results.size()){
          size = results.size();
          }    
-    
      Object[] resultSet = new Object[counter];
      for(int s=0, i = index; i<size; i++, s++){
          resultSet[s]= new Object();
