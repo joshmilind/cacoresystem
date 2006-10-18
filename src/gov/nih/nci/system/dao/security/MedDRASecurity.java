@@ -43,7 +43,7 @@ public Object getAuthenticationCode(Object securityToken)throws SecurityExceptio
 	}else{
 		valid = true;
 	}	
-	System.out.printlno("Validating token .....");
+	System.out.println("Validating token .....");
 	if(!valid){
 		String msg = "\nA valid license number is required to access MedDRA through the caCORE API. NCI staff and collaborators please contact NCICB for NCI's license. " +
 		"Other users contact MedDRA MSSO:\n 12011 Sunset Hill Road; Reston, VA 20190-3285; phone: 877-258-8280; e-mail: MSSOhelp@ngc.com; http://meddramsso.com";		
