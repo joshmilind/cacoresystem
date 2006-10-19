@@ -18,7 +18,7 @@ import msso.validator.MSSOUserValidator;
 import org.LexGrid.LexBIG.admin.*;
 import gov.nih.nci.lexrpc.client.*;
 import gov.nih.nci.lexrpc.server.LexAdapter;
-
+import gov.nih.nci.evs.security.*;
 
 /**
   * <!-- LICENSE_TEXT_START -->
@@ -289,7 +289,7 @@ public class EVSLexBigDAOImpl implements DAO
     private boolean validateToken(DAOSecurity security, SecurityToken securityToken) throws SecurityException{                
         boolean valid = false;                
         try{
-            if(getAuthenticationCode(security, securityToken) != null){
+            if(getSecurityKey(security, securityToken) != null){
                 valid = true;
             }            
         }catch(Exception ex){
@@ -297,14 +297,14 @@ public class EVSLexBigDAOImpl implements DAO
         return valid;       
     }
     
-    private Object getAuthenticationCode(DAOSecurity security, SecurityToken securityToken){
-        Object token = null;        
+    private SecurityKey getSecurityKey(DAOSecurity security, SecurityToken securityToken){
+        SecurityKey key = null;        
         try{
-            token = security.getAuthenticationCode(securityToken.getAccessToken());            
+            key = security.getSecurityKey(new UserCredentials(securityToken.getAccessToken()));            
         }catch(Exception ex){            
             throw new SecurityException(getException(ex.getMessage()));
         }       
-        return token;
+        return key;
     }
     /**
      * Returns the Security implementation class for the specified vocabulary
@@ -342,13 +342,10 @@ public class EVSLexBigDAOImpl implements DAO
                 securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
             }  
             if(securityToken==null){
-                throw new SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
-             }  
-            System.out.println("Access Token: "+ securityToken.getAccessToken());
-            boolean valid = validateToken(security, securityToken);
-            if(!valid){
-                throw new Exception("Permission denied - Invalid access token for "+ vocabularyName);
-            }
+                Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+                throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
+             }       
+            getSecurityKey(security, securityToken);
         }
 
             boolean found = false;

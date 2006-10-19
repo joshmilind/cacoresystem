@@ -295,7 +295,7 @@ public class EVSDTSDAOImpl implements DAO {
     private boolean validateToken(DAOSecurity security, SecurityToken securityToken) throws SecurityException{                
         boolean valid = false;                
         try{
-            if(getAuthenticationCode(security, securityToken) != null){
+            if(getSecurityKey(security, securityToken) != null){
                 valid = true;
             }            
         }catch(Exception ex){
@@ -303,14 +303,14 @@ public class EVSDTSDAOImpl implements DAO {
         return valid;       
     }
     
-    private Object getAuthenticationCode(DAOSecurity security, SecurityToken securityToken){
-        Object token = null;        
+    private SecurityKey getSecurityKey(DAOSecurity security, SecurityToken securityToken){
+    	SecurityKey key = null;        
         try{
-            token = security.getAuthenticationCode(securityToken.getAccessToken());            
+            key = security.getSecurityKey(new UserCredentials(securityToken.getAccessToken()));           
         }catch(Exception ex){            
             throw new SecurityException(getException(ex));
         }       
-        return token;
+        return key;
     }
     
     /**
@@ -352,7 +352,7 @@ public class EVSDTSDAOImpl implements DAO {
                 Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
                 throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
              }       
-            getAuthenticationCode(security, securityToken);
+            getSecurityKey(security, securityToken);
         }
         boolean found = dtsrpc.setVocabulary(vocabularyName);
 		if (!found) {
