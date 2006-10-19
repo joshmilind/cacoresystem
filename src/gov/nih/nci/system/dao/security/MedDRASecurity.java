@@ -3,7 +3,11 @@ import gov.nih.nci.common.util.*;
 import gov.nih.nci.evs.query.*;
 import gov.nih.nci.evs.security.*;
 import gov.nih.nci.system.applicationservice.SecurityException;
+import gov.nih.nci.system.dao.security.SecurityKey;
+import gov.nih.nci.system.dao.security.UserCredentials;
+
 import java.util.*;
+import org.apache.log4j.Logger;
 /**
  * Validates security token against the MedDRA vocabulary
  * @author Shaziya Muhsin
@@ -15,16 +19,17 @@ public class MedDRASecurity implements DAOSecurity {
      * @param securityToken - specify the securityToken value 
      * @return returns an authentication code 
      */
+private static Logger log = Logger.getLogger(MedDRASecurity.class.getName());
 private static HashSet validTokenCollection = new HashSet();
 	
 public MedDRASecurity(){	
-	System.out.println("MedDRASecurity.....");
-	resetCache(100000,60000);
+	//Clear cache every two hours
+	resetCache(7200000,7200000);
 }
-
-public Object getAuthenticationCode(Object securityToken)throws SecurityException{	
-	Object validToken = null;
+public SecurityKey getSecurityKey(UserCredentials credentials) throws SecurityException{	
+	SecurityKey key = null;	
 	boolean valid = false;
+	String securityToken = (String)credentials.getCredentials();
 	if(securityToken == null){
 		throw new SecurityException("Invalid access token for MedDRA - Permission Denied");
 	}
@@ -43,16 +48,15 @@ public Object getAuthenticationCode(Object securityToken)throws SecurityExceptio
 	}else{
 		valid = true;
 	}	
-	System.out.println("Validating token .....");
 	if(!valid){
 		String msg = "\nA valid license number is required to access MedDRA through the caCORE API. NCI staff and collaborators please contact NCICB for NCI's license. " +
 		"Other users contact MedDRA MSSO:\n 12011 Sunset Hill Road; Reston, VA 20190-3285; phone: 877-258-8280; e-mail: MSSOhelp@ngc.com; http://meddramsso.com";		
 		throw new SecurityException("Permission Denied - Invalid access token for MedDRA" + msg);
 	}else{
 		validTokenCollection.add(securityToken);
-		validToken = securityToken;
-	}
-	return validToken;
+		key = new SecurityKey(securityToken, credentials);
+	}	
+	return key;
 }
 
 private boolean found(String token){
@@ -68,10 +72,10 @@ private boolean found(String token){
 }
 
 private void resetCache(int delay, int interval){	
-	System.out.println("RESETTING CACHE.....");
+	
 	Timer timer = new Timer();
 	timer.scheduleAtFixedRate(new TimerTask(){
-			public void run(){
+			public void run(){				
 				validTokenCollection = new HashSet();
 			}
 		}, delay, interval);
