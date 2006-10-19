@@ -92,7 +92,7 @@ public class EVSLexBigDAOImpl implements DAO
 					found = true;
 				}
 				if(key.equalsIgnoreCase("jboss.server.data.dir")){
-					lg_config_file = value +"\\lb\\config.props";
+					lg_config_file = value +"/lb/config.props";
 				}				
 			}
 			if(!found){
