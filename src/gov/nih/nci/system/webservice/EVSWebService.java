@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 public class EVSWebService {
 	private static Logger log = Logger.getLogger(EVSWebService.class.getName());
 	private String defaultVocabulary = "NCI_Thesaurus";
-	private int defaultLimit = 100;
+	private int defaultLimit = 200;
 	private String returnClassName;
     private EVSWSTransformer transformer;
     SecurityToken securityToken = null;
@@ -81,7 +81,7 @@ public class EVSWebService {
 		if (startIndex > 0) {
 			total = startIndex;
 		}
-		if (recordCounter > 0) {
+		if (recordCounter > 0 && recordCounter != 1000) {
 			total += recordCounter;
 		} else {
 			total += defaultLimit;
