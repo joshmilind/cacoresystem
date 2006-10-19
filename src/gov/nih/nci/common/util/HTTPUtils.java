@@ -52,7 +52,7 @@ public class HTTPUtils implements Serializable{
     private  Properties properties = new Properties();
     private String query=null;
     private String startIndex = "0";
-    private String resultCounter = "0";
+    private String resultCounter = "1000";
     private String pageNumber = null;
     private String pageSize = null; 
     private String criteria = null;
@@ -1095,7 +1095,7 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
     
      results = new ArrayList();
      int index = 0;
-     int counter = 0;
+     int counter = 1000;
     
    try{ 
        String searchPath = getSearchClassNames(targetClassName, targetPackageName);       
@@ -1122,11 +1122,6 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
        log.error(ex.getMessage());
        throw new Exception(ex.getMessage());
     }
-   
-   if(resultCounter.equals("0") || counter == 0){
-	   resultCounter = "1000";
-	   counter = 1000;
-   }
    
    if((counter + index) > results.size()){
        counter = results.size();
