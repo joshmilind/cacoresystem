@@ -550,8 +550,7 @@ public class EVSLexBigDAOImpl implements DAO
 	        	log.warn("searchTerm cannot be null");
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
-	        Concept[] concepts = null;
-	    
+	        Concept[] concepts = null;    	        
 	        try{
 	        	concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
 	        }catch(Exception ex){	        	
@@ -559,26 +558,23 @@ public class EVSLexBigDAOImpl implements DAO
 	        		concepts = adapter.searchConcepts(searchTerm, limit);
 		        }
 	        	else{
-	        		throw new Exception("Exception in method call searchDescLogicConcept "+ex.getMessage());
+	        		throw new Exception("searchConcepts "+ex.getMessage());
 	        	}
-	        }
-	        
-	        
-	       
-	       	
-	        
+	        }		   
             if(vocabulary == null){
                 populateVocabulary(vocabularyName);
             }
-	        DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
-	        for(int x=0; x<concepts.length; x++){
-	            dlc[x] = new DescLogicConcept();
-	            dlc[x] = buildDescLogicConcept(concepts[x]);
-	            list.add(dlc[x]);
-	        }
+            if(concepts != null){
+            	DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
+    	        for(int x=0; x<concepts.length; x++){
+    	            dlc[x] = new DescLogicConcept();
+    	            dlc[x] = buildDescLogicConcept(concepts[x]);
+    	            list.add(dlc[x]);
+    	        }
+            }	        
 		}catch(Exception e){
 		    	log.error(e.getMessage());
-			throw new DAOException(getException("SearchConcepts..."+e.getMessage()));
+			throw new DAOException(getException(e.getMessage()));
 		}
 		return new Response(list);
 	}
