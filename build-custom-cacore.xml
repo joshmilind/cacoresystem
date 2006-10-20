@@ -212,10 +212,7 @@
 		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evsPackageUtil}"/>
 	</target>
 	<target name="-generate-common-role-util.custom" if="generate-common-role-util.custom.use"/>
-	<target name="-generate-dao-conf.custom" if="generate-dao-conf.custom.use">
-		<SDKecho message="Generating DAO configuration files"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.daogeneration}"/>
-	</target>
+	<target name="-generate-dao-conf.custom" if="generate-dao-conf.custom.use"/>
 	<target name="-generate-junit.custom" if="generate-junit.custom.use"/>
 	<target name="-generate-OR-mapping.custom" if="generate-OR-mapping.custom.use"/>
 	<target name="-generate-orm-conf.custom" if="generate-orm-conf.custom.use"/>
