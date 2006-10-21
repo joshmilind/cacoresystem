@@ -73,7 +73,9 @@
 	    <mapping resource="gov/nih/nci/cadsr/domain/Function.hbm.xml" />
 	    <mapping resource="gov/nih/nci/cadsr/domain/impl/FunctionImpl.hbm.xml" />
 	    <mapping resource="gov/nih/nci/cadsr/domain/ComponentLevel.hbm.xml" />
-	    <mapping resource="gov/nih/nci/cadsr/domain/impl/ComponentLevelImpl.hbm.xml" />
+	    <mapping resource="gov/nih/nci/cadsr/domain/impl/ComponentLevelImpl.hbm.xml" />	   
+	    <mapping resource="gov/nih/nci/cadsr/domain/ContactCommunication.hbm.xml" />
+	    <mapping resource="gov/nih/nci/cadsr/domain/impl/ContactCommunicationImpl.hbm.xml" />
 	    <mapping resource="gov/nih/nci/cadsr/umlproject/domain/Project.hbm.xml" />
 	    <mapping resource="gov/nih/nci/cadsr/umlproject/domain/impl/ProjectImpl.hbm.xml" />
 	    <mapping resource="gov/nih/nci/cadsr/umlproject/domain/SubProject.hbm.xml" />
