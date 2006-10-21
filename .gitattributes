@@ -18,6 +18,7 @@ conf/EVSQueryImplBeanImpl.javajet -text
 conf/beanevsgeneration.xml -text
 conf/beanevswsgeneration.xml -text
 conf/castormappinggeneration.xml -text
+conf/castormappinggeneration_cacore.xml -text
 conf/core-deploy.properties -text
 conf/daogeneration.xml -text
 conf/evsFormat.xsl -text
@@ -85,6 +86,7 @@ orm/gov/nih/nci/cabio/domain/impl/LocationImpl.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/Provenance.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/impl/ProvenanceImpl.hbm.xml -text
 src/gov/nih/nci/codegen/core/transformer/UML13CastorMappingTransformer.java -text
+src/gov/nih/nci/codegen/core/transformer/UML13CastorMappingTransformerForCACORE.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13DAOTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13SchemaTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13SchemaTransformerForEVS.java -text
