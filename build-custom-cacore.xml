@@ -221,7 +221,7 @@
 		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evs_schemageneration}"/>		
 	</target>
 	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
-	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use">
+	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use" depends="-generate-common-package-util.custom">
 			<SDKecho message="Generating XML mapping for caCORE "/>
 			<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.castormappinggeneration_cacore}"/>		
 	</target>
