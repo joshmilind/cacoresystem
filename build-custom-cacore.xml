@@ -448,7 +448,7 @@
 			<classes file="${dir.output.project.xmlmapping}/xml-mapping.xml" />
 			<classes file="${dir.conf}/xml.properties"/>
 			<classes file="${dir.output.project}/log4j.properties"/>
-			<zipfileset dir="${dir.output.project.conf}" prefix="WEB-INF/classes">
+			<zipfileset dir="${dir.custom.conf}" prefix="WEB-INF/classes">
 				<include name="DAOConfig.xml"/>
 				
 				<!--
