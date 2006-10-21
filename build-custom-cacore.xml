@@ -153,7 +153,7 @@
 		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
 				<controlfileset>
 					<fileset dir="${dir.custom.conf}">
-						<include name="${file.control.castormappinggeneration}"/>
+						<include name="${file.control.castormappinggeneration_cacore}"/>
 					</fileset>
 				</controlfileset>
 				<extendedfilterset>
@@ -222,8 +222,8 @@
 	</target>
 	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
 	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use">
-			<SDKecho message="Generating XML mapping "/>
-			<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.castormappinggeneration}"/>		
+			<SDKecho message="Generating XML mapping for caCORE "/>
+			<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.castormappinggeneration_cacore}"/>		
 	</target>
 	<target name="-init-project.custom" if="init-project.custom.use">
 		<SDKecho message="Copying files required by caCORE API to SDK directory"/>
