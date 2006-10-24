@@ -221,10 +221,11 @@
 		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evs_schemageneration}"/>		
 	</target>
 	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
-	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use" depends="-generate-common-package-util.custom">
-			<SDKecho message="Generating XML mapping for caCORE "/>
-			<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.castormappinggeneration_cacore}"/>		
-	</target>
+	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
+	<target name="generate-xml-mapping-for-cacore">
+				<SDKecho message="Generating XML mapping for caCORE "/>
+				<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.castormappinggeneration_cacore}"/>		
+		</target>
 	<target name="-init-project.custom" if="init-project.custom.use">
 		<SDKecho message="Copying files required by caCORE API to SDK directory"/>
 		<copy todir="${dir.model}" overwrite="no" failonerror="false">
@@ -491,7 +492,7 @@
 			</zipfileset>
 		</war>
 	</target>
-	<target name="-package-system.custom" if="package-system.custom.use">
+	<target name="-package-system.custom" if="package-system.custom.use" depends="generate-xml-mapping-for-cacore">
 		<delete dir="${cacore_home}/output"/>
 		<mkdir dir="${cacore_home}/output"/>
 		<copy todir="${cacore_home}/output" overwrite="true">
