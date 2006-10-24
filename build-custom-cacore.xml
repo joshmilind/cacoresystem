@@ -317,7 +317,7 @@
 		
 		<!-- Create client jar file -->
 		<mkdir dir="${dir.output.project.package.client.lib}"/>
-		<jar destfile="${dir.output.project.package.client.lib}/${file.project.client.jar}" update="yes">
+		<jar destfile="${dir.output.project.package.client.lib}/${file.project.client.jar}" update="yes" duplicate="preserve">
 			<manifest>
 				<attribute name="Generated-By" value="caCORE SDK Code Generator"/>
 				<attribute name="Project-Title" value="${project_name}"/>
@@ -336,7 +336,7 @@
 			</fileset>
 			<!-- pick up the exceptions classes -->
 			<fileset dir="${dir.output.project.framework.build}">				
-					<include name="**/*Exception.class"/>
+				    <include name="**/*Exception.class"/>
 			</fileset>
 			<fileset dir="${dir.generator.build}">
 				<include name="gov/nih/nci/common/**"/>
