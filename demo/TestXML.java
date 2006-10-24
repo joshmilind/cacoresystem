@@ -96,7 +96,7 @@ public class TestXML {
 						System.out.println("   ClusterId: "	+ returnedGene.getClusterId() + "\n");
 						System.out.println("   Symbol: " + returnedGene.getSymbol() + "\n\n\n");
 
-						File myFile = new File("@CLIENT_DIR@/test1.xml");
+						File myFile = new File("./test1.xml");
 						FileWriter myWriter = new FileWriter(myFile);
 						myUtil.toXML(returnedGene, myWriter);
 
@@ -147,7 +147,7 @@ public class TestXML {
 						System.out.println("Form object right after search: \n\n");
 						System.out.println("   Id: " + returnedCRF.getId() + "\n");
 
-						File myFile1 = new File("@CLIENT_DIR@/test2.xml");
+						File myFile1 = new File("./test2.xml");
 						FileWriter myWriter1 = new FileWriter(myFile1);
 						myUtil1.toXML(returnedCRF, myWriter1);
 
