@@ -11,6 +11,7 @@ import gov.nih.nci.common.util.NestedCriteria;
 import gov.nih.nci.common.util.ObjectFactory;
 import gov.nih.nci.common.util.Path2NestedCriteria;
 import gov.nih.nci.common.util.PrintUtils;
+import gov.nih.nci.system.query.cql.CQLQuery;
 import gov.nih.nci.common.util.SearchUtils;
 import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.evs.query.EVSQuery;
@@ -211,6 +212,10 @@ public class ApplicationServiceBusinessImpl {
 		return privateQuery((Object) hqlCriteria, targetClassName);
 	}
 
+	public List query(CQLQuery cqlQuery, String targetClassName) throws ApplicationException {
+		return privateQuery((Object) cqlQuery, targetClassName);
+	}
+	
 	/**
 	 * Gets the result list for the specified Hibernate Criteria from the
 	 * HTTPClient.
@@ -710,6 +715,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.8  2006/10/11 19:06:36  masondo
+// GF1524: Change the lazy setting to match hibernate 3.1.3+.   Added code to match SDK system.
+//
 // Revision 1.7  2006/09/28 23:10:58  masondo
 // GF1524: Fixed the SDK ServiceLocator
 //

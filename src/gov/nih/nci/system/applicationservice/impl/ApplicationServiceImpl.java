@@ -6,6 +6,7 @@ import gov.nih.nci.system.applicationservice.ApplicationService;
 import gov.nih.nci.system.applicationservice.ApplicationServiceProvider;
 import gov.nih.nci.system.dao.WritableDAO;
 import gov.nih.nci.evs.query.EVSQuery;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.List;
 
@@ -139,6 +140,22 @@ public class ApplicationServiceImpl extends ApplicationService
 		}
 	}	
 
+	/* (non-Javadoc)
+	 * @see gov.nih.nci.system.applicationservice.ApplicationService#query(gov.nih.nci.query.cql.CQLQuery, java.lang.String)
+	 */
+	public List query(CQLQuery cqlQuery, String targetClassName) throws ApplicationException
+	{
+		try
+		{
+			return this.applicationServiceBusinessImpl.query(cqlQuery, targetClassName);
+		}
+		catch (Exception e)
+		{
+			log.error("Exception: ", e);
+			throw new ApplicationException(e.getMessage(), e);
+		}
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * 

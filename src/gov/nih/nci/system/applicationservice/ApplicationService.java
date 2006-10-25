@@ -8,6 +8,7 @@ package gov.nih.nci.system.applicationservice;
 
 import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.evs.query.EVSQuery;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.List;
 
@@ -56,6 +57,8 @@ public abstract class ApplicationService
 
 	public abstract List query(HQLCriteria hqlCriteria, String targetClassName) throws ApplicationException;
 
+	public abstract List query(CQLQuery cqlQuery, String targetClassName) throws ApplicationException;
+	
 	public abstract List query(Object criteria, int firstRow, int resultsPerQuery, String targetClassName) throws ApplicationException;
 
 	public abstract List evsSearch(EVSQuery evsCriterion) throws ApplicationException;

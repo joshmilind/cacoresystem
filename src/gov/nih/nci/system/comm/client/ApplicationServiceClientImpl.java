@@ -3,6 +3,7 @@ package gov.nih.nci.system.comm.client;
 import gov.nih.nci.common.util.ClientInfo;
 import gov.nih.nci.common.util.Constant;
 import gov.nih.nci.common.util.HQLCriteria;
+import gov.nih.nci.system.query.cql.CQLQuery;
 import gov.nih.nci.evs.query.EVSQuery;
 import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
@@ -193,6 +194,14 @@ public class ApplicationServiceClientImpl extends ApplicationService
 		return applicationServiceProxy.query(getClientInfo(), hqlCriteria, targetClassName);
 	}
 
+	/* (non-Javadoc)
+	 * @see gov.nih.nci.system.applicationservice.ApplicationService#query(gov.nih.nci.query.cql.CQLQuery, java.lang.String)
+	 */
+	public List query(CQLQuery cqlQuery, String targetClassName) throws ApplicationException
+	{
+		return applicationServiceProxy.query(getClientInfo(), cqlQuery, targetClassName);
+	}
+	
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.ApplicationService#getQueryRowCount(java.lang.Object, java.lang.String)
 	 */
