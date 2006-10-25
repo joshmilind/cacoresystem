@@ -551,16 +551,17 @@ public class EVSWebService {
         return resultList;
     }
     /**
-     * Returns a list of MetaThesaurusConcepts for the given atoms
+     * Performs search on the MetaThesaurus by atoms
      * @param atomList
      * @param sourceAbbr
-     * @return
+     * @return returns a list of MetaThesaurusConcepts or Atoms based on the specified return type
      * @throws Exception
      */
     private List searchMetaphraseByAtoms(List atomList, String sourceAbbr) throws Exception{
         List resultSet = new ArrayList();
         List conceptList = new ArrayList();
-        HashMap atomSet = new HashMap();        
+        HashMap atomSet = new HashMap(); 
+        HashMap metaSet = new HashMap(); 
         String code = null;
         String name = null;
         String origin = null;
@@ -634,7 +635,7 @@ public class EVSWebService {
                             if(atomOrigin.startsWith(source)){
                                 atomSet.put(source + atomCode, atomConcept);
                             }
-                        }else if(atomConcept.getName()!=null && source != null){
+                        }else if(atomConcept.getName()!=null && source != null && !source.equals("*")){
                         	String srcAbbr = atomOrigin;
                         	if(atomConcept.getSource()!= null){
                         		if(atomConcept.getSource().getAbbreviation()!=null)
@@ -645,21 +646,31 @@ public class EVSWebService {
                             		atomSet.put(srcAbbr + atomConcept.getName(), atomConcept);
                         		}
                         	}                        	
+                        }else if(atomConcept.getName()!=null){
+                        	atomSet.put(atomConcept.getName(), atomConcept);
                         }
             		}
             		
             	}            	
-            }           
+            }else{            	
+            	for(int c=0; c<conceptList.size(); c++){
+            		MetaThesaurusConcept mtc = (MetaThesaurusConcept) conceptList.get(c);            		
+            		metaSet.put(mtc.getCui(), mtc);
+            	}
+            } 
+            
         }
         if(atomSet.size()>0){
     		for(Iterator iterator = atomSet.keySet().iterator(); iterator.hasNext();){
     			String key = (String)iterator.next();
     			resultSet.add(atomSet.get(key));
     		}            		
+    	}else if(metaSet.size()>0){
+    		for(Iterator iterator = metaSet.keySet().iterator(); iterator.hasNext();){
+    			String key = (String)iterator.next();
+    			resultSet.add(metaSet.get(key));
+    		}  
     	}
-        else if(source == null && code == null){
-        	resultSet = conceptList;
-        }
         return resultSet;
     }
 
