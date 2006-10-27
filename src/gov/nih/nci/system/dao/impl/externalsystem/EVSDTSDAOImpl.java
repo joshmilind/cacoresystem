@@ -608,7 +608,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 *         list
 	 * @throws Exception
 	 */
-	public Response getTree(HashMap map) throws Exception {
+	private Response getTree(HashMap map) throws Exception {
 		List list = new ArrayList();
 		String vocabularyName = null;
 		String rootName = null;
@@ -751,7 +751,7 @@ public class EVSDTSDAOImpl implements DAO {
 		return evsTree;
 	}
 
-	public DefaultMutableTreeNode getChildNodes(DefaultMutableTreeNode dlNode,
+	private DefaultMutableTreeNode getChildNodes(DefaultMutableTreeNode dlNode,
 			DefaultMutableTreeNode dtsrpcNode, Vocabulary vocabulary) {
 		int childCounter = dtsrpcNode.getChildCount();
 		for (int i = 0; i < childCounter; i++) {
@@ -1459,7 +1459,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * 
 	 * @param vocabularyName
 	 */
-	public Response getVocabularyVersion(HashMap map) throws Exception {
+	private Response getVocabularyVersion(HashMap map) throws Exception {
 		String vocabularyName = null;
 		List version = new ArrayList();
 
@@ -2693,7 +2693,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response containsInverseRole(HashMap map) throws Exception {
+	private Response containsInverseRole(HashMap map) throws Exception {
 
 		String vocabularyName = null;
 		String roleName = null;
@@ -2740,7 +2740,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @return Returns a response that holds a Boolean value in a list
 	 * @throws Exception
 	 */
-	public Response containsRole(HashMap map) throws Exception {
+	private Response containsRole(HashMap map) throws Exception {
 
 		String vocabularyName = null;
 		String roleName = null;
@@ -2869,7 +2869,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllAssociationTypes(HashMap map) throws Exception {
+	private Response getAllAssociationTypes(HashMap map) throws Exception {
 
 		String vocabularyName = null;
 		Vector associations = new Vector();
@@ -2907,7 +2907,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllConceptAssociationQualifierTypes(HashMap map)
+	private Response getAllConceptAssociationQualifierTypes(HashMap map)
 			throws Exception {
 
 		String vocabularyName = null;
@@ -2947,7 +2947,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllConceptAssociationTypes(HashMap map) throws Exception {
+	private Response getAllConceptAssociationTypes(HashMap map) throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
 		List typeList = new ArrayList();
@@ -2983,7 +2983,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllConceptPropertyQualifierTypes(HashMap map)
+	private Response getAllConceptPropertyQualifierTypes(HashMap map)
 			throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
@@ -3020,7 +3020,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllConceptPropertyTypes(HashMap map) throws Exception {
+	private Response getAllConceptPropertyTypes(HashMap map) throws Exception {
 
 		String vocabularyName = null;
 		Vector types = new Vector();
@@ -3056,7 +3056,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllLicenses(HashMap map) throws Exception {
+	private Response getAllLicenses(HashMap map) throws Exception {
 		String vocabularyName = null;
 		String condition = null;
 		Vector types = new Vector();
@@ -3094,7 +3094,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllQualifierTypes(HashMap map) throws Exception {
+	private Response getAllQualifierTypes(HashMap map) throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
 		List typeList = new ArrayList();
@@ -3129,7 +3129,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllRoleNames(HashMap map) throws Exception {
+	private Response getAllRoleNames(HashMap map) throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
 		List typeList = new ArrayList();
@@ -3166,7 +3166,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllSubConceptCodes(HashMap map) throws Exception {
+	private Response getAllSubConceptCodes(HashMap map) throws Exception {
 		String vocabularyName = null;
 		String conceptCode = null;
 		Vector types = new Vector();
@@ -3205,7 +3205,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllSubConceptNames(HashMap map) throws Exception {
+	private Response getAllSubConceptNames(HashMap map) throws Exception {
 		String vocabularyName = null;
 		String conceptName = null;
 		Vector types = new Vector();
@@ -3243,7 +3243,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllSynonymTypes(HashMap map) throws Exception {
+	private Response getAllSynonymTypes(HashMap map) throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
 		List typeList = new ArrayList();
@@ -3278,7 +3278,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllSilos(HashMap map) throws Exception {
+	private Response getAllSilos(HashMap map) throws Exception {
 
 		String vocabularyName = null;
 		List siloList = new ArrayList();
@@ -3322,7 +3322,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllTermAssociationQualifierTypes(HashMap map)
+	private Response getAllTermAssociationQualifierTypes(HashMap map)
 			throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
@@ -3359,7 +3359,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllTermPropertyQualifierTypes(HashMap map)
+	private Response getAllTermPropertyQualifierTypes(HashMap map)
 			throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
@@ -3396,7 +3396,7 @@ public class EVSDTSDAOImpl implements DAO {
 	 * @throws Exception
 	 */
 
-	public Response getAllTermPropertyTypes(HashMap map) throws Exception {
+	private Response getAllTermPropertyTypes(HashMap map) throws Exception {
 		String vocabularyName = null;
 		Vector types = new Vector();
 		List typeList = new ArrayList();
@@ -3457,7 +3457,7 @@ public class EVSDTSDAOImpl implements DAO {
 		return dlc;
 	}
 
-	public Vector convertAssociations(Vector dtsrpcAssociations) {
+	private Vector convertAssociations(Vector dtsrpcAssociations) {
 		Vector associationVector = new Vector();
 		gov.nih.nci.evs.domain.Association association = new Association();
 		for (int i = 0; i < dtsrpcAssociations.size(); i++) {
@@ -3472,7 +3472,7 @@ public class EVSDTSDAOImpl implements DAO {
 		return associationVector;
 	}
 
-	public EdgeProperties convertEdgeProperties(
+	private EdgeProperties convertEdgeProperties(
 			gov.nih.nci.dtsrpc.client.Concept concept) {
 		EdgeProperties edgeProperties = new EdgeProperties();
 		edgeProperties.setName(concept.getTreeNode().getName());
@@ -3788,7 +3788,7 @@ public class EVSDTSDAOImpl implements DAO {
 
 	}
 
-	public Vector getDLSemanticTypes(Vector properties) {
+	private Vector getDLSemanticTypes(Vector properties) {
 		Vector semanticTypes = new Vector();
 		for(int i=0; i< properties.size(); i++){
 			Property p = (Property) properties.get(i);
@@ -3799,7 +3799,7 @@ public class EVSDTSDAOImpl implements DAO {
 		return semanticTypes;
 	}
 
-	public Response getAllPropertyTypes(HashMap map) throws Exception {
+	private Response getAllPropertyTypes(HashMap map) throws Exception {
 
 		String vocabularyName = null;
 
@@ -3871,7 +3871,7 @@ public class EVSDTSDAOImpl implements DAO {
 		return valid;
 	}
 
-	public Response getHistoryRecords(HashMap map) throws Exception {
+	private Response getHistoryRecords(HashMap map) throws Exception {
 		String vocabularyName = null;
 		String conceptCode = null;
 		Date initialDate = null;
