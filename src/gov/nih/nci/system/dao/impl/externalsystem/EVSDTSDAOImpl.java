@@ -3793,7 +3793,7 @@ public class EVSDTSDAOImpl implements DAO {
 		for(int i=0; i< properties.size(); i++){
 			Property p = (Property) properties.get(i);
 			if(p.getName().equalsIgnoreCase("Semantic_Type")){
-				semanticTypes.add(p);
+				semanticTypes.add(p.getValue());
 			}
 		}		
 		return semanticTypes;
