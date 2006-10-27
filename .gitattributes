@@ -21,6 +21,7 @@ conf/castormappinggeneration.xml -text
 conf/castormappinggeneration_cacore.xml -text
 conf/core-deploy.properties -text
 conf/daogeneration.xml -text
+conf/ehcache_evs.xml -text
 conf/evsFormat.xsl -text
 conf/evsPackageUtil.xml -text
 conf/evs_schemageneration.xml -text
@@ -103,6 +104,7 @@ src/gov/nih/nci/system/comm/client/ApplicationServiceClientImpl.java -text
 src/gov/nih/nci/system/comm/common/ApplicationServiceProxy.java -text
 src/gov/nih/nci/system/comm/server/ApplicationServiceServerImpl.java -text
 src/gov/nih/nci/system/conf/DAOConfig.xml -text
+src/gov/nih/nci/system/dao/cache/EVSCacheManager.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigDAOImpl.java -text
 src/gov/nih/nci/system/dao/security/DAOSecurity.java -text

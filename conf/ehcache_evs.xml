@@ -1,0 +1,73 @@
+<ehcache>
+<diskStore path="C:/jboss-4.0.4.GA/server/default/tmp/cache"/>
+ <defaultCache
+        maxElementsInMemory="500"
+        eternal="false"
+        timeToIdleSeconds="1800"
+        timeToLiveSeconds="100"
+        overflowToDisk="true"
+        />
+<cache name="searchDescLogicConcepts"
+maxElementsInMemory="200"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="searchMetaThesaurus"
+maxElementsInMemory="200"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="searchSourceByCode"
+maxElementsInMemory="100"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getDescLogicConceptNameByCode"
+maxElementsInMemory="200"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getConceptNameByCode"
+maxElementsInMemory="200"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getConceptCodeByName"
+maxElementsInMemory="200"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getConceptWithPropertyMatching"
+maxElementsInMemory="100"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getAllVocabularies"
+maxElementsInMemory="50"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getMetaSources"
+maxElementsInMemory="100"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+</ehcache>

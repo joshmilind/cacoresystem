@@ -470,6 +470,9 @@
 				<include name="Criteria.jsp"/>
 				<include name="Result.jsp"/>
 			</fileset>
+			<zipfileset dir="${dir.custom.conf}" prefix="WEB-INF/classes">
+				<include name="ehcache_evs.xml"/>
+			</zipfileset>
 		   	<fileset dir="${dir.conf.xslt}">
 				<include name="**/**"/>
 				<exclude name="*.xsl"/>

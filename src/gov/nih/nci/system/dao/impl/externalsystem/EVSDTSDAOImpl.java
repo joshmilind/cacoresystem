@@ -8,13 +8,14 @@ import java.lang.reflect.Method;
 import javax.swing.tree.DefaultMutableTreeNode;
 //internal
 import gov.nih.nci.evs.domain.*;
+import gov.nih.nci.evs.domain.Property;
 import gov.nih.nci.evs.query.EVSQueryImpl;
-
 import gov.nih.nci.common.util.*;
 
 import gov.nih.nci.common.net.*;
 
 import gov.nih.nci.system.dao.*;
+import gov.nih.nci.system.dao.cache.EVSCacheManager;
 import gov.nih.nci.system.dao.security.*;
 //dtsrpc jar
 import gov.nih.nci.dtsrpc.client.*;
@@ -30,6 +31,7 @@ import COM.Lexical.Metaphrase.Term;
 import org.apache.log4j.*;
 
 import gov.nih.nci.evs.security.*;
+import gov.nih.nci.system.dao.cache.*;
 
 /**
  * <!-- LICENSE_TEXT_START -->
@@ -89,108 +91,151 @@ public class EVSDTSDAOImpl implements DAO {
 	public Response query(Request r) throws DAOException {
 		Object obj = r.getRequest();
 		List resultList = new ArrayList();
-		gov.nih.nci.common.net.Response response = new Response();
-		Hashtable configs;
-		String methodName = null;
+		gov.nih.nci.common.net.Response response = new Response();		
 
 		try {
-			configs = r.getConfig();
+			Hashtable configs = r.getConfig();
 			EVSQueryImpl criteria = (EVSQueryImpl) obj;
 			if (criteria.getSecurityTokenCollection().size() > 0
 					&& criteria.getSecurityTokenCollection() != null) {
 				tokenCollection = criteria.getSecurityTokenCollection();
+			}			
+			String queryType = null;
+			HashMap mapValues = new HashMap();
+			if(((HashMap)criteria.getClass().getField("descLogicValues").get(criteria)).size()>0){
+				queryType = "descLogicValues";
+				mapValues = (HashMap)criteria.getClass().getField("descLogicValues").get(criteria);
+			}else if(((HashMap)criteria.getClass().getField("metaThesaurusValues").get(criteria)).size()>0){
+				queryType = "metaThesaurusValues";
+				mapValues = (HashMap)criteria.getClass().getField("metaThesaurusValues").get(criteria);
 			}
-			Field[] fields = criteria.getClass().getDeclaredFields();
-			for (int i = 0; i < fields.length; i++) {
-				fields[i].setAccessible(true);
-				String fieldName = fields[i].getName();
-				if (fieldName.equalsIgnoreCase("securityTokenCollection")) {
-					continue;
-				}
-				if (fields[i].getType().equals(HashMap.class)) {
-					HashMap mapValues = (HashMap) fields[i].get(criteria);
-					if ((mapValues != null) && (mapValues.size() > 0)) {
-						if (fieldName.equalsIgnoreCase("descLogicValues")) {
-							// Check for overwritting system properties; else
-							// use request parameters
-							String server = System.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
-							String port = System.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): System.getProperty("EVS_DTSRCP_PORT");
-
-							if (server != null && port != null) {
-								dtsrpc = new DTSRPCClient(server, port);
-							} else {
-								log.error("DTSRPC Server name is null");
-								throw new DAOException(
-										getException("DTSRPC Server name is null"));
-							}
-						} else if (fieldName
-								.equalsIgnoreCase("metaThesaurusValues")) {
-							String metaServer = System
-									.getProperty("EVS_META_SERVER") == null ? (String) configs
-									.get("metaphraseServer")
-									: System.getProperty("EVS_META_SERVER");
-							String database = System.getProperty("EVS_META_DB") == null ? (String) configs
-									.get("database")
-									: System.getProperty("EVS_META_DB");
-							String username = System
-									.getProperty("EVS_META_USERNAME") == null ? (String) configs
-									.get("username")
-									: System.getProperty("EVS_META_USERNAME");
-							String password = System
-									.getProperty("EVS_META_PASSWD") == null ? (String) configs
-									.get("password")
-									: System.getProperty("EVS_META_PASSWD");
-							metaphrase = new RMIMetaphrase("//" + metaServer
-									+ "/RemoteMetaphrase", database, username,
-									password);
+			try {
+				response = queryEVS(configs, mapValues,  queryType);
+			} catch (Exception ex) {
+				String msg = " - ";
+                
+				if (ex.getMessage() == null) {
+					if (pastEx.getMessage() == null) {
+						if (queryType.equalsIgnoreCase("descLogicValues")) {
+							msg = msg + "caCORE - DTSRPC Exception";
+						} else if (queryType.startsWith("meta")) {
+							msg = msg + "caCORE - Metaphrase Exception";
 						}
-
-						Iterator iter = mapValues.keySet().iterator();
-						String key = (String) iter.next();
-						methodName = key.substring(0, key.indexOf("$"));
-						Method method = this.getClass().getDeclaredMethod(
-								methodName, new Class[] { HashMap.class });
-
-						if (method == null) {
-							log.error("Invalid method name");
-							throw new DAOException(
-									getException("Invalid method name"));
-						} else {
-							try {
-								response = (Response) method.invoke(this,
-										new Object[] { mapValues });
-							} catch (Exception ex) {
-								String msg = " - ";
-                                log.error( methodName + " throws Exception ");
-								if (ex.getMessage() == null) {
-									if (pastEx.getMessage() == null) {
-										if (fieldName.equalsIgnoreCase("descLogicValues")) {
-											msg = msg + "caCORE - DTSRPC Exception";
-										} else if (fieldName.startsWith("meta")) {
-											msg = msg + "caCORE - Metaphrase Exception";
-										}
-									} else {
-										msg = msg + pastEx.getMessage();
-									}
-
-								} else {
-									msg = msg + ex.getMessage();
-								}
-								log.error(msg);
-								throw new DAOException(msg);
-							}
-
-						}
-
+					} else {
+						msg = msg + pastEx.getMessage();
 					}
+
+				} else {
+					msg = msg + ex.getMessage();
 				}
-			}
+				log.error(msg);
+				throw new DAOException(msg);
+			}	
 
 		} catch (Exception e) {
 			throw new DAOException(e.getMessage());
 		}
 		return response;
 	}
+	
+	private Response queryEVS(Hashtable config, HashMap mapValues, String queryType) throws Exception{	
+		Response response = null;
+		String cacheName = null;
+		Iterator iter = mapValues.keySet().iterator();
+		String keyMethod = (String) iter.next();
+		String methodName = keyMethod.substring(0, keyMethod.indexOf("$"));
+		Method method = this.getClass().getDeclaredMethod(methodName, new Class[] { HashMap.class });
+		String key = methodName;
+		if (method == null) {
+			log.error("Invalid method name");
+			throw new DAOException(getException("Invalid method name"));
+		} else {				
+			for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){									
+				String name = (String)it.next();
+				Object value = mapValues.get(name);
+				key += "_"+String.valueOf(value);
+			}
+			EVSCacheManager evsCache = EVSCacheManager.getInstance();
+			boolean checkCache = true;			
+			if(key.startsWith(methodName + "_MedDRA")){
+				 checkCache = false;
+			}			
+			if(checkCache){
+				if(evsCache != null){
+					cacheName = evsCache.getCacheName(methodName);					
+					if(cacheName != null){
+						try{
+							//read data from cache
+							Object results = evsCache.get(key, cacheName);
+							if(results != null){																 
+								response = (Response)results;
+							}
+						}catch(Exception ex){}
+					}	
+				}							
+			}
+			
+			try{
+				if(response == null){
+					//Call EVS Servers
+					makeRemoteConnection(config, queryType);
+					response = (Response) method.invoke(this,new Object[] { mapValues });
+					//update cache
+					if(checkCache){
+						if(evsCache != null && cacheName != null){
+							evsCache.put(key, response, cacheName);
+						}						
+					}
+				}				
+			}catch(Exception ex){
+				log.error( methodName + " throws Exception ");
+				throw new DAOException(ex.getMessage());
+			}
+			
+		}
+		return response;
+	}
+	
+	private void makeRemoteConnection(Hashtable configs, String queryType)throws Exception{
+		try{
+			if (queryType.equalsIgnoreCase("descLogicValues")) {
+				// Check for overwritting system properties; else
+				// use request parameters
+				String server = System.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
+				String port = System.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): System.getProperty("EVS_DTSRCP_PORT");
+
+				if (server != null && port != null) {
+					dtsrpc = new DTSRPCClient(server, port);
+				} else {
+					log.error("DTSRPC Server name is null");
+					throw new DAOException(
+							getException("DTSRPC Server name is null"));
+				}
+			} else if (queryType.equalsIgnoreCase("metaThesaurusValues")) {
+				String metaServer = System
+						.getProperty("EVS_META_SERVER") == null ? (String) configs
+						.get("metaphraseServer")
+						: System.getProperty("EVS_META_SERVER");
+				String database = System.getProperty("EVS_META_DB") == null ? (String) configs
+						.get("database")
+						: System.getProperty("EVS_META_DB");
+				String username = System
+						.getProperty("EVS_META_USERNAME") == null ? (String) configs
+						.get("username")
+						: System.getProperty("EVS_META_USERNAME");
+				String password = System
+						.getProperty("EVS_META_PASSWD") == null ? (String) configs
+						.get("password")
+						: System.getProperty("EVS_META_PASSWD");
+				metaphrase = new RMIMetaphrase("//" + metaServer
+						+ "/RemoteMetaphrase", database, username,
+						password);
+			}			
+		}catch(Exception ex){
+			throw new DAOException(getException(ex));
+		}
+		}
+	
 
 	/**
 	 * Gets the descendant concept codes for the specified concept
@@ -3407,10 +3452,8 @@ public class EVSDTSDAOImpl implements DAO {
 			dlc.setEdgeProperties(convertEdgeProperties(concept));
 			dlc.setTreeNode(convertTreeNode(concept));
 		}
-
-		dlc.setSemanticTypeVector(getDLSemanticTypes(dlc));
+		dlc.setSemanticTypeVector(getDLSemanticTypes(dlc.getPropertyCollection()));
 		dlc.setVocabulary(vocabulary);
-
 		return dlc;
 	}
 
@@ -3745,19 +3788,14 @@ public class EVSDTSDAOImpl implements DAO {
 
 	}
 
-	public Vector getDLSemanticTypes(DescLogicConcept dlc) {
+	public Vector getDLSemanticTypes(Vector properties) {
 		Vector semanticTypes = new Vector();
-		Vector properties = new Vector();
-		if (dlc.getSemanticTypeVector() == null) {
-			properties = dlc.getPropertyCollection();
-			for (int i = 0; i < properties.size(); i++) {
-				gov.nih.nci.evs.domain.Property p = (gov.nih.nci.evs.domain.Property) properties
-						.get(i);
-				if (p.getName().equalsIgnoreCase("Semantic_Type")) {
-					semanticTypes.add(p.getValue());
-				}
+		for(int i=0; i< properties.size(); i++){
+			Property p = (Property) properties.get(i);
+			if(p.getName().equalsIgnoreCase("Semantic_Type")){
+				semanticTypes.add(p);
 			}
-		}
+		}		
 		return semanticTypes;
 	}
 
