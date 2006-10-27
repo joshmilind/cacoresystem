@@ -59,7 +59,7 @@ public class EVSCacheManager {
 	 * @param cacheStoreName
 	 */
 	public void put(String key, Object values, String cacheStoreName){		
-		log.info("Upload data to CACHE ");
+		log.debug("Upload data to CACHE ");
 		evsManager.getCache(cacheStoreName).put(new Element(key, values));
 	}		
 	/**
