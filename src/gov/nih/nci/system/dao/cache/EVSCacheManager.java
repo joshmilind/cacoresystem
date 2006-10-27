@@ -11,7 +11,7 @@ import org.apache.log4j.*;
  */
 /**
  * The EVSCacheManger is a singleton that looks for a resources named ehcache_evs.xml. 
- * The ehcache_evs.xml file holds information regarding data that need to be cached. 
+ * The ehcache_evs.xml provideds information regarding the data that need to be cached. 
  */
 
 public class EVSCacheManager {
@@ -59,7 +59,7 @@ public class EVSCacheManager {
 	 * @param cacheStoreName
 	 */
 	public void put(String key, Object values, String cacheStoreName){		
-		log.info("Update the cache");
+		log.info("Upload data to CACHE ");
 		evsManager.getCache(cacheStoreName).put(new Element(key, values));
 	}		
 	/**
@@ -74,7 +74,7 @@ public class EVSCacheManager {
 		Cache tmpCache = evsManager.getCache(cacheStoreName);
 		if(tmpCache.get(key)!=null){
 			value = tmpCache.get(key).getValue();
-			log.info("Reading values from the cache");
+			log.debug("Retrieve data from CACHE");
 		}		
 		return value;
 	}
