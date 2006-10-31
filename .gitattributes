@@ -7,6 +7,7 @@
 conf/BeanEVSImpl.javajet -text
 conf/BeanEVSWS.javajet -text
 conf/BeanSkel_EVS.skeleton -text
+conf/BeancaCORE.javajet -text svneol=unset#application/octet-stream
 conf/ClientREADME.txt -text
 conf/DAOConfig-evs.xml -text
 conf/DAOConfig-evs2.xml -text
@@ -17,6 +18,7 @@ conf/EVSQueryBeanImpl.javajet -text
 conf/EVSQueryImplBeanImpl.javajet -text
 conf/beanevsgeneration.xml -text
 conf/beanevswsgeneration.xml -text
+conf/beangeneration_cacore.xml -text
 conf/castormappinggeneration.xml -text
 conf/castormappinggeneration_cacore.xml -text
 conf/core-deploy.properties -text
