@@ -107,6 +107,7 @@ src/gov/nih/nci/system/comm/common/ApplicationServiceProxy.java -text
 src/gov/nih/nci/system/comm/server/ApplicationServiceServerImpl.java -text
 src/gov/nih/nci/system/conf/DAOConfig.xml -text
 src/gov/nih/nci/system/dao/cache/EVSCacheManager.java -text
+src/gov/nih/nci/system/dao/impl/externalsystem/DAS2DAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigDAOImpl.java -text
 src/gov/nih/nci/system/dao/security/DAOSecurity.java -text
