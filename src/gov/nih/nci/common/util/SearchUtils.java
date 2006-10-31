@@ -266,22 +266,24 @@ public class SearchUtils {
                          }catch(Exception ex){
                              throw new Exception( critString +" is not an association of "+ criteriaObject.getClass().getName());
                          }
-
-
                          if(method != null){
                              Class[] types = method.getParameterTypes();
-
                              if(types.length > 0){
-                                 if(method.getName().endsWith("Collection")){
-                                     Object arg = types[0].newInstance();
-                                     if(types[0].getName().endsWith("Vector")){
-                                         ((Vector)arg).add(assObject);
-                                     }else if(types[0].getName().endsWith("Set")){
-                                         ((Set)arg).add(assObject);
+                            	 String dataType = types[0].getName();                            	                             	 
+                                 if(method.getName().endsWith("Collection") && dataType.startsWith("java.util.")){                                    
+                                     if(dataType.endsWith("Vector")){
+                                    	 Vector list = new Vector();
+                                    	 list.add(assObject);
+                                    	 method.invoke(criteriaObject, new Object[]{list});
+                                     }else if(dataType.endsWith("Set")){
+                                    	 Set list = new HashSet();
+                                    	 list.add(assObject);
+                                    	 method.invoke(criteriaObject, new Object[]{list});
                                      }else{
-                                         ((Collection)arg).add(assObject);
-                                     }
-                                     method.invoke(criteriaObject, new Object[]{arg});
+                                    	 Collection list = new ArrayList();
+                                    	 list.add(assObject);
+                                    	 method.invoke(criteriaObject, new Object[]{list});
+                                     }                                     
                                  }
                                  else{
                                      method.invoke(criteriaObject, new Object[]{assObject});
@@ -306,6 +308,8 @@ public class SearchUtils {
              }
         return criteriaObject;
          }
+  
+   
 
 /**
  * Generates Search Criteria
