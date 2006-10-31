@@ -53,6 +53,7 @@
 		
 		
 	<target name="-compile-templates.custom" if="compile-templates.custom.use">
+		<jetc template="${dir.output.project.templates}/BeancaCORE.javajet" destdir="${dir.output.project.src}"/>
 		<jetc template="${dir.output.project.templates}/BeanEVSImpl.javajet" destdir="${dir.output.project.src}"/>
 		<jetc template="${dir.output.project.templates}/BeanEVSWS.javajet" destdir="${dir.output.project.src}"/>
 		<javac srcdir="${dir.output.project.src}" destdir="${dir.output.project.build}" debug="${DEBUG_FLAG}">
@@ -123,6 +124,7 @@
 					<include name="${file.control.beanevsgeneration}"/>
 					<include name="${file.control.beanevswsgeneration}"/>
 					<include name="${file.control.evsPackageUtil}"/>
+					<include name="${file.control.beangeneration_cacore}"/>
 				</fileset>
 			</controlfileset>
 			<extendedfilterset>
@@ -203,6 +205,11 @@
 	<target name="-format.custom" if="format.custom.use"/>
 	<target name="-generate-artifacts.custom" if="generate-artifacts.custom.use"/>
 	<target name="-generate-beans.custom" if="generate-beans.custom.use">
+		<SDKecho message="Generating beans for caCORE"/>
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beangeneration_cacore}"/>
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanimplgeneration}"/>
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanwsgeneration}"/>
+		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanwsimplgeneration}"/>
 		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanevsgeneration}"/>
 		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanevswsgeneration}"/>
 	</target>
