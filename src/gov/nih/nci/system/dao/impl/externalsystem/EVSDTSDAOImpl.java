@@ -149,14 +149,19 @@ public class EVSDTSDAOImpl implements DAO {
 		if (method == null) {
 			log.error("Invalid method name");
 			throw new DAOException(getException("Invalid method name"));
-		} else {				
+		} 
+		boolean enableCache = String.valueOf(config.get("enableCache"));
+		boolean checkCache = true;	
+		EVSCacheManager evsCache = null;
+		if(enableCache){
+			evsCache = EVSCacheManager.getInstance();
+			checkCache = false;
+		}
 			for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){									
 				String name = (String)it.next();
 				Object value = mapValues.get(name);
 				key += "_"+String.valueOf(value);
-			}
-			EVSCacheManager evsCache = EVSCacheManager.getInstance();
-			boolean checkCache = true;			
+			}						
 			if(key.startsWith(methodName + "_MedDRA")){
 				 checkCache = false;
 			}			
@@ -192,7 +197,7 @@ public class EVSDTSDAOImpl implements DAO {
 				throw new DAOException(ex.getMessage());
 			}
 			
-		}
+		
 		return response;
 	}
 	
