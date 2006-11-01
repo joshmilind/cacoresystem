@@ -15,6 +15,7 @@
   </domainObjects>
   <domainObjects name="gov.nih.nci.evs.query.EVSQueryImpl">
       <DataSource>EVS</DataSource>
+      <enableCache>true</enableCache>
       <dtsrpcServer>ncidts.nci.nih.gov</dtsrpcServer>
       <port>6550</port>
       <metaphraseServer>ncimeta-api.nci.nih.gov</metaphraseServer>
