@@ -1,7 +1,6 @@
 import gov.nih.nci.system.applicationservice.*;
 import java.util.*;
 
-import gov.nih.nci.camod.domain.*;
 import gov.nih.nci.cadsr.domain.*;
 import gov.nih.nci.cabio.domain.*;
 import gov.nih.nci.common.util.*;
@@ -37,8 +36,8 @@ import org.w3c.dom.Document;
  */
 
 /**
- * TestSVG.java demonstartes how to use the SVGManipulation class to
- * change the apprearance of a pathway diagram associated with a given pathway
+ * TestSVG.java demonstartes how to use the SVGManipulation class to change the
+ * apprearance of a pathway diagram associated with a given pathway
  */
 
 public class TestSVG {
@@ -48,20 +47,21 @@ public class TestSVG {
 		System.out.println("*** TestClient...");
 		try {
 
+			String prodUrl = "http://cabio.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+			String stageUrl = "http://cabio-stage.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+			String qaUrl = "http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
+			String localUrl = "http://localhost:8080/@PROJECT_NAME@/http/remoteService";
+			// String genUrl =
+			// "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
+			// ApplicationService appService =
+			// ApplicationService.getRemoteInstance(prodUrl);
 
-            String prodUrl  = "http://cabio.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
-            String stageUrl = "http://cabio-stage.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
-            String qaUrl    = "http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
-            String localUrl = "http://localhost:8080/@PROJECT_NAME@/http/remoteService";
-			//String genUrl = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
-			//ApplicationService appService = ApplicationService.getRemoteInstance(prodUrl);
+			ApplicationService appService = ApplicationServiceProvider
+					.getApplicationService();
 
-			ApplicationService appService = ApplicationServiceProvider.getApplicationService();
-
-            /************ Example used in the Developer Guide ***************** */
+			/** ********** Example used in the Developer Guide ***************** */
 
 			try {
-
 
 				System.out.println("Retrieving Pathway from cabio");
 				Pathway pw = new Pathway();
@@ -70,30 +70,34 @@ public class TestSVG {
 				try {
 					List resultList = appService.search(Pathway.class, pw);
 					System.out.println("result count: " + resultList.size());
-					for (Iterator resultsIterator = resultList.iterator(); resultsIterator.hasNext();) {
+					for (Iterator resultsIterator = resultList.iterator(); resultsIterator
+							.hasNext();) {
 						Pathway returnedPw = (Pathway) resultsIterator.next();
-						//Get pathway diagram
-                        String pathwayDiagram = returnedPw.getDiagram();
-						//Generate SVGManipulator with pathway diagram
-                        SVGManipulator svgM = new SVGManipulator(returnedPw);
-						//Get SVG diagram
-                        Document orgSvgDoc = svgM.getSvgDiagram();
-                        //Save the svg diagram
-						svgM.saveXMLDoc("./svg/orginal.svg",orgSvgDoc);
+						// Get pathway diagram
+						String pathwayDiagram = returnedPw.getDiagram();
+						// Generate SVGManipulator with pathway diagram
+						SVGManipulator svgM = new SVGManipulator(returnedPw);
+						// Get SVG diagram
+						Document orgSvgDoc = svgM.getSvgDiagram();
+						// Save the svg diagram
+						svgM.saveXMLDoc("./svg/orginal.svg", orgSvgDoc);
 
-                        //Reset the SVG diagram to it's original state and disable all the genes
+						// Reset the SVG diagram to it's original state and
+						// disable all the genes
 						Document org0 = svgM.reset();
-                        svgM.disableAllGenes();
-                        Document disableGenesDoc = svgM.getSvgDiagram();
-                        svgM.saveXMLDoc("disableGenesDoc.svg",disableGenesDoc);
+						svgM.disableAllGenes();
+						Document disableGenesDoc = svgM.getSvgDiagram();
+						svgM.saveXMLDoc("disableGenesDoc.svg", disableGenesDoc);
 
-                        //Reset SVG diagram to it's original state and disable all the nodes
-                        Document org1 = svgM.reset();
+						// Reset SVG diagram to it's original state and disable
+						// all the nodes
+						Document org1 = svgM.reset();
 						svgM.disableAllNodes();
-                        Document disableNodesDoc = svgM.getSvgDiagram();
-                        svgM.saveXMLDoc("disableNodesDoc.svg",disableNodesDoc);
+						Document disableNodesDoc = svgM.getSvgDiagram();
+						svgM.saveXMLDoc("disableNodesDoc.svg", disableNodesDoc);
 
-                        //Reset SVG diagram to it's Original state and change the display colors for each gene
+						// Reset SVG diagram to it's Original state and change
+						// the display colors for each gene
 						Document org = svgM.reset();
 						Gene[] genes = new Gene[2];
 						String[] colors = new String[2];
@@ -111,9 +115,9 @@ public class TestSVG {
 						svgM.setSvgColors(genes, colors);
 
 						Document geneColor = svgM.getSvgDiagram();
-                        svgM.saveXMLDoc("geneColor.svg",geneColor);
+						svgM.saveXMLDoc("geneColor.svg", geneColor);
 
-						//Retrieve Color for each Gene
+						// Retrieve Color for each Gene
 						String genep53color = svgM.getSvgColor(genes[0]);
 						System.out.println("geneP53 color: " + genep53color);
 
@@ -124,11 +128,12 @@ public class TestSVG {
 						String svgString = svgM.toString();
 						System.out.println("toString:\n" + svgString);
 
-						svgM.setGeneInfoLocation("http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/GetHTML?query=Gene");
+						svgM
+								.setGeneInfoLocation("http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/GetHTML?query=Gene");
 
 						Document geneLocation = svgM.getSvgDiagram();
 
-                        // Change the color of a Gene in the SVG diagram
+						// Change the color of a Gene in the SVG diagram
 						Map geneColors = new HashMap();
 						geneColors.put("rab7", "0,255,255");
 						geneColors.put("rab1", "0,255, 255");
@@ -136,8 +141,7 @@ public class TestSVG {
 						svgM.setSvgColors(geneColors);
 
 						Document d = svgM.getSvgDiagram();
-                        svgM.saveXMLDoc("geneMap.svg",d);
-
+						svgM.saveXMLDoc("geneMap.svg", d);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -149,6 +153,5 @@ public class TestSVG {
 			ex.printStackTrace();
 			System.out.println("Test client throws Exception = " + ex);
 		}
-
 	}
 }
