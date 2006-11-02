@@ -150,7 +150,7 @@ public class EVSDTSDAOImpl implements DAO {
 			log.error("Invalid method name");
 			throw new DAOException(getException("Invalid method name"));
 		} 
-		boolean enableCache = String.valueOf(config.get("enableCache"));
+		boolean enableCache = Boolean.getBoolean((String)config.get("enableCache"));
 		boolean checkCache = true;	
 		EVSCacheManager evsCache = null;
 		if(enableCache){
