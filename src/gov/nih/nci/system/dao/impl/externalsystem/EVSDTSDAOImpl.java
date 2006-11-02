@@ -149,14 +149,19 @@ public class EVSDTSDAOImpl implements DAO {
 		if (method == null) {
 			log.error("Invalid method name");
 			throw new DAOException(getException("Invalid method name"));
-		} 
-		boolean enableCache = Boolean.getBoolean((String)config.get("enableCache"));
+		}		
+		boolean enableCache = true;
+		if(config.get("enableCache")!=null){
+			try{
+				enableCache = Boolean.valueOf((String)config.get("enableCache")).booleanValue();
+			}catch(Exception ex){			
+			}
+			
+		}
 		boolean checkCache = true;	
 		EVSCacheManager evsCache = null;
 		if(enableCache){
 			evsCache = EVSCacheManager.getInstance();
-			checkCache = false;
-		}
 			for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){									
 				String name = (String)it.next();
 				Object value = mapValues.get(name);
@@ -164,19 +169,22 @@ public class EVSDTSDAOImpl implements DAO {
 			}						
 			if(key.startsWith(methodName + "_MedDRA")){
 				 checkCache = false;
-			}			
-			if(checkCache){
-				if(evsCache != null){
-					cacheName = evsCache.getCacheName(methodName);					
-					if(cacheName != null){
-						try{
-							//read data from cache
-							Object results = evsCache.get(key, cacheName);
-							if(results != null){																 
-								response = (Response)results;
-							}
-						}catch(Exception ex){}
-					}	
+			}	
+		}else{
+			checkCache = false;
+		}
+		if(checkCache){
+			if(evsCache != null){
+				cacheName = evsCache.getCacheName(methodName);					
+				if(cacheName != null){
+					try{
+						//read data from cache
+						Object results = evsCache.get(key, cacheName);
+						if(results != null){																 
+							response = (Response)results;
+						}
+					}catch(Exception ex){}
+				}						
 				}							
 			}
 			
