@@ -32,6 +32,7 @@ import org.apache.log4j.*;
 
 import gov.nih.nci.evs.security.*;
 import gov.nih.nci.system.dao.cache.*;
+import gov.nih.nci.system.dao.properties.*;
 
 /**
  * <!-- LICENSE_TEXT_START -->
@@ -137,112 +138,118 @@ public class EVSDTSDAOImpl implements DAO {
 		}
 		return response;
 	}
-	
+	   
+    private String getVocabularyName(HashMap mapValues){
+        String vocabularyName = null;
+        for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){                                    
+            String name = (String)it.next();
+            Object value = mapValues.get(name);            
+            if(name.equals("vocabularyName")){
+                vocabularyName = (String)value;
+                break;
+            }
+        }
+        return vocabularyName;
+    }
+    private String getMethodName(HashMap mapValues){ 
+    	String methodName = null;
+        Iterator iter = mapValues.keySet().iterator();
+        String keyMethod = (String) iter.next();
+        if(keyMethod != null){
+        	methodName = keyMethod.indexOf("$") > 0 ? keyMethod.substring(0, keyMethod.indexOf("$")): keyMethod;
+        }
+        return methodName; 
+    }
+    
+    private String getCacheKey(String methodName,HashMap mapValues){
+        String key = methodName;
+        for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){                                    
+            String name = (String)it.next();
+            Object value = mapValues.get(name);
+            key += "_"+String.valueOf(value);            
+        }
+        return key;
+    }
+    private boolean enableCache(Hashtable config){
+        boolean enableCache = true;
+        if(config.get("enableCache")!=null){
+            try{
+                enableCache = Boolean.valueOf((String)config.get("enableCache")).booleanValue();
+            }catch(Exception ex){}
+        }
+        return enableCache;
+    }
 	private Response queryEVS(Hashtable config, HashMap mapValues, String queryType) throws Exception{	
-		Response response = null;
-		String cacheName = null;
-		Iterator iter = mapValues.keySet().iterator();
-		String keyMethod = (String) iter.next();
-		String methodName = keyMethod.substring(0, keyMethod.indexOf("$"));
-		Method method = this.getClass().getDeclaredMethod(methodName, new Class[] { HashMap.class });
-		String key = methodName;
+		Response response = null;		
+        String vocabularyName = getVocabularyName(mapValues);
+        String methodName = getMethodName(mapValues);       
+    	Method method = this.getClass().getDeclaredMethod(methodName, new Class[] { HashMap.class });       
 		if (method == null) {
 			log.error("Invalid method name");
 			throw new DAOException(getException("Invalid method name"));
-		}		
-		boolean enableCache = true;
-		if(config.get("enableCache")!=null){
-			try{
-				enableCache = Boolean.valueOf((String)config.get("enableCache")).booleanValue();
-			}catch(Exception ex){			
-			}
-			
 		}
-		boolean checkCache = true;	
-		EVSCacheManager evsCache = null;
-		if(enableCache){
-			evsCache = EVSCacheManager.getInstance();
-			for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){									
-				String name = (String)it.next();
-				Object value = mapValues.get(name);
-				key += "_"+String.valueOf(value);
-			}						
-			if(key.startsWith(methodName + "_MedDRA")){
-				 checkCache = false;
-			}	
-		}else{
-			checkCache = false;
-		}
-		if(checkCache){
-			if(evsCache != null){
-				cacheName = evsCache.getCacheName(methodName);					
-				if(cacheName != null){
-					try{
-						//read data from cache
-						Object results = evsCache.get(key, cacheName);
-						if(results != null){																 
-							response = (Response)results;
-						}
-					}catch(Exception ex){}
-				}						
-				}							
-			}
-			
-			try{
-				if(response == null){
-					//Call EVS Servers
-					makeRemoteConnection(config, queryType);
-					response = (Response) method.invoke(this,new Object[] { mapValues });
-					//update cache
-					if(checkCache){
-						if(evsCache != null && cacheName != null){
-							evsCache.put(key, response, cacheName);
-						}						
-					}
-				}				
-			}catch(Exception ex){
-				log.error( methodName + " throws Exception ");
-				throw new DAOException(ex.getMessage());
-			}
-			
-		
+        String key = getCacheKey(methodName, mapValues);
+        boolean checkCache = false;        
+        EVSCacheManager evsCache = null;          
+		//Check if a security token is required to access the vocabulary
+        DAOSecurity security = null;
+        if(vocabularyName != null){
+            if(getSecurityAdapter(vocabularyName)!= null){
+                security = getSecurityAdapter(vocabularyName);
+            }
+        }
+        if(security != null){
+            SecurityToken securityToken = null;
+            if(tokenCollection.size()>0){
+                securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
+            }  
+            if(securityToken==null){
+                Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+                throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
+             }       
+            getSecurityKey(security, securityToken);
+        }else{
+            //Security token is not required to access the Vocabulary
+            //Check if cache needs to be enabled            
+            if(enableCache(config)){
+                evsCache = EVSCacheManager.getInstance();
+                if(evsCache != null){ 
+                    if(evsCache.isCacheNameValid(methodName)){
+                        checkCache = true;
+                        try{
+                            //read data from cache
+                            Object results = evsCache.get(key, methodName);
+                            if(results != null){
+                                return (Response)results;
+                            }                            
+                        }catch(Exception ex){}                        
+                    }                       
+                 }                   
+            }
+        }
+        try{
+            //Query EVS Servers
+            makeRemoteConnection(config, queryType);
+            response = (Response) method.invoke(this,new Object[] { mapValues });
+            //update cache
+            if(checkCache){
+                evsCache.put(key, response, methodName);                                             
+            }                               
+        }catch(Exception ex){
+            log.error( methodName + " throws Exception ");
+            throw new DAOException(ex.getMessage());
+        }         
 		return response;
 	}
 	
 	private void makeRemoteConnection(Hashtable configs, String queryType)throws Exception{
 		try{
+			EVSProperties evsProperties = EVSProperties.getInstance(configs);
 			if (queryType.equalsIgnoreCase("descLogicValues")) {
-				// Check for overwritting system properties; else
-				// use request parameters
-				String server = System.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
-				String port = System.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): System.getProperty("EVS_DTSRCP_PORT");
-
-				if (server != null && port != null) {
-					dtsrpc = new DTSRPCClient(server, port);
-				} else {
-					log.error("DTSRPC Server name is null");
-					throw new DAOException(
-							getException("DTSRPC Server name is null"));
-				}
-			} else if (queryType.equalsIgnoreCase("metaThesaurusValues")) {
-				String metaServer = System
-						.getProperty("EVS_META_SERVER") == null ? (String) configs
-						.get("metaphraseServer")
-						: System.getProperty("EVS_META_SERVER");
-				String database = System.getProperty("EVS_META_DB") == null ? (String) configs
-						.get("database")
-						: System.getProperty("EVS_META_DB");
-				String username = System
-						.getProperty("EVS_META_USERNAME") == null ? (String) configs
-						.get("username")
-						: System.getProperty("EVS_META_USERNAME");
-				String password = System
-						.getProperty("EVS_META_PASSWD") == null ? (String) configs
-						.get("password")
-						: System.getProperty("EVS_META_PASSWD");
-				metaphrase = new RMIMetaphrase("//" + metaServer
-						+ "/RemoteMetaphrase", database, username,
-						password);
+				dtsrpc = evsProperties.getDtsrpcConnection();
+			
+			} else if (queryType.equalsIgnoreCase("metaThesaurusValues")) {		
+				metaphrase = evsProperties.getMetaphrase();
 			}			
 		}catch(Exception ex){
 			throw new DAOException(getException(ex));
@@ -396,22 +403,6 @@ public class EVSDTSDAOImpl implements DAO {
 			throw new DAOException(
 					getException(" vocabularyName cannot be null"));
 		}
-
-        DAOSecurity security = null;
-        if(getSecurityAdapter(vocabularyName)!= null){
-            security = getSecurityAdapter(vocabularyName);
-        }       
-        if(security != null){
-            SecurityToken securityToken = null;
-            if(tokenCollection.size()>0){
-                securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
-            }  
-            if(securityToken==null){
-                Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
-                throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
-             }       
-            getSecurityKey(security, securityToken);
-        }
         boolean found = dtsrpc.setVocabulary(vocabularyName);
 		if (!found) {
 			throw new DAOException(
@@ -1800,21 +1791,22 @@ public class EVSDTSDAOImpl implements DAO {
 			}
 
 			if (cui) {
-
 				metaConcept = metaphrase.getConcept(searchTerm);
 				COM.Lexical.Metaphrase.Source[] sources = metaConcept.sources();
 
 				if (!(checkSource)) {
 					// log.info("Searching all sources");
-					MetaThesaurusConcept concept = buildMetaThesaurusConcept(metaConcept);
-					list.add(concept);
+					try{					
+						list.add(buildMetaThesaurusConcept(metaConcept));
+					}catch(Exception ex){}
+					
 				} else {
-
 					for (int i = 0; i < sources.length; i++) {
 						String sourceSAB = sources[i].SAB().toUpperCase();
 						if (sourceSAB.equalsIgnoreCase(source)) {
-							MetaThesaurusConcept concept = buildMetaThesaurusConcept(metaConcept);
-							list.add(concept);
+							try{					
+								list.add(buildMetaThesaurusConcept(metaConcept));
+							}catch(Exception ex){}
 							break;
 						}
 					}
@@ -1836,19 +1828,20 @@ public class EVSDTSDAOImpl implements DAO {
 				int counter = 0;
 				while (e.hasMoreElements()) {
 					metaConcept = ((Match) e.nextElement()).concept();
-
 					counter++;
 					if (!checkSource) {
-						list.add(buildMetaThesaurusConcept(metaConcept));
+						try{
+							list.add(buildMetaThesaurusConcept(metaConcept));
+						}catch(Exception ex){}						
 						// log.info("Searching all sources");
 					} else {
-						COM.Lexical.Metaphrase.Source[] sources = metaConcept
-								.sources();
+						COM.Lexical.Metaphrase.Source[] sources = metaConcept.sources();
 						for (int i = 0; i < sources.length; i++) {
 							String sourceSAB = sources[i].SAB().toUpperCase();
 							if (sourceSAB.equalsIgnoreCase(source)) {
-								MetaThesaurusConcept concept = buildMetaThesaurusConcept(metaConcept);
-								list.add(concept);
+								try{
+									list.add(buildMetaThesaurusConcept(metaConcept));
+								}catch(Exception ex){}
 								break;
 							}
 						}
@@ -1860,8 +1853,7 @@ public class EVSDTSDAOImpl implements DAO {
 			Hashtable hashTable = new Hashtable();
 
 			for (int i = 0; i < list.size(); i++) {
-				MetaThesaurusConcept mConcept = (MetaThesaurusConcept) list
-						.get(i);
+				MetaThesaurusConcept mConcept = (MetaThesaurusConcept) list.get(i);
 				hashTable.put(mConcept.getCui(), mConcept);
 
 			}
@@ -1923,7 +1915,9 @@ public class EVSDTSDAOImpl implements DAO {
 				COM.Lexical.Metaphrase.Source metaSource = (COM.Lexical.Metaphrase.Source) e
 						.nextElement();
 				COM.Lexical.Metaphrase.Concept metaConcept = getMetaConceptForSource(metaSource);
-				conceptList.add(buildMetaThesaurusConcept(metaConcept));
+				try{
+					conceptList.add(buildMetaThesaurusConcept(metaConcept));
+				}catch(Exception ex){}				
 			}
 		} catch (Exception ex) {
 			throw new DAOException(getException(ex.getMessage()));
