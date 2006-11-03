@@ -59,7 +59,7 @@ public class EVSProperties {
 	private static void loadProperties(Hashtable configs) throws Exception{
 		String propertyFile = System.getProperty("gov.nih.nci.cacore.evsProperties");
 		Properties properties = new Properties();
-		System.out.println("PROPERTY FILE LOCATION: "+ propertyFile);
+		//System.out.println("PROPERTY FILE LOCATION: "+ propertyFile);
 		try{
 			if(propertyFile != null && propertyFile.length() > 0){
 				FileInputStream fis = new FileInputStream(new File(propertyFile));
@@ -70,7 +70,7 @@ public class EVSProperties {
 		for(Iterator i = properties.keySet().iterator(); i.hasNext();){
 			String key = (String)i.next();
 			String value  = properties.getProperty(key);
-			System.out.println("KEY: "+ key +"\t - "+value);
+			//System.out.println("KEY: "+ key +"\t - "+value);
 		}
 		try{
 			dtsServer = properties.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
