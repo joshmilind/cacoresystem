@@ -144,8 +144,8 @@ public class EVSDTSDAOImpl implements DAO {
         for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){                                    
             String key = (String)it.next();
             String name = key.substring(key.indexOf("$") + 1, key.length());
-            Object value = mapValues.get(name);            
-            if(name.equalsIgnoreCase("VocabularyName")){
+            Object value = mapValues.get(key);            
+            if (name.equalsIgnoreCase("VocabularyName")){
                 vocabularyName = (String)value;
                 break;
             }
