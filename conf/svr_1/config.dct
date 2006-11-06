@@ -55,5 +55,5 @@ sql_settings = { sql_url = "jdbc:oracle:thin:@cbiodb2-d.nci.nih.gov:1521:cbdev"
                    sql_read_only = "no"} 
 }
 "IDSvcInterface_class" = "net.handle.server.HandleRepositoryIDInterface"
-"server_prefix" = "123"
+"server_prefix" = "2500.1"
 }
