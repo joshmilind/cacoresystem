@@ -73,23 +73,6 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	public List search(ClientInfo clientInfo, String path, List objList) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			String newPath = path;
-			if (objList.size() != 0)
-				newPath = newPath.concat("," + objList.get(0).getClass().getName());
-			newPath = newPath.replaceAll("Impl","");
-			newPath = newPath.replaceAll("impl.","");
-			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
-		
 		return applicationService.search(path, objList);
 
 	}
@@ -99,23 +82,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	 */
 	public List search(ClientInfo clientInfo, String path, Object obj) throws ApplicationException
 	{
-		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			String newPath = path;
-			if (obj != null)
-				newPath = newPath.concat("," + obj.getClass().getName());
-			newPath = newPath.replaceAll("Impl","");
-			newPath = newPath.replaceAll("impl.","");
-			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
+		ClientInfoThreadVariable.setClientInfo(clientInfo);		
 		return applicationService.search(path, obj);
 
 	}
@@ -126,25 +93,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	public List search(ClientInfo clientInfo, Class targetClass, List objList) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			String newPath = targetClass.getName();
-			if (objList.size() != 0)
-				newPath = newPath.concat("," + objList.get(0).getClass().getName());
-			newPath = newPath.replaceAll("Impl","");
-			newPath = newPath.replaceAll("impl.","");
-			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
-
 		return applicationService.search(targetClass, objList);
-
 	}
 
 	/* (non-Javadoc)
@@ -153,25 +102,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	public List search(ClientInfo clientInfo, Class targetClass, Object obj) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			String newPath = new String(targetClass.getName());
-			if (obj != null)
-				newPath = newPath.concat("," + obj.getClass().getName());
-			newPath = newPath.replaceAll("Impl","");
-			newPath = newPath.replaceAll("impl.","");
-			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
-
 		return applicationService.search(targetClass, obj);
-
 	}
 
 	/* (non-Javadoc)
@@ -180,24 +111,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	public List query(ClientInfo clientInfo, Object criteria, int firstRow, int resultsPerQuery, String targetClassName) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		List list = applicationService.query(criteria, firstRow, resultsPerQuery, targetClassName);
-
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			if (list.size() != 0)
-				targetClassName.concat("," + list.get(0).getClass().getName());
-			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
-
-		return list;
-
+		return applicationService.query(criteria, firstRow, resultsPerQuery, targetClassName);
 	}
 
 	/* (non-Javadoc)
@@ -206,24 +120,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	public List query(ClientInfo clientInfo, DetachedCriteria detachedCriteria, String targetClassName) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		List list = applicationService.query(detachedCriteria, targetClassName);
-		
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			if (list.size() != 0)
-				targetClassName.concat("," + list.get(0).getClass().getName());
-			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
-
-		return list;
-
+		return applicationService.query(detachedCriteria, targetClassName);
 	}
 	
 	/* (non-Javadoc)
@@ -232,51 +129,17 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	public List query(ClientInfo clientInfo, HQLCriteria hqlCriteria, String targetClassName) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		List list = applicationService.query(hqlCriteria, targetClassName);
-		
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			if (list.size() != 0)
-				targetClassName.concat("," + list.get(0).getClass().getName());
-			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
-
-		return list;
-
+		return applicationService.query(hqlCriteria, targetClassName);
 	}
+	
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.comm.common.ApplicationServiceProxy#query(gov.nih.nci.common.util.ClientInfo, gov.nih.nci.query.cql.CQLQuery, java.lang.String)
 	 */
 	public List query(ClientInfo clientInfo, CQLQuery cqlQuery, String targetClassName) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-		
-		List list = applicationService.query(cqlQuery, targetClassName);
-		
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			if (list.size() != 0)
-				targetClassName.concat(Constant.COMMA + list.get(0).getClass().getName());
-			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
-			while (tokenPath.hasMoreTokens())
-			{
-				String domainObjectName =  tokenPath.nextToken().trim();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),domainObjectName, "READ"))
-					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
-			}
-		}
-
-		return list;
-
+		return applicationService.query(cqlQuery, targetClassName);
 	}
-	
 	
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.comm.common.ApplicationServiceProxy#getQueryRowCount(gov.nih.nci.common.util.ClientInfo, java.lang.Object, java.lang.String)
@@ -284,15 +147,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	public int getQueryRowCount(ClientInfo clientInfo, Object criteria, String targetClassName) throws ApplicationException
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
-
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),targetClassName, "READ"))
-				throw new AuthorizationException("User does not have privilege to perform a READ on " + targetClassName+ " object");
-		}
-		
 		return applicationService.getQueryRowCount(criteria, targetClassName);
-
 	}
 
 	/* (non-Javadoc)
@@ -302,40 +157,19 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	{
 		ClientInfoThreadVariable.setClientInfo(clientInfo);
 		
-		List list = applicationService.evsSearch(evsCriterion);
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			String returnObjectName = "";
-			if (list.size() != 0)
-				returnObjectName = list.get(0).getClass().getName();
-			if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),returnObjectName, "READ"))
-				throw new ApplicationException("User does not have privilege to perform a READ on " + returnObjectName+ " object");
-		}
-
-		return list;
-
+		return applicationService.evsSearch(evsCriterion);
 	}
     
     public boolean exist(String bigId) throws ApplicationException
     {           
-             return applicationService.exist(bigId);
-
+        return applicationService.exist(bigId);
     }
     
-    public Object getDataObjectFromBigId(ClientInfo clientInfo, String bigId) throws ApplicationException
+    public Object getDataObject(ClientInfo clientInfo, String bigId) throws ApplicationException
     {
         
         ClientInfoThreadVariable.setClientInfo(clientInfo);        
-        Object dataObject = applicationService.getDataObjectFromBigId(bigId);
-        if (securityEnabler.getSecurityLevel() > 0)
-        {
-            String returnObjectName = "";
-            if (dataObject != null)
-                returnObjectName = dataObject.getClass().getName();
-            if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(),returnObjectName, "READ"))
-                throw new ApplicationException("User does not have privilege to perform a READ on " + returnObjectName+ " object");
-        }
-        return dataObject;
+        return applicationService.getDataObject(bigId);
     }
 
 	/* (non-Javadoc)
@@ -345,24 +179,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	// NOTE: Use only "//" for comments in the following method
 	public Object createObject(ClientInfo clientInfo, Object domainobject) throws ApplicationException
 	{
-
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-
-			String domainObjectName = domainobject.getClass().getName();
-			try
-			{
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(), domainObjectName, "CREATE"))
-				{
-					throw new AuthorizationException("User does not have privilege to CREATE " + domainObjectName + " object");
-				}
-			}
-			catch (ApplicationException e)
-			{
-				throw new ApplicationException(e.getMessage());
-			}
-		}
-
+		ClientInfoThreadVariable.setClientInfo(clientInfo);
 		return applicationService.createObject(domainobject);
 
 	}
@@ -375,20 +192,8 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	// NOTE: Use only "//" for comments in the following method
 	public Object updateObject(ClientInfo clientInfo, Object domainobject) throws ApplicationException
 	{
-
-		
-			
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			String domainObjectName = domainobject.getClass().getName();
-			if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(), domainObjectName, "UPDATE"))
-			{
-				throw new AuthorizationException("User does not have privilege to CREATE " + domainObjectName + " object");
-			}
-		}
-
+		ClientInfoThreadVariable.setClientInfo(clientInfo);
 		return applicationService.updateObject(domainobject);
-		
 	}
 	/*@WRITABLE_API_END@*/
 
@@ -399,25 +204,8 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	// NOTE: Use only "//" for comments in the following method
 	public void removeObject(ClientInfo clientInfo, Object domainobject) throws ApplicationException
 	{
-
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			try
-			{
-				String domainObjectName = domainobject.getClass().getName();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(), domainObjectName, "DELETE"))
-				{
-					throw new ApplicationException("User does not have privilege to DELETE " + domainObjectName + " object");
-				}
-			}
-			catch (ApplicationException e)
-			{
-				throw new ApplicationException(e.getMessage());
-			}
-		}
-
+		ClientInfoThreadVariable.setClientInfo(clientInfo);
 		applicationService.removeObject(domainobject);
-
 	}
 	/*@WRITABLE_API_END@*/
 
@@ -428,25 +216,8 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	// NOTE: Use only "//" for comments in the following method
 	public List getObjects(ClientInfo clientInfo, Object domainobject) throws ApplicationException
 	{
-
-		if (securityEnabler.getSecurityLevel() > 0)
-		{
-			try
-			{
-				String domainObjectName = domainobject.getClass().getName();
-				if (!securityEnabler.hasAuthorization(clientInfo.getSessionKey(), domainObjectName, "READ"))
-				{
-					throw new ApplicationException("User does not have privilege to CREATE " + domainObjectName + " object");
-				}
-			}
-			catch (ApplicationException e)
-			{
-				throw new ApplicationException(e.getMessage());
-			}
-		}
-
+		ClientInfoThreadVariable.setClientInfo(clientInfo);
 		return applicationService.getObjects(domainobject);
-
 	}
 	/*@WRITABLE_API_END@*/
 

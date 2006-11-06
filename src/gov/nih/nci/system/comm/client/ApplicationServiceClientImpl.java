@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
@@ -31,6 +32,7 @@ public class ApplicationServiceClientImpl extends ApplicationService
 	private static int maxRecordsCount = 0;
 	private static boolean caseSensitivity = false;	
 
+	private static Logger log= Logger.getLogger(ApplicationServiceClientImpl.class.getName());	
 	/**
 	 * Default Constructor. Obtains the Remote instance of {@link 
 	 * ApplicationService} and caches it.
@@ -41,38 +43,41 @@ public class ApplicationServiceClientImpl extends ApplicationService
 		{
 			Properties _properties = new Properties();
 			_properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("CORESystem.properties"));
-			String rsPerQuery = (String) _properties.getProperty("RECORDSPERQUERY");
-			String maxRsPerQuery = (String) _properties.getProperty("MAXRECORDSPERQUERY");
+			String rsPerQuery = _properties.getProperty("RECORDSPERQUERY");
+			String maxRsPerQuery = _properties.getProperty("MAXRECORDSPERQUERY");
 			
 			if (rsPerQuery != null)
 			{
+				log.info("RECORDSPERQUERY property found : "+rsPerQuery);
 				recordsCount = new Integer(rsPerQuery).intValue();
 			}
 			else
 			{
+				log.error("RECORDSPERQUERY property not found. Using default");
 				recordsCount = Constant.RESULT_COUNT_PER_QUERY;
 			}
 			if (maxRsPerQuery != null)
 			{
+				log.info("MAXRECORDSPERQUERY property found : "+maxRsPerQuery);
 				maxRecordsCount = new Integer(maxRsPerQuery).intValue();
-
 			}
 			else
 			{
+				log.error("MAXRECORDSPERQUERY property not found. Using default");
 				maxRecordsCount = Constant.MAX_RESULT_COUNT_PER_QUERY;
 			}
 		}
 		catch (IOException e)
 		{
-			System.out.println("IOException occured: " + e.getMessage());
+			log.error("IOException: ", e);
 		}
 		catch (Exception ex)
 		{
-			System.out.println("Exception - " + ex.getMessage());
+			log.error("Exception: ", ex);
 		}
 	}
 	
-	@Override
+	//@Override
 	protected ApplicationService getBeanInstance()
 	{
 		applicationServiceProxy = getRemoteServiceFromClassPath();
@@ -80,7 +85,7 @@ public class ApplicationServiceClientImpl extends ApplicationService
 		return applicationService;
 	}
 
-	@Override
+	//@Override
 	protected ApplicationService getBeanInstance(String URL)
 	{
 		applicationServiceProxy = getRemoteServiceFromPath(URL);
@@ -90,7 +95,7 @@ public class ApplicationServiceClientImpl extends ApplicationService
 	
 	private static ApplicationServiceProxy getRemoteServiceFromPath(String URL)
 	{
-		String xmlFileString = new String("<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org/dtd/spring-beans.dtd\"><beans><bean id=\"remoteService\" class=\"org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean\"><property name=\"serviceUrl\"><value>" + URL + "</value></property><property name=\"serviceInterface\"><value>gov.nih.nci.system.comm.common.ApplicationServiceProxy</value></property></bean></beans>");
+		String xmlFileString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org/dtd/spring-beans.dtd\"><beans><bean id=\"remoteService\" class=\"org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean\"><property name=\"serviceUrl\"><value>" + URL + "</value></property><property name=\"serviceInterface\"><value>gov.nih.nci.system.comm.common.ApplicationServiceProxy</value></property></bean></beans>";
 		GenericApplicationContext ctx = new GenericApplicationContext();
 		XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
 		InputStream inputStream = new ByteArrayInputStream(xmlFileString.getBytes());
@@ -112,7 +117,7 @@ public class ApplicationServiceClientImpl extends ApplicationService
 	{
 		ClientSession cs = ClientSession.getInstance();
 		ClientInfo clientInfo = new ClientInfo();
-		clientInfo.setSessionKey(cs.getSessionKey());
+		clientInfo.setUserName(cs.getSessionKey());
 		clientInfo.setRecordsCount(ApplicationServiceClientImpl.recordsCount);
 		clientInfo.setCaseSensitivity(ApplicationServiceClientImpl.caseSensitivity);
 		return clientInfo;
@@ -121,7 +126,7 @@ public class ApplicationServiceClientImpl extends ApplicationService
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.ApplicationService#setRecordsCount(int)
 	 */
-	@Override
+	//@Override
 	public void setRecordsCount(int recordsCount) throws ApplicationException
 	{
 		if (recordsCount > maxRecordsCount)
@@ -221,9 +226,9 @@ public class ApplicationServiceClientImpl extends ApplicationService
     {
         return applicationServiceProxy.exist(bigId);
     }
-    public Object getDataObjectFromBigId(String bigId) throws ApplicationException
+    public Object getDataObject(String bigId) throws ApplicationException
     {
-        return applicationServiceProxy.getDataObjectFromBigId(getClientInfo(), bigId);
+        return applicationServiceProxy.getDataObject(getClientInfo(), bigId);
     }
 
 

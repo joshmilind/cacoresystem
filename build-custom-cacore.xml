@@ -1,324 +1,304 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="caCORESDKCustom">
+<<<<<<< build-custom-cacore.xml
+
+	<!--***********************************************************************
+	*** CONDITIONAL PROPERTIES
+	*********************************************************************** -->
+=======
+>>>>>>> 1.39
 	<condition property="fix-xmi-yes-custom">
 		<and>
-			<istrue value="${fix-xmi-yes}"/>
-			<istrue value="${fix-xmi.custom.use}"/>
+			<istrue value="${fix-xmi-yes}" />
+			<istrue value="${fix-xmi.custom.use}" />
 		</and>
 	</condition>
 	
-	<target name="-copy-custom-lib.custom" if="build-system.custom.use"/>
-	<target name="-generate-system.custom" if="generate-system.custom.use"/>
-	<target name="-copy-framework.custom" if="copy-framework.custom.use"/>
-	<target name="-generate-templates.custom" if="generate-templates.custom.use"/>
-	<target name="-build-artifacts.custom" if="build-artifacts.custom.use"/>
-	<target name="-build-beans.custom" if="build-beans.custom.use"/>
-	<target name="-build-framework.custom" if="build-framework.custom.use"/>
-	<target name="-build-orm.custom" if="build-orm.custom.use"/>
-	<target name="-build-schema.custom" if="build-schema.custom.use"/>
-	<target name="-build-system.custom" if="build-system.custom.use"/>
-	<target name="-clean.custom" if="clean.custom.use"/>
-	<target name="-clean-all.custom" if="clean-all.custom.use"/>
-	<target name="-clean-generator.custom" if="clean-framework.custom.use"/>
-	<target name="-compile-beans.custom" if="compile-beans.custom.use"/>
-	<target name="-compile-framework.custom" if="compile-framework.custom.use">
-		<SDKecho message="Compiling application framework"/>
-		<copy todir="${dir.output.project.framework.src}">
-			<fileset dir="${dir.output.project.src}"/>
-		</copy>
-		<javac destdir="${dir.output.project.framework.build}" debug="${DEBUG_FLAG}">
-			<src path="${dir.output.project.framework.src}"/>
-			<!--src path="${dir.output.project.src}"/-->
-			<classpath refid="classpath"/>
-		</javac>
-	</target>	
-	<target name="-compile-generator.custom" if="compile-generator.custom.use">
-		<SDKecho message="Compiling generated custom code ${dir.custom.framework.src}"/>
-		<mkdir dir="${dir.output.generator.src}"/>
-		<copy todir="${dir.output.generator.src}">
-			<fileset dir="${dir.custom.framework.src}">
-				<include name="gov/nih/nci/codegen/**/*.java"/>
-				<include name="gov/nih/nci/common/exception/*.java"/>
-				<include name="gov/nih/nci/common/util/*marshall*.java"/>
-			</fileset>
-		</copy>
-		<javac destdir="${dir.generator.build}" debug = "on">
-			<src path="${dir.output.generator.src}"/>
-			<classpath refid="classpath"/>
-		</javac>
-	</target>			
+	<!--***********************************************************************
+	*** Initialization and Cleanup
+	*********************************************************************** -->
+	<target name="-clean.custom" if="clean.custom.use">
+		<echo> Cleaning custom libs in ${dir.lib}</echo>
+		<delete file="${dir.lib}/lb*.jar" />
+		<delete file="${dir.lib}/dtsrpc*.jar" />
+		<delete file="${dir.lib}/lex*.jar" />
+		<delete file="${dir.lib}/MSSOU*.jar" />
+	</target>
 		
-		
-		
-	<target name="-compile-templates.custom" if="compile-templates.custom.use">
-		<jetc template="${dir.output.project.templates}/BeancaCORE.javajet" destdir="${dir.output.project.src}"/>
-		<jetc template="${dir.output.project.templates}/BeanEVSImpl.javajet" destdir="${dir.output.project.src}"/>
-		<jetc template="${dir.output.project.templates}/BeanEVSWS.javajet" destdir="${dir.output.project.src}"/>
-		<javac srcdir="${dir.output.project.src}" destdir="${dir.output.project.build}" debug="${DEBUG_FLAG}">
-			<classpath refid="classpath"/>
-		</javac>
-	</target>
-
-	<target name="-copy-custom-wsdd.custom" if="copy-custom-wsdd.custom.use" depends="-init-project.custom">
-		<SDKecho message="inside of copy-customwsdd.custom."/>
-				<copy todir="${dir.output.project.web-inf}" overwrite="yes" failonerror="false">
-					<fileset dir="${dir.src.custom.wsdd}">
-						<include name="${file.server.config.wsdd}"/>
-					</fileset>
-				</copy>
-	</target>
-
-	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use" depends="-init-project.custom">
-	<SDKecho message="inside of copy-custombeans.custom."/>
-			<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
-				<fileset dir="${dir.src.custom.beans}">					
-				    <include name="**/evs/query/*.java"/>					
-				</fileset>
-			</copy>
-	</target>
-	<target name="-copy-custom-orm.custom" if="copy-custom-orm.custom.use" depends="-init-project.custom">
-	<SDKecho message="inside of copy-custom-orm.custom."/>
-		<copy todir="${dir.output.project.conf}" overwrite="yes" failonerror="false">
-			<fileset dir="${dir.src.custom.orm}">
-				<include name="${file.orm.properties}"/>
-				<include name="${file.dao.configuration}"/>
-				<include name="${file.orm.configuration}"/>
-				<include name="${file.orm2.configuration}"/>
-			</fileset>
-		</copy>
-	</target>
-	<target name="-copy-project-framework.custom" if="copy-project-framework.custom.use" depends="-init-project.custom">
-		<copy todir="${dir.output.project.framework.src}" overwrite="yes" failonerror="false">
-			<fileset dir="${dir.custom.framework.src}">
-				<include name="**/common/util/*.java"/>
-				<include name="**/system/applicationservice/impl/*.java"/>
-				<include name="**/system/applicationservice/*.java"/>
-				<include name="**/comm/**/*.java"/>
-				<include name="**/dao/**/*.java"/>
-				<include name="**/delegator/*.java"/>
-				<include name="**/dao/**/*.java"/>
-				<include name="**/proxy/**/*.java"/>
-				<include name="**/webservice/**/*.java"/>
-				<include name="**/evs/service/*.java"/>
-				<include name="**/codegen/**/*.java"/>				
-			</fileset>
-		</copy>
-	</target>
-	<target name="-copy-server-file.custom" if="copy-server-file.custom.use"/>
-	<target name="-copy-template-files.custom" if="copy-template-files.custom.use">
-		<copy todir="${dir.output.project.templates}">
-			<fileset dir="${dir.custom.conf}">
-				<include name="*.javajet"/>
-			</fileset>
-			<fileset dir="${dir.custom.conf}">
-				<include name="*.skeleton"/>
-			</fileset>
-		</copy>
-	</target>
-	<target name="-create-control-files.custom" if="create-control-files.custom.use">
-		<SDKcreatecontrol outputdir="${dir.output.project.src}">
-			<controlfileset>
-				<fileset dir="${dir.custom.conf}">
-					<include name="${file.control.beanevsgeneration}"/>
-					<include name="${file.control.beanevswsgeneration}"/>
-					<include name="${file.control.evsPackageUtil}"/>
-					<include name="${file.control.beangeneration_cacore}"/>
-				</fileset>
-			</controlfileset>
-			<extendedfilterset>
-		        <filter token="EVS_MODEL" value="${dir.model}/${fixed_evs_model_filename}"/>				
-			</extendedfilterset>
-		</SDKcreatecontrol>
-		
-		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
-					<controlfileset>
-						<fileset dir="${dir.custom.conf}">
-							<include name="${file.control.evsPackageUtil}"/>
-						</fileset>
-					</controlfileset>
-					<extendedfilterset>
-				        <filter token="EVS_MODEL" value="${dir.model}/${fixed_evs_model_filename}"/>				
-					</extendedfilterset>
-				</SDKcreatecontrol>
-		<SDKcreatecontrol outputdir="${dir.output.project.xmlschema}">
-			<controlfileset>
-				<fileset dir="${dir.custom.conf}">
-					<include name="${file.control.evs_schemageneration}"/>
-				</fileset>
-			</controlfileset>
-			<extendedfilterset>
-		       <filter token="EVS_MODEL" value="${dir.model}/${fixed_evs_model_filename}"/>				
-			</extendedfilterset>
-		</SDKcreatecontrol>	
-		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
-				<controlfileset>
-					<fileset dir="${dir.custom.conf}">
-						<include name="${file.control.castormappinggeneration_cacore}"/>
-					</fileset>
-				</controlfileset>
-				<extendedfilterset>
-					<filter token="EVSPROPERTIESFILE" value="evsBeans.properties"/>
-				</extendedfilterset>
-		</SDKcreatecontrol>	
-				
-		<SDKcreatecontrol outputdir="${dir.output.project.conf}">
-			<controlfileset>
-				<fileset dir="${dir.custom.conf}">
-					<include name="${file.control.corewsdd}"/>
-				</fileset>
-			</controlfileset>
-			<extendedfilterset>
-				<!-- The generator that uses this control file looks for the following file on the 
-					 classpath, which includes the project's conf directory where the evsBeans file
-					 is located.  -->
-				<filter token="EVSPROPERTIESFILE" value="evsBeans.properties"/>
-			</extendedfilterset>
-		</SDKcreatecontrol>
-	</target>
-	<target name="-create-output-dirs.custom" if="create-output-dirs.custom.use">
-	</target>
-	<target name="-create-project-dirs.custom" if="create-project-dirs.custom.use"/>
-	<target name="-deploy-server.custom" if="deploy-server.custom.use"/>
-	<target name="-deployWS.custom" if="deployWS.custom.use"/>
-	<target name="-disable-writable-api.custom" if="disable-writable-api-yes,disable-writable-api.custom.use"/>
-	<target name="-doc.custom" if="doc.custom.use"/>
-	<target name="-doc-framework.custom" if="doc-framework.custom.use"/>
-	<target name="-fix-xmi.custom" if="fix-xmi.custom.use">
-		<SDKecho message="Pre-processing XMI files"/>
-		<java classname="gov.nih.nci.codegen.core.util.FixXMI" fork="true">
-			<classpath refid="classpath"/>
-			<jvmarg value="-Xmx512m"/>
-			<arg value="${xmi_preprocessor}"/>
-			<arg value="${dir.custom.model}/${model_filename}"/>
-			<arg value="${dir.custom.model}/${fixed_filename}"/>
-		</java>		
-		<java classname="gov.nih.nci.codegen.core.util.FixXMI" fork="true">
-			<classpath refid="classpath"/>
-			<jvmarg value="-Xmx512m"/>
-			<arg value="${xmi_preprocessor}"/>
-			<arg value="${dir.custom.model}/${evs_model_filename}"/>
-			<arg value="${dir.model}/${fixed_evs_model_filename}"/>
-		</java>		
-	</target>
-	<target name="-format.custom" if="format.custom.use"/>
-	<target name="-generate-artifacts.custom" if="generate-artifacts.custom.use"/>
-	<target name="-generate-beans.custom" if="generate-beans.custom.use">
-		<SDKecho message="Generating beans for caCORE"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beangeneration_cacore}"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanimplgeneration}"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanwsgeneration}"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanwsimplgeneration}"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanevsgeneration}"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.beanevswsgeneration}"/>
-	</target>
-	<target name="-generate-cache.custom" if="generate-cache.custom.use"/>
-	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use">
-		<SDKecho message="Generating evs package utilities"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evsPackageUtil}"/>
-	</target>
-	<target name="-generate-common-role-util.custom" if="generate-common-role-util.custom.use"/>
-	<target name="-generate-dao-conf.custom" if="generate-dao-conf.custom.use"/>
-	<target name="-generate-junit.custom" if="generate-junit.custom.use"/>
-	<target name="-generate-OR-mapping.custom" if="generate-OR-mapping.custom.use"/>
-	<target name="-generate-orm-conf.custom" if="generate-orm-conf.custom.use"/>
-	<target name="-generate-schemas.custom" if="generate-schemas.custom.use">
-		<SDKecho message="Generating EVS XML schemas"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.evs_schemageneration}"/>		
-	</target>
-	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use"/>
-	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
-	<target name="generate-xml-mapping-for-cacore">
-				<SDKecho message="Generating XML mapping for caCORE "/>
-				<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.castormappinggeneration_cacore}"/>		
-		</target>
+	<target name="-clean-generator.custom" if="clean-framework.custom.use" />
+	<target name="-create-output-dirs.custom" if="create-output-dirs.custom.use" />
+	
 	<target name="-init-project.custom" if="init-project.custom.use">
-		<SDKecho message="Copying files required by caCORE API to SDK directory"/>
+		<SDKecho message="Copying files required by caCORE API to SDK directory" />
 		<copy todir="${dir.model}" overwrite="no" failonerror="false">
 			<fileset dir="${dir.custom.model}">
-				<include name="${fixed_filename}"/>
-				<include name="${fixed_evs_model_filename}"/>
+				<include name="${fixed_filename}" />
+				<include name="${fixed_evs_model_filename}" />
 			</fileset>
 		</copy>
-		<copy todir="${dir.src.custom.wsdd}" overwrite="yes" failonerror="false">
+		<copy todir="${dir.conf.webservice}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.wsdd}">
-				<include name="${file.server.config.wsdd}"/>
+				<include name="${file.server.config.wsdd}" />
 			</fileset>
 		</copy>
-		<copy todir="${dir.src.custom.beans}" overwrite="yes" failonerror="false">
+		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.beans}">
-				<include name="**/evs/domain/*.java"/>
-				<include name="**/evs/query/*.java"/>
-				<include name="**/evs/domain/ws/*.java"/>
-				<include name="**/evs/service/*.java"/>
-				<include name="**/*.java"/>
+				<include name="**/evs/domain/*.java" />
+				<include name="**/evs/query/*.java" />
+				<include name="**/evs/domain/ws/*.java" />
+				<include name="**/evs/service/*.java" />
+				<include name="**/*.java" />
 			</fileset>
 		</copy>
-		<copy todir="${dir.src.custom.framework}" overwrite="yes" failonerror="false">
+		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.beans}">
-				<include name="**/common/util/*.java"/>
-				<include name="**/system/applicationservice/impl/*.java"/>
-				<include name="**/system/applicationservice/*.java"/>
-				<include name="**/comm/common/*.java"/>
-				<include name="**/comm/server/*.java"/>
-				<include name="**/dao/impl/externalsystem/*.java"/>
-				<include name="**/dao/impl/orm/*.java"/>
-			   	<include name="**/dao/*.java"/>
+				<include name="**/common/util/*.java" />
+				<include name="**/system/applicationservice/impl/*.java" />
+				<include name="**/system/applicationservice/*.java" />
+				<include name="**/comm/common/*.java" />
+				<include name="**/comm/server/*.java" />
+				<include name="**/dao/impl/externalsystem/*.java" />
+				<include name="**/dao/impl/orm/*.java" />
+				<include name="**/dao/*.java" />
 			</fileset>
 		</copy>
 
-		<copy todir="${dir.src.custom.orm}" overwrite="yes" failonerror="false">
-			<fileset dir="${dir.custom.orm}"/>
-		</copy>
-		<copy todir="${dir.src.custom.beans}" overwrite="yes" failonerror="false">
+		<copy todir="${dir.src.custom.beans}" overwrite="yes" failonerror="true">
 			<fileset dir="${dir.custom.beans}">
 				<include name="**/evs/domain/*.java" />
 			</fileset>
 		</copy>
-		<copy todir="${dir.src.custom.orm}" overwrite="yes" failonerror="true">
-			<fileset dir="${dir.custom.conf}">
-				<include name="${file.orm.configuration}"/>
-				<include name="${file.orm2.configuration}"/>
-				<include name="${file.orm.properties}"/>
-				<include name="${file.dao.configuration}"/>
-			</fileset>
-		</copy>
-		<copy todir="${dir.output.project.conf}" overwrite="yes" failonerror="true">
-			<fileset dir="${dir.custom.conf}">
-				<include name="evsBeans.properties"/>
-			</fileset>
-			<fileset dir="${dir.custom.conf}/xslt">
-				<include name="evsFormat.xsl"/>
-				<include name="cacoreFormat.xsl"/>
-			</fileset>
-			<filterset>
-		        <filter token="XSLT_PATH" value="${project_name}"/>
-			</filterset>				
-		</copy>
-		<copy todir="${dir.lib}" overwrite="yes" failonerror="true">
-			<fileset dir="${dir.custom.lib}"/>
+		
+		<!-- FIX. Workaround to get the handler system in the correct location for war deployments -->
+		<mkdir dir="${dir.output.project.classes}/conf/svr_1" />
+		<copy todir="${dir.output.project.classes}/conf/svr_1" overwrite="yes" failonerror="true">
+			<fileset dir="${dir.custom.conf}/svr_1" />
 		</copy>
 	</target>
 	
+	<target name="-copy-custom-lib.custom" if="copy-custom-lib.custom.use" >
+		<copy todir="${dir.lib}" overwrite="yes" failonerror="true">
+			<fileset dir="${dir.custom.lib}" />
+		</copy>		
+	</target>
+
+	<target name="-copy-control-files.custom" if="copy-control-files.custom.use">
+		<SDKecho message="Copying caCORE configuration files to SDK output" />
+		<copy todir="${dir.output.project}" overwrite="true">
+			<fileset dir="${dir.custom}">
+				<include name="${dir.conf}/**/*" />
+			</fileset>
+		</copy>
+		<antcall target="replace-cacore-tokens-in-files" />
+	</target>
+
+	<target name="-clean-all.custom" if="clean-all.custom.use">
+		<echo> Cleaning custom libs in ${dir.lib}</echo>
+		<delete file="${dir.lib}/lb*.jar" />
+		<delete file="${dir.lib}/dtsrpc*.jar" />
+		<delete file="${dir.lib}/lex*.jar" />
+		<delete file="${dir.lib}/MSSOU*.jar" />
+	</target>
+
+	<target name="replace-cacore-tokens-in-files">
+		<SDKecho message="Replacing tokens in configuration files" />
+		<replace dir="${dir.output.conf}">
+			<replacefilter token="@EXTERNALSERVER@" value="${external_server_name}" />
+			<replacefilter token="@EVSDTSRPCSERVER@" value="${evs_dtsrpc_server}" />
+			<replacefilter token="@EVSDTSRPCPORT@" value="${evs_dtsrpc_port}" />
+			<replacefilter token="@EVSMETAPHRASESERVER@" value="${evs_metaphrase_server}" />
+			<replacefilter token="@EVSMETAPHRASEDATABASE@" value="${evs_metaphrase_database}" />
+			<replacefilter token="@EVSMETAPHRASEUSERNAME@" value="${evs_metaphrase_username}" />
+			<replacefilter token="@EVSMETAPHRASEPASSWORD@" value="${evs_metaphrase_password}" />
+			<replacefilter token="@WEB_SERVER_NAME@" value="${web_server_name}" />
+			<replacefilter token="@WEB_SERVER_PORT@" value="${web_server_port}" />
+			<replacefilter token="@EVS_MODEL@" value="${dir.model}/${fixed_evs_model_filename}" />
+			<replacefilter token="@EVSPROPERTIESFILE@" value="evsBeans.properties" />
+		</replace>
+	</target>
+
+	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use">
+		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.src.custom.beans}">
+				<include name="**/evs/query/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="-copy-custom-orm.custom" if="copy-custom-orm.custom.use" depends="-init-project.custom">
+		<copy todir="${dir.output.conf}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.src.custom.orm}">
+				<include name="${file.orm.properties}" />
+				<include name="${file.dao.configuration}" />
+				<include name="${file.orm.configuration}" />
+				<include name="${file.orm2.configuration}" />
+			</fileset>
+		</copy>
+		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="true">
+			<fileset dir="${dir.custom.orm}" />
+		</copy>		
+	</target>
+	
+	<target name="-copy-framework.custom" if="copy-framework.custom.use" depends="-init-project.custom">
+		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.custom.framework.src}">
+				<include name="**/common/util/*.java" />
+				<include name="**/system/applicationservice/impl/*.java" />
+				<include name="**/system/applicationservice/*.java" />
+				<include name="**/comm/**/*.java" />
+				<include name="**/dao/**/*.java" />
+				<include name="**/delegator/*.java" />
+				<include name="**/dao/**/*.java" />
+				<include name="**/proxy/**/*.java" />
+				<include name="**/webservice/**/*.java" />
+				<include name="**/evs/service/*.java" />
+			</fileset>
+		</copy>
+		<!-- The SDK puts the conf generated files in 'src'(?) Copying from conf to src for proper packaging -->
+		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.output.conf}" includes="*.xml"/>
+		</copy>
+	</target>
+	
+	<target name="-copy-template-files.custom" if="copy-template-files.custom.use">
+		<copy todir="${dir.output.project.templates}">
+			<fileset dir="${dir.custom.conf}">
+				<include name="*.javajet" />
+			</fileset>
+			<fileset dir="${dir.custom.conf}">
+				<include name="*.skeleton" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="-fix-xmi.custom" if="fix-xmi.custom.use">
+		<SDKecho message="Pre-processing XMI files" />
+		<java classname="gov.nih.nci.codegen.core.util.FixXMI" fork="true">
+			<classpath refid="classpath" />
+			<jvmarg value="-Xmx512m" />
+			<arg value="${xmi_preprocessor}" />
+			<arg value="${dir.custom.model}/${model_filename}" />
+			<arg value="${dir.custom.model}/${fixed_filename}" />
+		</java>
+		<java classname="gov.nih.nci.codegen.core.util.FixXMI" fork="true">
+			<classpath refid="classpath" />
+			<jvmarg value="-Xmx512m" />
+			<arg value="${xmi_preprocessor}" />
+			<arg value="${dir.custom.model}/${evs_model_filename}" />
+			<arg value="${dir.model}/${fixed_evs_model_filename}" />
+		</java>
+	</target>
+
+	<!--***********************************************************************
+		*** COMPILE AND PACKAGE GENERATED APPLICATION 
+		*********************************************************************** -->
+	<target name="-generate-system.custom" if="generate-system.custom.use" />
+	<target name="-generate-cache.custom" if="generate-cache.custom.use" />
+	<target name="-generate-templates.custom" if="generate-templates.custom.use" />
+	<target name="-generate-common-role-util.custom" if="generate-common-role-util.custom.use" />
+	<target name="-generate-dao-conf.custom" if="generate-dao-conf.custom.use" />
+	<target name="-generate-junit.custom" if="generate-junit.custom.use" />
+	<target name="-generate-OR-mapping.custom" if="generate-OR-mapping.custom.use" />
+	<target name="-generate-orm-conf.custom" if="generate-orm-conf.custom.use" />
+	<target name="-generate-schemas.custom" if="generate-schemas.custom.use" />
+	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use" />
+	<target name="-build-artifacts.custom" if="build-artifacts.custom.use" />
+	<target name="-build-beans.custom" if="build-beans.custom.use" />
+	<target name="-build-framework.custom" if="build-framework.custom.use" />
+	<target name="-build-orm.custom" if="build-orm.custom.use" />
+	<target name="-build-schema.custom" if="build-schema.custom.use" />
+	<target name="-build-system.custom" if="build-system.custom.use" />
+	<target name="-compile-beans.custom" if="compile-beans.custom.use" />
+	<target name="-package-client-resources.custom" if="package-client-resources.custom.use" />
+	<target name="-package-client-jar.custom" if="package-client-jar.custom.use" />
+	<target name="-package-thickclient-resources.custom" if="package-thickclient-resources.custom.use" />
+	<target name="-package-war.custom" if="package-war.custom.use" />
+	
+	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use">
+		<SDKecho message="Generating evs package utilities" />
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.evsPackageUtil}" />
+	</target>
+
+	<target name="-compile-generator.custom" if="compile-generator.custom.use"
+			description="Compile cacORE code generation classes">
+			<SDKecho message="Compiling caCORE code generator"/>
+			<javac destdir="${dir.codegen.temp.build}" debug="${sdk.debug}">
+				<src path="${dir.output.project.src}"/>
+				<include name="gov/nih/nci/codegen/**/*.java"/>
+				<classpath refid="classpath"/>
+			</javac>
+	</target>
+	
+	<target name="-generate-wsdd.custom" if="generate-wsdd.custom.use">
+		<SDKecho message="Generating WSDD file" />
+		<!-- SDK does not add the class path to the generated output artifacts.  
+		Adding a workaround to copy the evsBeans.properity to the location in the classpath -->
+		<copy todir="${dir.output.conf}/resources/server" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.output.project.src}">
+				<include name="evsBeans.properties" />
+			</fileset>
+		</copy>
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.corewsdd}" />
+	</target>
+	
+	<target name="-generate-beans.custom" if="generate-beans.custom.use">
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanevsgeneration}" />
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanevswsgeneration}" />
+	</target>
+
+	<!-- client package -->
 	<target name="-package-client.custom" if="package-client.custom.use">
+		<SDKecho message="Packaging caCORE client resources" />
 		<!-- First, create test client files with current project information -->
-		<copy todir="${dir.output.project.client}" overwrite="true">
+		<copy todir="${dir.output.project.package.client}" overwrite="true">
 			<fileset dir="${dir.custom.demo}">
-				<exclude name="build_client.xml"/>
+				<exclude name="build_client.xml" />
 			</fileset>
 			<filterset>
-				<filter token="WEB_SERVER_NAME" value="${web_server_name}"/>
-				<filter token="WEB_SERVER_PORT" value="${web_server_port}"/>
-				<filter token="PROJECT_NAME" value="${project_name}"/>
-				<filter token="SCHEMA_DIR" value="${basedir.unix}/${dir.output.project.xmlschema}"/>
-				<filter token="CLIENT_DIR" value="${basedir.unix}/${dir.output.project.package.client}"/>
-				<filter token="WEBSERVICENAME" value="${webservice_name}"/>
+				<filter token="WEB_SERVER_NAME" value="${web_server_name}" />
+				<filter token="WEB_SERVER_PORT" value="${web_server_port}" />
+				<filter token="PROJECT_NAME" value="${project_name}" />
+				<filter token="SCHEMA_DIR" value="${basedir.unix}/${dir.output.project.xmlschema}" />
+				<filter token="CLIENT_DIR" value="${basedir.unix}/${dir.output.project.package.client}" />
+				<filter token="WEBSERVICENAME" value="${webservice_name}" />
 			</filterset>
 		</copy>
-		<copy file="${dir.custom.demo}/build_client.xml" tofile="${dir.output.project.client}/build.xml" overwrite="true">
+		<copy file="${dir.custom.demo}/build_client.xml" tofile="${dir.output.project.package.client}/build.xml" overwrite="true">
 			<filterset>
-				<filter token="AXIS_SERVICE" value="-l${url.project.axisservice}"/>
+				<filter token="AXIS_SERVICE" value="-l${url.project.axisservice}" />
 			</filterset>
 		</copy>
+	</target>
+
+	<!-- thickclient package -->
+	<target name="-package-thickclient.custom" if="package-thickclient.custom.use">
+		<SDKecho message="Packaging caCORE thickclient resources" />
+		<!-- First, create test client files with current project information -->
+		<copy todir="${dir.output.project.package.thickclient}" overwrite="true">
+			<fileset dir="${dir.custom.demo}">
+				<exclude name="build_client.xml" />
+			</fileset>
+			<filterset>
+				<filter token="WEB_SERVER_NAME" value="${web_server_name}" />
+				<filter token="WEB_SERVER_PORT" value="${web_server_port}" />
+				<filter token="PROJECT_NAME" value="${project_name}" />
+				<filter token="SCHEMA_DIR" value="${basedir.unix}/${dir.output.project.xmlschema}" />
+				<filter token="CLIENT_DIR" value="${basedir.unix}/${dir.output.project.package.client}" />
+				<filter token="WEBSERVICENAME" value="${webservice_name}" />
+			</filterset>
+		</copy>
+		<copy file="${dir.custom.demo}/build_client.xml" tofile="${dir.output.project.package.client}/build.xml" overwrite="true">
+			<filterset>
+				<filter token="AXIS_SERVICE" value="-l${url.project.axisservice}" />
+			</filterset>
+		</copy>
+<<<<<<< build-custom-cacore.xml
+	</target>
+	
+	<target name="-package-system.custom" if="package-system.custom.use">
+		<delete dir="${cacore_home}/output" />
+		<mkdir dir="${cacore_home}/output" />
+=======
 		
 		<!-- Create client jar file -->
 		<mkdir dir="${dir.output.project.package.client.lib}"/>
@@ -503,29 +483,30 @@
 	<target name="-package-system.custom" if="package-system.custom.use" depends="generate-xml-mapping-for-cacore">
 		<delete dir="${cacore_home}/output"/>
 		<mkdir dir="${cacore_home}/output"/>
+>>>>>>> 1.39
 		<copy todir="${cacore_home}/output" overwrite="true">
-			<fileset dir="${dir.output.project.package}"/>
-		</copy>	
-		<mkdir dir="${cacore_home}/output/client/log"/>
-		<copy todir="${cacore_home}/output/client/log" overwrite="true">
-			<fileset dir="${dir.output.project.conf}">
-				<include name="client.log"/>
-			</fileset>
-		</copy>	
-		
+			<fileset dir="${dir.output.project.package}" />
+		</copy>
 	</target>
-	<target name="-rundemo.custom" if="rundemo.custom.use"/>
-	<target name="-runtest.custom" if="runtest.custom.use"/>
-	<target name="-runXMLdemo.custom" if="runXMLdemo.custom.use"/>
-	<target name="-runWSdemo.custom" if="runWSdemo.custom.use"/>
-	<target name="-undeployWS.custom" if="undeployWS.custom.use"/>
 	
-	<!--********************************************************************-->
-	<!--          CUSTOM TARGETS                                            -->
-	<!--********************************************************************-->
-	<target name="-generate-wsdd.cacore">
-		<SDKecho message="Generating WSDD file"/>
-		<SDKgenerate controlfile="${dir.output.project.conf}/${file.control.corewsdd}"/>
-	</target>	
+	<target name="-rundemo.custom" if="rundemo.custom.use" />
+	<target name="-runtest.custom" if="runtest.custom.use" />
+	<target name="-runXMLdemo.custom" if="runXMLdemo.custom.use" />
+	<target name="-runWSdemo.custom" if="runWSdemo.custom.use" />
+	<target name="-undeployWS.custom" if="undeployWS.custom.use" />
+	<target name="-compile-source.custom" if="compile-source.custom.use" />
+	<target name="-deploy-server.custom" if="deploy-server.custom.use" />
+	<target name="-deployWS.custom" if="deployWS.custom.use" />
 	
+	<!--***********************************************************************
+		*** THE APPLICATION DEPLOYMENT TARGETS
+		*********************************************************************** -->
+	<target name="-copy-server-file.custom" if="copy-server-file.custom.use" />
+	
+	<!--***********************************************************************
+		*** DOCUMENTATION TASK
+		*********************************************************************** -->
+	<target name="-doc.custom" if="doc.custom.use" />
+	<target name="-doc-framework.custom" if="doc-framework.custom.use" />
+
 </project>

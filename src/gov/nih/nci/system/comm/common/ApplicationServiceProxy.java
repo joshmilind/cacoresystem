@@ -43,7 +43,7 @@ public interface ApplicationServiceProxy
     
     public abstract boolean exist(String bigId) throws ApplicationException;
     
-    public abstract Object getDataObjectFromBigId(ClientInfo clientInfo, String bigId) throws ApplicationException;
+    public abstract Object getDataObject(ClientInfo clientInfo, String bigId) throws ApplicationException;
 
 	/*@WRITABLE_API_START@*/
 	public abstract Object createObject(ClientInfo clientInfo, Object domainobject) throws ApplicationException;

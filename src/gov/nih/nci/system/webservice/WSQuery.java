@@ -226,7 +226,7 @@ public class WSQuery {
       
       public Object getDataObject(String bigId) throws Exception{
           ApplicationService app = ApplicationServiceProvider.getLocalInstance();
-          Object dataObject = app.getDataObjectFromBigId(bigId);
+          Object dataObject = app.getDataObject(bigId);
           Object wsObject = null;
           if(dataObject != null){
               List result = new ArrayList();

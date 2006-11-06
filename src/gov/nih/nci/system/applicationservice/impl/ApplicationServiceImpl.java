@@ -1,14 +1,18 @@
 package gov.nih.nci.system.applicationservice.impl;
 
+import gov.nih.nci.common.util.Constant;
 import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 import gov.nih.nci.system.applicationservice.ApplicationServiceProvider;
+import gov.nih.nci.system.applicationservice.AuthorizationException;
 import gov.nih.nci.system.dao.WritableDAO;
 import gov.nih.nci.evs.query.EVSQuery;
 import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.system.server.mgmt.SecurityEnabler;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.hibernate.criterion.DetachedCriteria;
 
@@ -25,6 +29,7 @@ public class ApplicationServiceImpl extends ApplicationService
 	private static Logger log = Logger.getLogger(ApplicationServiceImpl.class.getName());
 	private ApplicationServiceBusinessImpl applicationServiceBusinessImpl = null;
 	private WritableDAO writableDAO = null;
+	private SecurityEnabler securityEnabler = null;
 
 	/**
 	 * Default Constructor. It obtains appropriate implementation of the
@@ -35,6 +40,7 @@ public class ApplicationServiceImpl extends ApplicationService
 	{
 		this.applicationServiceBusinessImpl = ApplicationServiceBusinessImpl.getLocalInstance();
 		this.writableDAO = new WritableDAO();
+		this.securityEnabler = new SecurityEnabler(Constant.APPLICATION_NAME);
 	}
 
 
@@ -91,6 +97,11 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public int getQueryRowCount(Object criteria, String targetClassName) throws ApplicationException
 	{
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			if (!securityEnabler.hasAuthorization(targetClassName, "READ"))
+				throw new AuthorizationException("User does not have privilege to perform a READ on " + targetClassName+ " object");
+		}
 		try
 		{
 			return this.applicationServiceBusinessImpl.getQueryRowCount(criteria, targetClassName);
@@ -110,15 +121,29 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List query(DetachedCriteria detachedcriteria, String targetClassName) throws ApplicationException
 	{
+		List list = null;
 		try
 		{
-			return this.applicationServiceBusinessImpl.query(detachedcriteria, targetClassName);
+			list = this.applicationServiceBusinessImpl.query(detachedcriteria, targetClassName);
 		}
 		catch (Exception e)
 		{
 			log.error("Exception: ", e);
 			throw new ApplicationException(e.getMessage(), e);
 		}
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			if (list.size() != 0)
+				targetClassName.concat(Constant.COMMA + list.get(0).getClass().getName());
+			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}
+		return list;
 	}
 	
 	/*
@@ -129,15 +154,29 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List query(HQLCriteria hqlcriteria, String targetClassName) throws ApplicationException
 	{
+		List list = null;
 		try
 		{
-			return this.applicationServiceBusinessImpl.query(hqlcriteria, targetClassName);
+			list = this.applicationServiceBusinessImpl.query(hqlcriteria, targetClassName);
 		}
 		catch (Exception e)
 		{
 			log.error("Exception: ", e);
 			throw new ApplicationException(e.getMessage(), e);
 		}
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			if (list.size() != 0)
+				targetClassName.concat(Constant.COMMA + list.get(0).getClass().getName());
+			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}
+		return list;
 	}	
 
 	/* (non-Javadoc)
@@ -145,15 +184,29 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List query(CQLQuery cqlQuery, String targetClassName) throws ApplicationException
 	{
+		List list = null;	
 		try
 		{
-			return this.applicationServiceBusinessImpl.query(cqlQuery, targetClassName);
+			list = applicationServiceBusinessImpl.query(cqlQuery, targetClassName);
 		}
 		catch (Exception e)
 		{
 			log.error("Exception: ", e);
 			throw new ApplicationException(e.getMessage(), e);
 		}
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			if (list.size() != 0)
+				targetClassName.concat(Constant.COMMA + list.get(0).getClass().getName());
+			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}
+		return list;
 	}	
 	
 	/*
@@ -164,15 +217,29 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List query(Object criteria, int firstRow, int resultsPerQuery, String targetClassName) throws ApplicationException
 	{
+		List list = null;
 		try
 		{
-			return this.applicationServiceBusinessImpl.query(criteria, firstRow, resultsPerQuery, targetClassName);
+			list = this.applicationServiceBusinessImpl.query(criteria, firstRow, resultsPerQuery, targetClassName);
 		}
 		catch (Exception e)
 		{
 			log.error("Exception: ", e);
 			throw new ApplicationException(e.getMessage(), e);
 		}
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			if (list.size() != 0)
+				targetClassName.concat(Constant.COMMA + list.get(0).getClass().getName());
+			StringTokenizer tokenPath = new StringTokenizer(targetClassName, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}
+		return list;
 	}
 
 	/*
@@ -203,11 +270,11 @@ public class ApplicationServiceImpl extends ApplicationService
             throw new ApplicationException(e.getMessage());
         }
     }
-    public Object getDataObjectFromBigId(String bigId) throws ApplicationException
+    public Object getDataObject(String bigId) throws ApplicationException
     {
         try
         {
-            return this.applicationServiceBusinessImpl.getDataObjectFromBigId(bigId);
+            return this.applicationServiceBusinessImpl.getDataObject(bigId);
         }
         catch (Exception e)
         {
@@ -224,6 +291,21 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List search(Class targetClass, Object obj) throws ApplicationException
 	{
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String newPath = targetClass.getName();
+			if (obj != null)
+				newPath = newPath.concat(Constant.COMMA + obj.getClass().getName());
+			newPath = newPath.replaceAll("Impl","");
+			newPath = newPath.replaceAll("impl.","");
+			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}
 		try
 		{
 			return this.applicationServiceBusinessImpl.search(targetClass, obj);
@@ -243,6 +325,21 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List search(Class targetClass, List objList) throws ApplicationException
 	{
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String newPath = targetClass.getName();
+			if (objList.size() != 0)
+				newPath = newPath.concat(Constant.COMMA + objList.get(0).getClass().getName());
+			newPath = newPath.replaceAll("Impl","");
+			newPath = newPath.replaceAll("impl.","");
+			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}	
 		try
 		{
 			return this.applicationServiceBusinessImpl.search(targetClass, objList);
@@ -262,6 +359,21 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List search(String path, Object obj) throws ApplicationException
 	{
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String newPath = path;
+			if (obj != null)
+				newPath = newPath.concat(Constant.COMMA + obj.getClass().getName());
+			newPath = newPath.replaceAll("Impl","");
+			newPath = newPath.replaceAll("impl.","");
+			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}
 		try
 		{
 			return this.applicationServiceBusinessImpl.search(path, obj);
@@ -281,6 +393,21 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	public List search(String path, List objList) throws ApplicationException
 	{
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String newPath = path;
+			if (objList.size() != 0)
+				newPath = newPath.concat(Constant.COMMA + objList.get(0).getClass().getName());
+			newPath = newPath.replaceAll("Impl","");
+			newPath = newPath.replaceAll("impl.","");
+			StringTokenizer tokenPath = new StringTokenizer(newPath, ",");
+			while (tokenPath.hasMoreTokens())
+			{
+				String domainObjectName =  tokenPath.nextToken().trim();
+				if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+					throw new AuthorizationException("User does not have privilege to perform a READ on " + domainObjectName+ " object");
+			}
+		}
 		try
 		{
 			return this.applicationServiceBusinessImpl.search(path, objList);
@@ -299,9 +426,17 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	/*@WRITABLE_API_START@*/
 	// NOTE: Use only "//" for comments in the following method
-	public Object createObject(Object obj) throws ApplicationException
+	public Object createObject(Object domainobject) throws ApplicationException
 	{
-		return writableDAO.createObject(obj);
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String domainObjectName = domainobject.getClass().getName();
+			if (!securityEnabler.hasAuthorization(domainObjectName, "CREATE"))
+			{
+				throw new AuthorizationException("User does not have privilege to CREATE " + domainObjectName + " object");
+			}
+		}
+		return writableDAO.createObject(domainobject);
 	}
 	/*@WRITABLE_API_END@*/
 
@@ -312,9 +447,17 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	/*@WRITABLE_API_START@*/
 	// NOTE: Use only "//" for comments in the following method
-	public Object updateObject(Object obj) throws ApplicationException
+	public Object updateObject(Object domainobject) throws ApplicationException
 	{
-		return writableDAO.updateObject(obj);
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String domainObjectName = domainobject.getClass().getName();
+			if (!securityEnabler.hasAuthorization(domainObjectName, "UPDATE"))
+			{
+				throw new AuthorizationException("User does not have privilege to UPDATE " + domainObjectName + " object");
+			}
+		}
+		return writableDAO.updateObject(domainobject);
 	}
 	/*@WRITABLE_API_END@*/
 
@@ -325,9 +468,17 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	/*@WRITABLE_API_START@*/
 	// NOTE: Use only "//" for comments in the following method
-	public void removeObject(Object obj) throws ApplicationException
+	public void removeObject(Object domainobject) throws ApplicationException
 	{
-		writableDAO.removeObject(obj);
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String domainObjectName = domainobject.getClass().getName();
+			if (!securityEnabler.hasAuthorization(domainObjectName, "DELETE"))
+			{
+				throw new ApplicationException("User does not have privilege to DELETE " + domainObjectName + " object");
+			}
+		}
+		writableDAO.removeObject(domainobject);
 	}
 	/*@WRITABLE_API_END@*/
 
@@ -338,9 +489,17 @@ public class ApplicationServiceImpl extends ApplicationService
 	 */
 	/*@WRITABLE_API_START@*/
 	// NOTE: Use only "//" for comments in the following method
-	public List getObjects(Object obj) throws ApplicationException
+	public List getObjects(Object domainobject) throws ApplicationException
 	{
-		return writableDAO.getObjects(obj);
+		if (securityEnabler.getSecurityLevel() > 0)
+		{
+			String domainObjectName = domainobject.getClass().getName();
+			if (!securityEnabler.hasAuthorization(domainObjectName, "READ"))
+			{
+				throw new ApplicationException("User does not have privilege to READ " + domainObjectName + " object");
+			}
+		}
+		return writableDAO.getObjects(domainobject);
 	}
 	/*@WRITABLE_API_END@*/
 

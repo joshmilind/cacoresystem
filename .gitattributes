@@ -4,15 +4,12 @@
 /build-custom-cacore.properties -text
 /build-custom-cacore.xml -text
 /build.xml -text
-conf/BeanSkel_EVS.skeleton -text
-conf/BeancaCORE.javajet -text svneol=unset#application/octet-stream
 conf/DAOConfig.xml -text
-conf/beanevswsgeneration.xml -text
-conf/beangeneration_cacore.xml -text
 conf/castormappinggeneration.xml -text
 conf/castormappinggeneration_cacore.xml -text
 conf/codegen/control-files/beanevsgeneration.xml -text
 conf/codegen/control-files/beanevswsgeneration.xml -text
+conf/codegen/control-files/beangeneration_cacore.xml -text
 conf/codegen/control-files/daogeneration.xml -text
 conf/codegen/control-files/evsPackageUtil.xml -text
 conf/codegen/control-files/wsddEVSUtil.xml -text
@@ -20,6 +17,7 @@ conf/codegen/resources/xml.properties -text
 conf/codegen/template/BeanEVSImpl.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanEVSWS.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanSkel_EVS.skeleton -text svneol=unset#application/octet-stream
+conf/codegen/template/BeancaCORE.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/EVSBeanSkel.skeleton -text svneol=unset#application/octet-stream
 conf/core-deploy.properties -text
 conf/ehcache_evs.xml -text
@@ -37,8 +35,6 @@ conf/svr_1/pubkey.bin -text
 conf/svr_1/siteinfo.bin -text
 conf/web/WEB-INF/web.xml -text
 conf/webservice/server-config.wsdd -text svneol=unset#application/octet-stream
-conf/wsdl/server-config.wsdd -text
-conf/xml.properties -text
 conf/xslt/cacoreFormat.xsl -text
 conf/xslt/evsFormat.xsl -text
 conf/xslt/images/evs.gif -text
@@ -103,7 +99,6 @@ src/gov/nih/nci/system/applicationservice/impl/ApplicationServiceImpl.java -text
 src/gov/nih/nci/system/comm/client/ApplicationServiceClientImpl.java -text
 src/gov/nih/nci/system/comm/common/ApplicationServiceProxy.java -text
 src/gov/nih/nci/system/comm/server/ApplicationServiceServerImpl.java -text
-src/gov/nih/nci/system/conf/DAOConfig.xml -text
 src/gov/nih/nci/system/dao/cache/EVSCacheManager.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/DAS2DAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text

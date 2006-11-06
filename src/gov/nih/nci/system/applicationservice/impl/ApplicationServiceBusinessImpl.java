@@ -3,7 +3,6 @@ package gov.nih.nci.system.applicationservice.impl;
 import gov.nih.nci.common.net.Request;
 import gov.nih.nci.common.net.Response;
 import gov.nih.nci.common.util.ClientInfoThreadVariable;
-import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.common.util.Constant;
 import gov.nih.nci.common.util.HQLCriteria;
 import gov.nih.nci.common.util.ListProxy;
@@ -238,7 +237,7 @@ public class ApplicationServiceBusinessImpl {
 		request.setFirstRow(new Integer(firstRow));
 
 		int localRecordsCount = recordsCount;
-		if (ClientInfoThreadVariable.isClientRequest())
+		if (ClientInfoThreadVariable.getRecordsCount() > 0)
 			localRecordsCount = ClientInfoThreadVariable.getRecordsCount();
 
 		if ((maxRecordsCount > 0) && (localRecordsCount > maxRecordsCount)) {
@@ -330,7 +329,7 @@ public class ApplicationServiceBusinessImpl {
     public boolean exist(String bigId) throws Exception {
         boolean exist = false;
         try {
-            if(getDataObjectFromBigId(bigId)!=null){
+            if(getDataObject(bigId)!=null){
                 exist = true;
             }
         } catch (Exception ex) {
@@ -340,7 +339,7 @@ public class ApplicationServiceBusinessImpl {
         return exist;
     }
     
-    public Object getDataObjectFromBigId(String bigId) throws Exception {
+    public Object getDataObject(String bigId) throws Exception {
         IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("./conf/svr_1");
         
         ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
@@ -557,7 +556,7 @@ public class ApplicationServiceBusinessImpl {
 				String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				String setterMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				// orig's getter method
-				Method getterMethod = objKlass.getMethod(getterMethodName, null);
+				Method getterMethod = objKlass.getMethod(getterMethodName, (Class[])null);
 				// new object setter method
 				Method setterMethod = newObject.getClass().getMethod(setterMethodName,
 						new Class[] { getterMethod.getReturnType() });
@@ -571,7 +570,7 @@ public class ApplicationServiceBusinessImpl {
 						}
 					}
 				} else {
-					fieldValue = getterMethod.invoke(obj,null);
+					fieldValue = getterMethod.invoke(obj,(Object[])null);
 					if (fieldValue instanceof Collection) {
 						Collection oldValue = (Collection) fieldValue;
 						Collection newValue = new ArrayList();
@@ -645,7 +644,7 @@ public class ApplicationServiceBusinessImpl {
 				String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				String setterMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 				// orig's getter method
-				Method getterMethod = objKlass.getMethod(getterMethodName,null);
+				Method getterMethod = objKlass.getMethod(getterMethodName,(Class[])null);
 				// new object setter method
 				Method setterMethod = newObject.getClass().getMethod(setterMethodName,
 						new Class[] { getterMethod.getReturnType() });
@@ -715,6 +714,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.9  2006/10/25 20:36:57  masondo
+// GF2896: Add Support for CQL Queries (SDK requirement pushed to the caCORE API.)
+//
 // Revision 1.8  2006/10/11 19:06:36  masondo
 // GF1524: Change the lazy setting to match hibernate 3.1.3+.   Added code to match SDK system.
 //

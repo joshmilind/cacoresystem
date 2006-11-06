@@ -308,7 +308,9 @@ public class CLASS implements JETTemplate{
 		if(UML13Utils.getTaggedValue(klass, "constructor-parameter-name") != null){
 			paramName = UML13Utils.getTaggedValue(klass, "constructor-parameter-name").getValue();
 			}
-
+			
+		method.append("/**\n\t* Default constructor\n\t*/\n");
+		method.append("\tpublic "+ klass.getName()+ "(){}\n\n\n");
 		method.append("public "+ klass.getName()+ "("+ paramType +" "+ paramName +"){\n");
 		method.append("\tthis."+paramName +" = "+ paramName +";\n}");
 		

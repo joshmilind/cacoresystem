@@ -105,7 +105,7 @@ import java.io.*;
  */
 public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable {
 
-    private static Logger log = Logger.getLogger(UML13CommonRoleUtilTransformer.class);
+    private static Logger log = Logger.getLogger(UML13WSDDTransformerForEVS.class);
 
     private UML13ClassifierFilter _classifierFilt;
 
