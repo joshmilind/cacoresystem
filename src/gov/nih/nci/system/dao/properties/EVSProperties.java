@@ -73,12 +73,12 @@ public class EVSProperties {
 			//System.out.println("KEY: "+ key +"\t - "+value);
 		}
 		try{
-			dtsServer = properties.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): System.getProperty("EVS_DTSRCP_SERVER");
-			port = properties.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): System.getProperty("EVS_DTSRCP_PORT");
-			metaServer = properties.getProperty("EVS_META_SERVER") == null ? (String) configs.get("metaphraseServer"): System.getProperty("EVS_META_SERVER");
-			database = properties.getProperty("EVS_META_DB") == null ? (String) configs.get("database"): System.getProperty("EVS_META_DB");
-			userName = properties.getProperty("EVS_META_USERNAME") == null ? (String) configs.get("username"): System.getProperty("EVS_META_USERNAME");
-			password = properties.getProperty("EVS_META_PASSWD") == null ? (String) configs.get("password"): System.getProperty("EVS_META_PASSWD");		
+			dtsServer = properties.getProperty("EVS_DTSRCP_SERVER") == null ? (String) configs.get("dtsrpcServer"): properties.getProperty("EVS_DTSRCP_SERVER");
+			port = properties.getProperty("EVS_DTSRCP_PORT") == null ? (String) configs.get("port"): properties.getProperty("EVS_DTSRCP_PORT");
+			metaServer = properties.getProperty("EVS_META_SERVER") == null ? (String) configs.get("metaphraseServer"): properties.getProperty("EVS_META_SERVER");
+			database = properties.getProperty("EVS_META_DB") == null ? (String) configs.get("database"): properties.getProperty("EVS_META_DB");
+			userName = properties.getProperty("EVS_META_USERNAME") == null ? (String) configs.get("username"): properties.getProperty("EVS_META_USERNAME");
+			password = properties.getProperty("EVS_META_PASSWD") == null ? (String) configs.get("password"): properties.getProperty("EVS_META_PASSWD");		
 		}catch(Exception ex){
 			throw new Exception(ex.getMessage());
 		}	
