@@ -1,5 +1,5 @@
-<ehcache>
-<diskStore path="C:/jboss-4.0.4.GA/server/default/tmp/cache"/>
+ehcache
+<diskStore path="@CACHE_PATH@"/>
  <defaultCache
         maxElementsInMemory="500"
         eternal="false"
@@ -36,14 +36,14 @@ timeToLiveSeconds="7200"
 overflowToDisk="true"
 />
 <cache name="getConceptNameByCode"
-maxElementsInMemory="200"
+maxElementsInMemory="100"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"
 overflowToDisk="true"
 />
 <cache name="getConceptCodeByName"
-maxElementsInMemory="200"
+maxElementsInMemory="100"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"
@@ -57,14 +57,42 @@ timeToLiveSeconds="7200"
 overflowToDisk="true"
 />
 <cache name="getAllVocabularies"
-maxElementsInMemory="50"
+maxElementsInMemory="2"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"
 overflowToDisk="true"
 />
 <cache name="getMetaSources"
+maxElementsInMemory="2"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getDescLogicConcept"
 maxElementsInMemory="100"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getAllPropertyTypes"
+maxElementsInMemory="1"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getAllRoleNames"
+maxElementsInMemory="1"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getAllAssociationTypes"
+maxElementsInMemory="1"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"

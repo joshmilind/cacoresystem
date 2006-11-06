@@ -24,6 +24,7 @@ conf/castormappinggeneration_cacore.xml -text
 conf/core-deploy.properties -text
 conf/daogeneration.xml -text
 conf/ehcache_evs.xml -text
+conf/evs.properties -text
 conf/evsFormat.xsl -text
 conf/evsPackageUtil.xml -text
 conf/evs_schemageneration.xml -text
