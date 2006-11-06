@@ -4,31 +4,28 @@
 /build-custom-cacore.properties -text
 /build-custom-cacore.xml -text
 /build.xml -text
-conf/BeanEVSImpl.javajet -text
-conf/BeanEVSWS.javajet -text
 conf/BeanSkel_EVS.skeleton -text
 conf/BeancaCORE.javajet -text svneol=unset#application/octet-stream
-conf/ClientREADME.txt -text
-conf/DAOConfig-evs.xml -text
-conf/DAOConfig-evs2.xml -text
 conf/DAOConfig.xml -text
-conf/EVSBeanSkel.skeleton -text
-conf/EVSDAOBeanImpl.javajet -text
-conf/EVSQueryBeanImpl.javajet -text
-conf/EVSQueryImplBeanImpl.javajet -text
-conf/beanevsgeneration.xml -text
 conf/beanevswsgeneration.xml -text
 conf/beangeneration_cacore.xml -text
 conf/castormappinggeneration.xml -text
 conf/castormappinggeneration_cacore.xml -text
+conf/codegen/control-files/beanevsgeneration.xml -text
+conf/codegen/control-files/beanevswsgeneration.xml -text
+conf/codegen/control-files/daogeneration.xml -text
+conf/codegen/control-files/evsPackageUtil.xml -text
+conf/codegen/control-files/wsddEVSUtil.xml -text
+conf/codegen/resources/xml.properties -text
+conf/codegen/template/BeanEVSImpl.javajet -text svneol=unset#application/octet-stream
+conf/codegen/template/BeanEVSWS.javajet -text svneol=unset#application/octet-stream
+conf/codegen/template/BeanSkel_EVS.skeleton -text svneol=unset#application/octet-stream
+conf/codegen/template/EVSBeanSkel.skeleton -text svneol=unset#application/octet-stream
 conf/core-deploy.properties -text
-conf/daogeneration.xml -text
 conf/ehcache_evs.xml -text
 conf/evs.properties -text
-conf/evsFormat.xsl -text
-conf/evsPackageUtil.xml -text
 conf/evs_schemageneration.xml -text
-conf/hibernate.properties -text
+conf/hibernate/hibernate.properties -text
 conf/orm1.cfg.xml -text
 conf/orm2.cfg.xml -text
 conf/spring/SDKSpringBeanConfig.xml -text
@@ -38,8 +35,8 @@ conf/svr_1/config.dct -text svneol=unset#application/octet-stream
 conf/svr_1/privkey.bin -text
 conf/svr_1/pubkey.bin -text
 conf/svr_1/siteinfo.bin -text
-conf/web.xml -text
-conf/wsddEVSUtil.xml -text
+conf/web/WEB-INF/web.xml -text
+conf/webservice/server-config.wsdd -text svneol=unset#application/octet-stream
 conf/wsdl/server-config.wsdd -text
 conf/xml.properties -text
 conf/xslt/cacoreFormat.xsl -text

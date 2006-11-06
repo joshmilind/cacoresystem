@@ -1,0 +1,211 @@
+import java.util.*;
+import org.omg.uml.foundation.core.*;
+import org.omg.uml.foundation.extensionmechanisms.*;
+import org.omg.uml.modelmanagement.*;
+import org.omg.uml.foundation.datatypes.*;
+import gov.nih.nci.codegen.core.*;
+import gov.nih.nci.codegen.core.transformer.*;
+import gov.nih.nci.codegen.core.transformer.template.*;
+import gov.nih.nci.codegen.core.filter.*;
+import gov.nih.nci.codegen.core.handler.*;
+import gov.nih.nci.codegen.core.access.*;
+import gov.nih.nci.codegen.core.util.*;
+
+public class CLASS implements JETTemplate{
+
+	public String capFirst(String s){
+		return s.substring(0, 1).toUpperCase() + s.substring(1);
+	}
+	public String uncapFirst(String s){
+		return s.substring(0, 1).toLowerCase() + s.substring(1);
+	}
+	
+	public String getGetterName(AssociationEnd ae){
+		String name = ae.getName();
+		if(name == null || name.trim().length() == 0){
+			name = ae.getType().getName();
+		}
+		return "get" + capFirst(name);
+	}
+	public String getSetterName(AssociationEnd ae){
+		String name = ae.getName();
+		if(name == null || name.trim().length() == 0){
+			name = ae.getType().getName();
+		}
+		return "set" + capFirst(name);
+	}
+	
+	public String getQualifiedName(ModelElement me, String basePkg){
+
+		String qName = null;
+        UmlPackage pkg = null;
+        if (basePkg != null) {
+            pkg = UML13Utils.getPackage(UML13Utils.getModel(me), basePkg);
+        } else {
+            pkg = UML13Utils.getModel(me);
+        }
+        qName = UML13Utils.getNamespaceName(pkg, me) + "." + me.getName();
+        return qName;		
+	}
+	
+	public Attribute getIdAtt(UmlClass klass){
+		Attribute idAtt = null;
+		UmlClass superClass = klass;
+		while(superClass != null && idAtt == null){
+			idAtt = UML13Utils.getAttribute(superClass, "id");
+			superClass = UML13Utils.getSuperClass(superClass);
+		}
+		return idAtt;
+	}
+	
+
+	public String execute(Map context){
+		return generate(context);
+	}
+	public String fillInMethodContents(Operation op) {
+	  String paramValue1 = new String();
+	  StringBuffer myBuffer = new StringBuffer();
+	  //for(Iterator k=UML13Utils.getOperations((UmlClass)klass).iterator();k.hasNext();){
+	  	//Operation op = (Operation)k.next();
+	  	myBuffer.append("descLogicValues.put(");
+	  	myBuffer.append("\"");
+	  	myBuffer.append(op.getName());
+	  	myBuffer.append("$vocabularyName");
+	  	myBuffer.append("\",");
+	  	myBuffer.append("vocabularyName");
+	  	myBuffer.append(");\n");
+	  	for (Iterator l = UML13Utils.getParameters(op).iterator(); l.hasNext();){
+	    		Parameter param = (Parameter)l.next();
+	    		String paramType = null;
+	    		if(param.getKind().toString().equals("pdk_in")){
+	       			paramValue1 = param.getName();
+	       			myBuffer.append("descLogicValues.put(\"");
+	       			myBuffer.append(op.getName());
+	       			myBuffer.append("$");
+	       			myBuffer.append(paramValue1);
+	       			myBuffer.append("\",");
+	       			TaggedValue doc = UML13Utils.getTaggedValue(param,"type");
+	       			if(doc != null){
+	       			   paramType = doc.getValue();
+	       			}
+	       			if (paramType.equals("int")) {
+	       			   myBuffer.append("new Integer(" + paramValue1 + ")");
+	       			
+	       			} else if (paramType.equals("boolean")) {
+	       			   myBuffer.append("new Boolean(" + paramValue1 + ")");
+	       			} else {
+	       			  myBuffer.append(paramValue1);
+	       			}
+	       			myBuffer.append(");\n");
+	    		}
+	    	}
+	   //}
+	
+	  return myBuffer.toString();
+        }
+        
+        public String fillInMethodDeclarations(Operation op) {
+		  String paramValue1 = new String();
+		  StringBuffer myBuffer = new StringBuffer();
+		  myBuffer.append("String vocabularyName = null;\n");
+		  //for(Iterator k=UML13Utils.getOperations((UmlClass)klass).iterator();k.hasNext();){
+		  	//Operation op = (Operation)k.next();
+		  	for (Iterator l = UML13Utils.getParameters(op).iterator(); l.hasNext();){
+		    		Parameter param = (Parameter)l.next();
+		    		String paramType = null;
+		    		if(param.getKind().toString().equals("pdk_in")){
+		       			paramValue1 = param.getName();
+		       			TaggedValue doc = UML13Utils.getTaggedValue(param,"type");
+		       			if(doc != null){
+		       			   paramType = doc.getValue();
+		       			}
+		       			if (paramType.equals("int")) {
+		       			   myBuffer.append("int "+ paramValue1 + "=1\n;");
+		       			} else if (paramType.equals("boolean")) {
+		       			   myBuffer.append("boolean " + paramValue1 +"=false\n;");
+		       			} else {
+		       			   myBuffer.append(paramType + " " + paramValue1+";");
+		       			   myBuffer.append("\n");
+
+		       			}
+		       			
+		    		}
+		    	}
+		   //}
+		
+		  return myBuffer.toString();
+        }
+        
+        public String fillInMethodElseIfs(Operation op) {
+			  String paramValue1 = new String();
+			  StringBuffer myBuffer = new StringBuffer();
+			  for (Iterator l = UML13Utils.getParameters(op).iterator(); l.hasNext();){
+			    Parameter param = (Parameter)l.next();
+			    String paramType = null;
+			    if(param.getKind().toString().equals("pdk_in")){
+			       	paramValue1 = param.getName();
+			       	TaggedValue doc = UML13Utils.getTaggedValue(param,"type");
+			       	if(doc != null){
+			       		paramType = doc.getValue();
+			       	}
+			       	if (paramType.equals("int")) {
+			       		myBuffer.append("else if(name.equalsIgnoreCase(\"");
+			       		myBuffer.append(paramValue1);
+			       		myBuffer.append("\"");
+			       		myBuffer.append("))");
+			       		myBuffer.append(paramValue1 + "= ((Integer)map.get(key)).intValue();");   
+			       	} else if (paramType.equals("boolean")) {
+			       		myBuffer.append("else if(name.equalsIgnoreCase(\"");
+					myBuffer.append(paramValue1);
+					myBuffer.append("\"");
+			       		myBuffer.append("))");
+			       		myBuffer.append(paramValue1 + "= ((Boolean)map.get(key)).booleanValue();");  
+			       	} else {
+			       		myBuffer.append("else if(name.equalsIgnoreCase(\"");
+					myBuffer.append(paramValue1);
+					myBuffer.append("\"");
+			       		myBuffer.append("))");
+			       		myBuffer.append(paramValue1 + "= (String)map.get(key);");
+			       	}
+			       			
+			    		}
+			    	}
+			   //}
+			
+			  return myBuffer.toString();
+        }
+public String fillMethodSignature(Operation op) {
+			  String paramValue1 = new String();
+			  StringBuffer myBuffer = new StringBuffer();
+			  //for(Iterator k=UML13Utils.getOperations((UmlClass)klass).iterator();k.hasNext();){
+			  	//Operation op = (Operation)k.next();
+			  	myBuffer.append(op.getName()+"(");
+			  
+			  	for (Iterator l = UML13Utils.getParameters(op).iterator(); l.hasNext();){
+			    		Parameter param = (Parameter)l.next();
+			    		String paramType = null;
+			    		if(param.getKind().toString().equals("pdk_in")){
+			       			paramValue1 = param.getName();
+			       			myBuffer.append(paramValue1);
+			       			if(l.hasNext()) {
+			       			   myBuffer.append(",");
+			       			}
+			    		}
+			    	}
+			    	myBuffer.append(");");
+			   //}
+			
+			  return myBuffer.toString();
+        }        
+        
+        
+       
+
+
+        
+        
+	public String generate(Map context){
+		return "";
+	}
+
+}
