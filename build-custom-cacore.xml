@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="caCORESDKCustom">
-
-	
 	<condition property="fix-xmi-yes-custom">
 		<and>
 			<istrue value="${fix-xmi-yes}"/>
@@ -406,7 +404,7 @@
 	
 	</target>
 	<target name="-package-framework.custom" if="package-framework.custom.use" />
-	<target name="-package-server.custom" if="package-server.custom.use" depends="-generate-wsdd.cacore">
+	<target name="-package-server.custom" if="package-server.custom.use">
 	<SDKecho message="Inside of -package-server.custom"/>
 		<delete file="${dir.output.project.package.server}/${file.project.server.war}"/>
 		<war destfile="${dir.output.project.package.server}/${file.project.server.war}"
