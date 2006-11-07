@@ -170,6 +170,13 @@
 	<target name="-fix-xmi.custom" if="fix-xmi.custom.use">
 		<SDKecho message="Pre-processing XMI files" />
 		<java classname="gov.nih.nci.codegen.core.util.FixXMI" fork="true">
+			<classpath refid="classpath"/>
+			<jvmarg value="-Xmx512m"/>
+			<arg value="${xmi_preprocessor}"/>
+			<arg value="${dir.custom.model}/${model_filename}"/>
+			<arg value="${dir.model}/${fixed_filename}"/>
+		</java>
+		<java classname="gov.nih.nci.codegen.core.util.FixXMI" fork="true">
 			<classpath refid="classpath" />
 			<jvmarg value="-Xmx512m" />
 			<arg value="${xmi_preprocessor}" />
