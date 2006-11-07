@@ -67,7 +67,7 @@ public class TestCase {
                 System.out.println("Gene: "+ g.getId() +"\t"+ g.getSymbol() +"\t"+ g.getBigid());
             }            
             System.out.println("Big Id exists: "+appService.exist("hdl://123.P/MWE"));
-            Gene dataObject = (Gene)appService.getDataObjectFromBigId("hdl://123.P/MWE");
+            Gene dataObject = (Gene)appService.getDataObject("hdl://123.P/MWE");
             System.out.println("Result: "+ dataObject.getId() +"\t"+dataObject.getSymbol()+"\t"+dataObject.getBigid());
 
 
