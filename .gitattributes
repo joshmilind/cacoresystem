@@ -64,7 +64,10 @@ lib/MSSOUserValidator.jar -text
 lib/dtsrpcclient.jar -text
 lib/handle.jar -text
 lib/handlerservice.jar -text
-lib/lbRuntime.jar -text
+lib/lbAdmin.jar -text
+lib/lbImpl.jar -text
+lib/lbInterfaces.jar -text
+lib/lbModel.jar -text
 lib/lexrpcclient.jar -text
 lib/lexrpcserver.jar -text
 models/caCORE3-0-EVS.eap -text
