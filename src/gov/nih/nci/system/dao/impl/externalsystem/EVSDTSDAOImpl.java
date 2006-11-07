@@ -3466,9 +3466,9 @@ public class EVSDTSDAOImpl implements DAO {
 	}
 
 	private Vector convertAssociations(Vector dtsrpcAssociations) {
-		Vector associationVector = new Vector();
-		gov.nih.nci.evs.domain.Association association = new Association();
+		Vector associationVector = new Vector();		
 		for (int i = 0; i < dtsrpcAssociations.size(); i++) {
+			gov.nih.nci.evs.domain.Association association = new Association();
 			gov.nih.nci.dtsrpc.client.ConceptAssociation dtsAssociation = (gov.nih.nci.dtsrpc.client.ConceptAssociation) dtsrpcAssociations
 					.get(i);
 			association.setName(dtsAssociation.getName());
