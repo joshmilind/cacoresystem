@@ -1,4 +1,4 @@
-ehcache
+<ehcache>
 <diskStore path="@CACHE_PATH@"/>
  <defaultCache
         maxElementsInMemory="500"
