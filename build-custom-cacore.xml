@@ -189,7 +189,6 @@
 	<target name="-generate-junit.custom" if="generate-junit.custom.use" />
 	<target name="-generate-OR-mapping.custom" if="generate-OR-mapping.custom.use" />
 	<target name="-generate-orm-conf.custom" if="generate-orm-conf.custom.use" />
-	<target name="-generate-schemas.custom" if="generate-schemas.custom.use" />
 	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use" />
 	<target name="-build-artifacts.custom" if="build-artifacts.custom.use" />
 	<target name="-build-beans.custom" if="build-beans.custom.use" />
@@ -208,6 +207,11 @@
 		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.evsPackageUtil}" />
 	</target>
 
+	<target name="-generate-schemas.custom" if="generate-schemas.custom.use">
+			<SDKecho message="Generating EVS XML schemas"/>
+			<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.evs_schemageneration}"/>		
+	</target>
+	
 	<target name="-compile-generator.custom" if="compile-generator.custom.use"
 			description="Compile cacORE code generation classes">
 			<SDKecho message="Compiling caCORE code generator"/>

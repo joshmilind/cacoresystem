@@ -12,6 +12,7 @@ conf/codegen/control-files/beanevswsgeneration.xml -text
 conf/codegen/control-files/beangeneration_cacore.xml -text
 conf/codegen/control-files/daogeneration.xml -text
 conf/codegen/control-files/evsPackageUtil.xml -text
+conf/codegen/control-files/evs_schemageneration.xml -text
 conf/codegen/control-files/wsddEVSUtil.xml -text
 conf/codegen/resources/xml.properties -text
 conf/codegen/template/BeanEVSImpl.javajet -text svneol=unset#application/octet-stream
@@ -22,7 +23,6 @@ conf/codegen/template/EVSBeanSkel.skeleton -text svneol=unset#application/octet-
 conf/core-deploy.properties -text
 conf/ehcache_evs.xml -text
 conf/evs.properties -text
-conf/evs_schemageneration.xml -text
 conf/hibernate/hibernate.properties -text
 conf/orm1.cfg.xml -text
 conf/orm2.cfg.xml -text
