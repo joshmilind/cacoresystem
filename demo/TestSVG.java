@@ -1,10 +1,13 @@
-import gov.nih.nci.system.applicationservice.*;
-import java.util.*;
+import gov.nih.nci.cabio.domain.Gene;
+import gov.nih.nci.cabio.domain.Pathway;
+import gov.nih.nci.common.util.SVGManipulator;
+import gov.nih.nci.system.applicationservice.ApplicationService;
+import gov.nih.nci.system.applicationservice.ApplicationServiceProvider;
 
-import gov.nih.nci.cadsr.domain.*;
-import gov.nih.nci.cabio.domain.*;
-import gov.nih.nci.common.util.*;
-import org.hibernate.criterion.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.w3c.dom.Document;
 
 /**
@@ -61,97 +64,90 @@ public class TestSVG {
 
 			/** ********** Example used in the Developer Guide ***************** */
 
-			try {
+			System.out.println("Retrieving Pathway from cabio");
+			Pathway pw = new Pathway();
+            pw.setName("h_freePathway");
 
-				System.out.println("Retrieving Pathway from cabio");
-				Pathway pw = new Pathway();
-				pw.setId(new Long(251));
+			List resultList = appService.search(Pathway.class, pw);
+            if (resultList.size() != 1) {
+                System.err.println("Pathway lookup returned "+resultList.size()
+                        +" results.");
+                return;
+            }
+            
+            Pathway returnedPw = (Pathway)resultList.get(0);
+            
+			// Generate SVGManipulator with pathway diagram
+			SVGManipulator svgM = new SVGManipulator(returnedPw);
+			// Get SVG diagram
+			Document orgSvgDoc = svgM.getSvgDiagram();
+			// Save the svg diagram
+			svgM.saveXMLDoc("orginal.svg", orgSvgDoc);
 
-				try {
-					List resultList = appService.search(Pathway.class, pw);
-					System.out.println("result count: " + resultList.size());
-					for (Iterator resultsIterator = resultList.iterator(); resultsIterator
-							.hasNext();) {
-						Pathway returnedPw = (Pathway) resultsIterator.next();
-						// Get pathway diagram
-						String pathwayDiagram = returnedPw.getDiagram();
-						// Generate SVGManipulator with pathway diagram
-						SVGManipulator svgM = new SVGManipulator(returnedPw);
-						// Get SVG diagram
-						Document orgSvgDoc = svgM.getSvgDiagram();
-						// Save the svg diagram
-						svgM.saveXMLDoc("./svg/orginal.svg", orgSvgDoc);
+			// Reset the SVG diagram to it's original state and
+			// disable all the genes
+			svgM.reset();
+			svgM.disableAllGenes();
+			Document disableGenesDoc = svgM.getSvgDiagram();
+			svgM.saveXMLDoc("disableGenesDoc.svg", disableGenesDoc);
 
-						// Reset the SVG diagram to it's original state and
-						// disable all the genes
-						Document org0 = svgM.reset();
-						svgM.disableAllGenes();
-						Document disableGenesDoc = svgM.getSvgDiagram();
-						svgM.saveXMLDoc("disableGenesDoc.svg", disableGenesDoc);
+			// Reset SVG diagram to it's original state and disable
+			// all the nodes
+			svgM.reset();
+			svgM.disableAllNodes();
+			Document disableNodesDoc = svgM.getSvgDiagram();
+			svgM.saveXMLDoc("disableNodesDoc.svg", disableNodesDoc);
 
-						// Reset SVG diagram to it's original state and disable
-						// all the nodes
-						Document org1 = svgM.reset();
-						svgM.disableAllNodes();
-						Document disableNodesDoc = svgM.getSvgDiagram();
-						svgM.saveXMLDoc("disableNodesDoc.svg", disableNodesDoc);
+			// Reset SVG diagram to it's Original state and change
+			// the display colors for each gene
+			svgM.reset();
+			Gene[] genes = new Gene[2];
+			String[] colors = new String[2];
+            
+			Gene gene1 = new Gene();
+            gene1.setClusterId(new Long(443914));
+            gene1.setSymbol("SOD1");
+			List resultList1 = appService.search(Gene.class, gene1);
+			if (resultList1.size() > 0)
+				genes[0] = (Gene) resultList1.get(0);
+            
+			Gene gene2 = new Gene();
+            gene2.setClusterId(new Long(241570));
+            gene2.setSymbol("TNF");
+			List resultList2 = appService.search(Gene.class, gene2);
+            if (resultList2.size() > 0)
+                genes[1] = (Gene) resultList2.get(0);
+            
+			colors[0] = "255,50,50";
+			colors[1] = "0,255,255";
+			svgM.setSvgColors(genes, colors);
 
-						// Reset SVG diagram to it's Original state and change
-						// the display colors for each gene
-						Document org = svgM.reset();
-						Gene[] genes = new Gene[2];
-						String[] colors = new String[2];
-						Gene p53 = new Gene();
-						p53.setId(new Long(1031));
-						List resultList1 = appService.search(Gene.class, p53);
-						if (resultList1.size() > 0)
-							genes[0] = (Gene) resultList1.get(0);
-						Gene p54 = new Gene();
-						p54.setId(new Long(2));
-						List resultList2 = appService.search(Gene.class, p54);
-						genes[1] = (Gene) resultList2.get(0);
-						colors[0] = "255,255,255";
-						colors[1] = "0,255,255";
-						svgM.setSvgColors(genes, colors);
+			Document geneColor = svgM.getSvgDiagram();
+			svgM.saveXMLDoc("geneColor.svg", geneColor);
 
-						Document geneColor = svgM.getSvgDiagram();
-						svgM.saveXMLDoc("geneColor.svg", geneColor);
+			// Retrieve Color for each Gene
+			System.out.println("Gene 1 color: " + svgM.getSvgColor(genes[0]));
+			System.out.println("Gene 2 color: " + svgM.getSvgColor(genes[1]));
+			String svgString = svgM.toString();
+			System.out.println("toString:\n" + svgString);
+            
+            svgM.reset();
+            
+			svgM.setGeneInfoLocation(
+                    "http://cabio-qa.nci.nih.gov/cacore32/GetHTML?query=Gene");
 
-						// Retrieve Color for each Gene
-						String genep53color = svgM.getSvgColor(genes[0]);
-						System.out.println("geneP53 color: " + genep53color);
+			// Change the color of a Gene in the SVG diagram
+			Map geneColors = new HashMap();
+			geneColors.put("nfkb", "0,255,255");
+			geneColors.put("gpx", "0,255, 255");
 
-						Document org10 = svgM.reset();
-						String genep53color1 = svgM.getSvgColor(genes[0]);
+			svgM.setSvgColors(geneColors);
 
-						System.out.println("geneP53 color1: " + genep53color1);
-						String svgString = svgM.toString();
-						System.out.println("toString:\n" + svgString);
-
-						svgM
-								.setGeneInfoLocation("http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/GetHTML?query=Gene");
-
-						Document geneLocation = svgM.getSvgDiagram();
-
-						// Change the color of a Gene in the SVG diagram
-						Map geneColors = new HashMap();
-						geneColors.put("rab7", "0,255,255");
-						geneColors.put("rab1", "0,255, 255");
-
-						svgM.setSvgColors(geneColors);
-
-						Document d = svgM.getSvgDiagram();
-						svgM.saveXMLDoc("geneMap.svg", d);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} catch (RuntimeException e2) {
-				e2.printStackTrace();
-			}
+			Document d = svgM.getSvgDiagram();
+			svgM.saveXMLDoc("geneMap.svg", d);
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.out.println("Test client throws Exception = " + ex);
 		}
 	}
 }
