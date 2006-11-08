@@ -196,7 +196,6 @@
 	<target name="-generate-junit.custom" if="generate-junit.custom.use" />
 	<target name="-generate-OR-mapping.custom" if="generate-OR-mapping.custom.use" />
 	<target name="-generate-orm-conf.custom" if="generate-orm-conf.custom.use" />
-	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use" />
 	<target name="-build-artifacts.custom" if="build-artifacts.custom.use" />
 	<target name="-build-beans.custom" if="build-beans.custom.use" />
 	<target name="-build-framework.custom" if="build-framework.custom.use" />
@@ -208,6 +207,12 @@
 	<target name="-package-client-jar.custom" if="package-client-jar.custom.use" />
 	<target name="-package-thickclient-resources.custom" if="package-thickclient-resources.custom.use" />
 	<target name="-package-war.custom" if="package-war.custom.use" />
+	
+	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"
+		description="Generate caCORE XML mapping files">
+		<SDKecho message="Generating caCORE XML mapping files"/>
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.xmlmappinggeneration}"/>
+	</target>
 	
 	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use">
 		<SDKecho message="Generating evs package utilities" />
@@ -321,5 +326,26 @@
 		*********************************************************************** -->
 	<target name="-doc.custom" if="doc.custom.use" />
 	<target name="-doc-framework.custom" if="doc-framework.custom.use" />
+	
+	<!--***********************************************************************
+		*** CREATE caCORE DISTRIBUTION PACKAGE
+		*********************************************************************** -->
+			
+		<target name="package-cacore"
+			description="Creates a distribution of the caCORE API">
+			<SDKecho message="Creating caCORE distribution package"/>
+			<delete file="${dir.output.project.package}/${file.output.zip}" quiet="true"/>
+			<zip destfile="${dir.output.project.package}/${file.output.zip}">
+				<zipfileset dir="${basedir}" prefix="cacore">
+					<include name="conf/**/*"/>
+					<include name="lib/**/*"/>
+					<include name="models/**/*"/>
+					<include name="src/**/*"/>
+					<include name="*.xml"/>
+					<include name="*.properties"/>
+					<exclude name="**/CVS/**"/>
+				</zipfileset>
+			</zip>
+		</target>
 
 </project>
