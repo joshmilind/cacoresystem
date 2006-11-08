@@ -352,7 +352,7 @@ public class SVGManipulator
 	 * Get the current color of the specified gene within the SVG diagram.
 	 * With current cabio domain model, to get bcid for a given gene object:
 	 * <li> call getGeneAliasCollection method of the Gene object
-	 * <li>	iterate through this collection (GeneAlias object), call getType() method, check its value, if it matches “BioCarta” then call getName() method to get bcid.
+	 * <li>	iterate through this collection (GeneAlias object), call getType() method, check its value, if it matches ï¿½ï¿½ï¿½BioCartaï¿½ï¿½ï¿½ then call getName() method to get bcid.
 	 *			Break through the loop when this occurs.<br>
 	 * When bcid value is found, go through svg document, look for the bcid found, if there is a match, return the color for that, if not, return null.
 	 *
@@ -370,68 +370,40 @@ public class SVGManipulator
 
 		Document svg = getSvgDiagram();
 		if ( svg == null ) return null;
-		String aliasType, bcid=null;
-		Collection c=null;
 		// use reflection to get gene information and invoke it method
-		// to get GeneAliasCollection. From GeneAlias, get BCID
+		// to get GeneAliasCollection. From GeneAlias, get BCIDs
+        List<String> bcids = new ArrayList<String>();
 		try
         {
 			Class cls = gene.getClass();
 			Class[] parameterTypes = new Class[] {};
-			String className = cls.getName();
 			Object[] arguments = new Object[] {};
 
-			if(gene != null)
-			{
-				 Method getAlias = cls.getMethod("getGeneAliasCollection", parameterTypes);
-				 c = (Collection)getAlias.invoke(gene, arguments);
-			}
-
+            // use the gene symbol
+            Method getSymbol = cls.getMethod("getSymbol", parameterTypes);
+            String geneSymbol = (String)getSymbol.invoke(gene, arguments);
+            bcids.add(geneSymbol.toLowerCase());
+            
+			Method getAlias = cls.getMethod("getGeneAliasCollection", parameterTypes);
+            Collection c = (Collection)getAlias.invoke(gene, arguments);
+			
 			for(Iterator itr = c.iterator(); itr.hasNext();)
 			{
 			    Object geneAlias = itr.next();
 				Class clsGeneAlias = geneAlias.getClass();
 				Method getType = clsGeneAlias.getMethod("getType", parameterTypes);
-				aliasType = (String)getType.invoke(geneAlias, arguments);
+                String aliasType = (String)getType.invoke(geneAlias, arguments);
 				if(aliasType.equals(Constant.BIOCARTA_STRING))
 				{
 					Method getName = clsGeneAlias.getMethod("getName", parameterTypes);
-					bcid = (String)getName.invoke(geneAlias, arguments);
-					//System.out.println("bcid for gene id: + gene.getId() +  is " + bcid);
-					break; // found the first bcid
+					String bcid = (String)getName.invoke(geneAlias, arguments);
+                    bcids.add(bcid.toLowerCase());
 				}
 			}
-		 } catch (NoSuchMethodException e)
-         {
-			log.error("NoSuchMethodException: " + e.getMessage());
-			throw new Exception("getSvgColor - NoSuchMethodException: " + e.getMessage());
-
-
-		 } catch (IllegalArgumentException e)
-         {
-			// TODO Auto-generated catch block
-			log.error("getSvgColor - IllegalArgumentException: " + e.getMessage());
-			throw new Exception("getSvgColor - IllegalArgumentException: " + e.getMessage());
-
-
-		 } catch (IllegalAccessException e)
-         {
-			log.error("getSvgColor - IllegalAccessException: " + e.getMessage());
-			throw new Exception("getSvgColor - IllegalAccessException: " + e.getMessage());
-
-
-		 } catch (InvocationTargetException e)
-         {
-			log.error("getSvgColor - InvocationTargetException: " + e.getMessage());
-			throw new Exception("getSvgColor - InvocationTargetException: " + e.getMessage());
-
-
          } catch(Exception e)
          {
              log.error("getSvgColor - Exception: " + e.getMessage());
-             throw new Exception("getSvgColor - Exception: " + e.getMessage());
-
-
+             throw e;
          }
 
 		// go through svg document, return color for the specified bcid
@@ -449,7 +421,6 @@ public class SVGManipulator
 				// only interested in node if it's an element
 				if ( node.getNodeType() == Node.ELEMENT_NODE )
                 {
-					String name=node.getNodeName();
 					// get list of nodes for "g" child node
 					NodeList gkids=node.getChildNodes();
 					for ( int k=0; k<gkids.getLength(); k++)
@@ -467,15 +438,18 @@ public class SVGManipulator
 								  // ignore node, if no objectName ref
 								  if ( objref == null ) continue;
 								  String obname=objref.getNodeValue();
-								  if ( obname.equals(bcid) )
+                                  for(String bcid : bcids) 
                                   {
-									  Node colref = gkattrmap.getNamedItem("style");
-									  String colspec=colref.getNodeValue();
-									  int rgbstart=colspec.indexOf("rgb(");
-									  String t=colspec.substring(rgbstart+4);
-									  int reststart=t.indexOf(')');
-									  color=t.substring(0,reststart);
-								  }
+    								  if ( obname.equals(bcid) )
+                                      {
+    									  Node colref = gkattrmap.getNamedItem("style");
+    									  String colspec=colref.getNodeValue();
+    									  int rgbstart=colspec.indexOf("rgb(");
+    									  String t=colspec.substring(rgbstart+4);
+    									  int reststart=t.indexOf(')');
+    									  color=t.substring(0,reststart);
+    								  }
+                                  }
 							 }
 						}
 					} //end for "g" child node list of nodes
@@ -505,78 +479,36 @@ public class SVGManipulator
 			Object[] arguments = new Object[] {};
             for (int i=0; i<genes.length; i++ )
             {
-                String[] bcids=null, tempbcids=null;
-                String aliasType=null, bcid=null;
-                int n=0;
-                Class cls = genes[i].getClass();
-
-                Method getAlias = cls.getMethod("getGeneAliasCollection", parameterTypes);
+                Class clsGene = genes[i].getClass();
+                Method getAlias = clsGene.getMethod(
+                        "getGeneAliasCollection", parameterTypes);
 				Collection c = (Collection)getAlias.invoke(genes[i], arguments);
-                tempbcids = new String[c.size()];
 
+                // map the gene symbol to the new gene color
+                Method getSymbol = clsGene.getMethod("getSymbol", parameterTypes);
+                String geneSymbol = (String)getSymbol.invoke(genes[i], arguments);
+                colortab.put(geneSymbol.toLowerCase(),colors[i]);
+
+                // map all the gene's aliases to the new gene color
                 for(Iterator itr = c.iterator(); itr.hasNext();)
 				{
 					Object geneAlias = itr.next();
 					Class clsGeneAlias = geneAlias.getClass();
 					Method getType = clsGeneAlias.getMethod("getType", parameterTypes);
 
-					aliasType = (String)getType.invoke(geneAlias, arguments);
+                    String aliasType = (String)getType.invoke(geneAlias, arguments);
 					if(aliasType.equals(Constant.BIOCARTA_STRING))
 					{
 						Method getName = clsGeneAlias.getMethod("getName", parameterTypes);
-						bcid = (String)getName.invoke(geneAlias, arguments);
-                        tempbcids[n++] = bcid;
-
+                        String bcid = (String)getName.invoke(geneAlias, arguments);
+                        colortab.put(bcid.toLowerCase(),colors[i]);
 					}
 				}
-                if(tempbcids != null && tempbcids.length > 0)
-                {
-                    bcids = new String[tempbcids.length - 1];
-                    for (int k=0; k<n; k++)
-                    {
-                        bcids[k] = tempbcids[k];
-                    }
-
-                    for (int j=0; j<bcids.length; j++)
-                    {
-                        colortab.put(bcids[j],colors[i]);
-                    }
-                }
             }
-         } catch (NoSuchMethodException e)
-         {
-			//System.out.println(e);
-			log.error("setSvgColors - NoSuchMethodException: " + e.getMessage());
-			throw new Exception("setSvgColors - NoSuchMethodException: " + e.getMessage());
-
-		 } catch (IllegalArgumentException e)
-         {
-			// TODO Auto-generated catch block
-
-			log.error("IllegalArgumentException: " + e.getMessage());
-			throw new Exception("setSvgColors - IllegalArgumentException: " + e.getMessage());
-
-		 } catch (IllegalAccessException e)
-         {
-			// TODO Auto-generated catch block
-			log.error("IllegalAccessException: " + e.getMessage());
-			throw new Exception("setSvgColors - IllegalAccessException: " + e.getMessage());
-
-
-		 } catch (InvocationTargetException e)
-         {
-		     //System.out.println(e);
-		     log.error("InvocationTargetException: " + e.getMessage());
-		     throw new Exception("setSvgColors - InvocationTargetException: " + e.getMessage());
-
-
          } catch (Exception e)
          {
-			//System.out.println("exception here" + e.getMessage());
-			log.error("Exception: " + e.getMessage());
-			throw new Exception("setSvgColors - Exception: " + e.getMessage());
-
-            //return;
+			log.error("setSvgColors - Exception: " + e.getMessage());
+			throw e;
          }
 
         // now go through svg document, change colors for those
@@ -613,7 +545,7 @@ public class SVGManipulator
                                   String obname=objref.getNodeValue();
                                   // get existing color then update to new color
                                   Node colref = gkattrmap.getNamedItem("style");
-                                  if (colortab.containsKey(obname))
+                                  if (colortab.containsKey(obname.toLowerCase()))
                                   {
                                      String newcolor=colorMap(colref.getNodeValue(),(String)colortab.get(obname));
                                      newcolor=updateFilter(newcolor,"#OpaqueFilter");
