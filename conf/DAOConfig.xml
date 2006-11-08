@@ -10,9 +10,6 @@
        <tool>hibernate</tool>
        <database>oracle</database>
   </domainObjects>
-  <domainObjects name="gov.nih.nci.das2.domain.Segment,gov.nih.nci.das2.domain.Type,gov.nih.nci.das2.domain.Format,gov.nih.nci.das2.domain.Property,gov.nih.nci.das2.domain.Alias,gov.nih.nci.das2.domain.Sources,gov.nih.nci.das2.domain.Source,gov.nih.nci.das2.domain.Note,gov.nih.nci.das2.domain.Location,gov.nih.nci.das2.domain.Segments,gov.nih.nci.das2.domain.Capability,gov.nih.nci.das2.domain.Features,gov.nih.nci.das2.domain.Types,gov.nih.nci.das2.domain.Feature,gov.nih.nci.das2.domain.Maintainer,gov.nih.nci.das2.domain.Part,gov.nih.nci.das2.domain.Version,gov.nih.nci.das2.domain.Coordinates,gov.nih.nci.das2.domain.Parent">
-  	<DataSource>DAS2</DataSource>      
-  </domainObjects>
   <domainObjects name="gov.nih.nci.evs.query.EVSQueryImpl">
       <DataSource>EVS</DataSource>
       <enableCache>true</enableCache>
