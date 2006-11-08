@@ -1,4 +1,3 @@
-
 package gov.nih.nci.codegen.core.transformer;
 
 import gov.nih.nci.codegen.core.BaseArtifact;
@@ -110,7 +109,7 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
     private UML13ClassifierFilter _classifierFilt;
 
     private String _pkgName, _svcName, outputDir, evsFileName;
-    String cache = "";
+    StringBuffer cache = new StringBuffer();
     private Properties evsProperties = new Properties();
     private boolean createEVS = false;
 
@@ -175,24 +174,24 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
         }catch(Exception ex){
             ex.printStackTrace();
         }
-        cache = cache + "<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\"";
-        cache = cache + "\n";
-		cache = cache + "	xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\">";
-		cache = cache + "\n";
-  		cache = cache + "	<service name=\"" + _svcName + "\" style=\"wrapped\" use=\"literal\">";
-  		cache = cache + "\n";
-    	cache = cache + "	<parameter name=\"className\" value=\"gov.nih.nci.system.webservice.WSQuery\"/>";
-    	cache = cache + "\n";
-    	cache = cache + "	<parameter name=\"allowedMethods\" value=\"*\"/>";
-    	cache = cache + "\n";
-    	cache = cache + "	<parameter name=\"extraClasses\"";
-    	cache = cache + "\n";
-		cache = cache + "	value=\"";
+        cache.append("<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\"");
+        cache.append("\n");
+        cache.append("	xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\">");
+        cache.append("\n");
+        cache.append("	<service name=\"" + _svcName + "\" style=\"wrapped\" use=\"literal\">");
+        cache.append("\n");
+        cache.append("	<parameter name=\"className\" value=\"gov.nih.nci.system.webservice.WSQuery\"/>");
+        cache.append("\n");
+        cache.append("	<parameter name=\"allowedMethods\" value=\"*\"/>");
+        cache.append("\n");
+    	cache.append("	<parameter name=\"extraClasses\"");
+    	cache.append("\n");
+    	cache.append("	value=\"");
         if(evsClasses != null && createEVS){
-            cache += evsClasses;
+        	cache.append(evsClasses);
         }
 
-        String nn1 = new String();
+        StringBuffer nn1 = new StringBuffer();
 		for (Iterator i = classifiers.iterator(); i.hasNext();) {
 			Classifier klass = (Classifier) i.next();
 			UmlPackage classPkg = null;
@@ -203,21 +202,22 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
 			}
 			String name = UML13Utils.getNamespaceName(classPkg, klass);
 			
-			nn1 = name;
-			nn1 = nn1 + ".ws.";
-			nn1 = nn1 + klass.getName();
-			nn1 = nn1 + ",";
+			nn1.setLength(0);
+			nn1.append(name);
+			nn1.append(".ws.");
+			nn1.append(klass.getName());
+			nn1.append(",");
 			
-			nn1 = nn1 + name;  //UML13Utils.getNamespaceName(classPkg, klass);
-			nn1 = nn1 + ".ws.";
-			nn1 = nn1 + klass.getName();
-			nn1 = nn1 + "Impl";
+			nn1.append(name);  //UML13Utils.getNamespaceName(classPkg, klass);
+			nn1.append(".ws.");
+			nn1.append(klass.getName());
+			nn1.append("Impl");
 			if (i.hasNext()) {
-				nn1 += ",";
+				nn1.append(",");
 			}
 
 			//fill in fullyqualified object name
-			cache = cache + nn1;
+			cache.append(nn1);
 			//cache = cache + "\n";
 
 		}
@@ -228,7 +228,7 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
         //System.out.println("String before: " + finalString + "\n");
 		*/
 
-        cache = cache + "\"/>" + "\n";
+        cache.append("\"/>" + "\n");
         for (Iterator i = classifiers.iterator(); i.hasNext();) {
 					Classifier klass = (Classifier) i.next();
 					UmlPackage classPkg = null;
@@ -252,7 +252,7 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
 					tmp1_1 = tmp1_1 + nn2_1;
 					tmp1_1 = tmp1_1 + "\" />";
 					tmp1_1 = tmp1_1 + "\n";
-					cache = cache + tmp1_1;
+					cache.append(tmp1_1);
 
 					String tmp1 = "<beanMapping xmlns:myNS=\"urn:ws.";
 					tmp1 = tmp1 + reversePackageName(UML13Utils.getNamespaceName(classPkg, klass)).replaceAll(":impl.",":ws.");
@@ -272,29 +272,24 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
 		            tmp1 = tmp1 + nn2;
 		            tmp1 = tmp1 + "\" />";
 		            tmp1= tmp1 + "\n";
-					cache = cache + tmp1;
+					cache.append(tmp1);
 
 		}
         try{
             if(createEVS){
-                cache += this.getEVSBeanMapping();  
+            	cache.append(this.getEVSBeanMapping());  
             }
             
         }catch(Exception e){
             e.printStackTrace();
         }
         
-        cache = cache + "</service>";
-        cache = cache + "\n";
-		cache = cache + "</deployment>";
-		cache = cache + "\n";
+        cache.append("</service>");
+        cache.append("\n");
+        cache.append("</deployment>");
+        cache.append("\n");
 
-
-
-		String setUp = "";
-	    setUp = setUp + cache;;
-	    //System.out.println("The wsdd: " + setUp + "\n");
-		return setUp;
+		return cache.toString();
     }
 
 
@@ -401,7 +396,7 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
         evsProperties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));
     }
     public String getEVSClassList() throws Exception{
-        String evsClassList = "java.util.HashSet";        
+        StringBuffer evsClassList = new StringBuffer("java.util.HashSet");        
         if(evsProperties != null){
             Set keys = evsProperties.keySet();        
             Iterator i=keys.iterator();            
@@ -409,17 +404,15 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
                 String key = (String)i.next();
                 String value = (String)evsProperties.get(key);
                 if(key.indexOf(".")>0){
-                    String wsClassName = value +".ws."+key.substring(key.lastIndexOf(".")+1);
-                    //evsClassList += ","+key;
-                    evsClassList += ","+ wsClassName;
+                	evsClassList.append(",");
+                	evsClassList.append(value);
+                	evsClassList.append(".ws.");
+                	evsClassList.append(key.substring(key.lastIndexOf(".")+1));
                 }
-                
             }
         }
-             
-        
-        
-        return evsClassList;        
+           
+        return evsClassList.toString();        
     }
     
     public String getEVSBeanMapping() throws Exception{
@@ -442,6 +435,7 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
                     //packageList.add(st.nextToken());                }
                     packageList.add(st.nextToken());                
                     }
+
                 packageList.add("ws");
                 reversedPackageName = (String)packageList.get(packageList.size()-1);
                 for(int x = packageList.size()-2; x>=0; x--){
