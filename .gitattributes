@@ -34,10 +34,11 @@ conf/svr_1/privkey.bin -text
 conf/svr_1/pubkey.bin -text
 conf/svr_1/siteinfo.bin -text
 conf/web/WEB-INF/web.xml -text
+conf/web/images/evs.gif -text
+conf/web/images/sdk.gif -text
 conf/webservice/server-config.wsdd -text svneol=unset#application/octet-stream
 conf/xslt/cacoreFormat.xsl -text
 conf/xslt/evsFormat.xsl -text
-conf/xslt/images/evs.gif -text
 demo/EVSMonitor.java -text
 demo/EVSWSClient.java -text
 demo/TestCase.java -text
