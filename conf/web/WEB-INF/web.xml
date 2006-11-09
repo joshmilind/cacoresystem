@@ -6,6 +6,9 @@
 
 
 <web-app>
+   <welcome-file-list>
+         <welcome-file>Happy.jsp</welcome-file>
+   </welcome-file-list>
 	<context-param>
        	<param-name>cacoreBeans.Properties</param-name>
 		<param-value>cacoreBeans.properties,evsBeans.properties</param-value>
