@@ -561,7 +561,7 @@ public class PrintUtils {
                             System.out.println("Not specified");
                             }
                         else{
-                            System.out.println("has value  = "+ value.toString());
+                            System.out.println("found = "+ value.toString());
                             }
                         }
                     else if(evsResults.get(0).getClass().getName().endsWith("DefaultMutableTreeNode")){
@@ -650,15 +650,33 @@ public class PrintUtils {
                             Vector h =  hr.getHistoryCollection();
                             for(int x=0;x<h.size(); x++){
                                 History hist = (History) h.get(x);
-                                System.out.println("\t\t\t"+hist.getEditAction() + " : " + hist.getEditActionDate() +"  ref.code : " + hist.getReferenceCode());
-                                
+                                System.out.println("\t\t\t"+hist.getEditAction() + " : " + hist.getEditActionDate() +"  ref.code : " + hist.getReferenceCode());                                
                             }
                             }
                     } else if(evsResults.get(0).getClass().getName().endsWith("History")){
-                        System.out.println();
-                        
-                    }
-                    else{
+                        System.out.println("\n\tHISTORY -->");
+                        for(int i=0; i<evsResults.size(); i++){
+                            History hist = (History)evsResults.get(i);
+                            System.out.println("\t\t\t"+hist.getEditAction() + " : " + hist.getEditActionDate() +"  ref.code : " + hist.getReferenceCode());
+                            }                        
+                    }else if(evsResults.get(0).getClass().getName().endsWith("Vocabulary")){
+                        System.out.println("\n\tVOCABULARY --> \n");
+                        for(int i=0; i<evsResults.size(); i++){
+                            Vocabulary vocab = (Vocabulary)evsResults.get(i);
+                            System.out.println("\n\t\t"+ vocab.getName() +"\t"+ vocab.getNamespaceId());
+                        }                        
+                    }else if(evsResults.get(0).getClass().getName().endsWith("EditActionDate")){
+                        System.out.println("\n\tEditActionDate --> ");
+                        for(int i=0; i<evsResults.size(); i++){
+                            EditActionDate editAction = (EditActionDate)evsResults.get(i);
+                            System.out.println("\n\t\t"+ editAction.getAction() +"\t"+ editAction.getEditDate());
+                        }                        
+                    }else if(evsResults.get(0).getClass().getName().endsWith("Date")){
+                        System.out.println("\n\tDate --->");
+                        for(int i=0; i<evsResults.size(); i++){
+                            System.out.println("\n\t\t"+ String.valueOf(evsResults.get(0)));
+                        }                        
+                    }else{
                         System.out.println("Class not defined");
                         //printResults(evsResults);
                         }
