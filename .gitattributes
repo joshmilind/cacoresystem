@@ -81,7 +81,6 @@ models/xmi/evs3-1.xmi -text
 models/xmi/evs3-2.xmi -text svneol=unset#application/octet-stream
 models/xmi/fixed_evs3-1.xmi -text
 models/xmi/fixed_evs3-2.xmi -text svneol=unset#application/octet-stream
-orm/DAOConfig.xml -text
 orm/gov/nih/nci/cabio/domain/Location.hbm.xml -text
 orm/gov/nih/nci/cabio/domain/impl/LocationImpl.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/Provenance.hbm.xml -text
