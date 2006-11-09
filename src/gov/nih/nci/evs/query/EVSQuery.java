@@ -392,12 +392,7 @@ public interface EVSQuery extends Serializable{
 	 */
 	public void getMetaConceptNameByCode(String conceptCode);
 
-    /**
-     * Gets the source abbreviation for the given Source Concept unique identifier. 
-     */
-    public void getSourceAbbreviation(String cui);
-
-	/**
+   	/**
 	 * Get all MetaThesaurus Sources
 	 */
     public void getMetaSources();

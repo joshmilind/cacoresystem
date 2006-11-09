@@ -525,12 +525,8 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
      */
     public void getMetaConceptsForAllSources(){
         metaThesaurusValues.put("getMetaConceptCodessForAllSources$name","");
-    }
-    
-    public void getSourceAbbreviation(String cui){
-        metaThesaurusValues.put("getSourceAbbreviation$cui",cui);
-    }
-	/**
+    }    
+  /**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getMetaConceptNameByCode(java.lang.String)
 	 */
 	public void getMetaConceptNameByCode(String conceptCode) 
