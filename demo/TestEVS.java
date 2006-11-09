@@ -13,11 +13,11 @@ public class TestEVS {
 
         System.out.println("*** TestEVS...");
 
-            String prodUrl  = "http://cabio.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
-            String stageUrl = "http://cabio-stage.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
-            String qaUrl    = "http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/http/remoteService";
-            String localUrl = "http://localhost:8080/@PROJECT_NAME@/http/remoteService";
-			//String genUrl = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
+            String prodUrl  = "http://cabio.nci.nih.gov/cacore32/http/remoteService";
+            String stageUrl = "http://cabio-stage.nci.nih.gov/cacore32/http/remoteService";
+            String qaUrl    = "http://cabio-qa.nci.nih.gov/cacore32/http/remoteService";
+            String localUrl = "http://localhost:8080/cacore32/http/remoteService";
+			//String genUrl = "http://localhost:8080/cacore32/http/remoteService";
 			//ApplicationService appService = ApplicationService.getRemoteInstance(prodUrl);
 
 			ApplicationService appService = ApplicationServiceProvider.getApplicationService();
@@ -25,224 +25,156 @@ public class TestEVS {
 
 		try
 		{
-		    String vocabularyName = "NCI_Thesaurus";
-			EVSQuery evsQuery = new EVSQueryImpl();
+		    
+			EVSQuery[] evsQuery = new EVSQueryImpl[85];
+            for(int i=0; i<85; i++){
+                evsQuery[i] = new EVSQueryImpl();
+            }
 			List evsResults = new ArrayList();
 			System.out.println("\n\nEVS RESULTS......");
 			PrintUtils print = new PrintUtils();
+            
+            
+            String vocabularyName = "NCI_Thesaurus";
+            String rootName = "Heart";           
+            int levels = 3;
+            Vector roles = new Vector();
+            roles.add("Anatomic_Structure_Is_Physical_Part_Of");
+            String searchTerm = "blood*";
+            int matchLimit = 20;
+            int matchOption = 0;
+            String matchType = "";
+            int ASDIndex = 1;
+            String conceptName = "Heart";
+            String conceptCode = "C12434";
+            String baseLineDate = "01/01/1999";
+            String action = "modify";
+            String initialDate = "01/01/1999";
+            String finalDate = "01/01/2006";           
+            String roleName = "Anatomic_Structure_Is_Physical_Part_Of";
+            String roleValue = "Cardiac_Vein";
+            String sourceAbbr = "*";
+            String cui = "C0392895";
+            String metaCui = "C0927225";
+            String propertyName = "Synonym";
+            String conceptCode1 ="C33557";
+            String conceptName1 ="Gland";
+            String conceptCode2 = "C12805";
+            String conceptName2 = "Organ";
+            String atomCode = "10063229";
+           
+         
+            
+            Date editActionDate = new Date("01/01/2004");
+           
 
-
-/*********************************************************************
-* 1. searchDescLogicConcepts
-* ********************************************************************/
-			//evsQuery.searchDescLogicConcepts("NCI_Thesaurus","Anatomic_Structure_System_or_Substance",10);
-
-/*********************************************************************
-* 2. getTree
-* ********************************************************************/
-
-			Vector v = new Vector();
-			v.add("Anatomic_Structure_Has_Location");
-			v.add("Anatomic_Structure_is_Physical_Part_of");
-			v.add("part_of");
-			//When isFlag is true system exception
-        	//evsQuery.getTree("NCI_Thesaurus", "Heart", true, false, 1, "4", v);
-			//evsQuery.getTree("GO", "Gene_Ontology", true, false, 1, "4", v);
-			//evsQuery.getTree("GO", "Gene_Ontology", true, true, 1, "4", v);
-/****************************************************************************
-* 3. getConceptWithPropertyMatchin
-****************************************************************************/
-     	//evsQuery.getConceptWithPropertyMatching("NCI_Thesaurus", "Synonym", "protocol", 10);
-		//evsQuery.getConceptWithPropertyMatching("NCI_Thesaurus", "Synonym", "Tobacco Smoking", 10);
-
-
-/****************************************************************************
-* 4. getDescLogicConceptNameByCode
-****************************************************************************/
-
-		//evsQuery.getDescLogicConceptNameByCode("NCI_Thesaurus", "C12932");
-
-/****************************************************************************
-* 5. isSubConcep
-*****************************************************************************/
-		//Test
-			//evsQuery.isSubConcept("NCI_Thesaurus", "TP73_Gene", "Apoptosis_Regulation_Gene");
-
-
-/****************************************************************************
-* 6. isRetired
-*****************************************************************************/
-
-		//evsQuery.isRetired("NCI_Thesaurus", "C12756");
-
-/****************************************************************************
-* 7. getDescendants
-*****************************************************************************/
-		//evsQuery.getDescendants("NCI_Thesaurus", "C16612", false, "8/22/2003", "10/31/2003");
-
-/*****************************************************
- * 8. getRootConcepts
- * ***************************************************/
-		//evsQuery.getRootConcepts("NCI_Thesaurus",true);
-
-/*****************************************************
- * 9. getPropertyValues
- * ***************************************************/
-	 //evsQuery.getPropertyValues("NCI_Thesaurus", "Gene", "DEFINITION");
-
-/*****************************************************
- * 10. getAncestors
- * ***************************************************/
-	//evsQuery.getAncestors("NCI_Thesaurus", "C16612",false,"10/31/2003" ,"03/16/2005" );
-
-/*****************************************************
-* 11. getSubConcepts
-*****************************************************/
-	//evsQuery.getSubConcepts("NCI_Thesaurus", "Organ", Boolean.FALSE, Boolean.FALSE);
-
-/*****************************************************
- * 12. getSuperConcepts
- * ***************************************************/
-	//evsQuery.getSuperConcepts("NCI_Thesaurus", "Organ", Boolean.FALSE, Boolean.FALSE);
-
-/*****************************************************
-* 13. getRolesByConceptName
-* ***************************************************/
-			//evsQuery.getRolesByConceptName("NCI_Thesaurus", "Oncogene_MYC");
-
-/*****************************************************
- * 14. getPropertiesByConceptName
- *****************************************************/
-			//evsQuery.getPropertiesByConceptName("NCI_Thesaurus", "Gene");
-
-/*****************************************************
- * 15. evsQuery.getVocabularyNames
- *****************************************************/
-			//evsQuery.getVocabularyNames();
-
-/*****************************************************
- * 16. getConceptCodeByName
- *****************************************************/
-			//evsQuery.getConceptCodeByName("NCI_Thesaurus", "Chromosome");
-
-/******************************************************
- * 17. getVocabularyHost
- ******************************************************/
-			//evsQuery.getVocabularyHost("NCI_Thesaurus");
-
-/*******************************************************
- * 18. getVocabularyPort
- ******************************************************/
-			//evsQuery.getVocabularyPort("NCI_Thesaurus");
-
-/*******************************************************
- * 19. getConceptEditAction
- *******************************************************/
-			//evsQuery.getConceptEditAction("NCI_Thesaurus", "C16612");
-
-/*******************************************************
- * 20. containsInverseRole
- *******************************************************/
-			//evsQuery.containsInverseRole("NCI_Thesaurus","Anatomic_Structure_is_Physical_Part_of","Chromatin","Chromosome");
-
-/********************************************************
- * 21. evsQuery.containsRole
- *******************************************************/
-			//evsQuery.containsRole("NCI_Thesaurus","Anatomic_Structure_is_Physical_Part_of","Chromatin","Chromosome");
-
-/********************************************************
- * 22. getConceptEditActionDates
- ********************************************************/
-			//evsQuery.getConceptEditActionDates("NCI_Thesaurus", "C16612", "modify");
-
-/*********************************************************
- * 23. evsQuery.getConceptEditAction
- ********************************************************/
-			//evsQuery.getConceptEditAction(vocabularyName, "C16612");
-
-/****************************************************************
- *  METHODS *
- ****************************************************************/
-
-			//evsQuery.searchDescLogicConcepts("NCI_Thesaurus","blood*",10,0,"",1);
-			//evsQuery.hasChildren(vocabularyName, "Anatomic_Structure_System_or_Substance");
-			//evsQuery.hasParents(vocabularyName, "Blood");
-			//evsQuery.getChildConcepts("NCI_Thesaurus","Anatomic_Structure_System_or_Substance",false);
-			//evsQuery.getParentConcepts("NCI_Thesaurus","Blood",false);
-			//evsQuery.searchSourceByCode("N035552","CADSR-04");
-			//evsQuery.getConceptNameByCode("NCI_Thesaurus", "C12408");
-			//evsQuery.getDescLogicConcept("NCI_Thesaurus","Organ",false);
-
-/****************************************************************
-*  NEW METHODS *
-****************************************************************/
-
-			evsQuery.getHistoryRecords(vocabularyName, "C16612");
-			//evsQuery.getAllSilos("NCI_Thesaurus");
-            //evsQuery.getConceptWithSiloMatching("NCI_Thesaurus","brain*",5,"Terms");
-			//evsQuery.getConceptWithSiloMatching("NCI_Thesaurus","Blood",5,"2ND NCI SILO");
-			//evsQuery.getConceptWithSiloMatching("NCI_Thesaurus","Blood",5);
-            //evsQuery.getTree("NCI_Thesaurus", "Liver", true, false, 1, 4, v);
-
-/*************  PRINT DLC RESULTS       *********************************/
-
-
-			long startTime = System.currentTimeMillis(),endTime =0;
-    		evsResults = (List)appService.evsSearch(evsQuery);
-    		endTime = System.currentTimeMillis();
-
-    		print.printEVSResults(evsResults);
-
-    		System.out.println("\n\n"+evsResults.size() + " records found");
-    		System.out.println("latency in miliseconds = "+ (endTime - startTime));
-
-
-
-
-/**********************************************************************/
-			/** METATHESAURUS **/
-
-    		EVSQuery metaSearch = new EVSQueryImpl();
-			List metaResults 	= new ArrayList();
-			System.out.println("\n\nEVS METAPHRASE RESULTS......");
-
-
-/************* NCI Metathesaurus Search ******************************************/
-//MetaThesaurusConcept now supports Atoms.
-
-			metaSearch.searchMetaThesaurus("lung", 2, "*", false, false, false);
-
-//			metaSearch.searchByLoincId("10834-0", "LNC210");
-//			metaSearch.getSemanticTypes();
-//			metaSearch.getConceptsBySource("NCI");
-//			metaSearch.getMetaConceptNameByCode("C0017337");
-//			metaSearch.getMetaSources();
-//			metaSearch.getChildren("C0017337");
-//			metaSearch.getParent("C0017337");
-//    		metaSearch.getParent("C0017337", "NCI04");
-//    		metaSearch.getBroaderConcepts("C0017337", "SNOMEDCT_2004_01_31");
-//    		metaSearch.getNarrowerConcepts("C0017337", "SNOMEDCT_2004_01_31");
-
-//    		metaSearch.getRelatedConcepts("C0017337");
-//    		metaSearch.getRelatedConcepts("C0017337", "SNOMEDCT_2004_01_31");
-//			metaSearch.getRelatedConcepts("CL287739","SNOMEDCT_2004_01_31","RN");
-			//Categories "Medications", "Procedures", "Laboratory", "Diagnosis"
-//			metaSearch.getConceptsByCategories("C0017337","Procedures");
-//  		metaSearch.getMetaConceptNameByCode("C0024109");
-//   		metaSearch.getMetaSources();
-//    		metaSearch.getConceptsByCategories("C0017337", "Diagnosis");
-//    		metaSearch.searchByLoincId("10834-0", "LNC210");
-//   		metaSearch.getSemanticTypes();
-//    		metaSearch.getConceptsBySource("SNOMEDCT_2004_01_31");
-//			metaSearch.getChildren("C0017337", "NCI04");
-
-			startTime = System.currentTimeMillis();
-			metaResults = (List)appService.evsSearch(metaSearch);
-			endTime = System.currentTimeMillis();
-    		print.printEVSResults(metaResults);
-
-			System.out.println(metaResults.size()+"\trecords found");
-			System.out.println("Latency in miliseconds = "+ (endTime - startTime));
+			gov.nih.nci.evs.security.SecurityToken token = new gov.nih.nci.evs.security.SecurityToken();
+            token.setAccessToken("10832");          
+            
+            //DTSRPC Calls
+            
+            evsQuery[1].getAllVocabularies();
+            evsQuery[2].searchDescLogicConcepts(vocabularyName, searchTerm, 2);
+            evsQuery[3].searchDescLogicConcepts(vocabularyName, searchTerm, 2, 0, "",1);            
+            evsQuery[4].getConceptWithPropertyMatching(vocabularyName,"Synonym", "tobacco smoking",10);
+            evsQuery[5].getConceptWithSiloMatching(vocabularyName, searchTerm, 2);
+            evsQuery[6].getConceptWithSiloMatching(vocabularyName, searchTerm, 2, "Terms");
+            evsQuery[7].getDescLogicConceptNameByCode(vocabularyName,conceptCode);
+            evsQuery[8].isSubConcept(vocabularyName,"Gland","Organ");
+            evsQuery[9].isRetired( vocabularyName,  "C13262");
+            evsQuery[10].getDescendants( vocabularyName,  "Organ",  false,  "08/22/2003",  "10/31/2003");
+            evsQuery[11].getPropertyValues( vocabularyName, conceptName,  propertyName);
+            evsQuery[12].getAncestors( vocabularyName,  conceptName1,  Boolean.FALSE,  initialDate,  baseLineDate);
+            evsQuery[13].getSubConcepts( vocabularyName, "Organ",  Boolean.FALSE, Boolean.FALSE);
+            evsQuery[14].getSuperConcepts( vocabularyName,  "Organ",  Boolean.FALSE, Boolean.FALSE);
+            evsQuery[15].getRolesByConceptName( vocabularyName, conceptName);
+            evsQuery[16].getPropertiesByConceptName( vocabularyName, conceptName);
+            evsQuery[17].getVocabularyNames();
+            evsQuery[18].getTree(vocabularyName,rootName,true,true,1,3,roles);
+            evsQuery[19].getVocabularyByName( vocabularyName);
+            evsQuery[20].getConceptCodeByName( vocabularyName,  conceptName);
+            evsQuery[21].getConceptByName( vocabularyName,  conceptName);
+            evsQuery[22].getVocabularyHost( vocabularyName);
+            evsQuery[23].getVocabularyPort( vocabularyName);
+            evsQuery[24].getVocabularyVersion( vocabularyName);
+            evsQuery[25].getConceptEditAction( vocabularyName,  conceptCode);
+            evsQuery[26].getConceptEditAction( vocabularyName,  conceptCode,  new Date("11/01/2004"));
+            evsQuery[27].getConceptEditActionDates( vocabularyName,  conceptCode,  "modify");
+            evsQuery[28].getRootConcepts( vocabularyName,  true);            
+            evsQuery[29].getCodeActionChildren( vocabularyName,  "C12434",  "11/01/2004",  action);
+            evsQuery[30].getCodeActionParents( vocabularyName,  "C41067",  "11/01/2004" );   
+            evsQuery[31].getHistoryRecords( vocabularyName,  conceptCode);
+            evsQuery[32].getHistoryRecords( vocabularyName,  "01/01/2004","01/01/2005",  conceptCode);  
+            evsQuery[33].containsInverseRole( vocabularyName, "Anatomic_Structure_Is_Physical_Part_Of", "Coronary_Valve ",  "Heart");
+            evsQuery[34].containsRole( vocabularyName, "Anatomic_Structure_Is_Physical_Part_Of", "Cardiovascular_System",  "Heart");
+            evsQuery[35].getAllAssociationTypes( vocabularyName);
+            evsQuery[36].getAllConceptAssociationQualifierTypes( vocabularyName);
+            evsQuery[37].getAllConceptAssociationTypes( vocabularyName);
+            evsQuery[38].getAllConceptPropertyQualifierTypes( vocabularyName);
+            evsQuery[39].getAllConceptPropertyTypes( vocabularyName);
+            evsQuery[40].getAllLicenses( "SNOMED_CT", "");
+            evsQuery[41].getAllPropertyTypes( vocabularyName);
+            evsQuery[42].getAllSilos( vocabularyName);
+            evsQuery[43].getAllQualifierTypes( vocabularyName);
+            evsQuery[44].getAllRoleNames( vocabularyName);
+            evsQuery[45].getAllSubConceptCodes( vocabularyName,  "C13018");
+            evsQuery[46].getAllSubConceptNames( vocabularyName,  "Organ");
+            evsQuery[47].getAllSynonymTypes( vocabularyName);
+            evsQuery[48].getAllTermAssociationQualifierTypes( vocabularyName);
+            evsQuery[49].getAllTermPropertyQualifierTypes( vocabularyName);
+            evsQuery[50].getAllTermPropertyTypes( vocabularyName);
+            evsQuery[51].getParentConcepts( vocabularyName,  conceptName,  false);
+            evsQuery[52].getParentConcepts( vocabularyName,  "Blood",  false,  1);
+            evsQuery[53].getChildConcepts( vocabularyName,  "Anatomic_Structure_System_or_Substance",  false);            
+            evsQuery[54].hasParents( vocabularyName,  conceptName);
+            evsQuery[55].hasChildren( vocabularyName,  "Heart_Block");
+            evsQuery[56].getConceptNameByCode( vocabularyName,  conceptCode);
+            evsQuery[57].getDescLogicConcept( vocabularyName,  conceptName,  false);               
+            evsQuery[58].getHistoryStartDate( vocabularyName);
+            evsQuery[59].getHistoryEndDate( vocabularyName);
+            //evsQuery[60].fetchDTSProperties( vocabularyName,  "Blood");
+            //evsQuery[61].fetchTermAssociations( vocabularyName,  conceptName);
+            
+            //Methods calling the Metapharase Server
+            evsQuery[62].searchMetaThesaurus( searchTerm,  2,  sourceAbbr, false,  false, false);
+            evsQuery[63].searchMetaThesaurus( cui);
+            evsQuery[64].searchByLoincId( atomCode,  sourceAbbr);
+            evsQuery[65].searchSourceByCode( atomCode,  sourceAbbr);
+            evsQuery[66].getSemanticTypes();
+            evsQuery[67].getMetaConceptCodeForSource(sourceAbbr);
+            evsQuery[68].getMetaConceptNameByCode( cui);
+            evsQuery[69].getMetaSources();
+            evsQuery[70].getChildren( "C0017337",  sourceAbbr);
+            evsQuery[71].getParent( cui,  sourceAbbr);
+            evsQuery[72].getBroaderConcepts("C0017337",  sourceAbbr);
+            evsQuery[73].getNarrowerConcepts( "CL287739",  sourceAbbr);
+            evsQuery[74].getRelatedConcepts("CL287739",  sourceAbbr);
+            evsQuery[75].getRelatedConcepts("CL287739",  sourceAbbr,  "RN");            
+            evsQuery[76].getConceptsByCategories( "C0017337",  "Procedures");
+                        
+            
+            for(int i=60; i<77; i++){               
+                evsQuery[i].addSecurityToken("MedDRA", token);
+                String method = getMethodName((EVSQueryImpl)evsQuery[i]);
+                if(method == null){
+                    continue;
+                }
+                
+                System.out.println("\n___________________________________________________________________");
+                System.out.println("EVSQuery number "+ i + ". "+ method);
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                List results = new ArrayList();
+                try{
+                    results = appService.evsSearch(evsQuery[i]);  
+                }catch(Exception ex){
+                    System.out.println("\tError: "+ ex.getMessage());
+                }
+                
+                //print.printEVSResults(results);
+                System.out.println("Number of records found: "+ results.size());
+                System.out.println("\n==================================================================");
+            }
+            
 
 /*******************************************************************/
 
@@ -253,5 +185,20 @@ public class TestEVS {
 
 	 }
 
+    public static String getMethodName(EVSQueryImpl query){        
+        String methodName = null;        
+        if(query.metaThesaurusValues.size() > 0){
+            for(Iterator it = query.metaThesaurusValues.keySet().iterator(); it.hasNext();){                        
+                String m = (String)it.next();
+                methodName = m.indexOf("$")>1?m.substring(0, m.indexOf("$")):m;                
+            }
+        }else if(query.descLogicValues.size() > 0){
+            for(Iterator it = query.descLogicValues.keySet().iterator(); it.hasNext();){                        
+                String m = (String)it.next();
+                methodName = m.indexOf("$")>1?m.substring(0, m.indexOf("$")):m;                
+            }
+        }
+        return methodName;
+    }
 
 }//end class
