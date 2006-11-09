@@ -370,7 +370,7 @@ public interface EVSQuery extends Serializable{
 	/**
 	 * Gets MetaThesaurusConcepts for the specified source
 	 * @param sourceAbbr - specifies the source abbreviation
-	 * @depricated - Vocabulary Sources hosts large number of concept information. This method retrieves all the concepts from a Source. If all the concepts were not returned prior a time limit specified on the server this method tends to die.
+	 * @deprecated - Vocabulary Sources hosts large number of concept information. This method retrieves all the concepts from a Source. If all the concepts were not returned prior a time limit specified on the server this method tends to die.
 	 */
 
 	public void getConceptsBySource(String sourceAbbr);
