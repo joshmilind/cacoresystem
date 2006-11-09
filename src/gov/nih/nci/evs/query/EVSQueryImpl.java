@@ -528,7 +528,7 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
     }
     
     public void getSourceAbbreviation(String cui){
-        metaThesaurusValues.put("getMetaConceptsForAllSources$cui",cui);
+        metaThesaurusValues.put("getSourceAbbreviation$cui",cui);
     }
 	/**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getMetaConceptNameByCode(java.lang.String)
@@ -910,14 +910,14 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
     public void getHistoryRecords(String vocabularyName, String initialDate, String finalDate, String conceptCode){
         descLogicValues.put("getHistoryRecords$vocabularyName", vocabularyName);
         descLogicValues.put("getHistoryRecords$conceptCode", conceptCode);
-        descLogicValues.put("getHistoryRecords$initialDate", initialDate);
-        descLogicValues.put("getHistoryRecords$finalDate", finalDate);         
+        descLogicValues.put("getHistoryRecords$initialDate", new Date(initialDate));
+        descLogicValues.put("getHistoryRecords$finalDate",new Date(finalDate));         
     }
     
     public void getHistoryRecords(String vocabularyName, String initialDate, String finalDate){
         descLogicValues.put("getHistoryRecords$vocabularyName", vocabularyName);
-        descLogicValues.put("getHistoryRecords$initialDate", initialDate);
-        descLogicValues.put("getHistoryRecords$finalDate", finalDate);
+        descLogicValues.put("getHistoryRecords$initialDate", new Date(initialDate));
+        descLogicValues.put("getHistoryRecords$finalDate", new Date(finalDate));
     }
     /**
      * Gets the History start date
