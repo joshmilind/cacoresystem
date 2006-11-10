@@ -232,7 +232,7 @@ public class TestClient {
 				_targetList.add(_target2);
 
 				Chromosome _chrom = new Chromosome();
-				_chrom.setNumber("YX");
+				_chrom.setNumber("11");
 
 				Gene _gene4 = new Gene();
 				_gene4.setId(new Long(20));
@@ -242,7 +242,7 @@ public class TestClient {
 				_gene5.setTargetCollection(_targetList);
 
 				Gene _gene6 = new Gene();
-				_gene6.setId(new Long(901));
+				_gene6.setSymbol("brca*");
 
 				// _protein contains a list of genes and also with the name
 				// attribute set wild card
@@ -336,8 +336,8 @@ public class TestClient {
 
 				// Test Case 4: Query Pathway object to test CLOB
 				System.out
-						.println("\n\n\nTest Case 4: search(\"Pathway\", gene).  Testing for CLOB datatype");
-				List resultList4 = appService.search(
+						.println("\n\n\nTest Case 4: search(\"Pathway\", gene).  Testing for CLOB datatype");               
+                List resultList4 = appService.search(
 						"gov.nih.nci.cabio.domain.Pathway", _gene6);
 				if (resultList4.size() < 1) {
 					System.out.println("(Test Case 4) No records found");
@@ -396,7 +396,7 @@ public class TestClient {
 				System.out
 						.println("\n\n\nTest Case 7: search(\"Agent\", Target).  Testing type 2 nested Query");
 				List resultList7 = appService.search(
-						"gov.nih.nci.cabio.domain.Agent", _target);
+						"gov.nih.nci.cabio.domain.Agent", _target3);
 				if (resultList7.size() < 1) {
 					System.out.println("(Test Case 7) No records found");
 				} else {
@@ -410,18 +410,18 @@ public class TestClient {
 					}
 				}
 
-				// Test Case 9: Combine type 2 and list query, one of gene
+				// Test Case 8: Combine type 2 and list query, one of gene
 				// object in the list contains another collection
 				System.out
-						.println("\n\n\nTest Case 9: search(\"Protein, Gene\", Sequence) (// bi-direction (sequence m -> m gene m -> m protein).  Testing type 2 nested Query");
+						.println("\n\n\nTest Case 8: search(\"Protein, Gene\", Sequence) (// bi-direction (sequence m -> m gene m -> m protein).  Testing type 2 nested Query");
 				List resultList9 = appService
 						.search(
 								"gov.nih.nci.cabio.domain.Protein,gov.nih.nci.cabio.domain.Gene",
 								_seq1);
 				if (resultList9.size() < 1) {
-					System.out.println("(Test Case 9) No records found");
+					System.out.println("(Test Case 8) No records found");
 				} else {
-					System.out.println("(Test Case 9 )Total # of  records = "
+					System.out.println("(Test Case 8 )Total # of  records = "
 							+ resultList9.size());
 					Iterator iterator = resultList9.iterator();
 					while (iterator.hasNext()) {
@@ -431,17 +431,17 @@ public class TestClient {
 					}
 				}
 
-				// Test Case 10: Combine type 2 and list query, one of gene
+				// Test Case 9: Combine type 2 and list query, one of gene
 				// object in the list contains another collection
 				System.out
-						.println("\n\n\nTest Case 10: search(\"Sequence\", Clone) (// uni-direction (clone 1 -> m sequence). ");
+						.println("\n\n\nTest Case 9: search(\"Sequence\", Clone) (// uni-direction (clone 1 -> m sequence). ");
 				List resultList10 = appService
 						.search("gov.nih.nci.cabio.domain.NucleicAcidSequence",
 								_clone1);
 				if (resultList10.size() < 1) {
-					System.out.println("(Test Case 10) No records found");
+					System.out.println("(Test Case 9) No records found");
 				} else {
-					System.out.println("(Test Case 10 )Total # of  records = "
+					System.out.println("(Test Case 9 )Total # of  records = "
 							+ resultList10.size());
 					Iterator iterator = resultList10.iterator();
 					while (iterator.hasNext()) {
@@ -453,16 +453,16 @@ public class TestClient {
 					}
 				}
 
-				// Test Case 11: Combine type 2 and list query, one of gene
+				// Test Case 10: Combine type 2 and list query, one of gene
 				// object in the list contains another collection
 				System.out
-						.println("\n\n\nTest Case 11: search(\"Sequence\", Sequence), Get sequence from sequnce accession number");
+						.println("\n\n\nTest Case 10: search(\"Sequence\", Sequence), Get sequence from sequnce accession number");
 				List resultList11 = appService.search(
 						"gov.nih.nci.cabio.domain.Clone", _clone1);
 				if (resultList11.size() < 1) {
-					System.out.println("(Test Case 11) No records found");
+					System.out.println("(Test Case 10) No records found");
 				} else {
-					System.out.println("(Test Case 11 )Total # of  records = "
+					System.out.println("(Test Case 10 )Total # of  records = "
 							+ resultList11.size());
 					Iterator iterator = resultList11.iterator();
 					while (iterator.hasNext()) {
@@ -472,18 +472,18 @@ public class TestClient {
 					}
 				}
 
-				// Test Case 12: uni-direction (nested) (clone 1 -> m sequence m
+				// Test Case 11: uni-direction (nested) (clone 1 -> m sequence m
 				// -> m gene)
 				System.out
-						.println("\n\n\nTest Case 12: search(\"Gene, Sequence\", Clone), // uni-direction (nested) (clone 1 -> m sequence m -> m gene)");
+						.println("\n\n\nTest Case 11: search(\"Gene, Sequence\", Clone), // uni-direction (nested) (clone 1 -> m sequence m -> m gene)");
 				List resultList12 = appService
 						.search(
 								"gov.nih.nci.cabio.domain.Gene, gov.nih.nci.cabio.domain.NucleicAcidSequence",
 								_clone1);
 				if (resultList12.size() < 1) {
-					System.out.println("(Test Case 12) No records found");
+					System.out.println("(Test Case 11) No records found");
 				} else {
-					System.out.println("(Test Case 12 )Total # of  records = "
+					System.out.println("(Test Case 11 )Total # of  records = "
 							+ resultList12.size());
 					Iterator iterator = resultList12.iterator();
 					while (iterator.hasNext()) {
@@ -492,6 +492,57 @@ public class TestClient {
 								+ " | result symbol = " + gene.getSymbol());
 					}
 				}
+				//Test Case 12: Many-to-Many Unidirectional relationship (Use
+                // Pathway to get Histopathology)
+                System.out
+                        .println("\n\n\nTest Case 12: search(\"Histopathology\", Pathway),Many-to-Many Unidirectional relationship... ...");
+                Pathway _pathway1 = new Pathway();
+                _pathway1.setName("h_C*");
+                List resultList19 = appService.search(
+                        "gov.nih.nci.cabio.domain.Histopathology", _pathway1);
+                if (resultList19.size() < 1) {
+                    System.out
+                            .println("\n(Test Case 12: many-to-many Unidirectional) No records found");
+                } else {
+                    System.out
+                            .println("\n(Test Case 12: Many-to-many Unidirectional) Total # of  records = "
+                                    + resultList19.size());
+                    Iterator iterator = resultList19.iterator();
+                    while (iterator.hasNext()) {
+                        Histopathology his = (Histopathology) iterator.next();
+                        System.out.println(" result id = " + his.getId()
+                                + " | result description = "
+                                + his.getGrossDescription());
+                    }
+                }
+
+                // Test Case 13: Two level test
+                // Use Chromosome number "Y" get 290 Genes back, it will work
+                // Use Chromosome number "1" get 5749 Genes back, then it will
+                // NOT work to get SNP
+                System.out
+                        .println("\n\n\nTest Case 13: search(\"GeneOntology, Gene\", Chromosome), two level nested query... ...");
+                Chromosome _chrom2 = new Chromosome();
+                _chrom2.setNumber("Y");
+                List resultList20 = appService
+                        .search(
+                                "gov.nih.nci.cabio.domain.GeneOntology,gov.nih.nci.cabio.domain.Gene",
+                                _chrom2); // return total 87
+                if (resultList20.size() < 1) {
+                    System.out
+                            .println("\n(Test Case 13: two levels Chromosome->Gene->GeneOntology) No records found");
+                } else {
+                    System.out
+                            .println("\n(Test Case 13: two levels Chromosome->Gene->GeneOntology) Total # of  records = "
+                                    + resultList20.size());
+                    Iterator iterator = resultList20.iterator();
+                    while (iterator.hasNext()) {
+                        GeneOntology go = (GeneOntology) iterator.next();
+                        System.out.println(" result id = " + go.getId()
+                                + " | result name = " + go.getName());
+                    }
+                }
+
 
 				// Test Case 14: many-to-one relationship Bidirectional (Use
 				// Gene to get Taxon)
@@ -562,57 +613,7 @@ public class TestClient {
 					}
 				}
 
-				// Test Case 17: Many-to-Many Unidirectional relationship (Use
-				// Pathway to get Histopathology)
-				System.out
-						.println("\n\n\nTest Case 17: search(\"Histopathology\", Pathway),Many-to-Many Unidirectional relationship... ...");
-				Pathway _pathway1 = new Pathway();
-				_pathway1.setName("h_C*");
-				List resultList19 = appService.search(
-						"gov.nih.nci.cabio.domain.Histopathology", _pathway1);
-				if (resultList19.size() < 1) {
-					System.out
-							.println("\n(Test Case 17: many-to-many Unidirectional) No records found");
-				} else {
-					System.out
-							.println("\n(Test Case 17: Many-to-many Unidirectional) Total # of  records = "
-									+ resultList19.size());
-					Iterator iterator = resultList19.iterator();
-					while (iterator.hasNext()) {
-						Histopathology his = (Histopathology) iterator.next();
-						System.out.println(" result id = " + his.getId()
-								+ " | result description = "
-								+ his.getGrossDescription());
-					}
-				}
-
-				// Test Case 18: Two level test
-				// Use Chromosome number "Y" get 290 Genes back, it will work
-				// Use Chromosome number "1" get 5749 Genes back, then it will
-				// NOT work to get SNP
-				System.out
-						.println("\n\n\nTest Case 18: search(\"GeneOntology, Gene\", Chromosome), two level nested query... ...");
-				Chromosome _chrom2 = new Chromosome();
-				_chrom2.setNumber("Y");
-				List resultList20 = appService
-						.search(
-								"gov.nih.nci.cabio.domain.GeneOntology,gov.nih.nci.cabio.domain.Gene",
-								_chrom2); // return total 87
-				if (resultList20.size() < 1) {
-					System.out
-							.println("\n(Test Case 18: two levels Chromosome->Gene->GeneOntology) No records found");
-				} else {
-					System.out
-							.println("\n(Test Case 18: two levels Chromosome->Gene->GeneOntology) Total # of  records = "
-									+ resultList20.size());
-					Iterator iterator = resultList20.iterator();
-					while (iterator.hasNext()) {
-						GeneOntology go = (GeneOntology) iterator.next();
-						System.out.println(" result id = " + go.getId()
-								+ " | result name = " + go.getName());
-					}
-				}
-
+				
 
 			} catch (RuntimeException e2) {
 				// TODO Auto-generated catch block
