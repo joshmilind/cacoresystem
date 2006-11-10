@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
 import javax.xml.rpc.NamespaceConstants;
 import gov.nih.nci.evs.domain.ws.*;
+import gov.nih.nci.evs.security.ws.*;
 import java.util.*;
 
 import gov.nih.nci.common.util.*;
@@ -100,9 +101,10 @@ public class EVSWSClient{
     QName qnStringArr = new QName("EVSWebService","ArrayOf_xsd_string");
     QName qnAnyTypeArr = new QName("EVSWebService","ArrayOf_xsd_anytype");
     QName qnVocabularyArr = new QName("EVSWebService","ArrayOf_tns1_Vocabulary");
+    QName qnSecurityToken = new QName("urn:ws.security.evs.nci.nih.gov", "SecurityToken");
 
 
-
+    call.registerTypeMapping(SecurityToken.class, qnSecurityToken, new org.apache.axis.encoding.ser.BeanSerializerFactory(SecurityToken.class, qnSecurityToken), new org.apache.axis.encoding.ser.BeanDeserializerFactory(SecurityToken.class, qnSecurityToken));
     call.registerTypeMapping(MetaThesaurusConcept.class, qnMTC, new org.apache.axis.encoding.ser.BeanSerializerFactory(MetaThesaurusConcept.class, qnMTC), new org.apache.axis.encoding.ser.BeanDeserializerFactory(MetaThesaurusConcept.class, qnMTC));
     call.registerTypeMapping(Source.class, qnSource, new org.apache.axis.encoding.ser.BeanSerializerFactory(Source.class, qnSource), new org.apache.axis.encoding.ser.BeanDeserializerFactory(Source.class, qnSource));
     call.registerTypeMapping(Definition.class, qnDefinition, new org.apache.axis.encoding.ser.BeanSerializerFactory(Definition.class, qnDefinition), new org.apache.axis.encoding.ser.BeanDeserializerFactory(Definition.class, qnDefinition));
@@ -379,6 +381,81 @@ public class EVSWSClient{
 
             System.out.println("Number of items returned from Thesaurus = "+ mtcs.length);
             System.out.println("\n----------------------------------------------------------------\n");
+
+            /************* Thesaurus Test **********************************************************/
+//          5. Search MedDRA 
+         /***************************************************************************************/
+
+                     System.out.println("5. Search MedDRA");
+                     System.out.println("\n----------------------------------------------------------------\n");
+                     DescLogicConcept dlc = new DescLogicConcept();
+                     //dlc.setCode("C12756");
+                     //dlc.setCode("C43782");
+                     dlc.setName("Organ*");
+                     Vocabulary vocab = new Vocabulary();
+                     vocab.setName("MedDRA");
+                     gov.nih.nci.evs.security.ws.SecurityToken token = new gov.nih.nci.evs.security.ws.SecurityToken();
+                     //Note: Use a valid security token to access MedDRA
+                     token.setAccessToken("xxxxx");
+                     vocab.setSecurityToken(token);
+                     dlc.setVocabulary(vocab);
+
+
+                     call.setReturnType(qnDLCArr);
+                     Object[] thesaurusParams = new Object[]{"DescLogicConcept",dlc};
+                     DescLogicConcept[] dlcs = (DescLogicConcept[])call.invoke(thesaurusParams);
+
+                     printList = new ArrayList();
+                     for(int i=0; i<dlcs.length; i++){
+                         DescLogicConcept concept = dlcs[i];
+                         System.out.println("\nConcept: "+ concept.getName()+"\t"+ concept.getCode());
+                         List pList = new ArrayList();
+                         pList = concept.getPropertyCollection();
+                         for(int x=0; x<pList.size(); x++){
+                             Property prop = (Property)pList.get(x);
+                             System.out.println("\tProperty :"+ prop.getName()+"\t"+ prop.getValue());
+                             List qList = prop.getQualifierCollection();
+                             for(int q=0; q< qList.size(); q++){
+                                 Qualifier qual = (Qualifier)qList.get(q);
+                                 System.out.println("\t\tQualifer "+ qual.getName()+"\t"+ qual.getValue());
+                             }
+                         }
+                         pList = concept.getAssociationCollection();
+                         for(int x=0; x<pList.size(); x++){
+                             Association ass = (Association)pList.get(x);
+                             System.out.println("\tAssociation :"+ ass.getName()+"\t"+ ass.getValue());
+                             List qList = ass.getQualifierCollection();
+                             for(int q=0; q< qList.size(); q++){
+                                 Qualifier qual = (Qualifier)qList.get(q);
+                                 System.out.println("\t\tQualifer "+ qual.getName()+"\t"+ qual.getValue());
+                             }
+                         }
+                         pList = concept.getInverseAssociationCollection();
+                         for(int x=0; x<pList.size(); x++){
+                             Association ass = (Association)pList.get(x);
+                             System.out.println("\tAssociation :"+ ass.getName()+"\t"+ ass.getValue());
+                             List qList = ass.getQualifierCollection();
+                             for(int q=0; q< qList.size(); q++){
+                                 Qualifier qual = (Qualifier)qList.get(q);
+                                 System.out.println("\t\tQualifer "+ qual.getName()+"\t"+ qual.getValue());
+                             }
+                         }
+                         pList = concept.getRoleCollection();
+                         for(int x=0; x<pList.size(); x++){
+                             Role role = (Role)pList.get(x);
+                             System.out.println("\tRole :"+ role.getName()+"\t"+ role.getValue());                   
+                         }
+                         pList = concept.getInverseRoleCollection();
+                         for(int x=0; x<pList.size(); x++){
+                             Role role = (Role)pList.get(x);
+                             System.out.println("\tRole :"+ role.getName()+"\t"+ role.getValue());                   
+                         }
+                     }
+
+                     
+                     System.out.println("Number of items returned from Thesaurus = "+ dlcs.length);
+                     System.out.println("\n----------------------------------------------------------------\n");
+                     
 
 
 /****************************************************************************************/
