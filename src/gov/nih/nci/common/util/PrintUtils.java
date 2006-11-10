@@ -607,7 +607,13 @@ public class PrintUtils {
                                 System.out.println("\t - "+ (String) synList.get(i));
                                 }
                         }
-                    }
+                    }else if(evsResults.get(0).getClass().getName().endsWith("SemanticType")){
+                        System.out.println("\tSemanticType---> count ="+ evsResults.size());
+                        for(int z=0; z<evsResults.size(); z++){
+                            SemanticType sType = (SemanticType) evsResults.get(z);
+                            System.out.println("\t- Id: "+sType.getId()+"\t- Name : "+sType.getName());
+                            }
+                        }
                     else if(evsResults.get(0).getClass().getName().endsWith("Source")){
                             for(int m=0; m< evsResults.size(); m++){
                             Source source = (Source) evsResults.get(m);
@@ -677,8 +683,14 @@ public class PrintUtils {
                             System.out.println("\n\t\t"+ String.valueOf(evsResults.get(0)));
                         }                        
                     }else{
-                        System.out.println("Class not defined");
-                        //printResults(evsResults);
+                        for(int i=0; i< evsResults.size();i++){
+                            try{
+                                System.out.println("\t\t"+ String.valueOf(evsResults.get(i)));
+                            }catch(Exception ex){
+                                System.out.println("\t\t"+ evsResults.get(i));
+                            }                            
+                        }                       
+                        
                         }
 
                 }catch(Exception ex){}
