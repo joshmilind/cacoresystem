@@ -79,7 +79,7 @@ public class TestEVS {
             evsQuery[30].getCodeActionParents( vocabularyName,  "C41067",  "11/01/2004" );   
             evsQuery[31].getHistoryRecords( vocabularyName,  conceptCode);
             evsQuery[32].getHistoryRecords( vocabularyName,  "01/01/2004","01/01/2005",  conceptCode);  
-            evsQuery[33].containsInverseRole( vocabularyName, "Anatomic_Structure_Is_Physical_Part_Of", "Coronary_Valve ",  "Heart");
+            evsQuery[33].containsInverseRole( vocabularyName, "Disease_Has_Primary_Anatomic_Site" ,"Cardiac_Leiomyosarcoma",  "Heart");
             evsQuery[34].containsRole( vocabularyName, "Anatomic_Structure_Is_Physical_Part_Of", "Cardiovascular_System",  "Heart");
             evsQuery[35].getAllAssociationTypes( vocabularyName);
             evsQuery[36].getAllConceptAssociationQualifierTypes( vocabularyName);
