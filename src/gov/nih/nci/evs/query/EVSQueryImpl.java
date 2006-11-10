@@ -512,12 +512,8 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
     public void getConceptsBySource(String sourceAbbr) 
     {
         metaThesaurusValues.put("getConceptsBySource$sourceAbbr", sourceAbbr);
-    }
+    }    
     
-    public void getMetaConceptCodeForSource(String sourceAbbr) 
-	{
-		metaThesaurusValues.put("getMetaConceptCodeForSource$sourceAbbr", sourceAbbr);
-	}
 	
     /**
      * Returns MetaThesaurus concepts for all Sources

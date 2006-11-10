@@ -381,11 +381,7 @@ public interface EVSQuery extends Serializable{
      */
     public void getMetaConceptsForAllSources();
     
-    /**
-     * Returns MetaThesaurus concept codes for all Sources
-     */
-    public void getMetaConceptCodeForSource(String sourceAbbr);
-    
+   
 	/**
 	 * gets MetaThesaurusConcept name
 	 * @param conceptCode - specifies the concept code
