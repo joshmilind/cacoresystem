@@ -23,7 +23,7 @@ import java.util.*;
 <%
 if(klass.getName().endsWith("Vocabulary")){
 %>
-import gov.nih.nci.evs.security.*;
+import gov.nih.nci.evs.security.ws.*;
 <%
 }
 %>
