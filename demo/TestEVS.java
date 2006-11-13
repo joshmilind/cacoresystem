@@ -17,7 +17,7 @@ public class TestEVS {
             String stageUrl = "http://cabio-stage.nci.nih.gov/cacore32/http/remoteService";
             String qaUrl    = "http://cabio-qa.nci.nih.gov/cacore32/http/remoteService";
             String localUrl = "http://localhost:8080/cacore32/http/remoteService";
-			String genUrl = "http://localhost:8080/cacore32/http/remoteService";
+			String genUrl = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
 			
             //ApplicationService appService = ApplicationService.getRemoteInstance(prodUrl);
 			ApplicationService appService = ApplicationServiceProvider.getApplicationService();
