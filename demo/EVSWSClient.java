@@ -55,7 +55,7 @@ public class EVSWSClient{
             System.out.println("EVS WEB SERVICE TEST");
             System.out.println("\n--------------------\n");
             
-            String endpointURL = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/ws/caCOREService";
+            String endpointURL = "http://localhost:8080/cacore32/ws/caCOREService";
             String methodName = "queryObject";
             Service service = new Service();            
             Call call = (Call)service.createCall();
@@ -382,32 +382,32 @@ public class EVSWSClient{
             System.out.println("Number of items returned from Thesaurus = "+ mtcs.length);
             System.out.println("\n----------------------------------------------------------------\n");
 
-/************* Thesaurus Test **********************************************************/
+            /************* Thesaurus Test **********************************************************/
 //          5. Search MedDRA 
-/***************************************************************************************/
+         /***************************************************************************************/
 
-                     System.out.println("5. Search MedDRA");
+                     System.out.println("5. Search MedDRA - Set the vocabulary name to MedDRA (Default is NCI_Thesaurus)");
                      System.out.println("\n----------------------------------------------------------------\n");
-                     DescLogicConcept dlc = new DescLogicConcept();
+                     dlc = new DescLogicConcept();
                      //dlc.setCode("C12756");
                      //dlc.setCode("C43782");
-                     dlc.setName("Organ*");
+                     dlc.setName("genetic*");
                      Vocabulary vocab = new Vocabulary();
                      vocab.setName("MedDRA");
                      gov.nih.nci.evs.security.ws.SecurityToken token = new gov.nih.nci.evs.security.ws.SecurityToken();
                      //Note: Use a valid security token to access MedDRA
-                     token.setAccessToken("xxxxx");
+                     token.setAccessToken("xxxxxxxxx");
                      vocab.setSecurityToken(token);
-                     dlc.setVocabulary(vocab);
-
+                     // The default vocabulary is NCI_Thesaurus. Uncomment the following statement to query MedDRA. 
+                     //dlc.setVocabulary(vocab);
 
                      call.setReturnType(qnDLCArr);
-                     Object[] thesaurusParams = new Object[]{"DescLogicConcept",dlc};
-                     DescLogicConcept[] dlcs = (DescLogicConcept[])call.invoke(thesaurusParams);
+                     Object[] params = new Object[]{"DescLogicConcept",dlc};
+                     DescLogicConcept[] concepts = (DescLogicConcept[])call.invoke(params);
 
                      printList = new ArrayList();
-                     for(int i=0; i<dlcs.length; i++){
-                         DescLogicConcept concept = dlcs[i];
+                     for(int i=0; i<concepts.length; i++){
+                         DescLogicConcept concept = concepts[i];
                          System.out.println("\nConcept: "+ concept.getName()+"\t"+ concept.getCode());
                          List pList = new ArrayList();
                          pList = concept.getPropertyCollection();
@@ -453,7 +453,7 @@ public class EVSWSClient{
                      }
 
                      
-                     System.out.println("Number of items returned from Thesaurus = "+ dlcs.length);
+                     System.out.println("Number of items returned  = "+ concepts.length);
                      System.out.println("\n----------------------------------------------------------------\n");
                      
 
