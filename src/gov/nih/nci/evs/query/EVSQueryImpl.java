@@ -46,6 +46,9 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 		metaThesaurusValues = new HashMap();
 	}
 	
+    /**
+     * Stores the security token and vocabulary information in the EVSQuery object
+     */
     public void addSecurityToken(String vocabularyName, SecurityToken token)throws Exception{
         if(vocabularyName == null){
             throw new Exception("Please specify Vocabulary name");
@@ -55,13 +58,29 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
         }
         securityTokenCollection.put(vocabularyName, token);
     }
+    /**
+     * Validates the security token against the vocabulary specified
+     */
+    public void validateToken(String vocabularyName, SecurityToken token){
+        descLogicValues.put("validateToken$vocabularyName", vocabularyName);
+        descLogicValues.put("validateToken$token", token);
+    }
+    /**
+     * Returns securityToken
+     */
     public SecurityToken getSecurityToken(String vocabularyName){
         return (SecurityToken)securityTokenCollection.get(vocabularyName);
     }
+    /**
+     * Resets the securityToken information
+     */
 
     public void resetSecurityTokenCollection(){
         securityTokenCollection = new HashMap();
     } 
+    /**
+     * Returns the security token collection
+     */
     public HashMap getSecurityTokenCollection(){
         return securityTokenCollection;
     }

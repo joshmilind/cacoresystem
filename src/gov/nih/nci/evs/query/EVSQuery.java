@@ -39,7 +39,16 @@ import gov.nih.nci.evs.security.*;
 
 public interface EVSQuery extends Serializable{
 
+    /**
+     * Adds the specified security token and vocabulary information 
+     */
     public void addSecurityToken(String vocabularyName, SecurityToken token) throws Exception;
+    
+    /**
+     * Validates the security token aganist a vocabulary
+     */
+    public void validateToken(String vocabularyName, SecurityToken token);
+    
 	/**
 	 * Generates a DefaultMutableTreeNode for the specified rootName <br>
 	 * Eeach node is a DescLogicConcept instance
@@ -51,6 +60,7 @@ public interface EVSQuery extends Serializable{
 	 * @param levels - the depth of the tree
 	 * @param roles - the names of role relationships
 	 */
+    
 	public void getTree(String vocabularyName, String rootName, boolean direction,
                         boolean isaFlag, int attributes, String levels, Vector roles);
 
