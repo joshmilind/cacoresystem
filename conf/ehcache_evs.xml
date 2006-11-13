@@ -1,21 +1,21 @@
 <ehcache>
 <diskStore path="@CACHE_PATH@"/>
  <defaultCache
-        maxElementsInMemory="500"
+        maxElementsInMemory="100"
         eternal="false"
         timeToIdleSeconds="1800"
-        timeToLiveSeconds="100"
+        timeToLiveSeconds="7200"
         overflowToDisk="true"
         />
 <cache name="searchDescLogicConcepts"
-maxElementsInMemory="200"
+maxElementsInMemory="100"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"
 overflowToDisk="true"
 />
 <cache name="searchMetaThesaurus"
-maxElementsInMemory="200"
+maxElementsInMemory="100"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"
@@ -93,6 +93,42 @@ overflowToDisk="true"
 />
 <cache name="getAllAssociationTypes"
 maxElementsInMemory="1"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getRelatedConcepts"
+maxElementsInMemory="5"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getNarrowerConcepts"
+maxElementsInMemory="5"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getParent"
+maxElementsInMemory="5"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getChildren"
+maxElementsInMemory="5"
+eternal="false"
+timeToIdleSeconds="1800"
+timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+
+<cache name="getBroaderConcepts"
+maxElementsInMemory="5"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"
