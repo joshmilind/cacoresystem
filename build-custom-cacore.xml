@@ -13,6 +13,8 @@
 	<!--***********************************************************************
 	*** Initialization and Cleanup
 	*********************************************************************** -->
+	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use"/>
+	
 	<target name="-clean.custom" if="clean.custom.use">
 		<echo> Cleaning custom libs in ${dir.lib}</echo>
 		<delete file="${dir.lib}/lb*.jar" />
@@ -112,14 +114,6 @@
 			<replacefilter token="@EVSPROPERTIESFILE@" value="evsBeans.properties" />
 		</replace>
 	</target>
-
-	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use">
-		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
-			<fileset dir="${dir.src.custom.beans}">
-				<include name="**/evs/query/*.java" />
-			</fileset>
-		</copy>
-	</target>
 	
 	<target name="-copy-custom-orm.custom" if="copy-custom-orm.custom.use" depends="-init-project.custom">
 		<copy todir="${dir.output.conf}" overwrite="yes" failonerror="false">
@@ -207,12 +201,7 @@
 	<target name="-package-client-jar.custom" if="package-client-jar.custom.use" />
 	<target name="-package-thickclient-resources.custom" if="package-thickclient-resources.custom.use" />
 	<target name="-package-war.custom" if="package-war.custom.use" />
-	
-	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"
-		description="Generate caCORE XML mapping files">
-		<SDKecho message="Generating caCORE XML mapping files"/>
-		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.xmlmappinggeneration}"/>
-	</target>
+	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
 	
 	<target name="-generate-common-package-util.custom" if="generate-common-package-util.custom.use">
 		<SDKecho message="Generating evs package utilities" />
@@ -254,6 +243,12 @@
 	<!-- client package -->
 	<target name="-package-client.custom" if="package-client.custom.use">
 		<SDKecho message="Packaging caCORE client resources" />
+		
+		<!-- workaround to ensure the EVS beans are generated and compiled.  The SDK version only depends
+		     on XMI, not EVS code.  The build order is wrong. -->
+		<SDKecho message="Generating caCORE XML mapping files"/>
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.xmlmappinggeneration_cacore}"/>
+			
 		<!-- First, create test client files with current project information -->
 		<copy todir="${dir.output.project.package.client}" overwrite="true">
 			<fileset dir="${dir.custom.demo}">

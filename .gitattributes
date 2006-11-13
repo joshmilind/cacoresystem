@@ -5,11 +5,11 @@
 /build-custom-cacore.xml -text
 /build.xml -text
 conf/DAOConfig.xml -text
-conf/castormappinggeneration.xml -text
-conf/castormappinggeneration_cacore.xml -text
 conf/codegen/control-files/beanevsgeneration.xml -text
 conf/codegen/control-files/beanevswsgeneration.xml -text
 conf/codegen/control-files/beangeneration_cacore.xml -text
+conf/codegen/control-files/castormappinggeneration.xml -text
+conf/codegen/control-files/castormappinggeneration_cacore.xml -text
 conf/codegen/control-files/daogeneration.xml -text
 conf/codegen/control-files/evsPackageUtil.xml -text
 conf/codegen/control-files/evs_schemageneration.xml -text
