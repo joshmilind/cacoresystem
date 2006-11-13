@@ -1529,9 +1529,25 @@ public class EVSDTSDAOImpl implements DAO {
 						editActionDate);
 			}
 
-			if (editActions != null) {
+			if (editActions != null) {                
 				for (int i = 0; i < editActions.size(); i++) {
-					list.add(editActions.get(i));
+                    String action = null;
+                    if(Class.forName("java.lang.Integer").isInstance(editActions.get(i))){
+                        if((Integer)editActions.get(i) == 0){
+                            action = "create";
+                        }else if((Integer)editActions.get(i) == 1){
+                            action = "merge";
+                        }else if((Integer)editActions.get(i) == 2){
+                            action = "modify";
+                        }else if((Integer)editActions.get(i) == 3){
+                            action = "retire";
+                        }else if((Integer)editActions.get(i) == 4){
+                            action = "split";
+                        }
+                    }else{
+                        action = (String)editActions.get(i);
+                    }
+					list.add(action);
 				}
 			}
 
