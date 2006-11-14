@@ -39,6 +39,7 @@ conf/web/images/sdk.gif -text
 conf/webservice/server-config.wsdd -text svneol=unset#application/octet-stream
 conf/xslt/cacoreFormat.xsl -text
 conf/xslt/evsFormat.xsl -text
+custom/src/gov/nih/nci/cadsr/domain/Context.java -text
 demo/EVSMonitor.java -text
 demo/EVSWSClient.java -text
 demo/TestCase.java -text
