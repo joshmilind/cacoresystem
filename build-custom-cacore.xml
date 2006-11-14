@@ -13,8 +13,7 @@
 	<!--***********************************************************************
 	*** Initialization and Cleanup
 	*********************************************************************** -->
-	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use"/>
-	
+
 	<target name="-clean.custom" if="clean.custom.use">
 		<echo> Cleaning custom libs in ${dir.lib}</echo>
 		<delete file="${dir.lib}/lb*.jar" />
@@ -40,7 +39,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
-			<fileset dir="${dir.custom.beans}">
+			<fileset dir="${dir.custom.framework.src}">
 				<include name="**/evs/domain/*.java" />
 				<include name="**/evs/query/*.java" />
 				<include name="**/evs/domain/ws/*.java" />
@@ -49,7 +48,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
-			<fileset dir="${dir.custom.beans}">
+			<fileset dir="${dir.custom.framework.src}">
 				<include name="**/common/util/*.java" />
 				<include name="**/system/applicationservice/impl/*.java" />
 				<include name="**/system/applicationservice/*.java" />
@@ -62,7 +61,7 @@
 		</copy>
 
 		<copy todir="${dir.src.custom.beans}" overwrite="yes" failonerror="true">
-			<fileset dir="${dir.custom.beans}">
+			<fileset dir="${dir.custom.framework.src}">
 				<include name="**/evs/domain/*.java" />
 			</fileset>
 		</copy>
@@ -114,7 +113,13 @@
 			<replacefilter token="@EVSPROPERTIESFILE@" value="evsBeans.properties" />
 		</replace>
 	</target>
-	
+
+	<target name="-copy-custom-beans.custom" if="copy-custom-beans.custom.use">
+		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
+			<fileset dir="${dir.custom.beans}"/>
+		</copy>
+	</target>
+		
 	<target name="-copy-custom-orm.custom" if="copy-custom-orm.custom.use" depends="-init-project.custom">
 		<copy todir="${dir.output.conf}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.src.custom.orm}">
