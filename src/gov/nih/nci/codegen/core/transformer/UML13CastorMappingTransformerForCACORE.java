@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator; 
+
 import java.util.Properties;
 import java.util.Iterator;
 import java.util.List;
@@ -195,32 +198,49 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
     }
 
     private Document generateRepository(Collection classifiers) {
+        Element mappingEl = new Element("mapping");
+        //DocType docType = new DocType("mapping","SYSTEM","mapping.dtd");
+        DocType docType = new DocType("mapping","-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN","http://www.castor.org/mapping.dtd");
 
-
-            Element mappingEl = new Element("mapping");
-            //DocType docType = new DocType("mapping","SYSTEM","mapping.dtd");
-            DocType docType = new DocType("mapping","-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN","http://www.castor.org/mapping.dtd");
-
-            Document doc = new Document();
-			doc.setDocType(docType);
-	        for (Iterator i = classifiers.iterator(); i.hasNext();) {
-	            UmlClass klass = (UmlClass) i.next();
-	            try {
-	            	doMapping(klass, mappingEl);
-	            } catch (XMLUtilityException ex) {
-	            }
-	        }
-
-	        try {
-	        	if(createEVS){
-	        		doMappingForEVS(mappingEl);
-	        	}
-            } catch (XMLUtilityException ex) {
+        Document doc = new Document();
+		doc.setDocType(docType);
+		ArrayList list = new ArrayList();
+		for (Iterator i = classifiers.iterator(); i.hasNext();) {
+	            list.add(i.next());
+		}
+	    // The caCOREMarsheller has problem with forward references.   Sorting
+		// the class with the list generalizations to the top.
+		class caCOREComparer implements Comparator {
+            public int compare(Object obj1, Object obj2)
+            {
+                    int i1 = ((UmlClass)obj1).getGeneralization().size();
+                    int i2 = ((UmlClass)obj2).getGeneralization().size();
+    
+                    return Math.abs(i1) - Math.abs(i2);
             }
+		}
 
-            doc.setRootElement(mappingEl);
-            return doc;
-	    }
+		Collections.sort(list, new caCOREComparer());
+        for (Iterator i = list.iterator(); i.hasNext();) {
+            UmlClass klass = (UmlClass) i.next();
+            try {
+            	doMapping(klass, mappingEl);
+            } catch (XMLUtilityException ex) {
+            	ex.printStackTrace();
+            }
+        }
+
+        try {
+        	if(createEVS){
+        		doMappingForEVS(mappingEl);
+        	}
+        } catch (XMLUtilityException ex) {
+        	ex.printStackTrace();
+        }
+
+        doc.setRootElement(mappingEl);
+        return doc;
+    }
 
      private String getNamespaceURI(UmlClass klass) throws XMLUtilityException{
     	 StringBuffer nsURI = new StringBuffer();
@@ -638,5 +658,4 @@ private String getQualifiedName(String dataType) {
 
         return param;
     }
-
 }
