@@ -502,7 +502,7 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	 */
 	public void searchByLoincId(String code, String sourceAbbr) 
 	{
-		searchSourceByCode(code,sourceAbbr);
+		searchSourceByAtomCode(code,sourceAbbr);
 	}
 	
 
@@ -511,10 +511,17 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	 */
 	public void searchSourceByCode(String code, String sourceAbbr) 
 	{
-		metaThesaurusValues.put("searchSourceByCode$code", code);
-		metaThesaurusValues.put("searchSourceByCode$sourceAbbr", sourceAbbr);
-        //searchMetaThesaurus(code, 100, sourceAbbr, true, false, false);
+		searchSourceByAtomCode(code, sourceAbbr);
 	}
+    /**
+     * @see gov.nih.nci.evs.query.EVSQuery#searchSourceByAtomCode(String, String)
+     */
+    public void searchSourceByAtomCode(String code, String sourceAbbr) 
+    {
+        metaThesaurusValues.put("searchSourceByAtomCode$code", code);
+        metaThesaurusValues.put("searchSourceByAtomCode$sourceAbbr", sourceAbbr);
+        //searchMetaThesaurus(code, 100, sourceAbbr, true, false, false);
+    }
 
 	/**
 	 * @see gov.nih.nci.evs.query.EVSQuery#getSemanticTypes()

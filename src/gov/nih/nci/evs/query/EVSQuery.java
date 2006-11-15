@@ -39,6 +39,7 @@ import gov.nih.nci.evs.security.*;
 
 public interface EVSQuery extends Serializable{
 
+    public  static final long serialVersionUID =  1468599299281466395L;
     /**
      * Adds the specified security token and vocabulary information 
      */
@@ -365,12 +366,20 @@ public interface EVSQuery extends Serializable{
 	public void searchByLoincId(String code, String sourceAbbr);
 
 	/**
-	 * Search the specified vocabulary for a given code
+	 * Search the specified vocabulary for a given atom code
 	 * @param code - Concepts unique identifier within the given source
 	 * @param sourceAbbr - specifies the source abbreviation	 *
 	 */
 
-	public void searchSourceByCode(String code, String sourceAbbr);
+	public void searchSourceByAtomCode(String code, String sourceAbbr);
+    /**
+     * Search the specified vocabulary for a given code
+     * @param code - Concepts unique identifier within the given source
+     * @param sourceAbbr - specifies the source abbreviation     
+     * @deprecated - The preferred method is searchSourceByAtomCode
+     */
+
+    public void searchSourceByCode(String code, String sourceAbbr);
 	/**
 	 * Gets all semantic types from metaphrase
 	 */

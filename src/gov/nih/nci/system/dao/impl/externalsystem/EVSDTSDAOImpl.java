@@ -2148,6 +2148,7 @@ public class EVSDTSDAOImpl implements DAO {
     /** Search source by atom code
      * @param map - Specify atom code
      * @return List of MetaThesaurusConcepts
+     * @deprecated
      */
     private Response searchSourceByCode(HashMap map) throws Exception{
         return searchSourceByAtomCode(map);
