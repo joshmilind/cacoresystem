@@ -2145,14 +2145,21 @@ public class EVSDTSDAOImpl implements DAO {
         return source;
 	}
 
+    /** Search source by atom code
+     * @param map - Specify atom code
+     * @return List of MetaThesaurusConcepts
+     */
+    private Response searchSourceByCode(HashMap map) throws Exception{
+        return searchSourceByAtomCode(map);
+    }
+    
 	/**
-	 * Search by LoincId in the specified source
-	 * 
+	 * Search Source by atom code  
 	 * @param map
 	 * @return
 	 * @throws Exception
 	 */
-	private Response searchSourceByCode(HashMap map) throws Exception {
+	private Response searchSourceByAtomCode(HashMap map) throws Exception {
 		String code = null;
 		String sourceAbbr = "*";
 
