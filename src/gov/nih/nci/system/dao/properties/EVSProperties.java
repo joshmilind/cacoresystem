@@ -20,6 +20,7 @@ public class EVSProperties {
 	private static String password = null;
 	private static String dtsServer = null;
 	private static String port = null;
+    private static String lexBigConfigFileLocation = null;
 	
 	private EVSProperties(){}
 	
@@ -56,6 +57,9 @@ public class EVSProperties {
 		return dtsrpc ;
 		}
 	
+    public String getConfigFileLocation() throws Exception{
+        return lexBigConfigFileLocation;
+    }
 	private static void loadProperties(Hashtable configs) throws Exception{
 		String propertyFile = System.getProperty("gov.nih.nci.cacore.evsProperties");
 		Properties properties = new Properties();
@@ -78,7 +82,8 @@ public class EVSProperties {
 			metaServer = properties.getProperty("EVS_META_SERVER") == null ? (String) configs.get("metaphraseServer"): properties.getProperty("EVS_META_SERVER");
 			database = properties.getProperty("EVS_META_DB") == null ? (String) configs.get("database"): properties.getProperty("EVS_META_DB");
 			userName = properties.getProperty("EVS_META_USERNAME") == null ? (String) configs.get("username"): properties.getProperty("EVS_META_USERNAME");
-			password = properties.getProperty("EVS_META_PASSWD") == null ? (String) configs.get("password"): properties.getProperty("EVS_META_PASSWD");		
+			password = properties.getProperty("EVS_META_PASSWD") == null ? (String) configs.get("password"): properties.getProperty("EVS_META_PASSWD");
+            lexBigConfigFileLocation = properties.getProperty("LG_CONFIG_FILE") == null ? (String) configs.get("lexGridConfigFile"): properties.getProperty("LG_CONFIG_FILE");
 		}catch(Exception ex){
 			throw new Exception(ex.getMessage());
 		}	

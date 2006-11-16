@@ -19,6 +19,7 @@
       <database>NCI</database>
       <username>Guest</username>
       <password>NCI-EVS</password>
+      <lexGridConfigFile>C:/jboss-4.0.4.GA/server/default/data/lb/config.props</lexGridConfigFile>
   </domainObjects>
 </DAOConfiguration>
 
