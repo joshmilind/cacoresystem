@@ -1,5 +1,5 @@
 <ehcache>
-<diskStore path="@CACHE_PATH@"/>
+<diskStore path="java.io.tmpdir/cache/"/>
  <defaultCache
         maxElementsInMemory="100"
         eternal="false"
@@ -132,6 +132,13 @@ maxElementsInMemory="5"
 eternal="false"
 timeToIdleSeconds="1800"
 timeToLiveSeconds="7200"
+overflowToDisk="true"
+/>
+<cache name="getTree"
+maxElementsInMemory="1"
+eternal="false"
+timeToIdleSeconds="1000"
+timeToLiveSeconds="1800"
 overflowToDisk="true"
 />
 </ehcache>
