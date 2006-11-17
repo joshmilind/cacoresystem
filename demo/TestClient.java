@@ -613,7 +613,52 @@ public class TestClient {
 					}
 				}
 
-				
+				// Grid Identifier test
+				// Test Case 19: Get Grid Identifier
+				Gene gene = new Gene();
+	            gene.setSymbol("brca*");
+	            System.out.println("Search Provenance for Gene: " + gene.getName());
+	            List results = appService.search("gov.nih.nci.cabio.domain.Gene", gene);
+	            for(int i=0; i<results.size(); i++){
+	                Gene g = (Gene)results.get(i);            
+	                System.out.println("Gene: "+ g.getId() +"\t"+ g.getSymbol() +"\t"+ g.getBigid());
+	                System.out.println("Big Id exists: "+appService.exist(g.getId()));
+		            Gene dataObject = (Gene)appService.getDataObject(g.getId());
+		            System.out.println("Result: "+ dataObject.getId() +"\t"+dataObject.getSymbol()+"\t"+dataObject.getBigid());
+	            }            
+	            
+				// Test Case 21: Test Provence Provenance
+				Protein pro = new Protein();
+				pro.setName("BRCA*");
+				System.out.println("Search Provenance for Protein: " + pro.getName());
+				List protList = appService.search(Protein.class,pro);
+
+				for (int i=0;i<protList.size();i++)  {
+					Protein protein = (Protein)protList.get(i);
+					System.out.println("Protein "+protein.getName()+":"+protein.getId());
+
+					// Now the Provenance
+					Provenance p = new Provenance();
+					p.setFullyQualifiedClassName("gov.nih.nci.cabio.domain.Protein");	
+					p.setObjectIdentifier(protein.getId().toString());
+			
+					List resultList = appService.search(Provenance.class,p);
+					System.out.println("Returned: "+resultList.size()+" records");
+					Provenance provenance = (Provenance)resultList.get(0);
+
+					InternetSource source =
+		              	(InternetSource)provenance.getSupplyingSource();
+						System.out.println("Supplying: "+source.getOwnerInstitution());
+					InternetSource immediateSource =
+		              	(InternetSource)provenance.getImmediateSource();
+						System.out.println("Immediate: "+immediateSource.getOwnerInstitution());
+					InternetSource originalSource =
+		              	(InternetSource)provenance.getOriginalSource();
+						System.out.println("Original: "+originalSource.getOwnerInstitution());
+
+					URLSourceReference sourceReference =
+		                             (URLSourceReference)provenance.getSourceReference();
+		    			System.out.println("Type: "+sourceReference.getSourceReferenceType()+"\nURL: "+sourceReference.getSourceURL());
 
 			} catch (RuntimeException e2) {
 				// TODO Auto-generated catch block
