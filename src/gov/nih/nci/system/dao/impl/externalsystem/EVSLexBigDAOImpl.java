@@ -12,6 +12,8 @@ import gov.nih.nci.evs.query.*;
 import gov.nih.nci.common.util.*;
 import gov.nih.nci.common.net.*;
 import gov.nih.nci.system.dao.*;
+import gov.nih.nci.system.dao.cache.EVSCacheManager;
+import gov.nih.nci.system.dao.properties.EVSProperties;
 import gov.nih.nci.system.dao.security.*;
 
 import msso.validator.MSSOUserValidator;
@@ -53,18 +55,17 @@ import gov.nih.nci.evs.security.*;
 
 public class EVSLexBigDAOImpl implements DAO
 {
-	private static Logger log = Logger.getLogger(EVSLexBigDAOImpl.class.getName());	
-    private LexAdapter adapter;	
-	private String server;
-	private String port;
-	private Exception pastEx = new Exception();
-    private Vocabulary vocabulary = null;
-    private HashMap tokenCollection = new HashMap();
-    private String defaultVocabularyName = "NCI_Thesaurus";
+	private static Logger log = Logger.getLogger(EVSLexBigDAOImpl.class.getName());   	
+    private static HashMap adapters = new HashMap();
+    private static HashMap vocabularies = new HashMap();
+    private final static String defaultVocabularyName = "NCI_Thesaurus";
+    private final static String metaVocabularyName = "NCI MetaThesaurus";
 
-
-
-	/**
+   public EVSLexBigDAOImpl(){
+       
+   }
+   
+    /**
 	 * Creates a connection to the EVS datasource and generates a query based on the request.
 	 * The results are wrapped in a response object
 	 * @param r - Request object (This object holds the evs query)
@@ -72,115 +73,224 @@ public class EVSLexBigDAOImpl implements DAO
 	 * @throws DAOException
 	 * @throws Exception
 	 */
-	public Response query(Request r) throws DAOException
-	{
-		Object obj = r.getRequest();
-		List resultList  = new ArrayList();
-		gov.nih.nci.common.net.Response response = null;
-		Hashtable configs;
-		String methodName = null;
-		try{
-			configs= r.getConfig();
-			//Setting property file value for LexBIG
-			Properties sysProps = System.getProperties();			
-			String lg_config_file = null;
-			boolean found = false;
-			for(Iterator i = sysProps.keySet().iterator(); i.hasNext();){				
-				String key = (String)i.next();
-				String value = (String) sysProps.get(key);
-				if(key.equalsIgnoreCase("LG_CONFIG_FILE")){					
-					found = true;
-				}
-				if(key.equalsIgnoreCase("jboss.server.data.dir")){
-					lg_config_file = value +"/lb/config.props";
-				}				
-			}
-			if(!found){
-				System.setProperty("LG_CONFIG_FILE", lg_config_file);
-				log.info("Setting config property value: "+ System.getProperty("LG_CONFIG_FILE"));
-			}
-			EVSQueryImpl criteria = (EVSQueryImpl)obj;
-			if(criteria.getSecurityTokenCollection().size()>0){
-	            tokenCollection = criteria.getSecurityTokenCollection();
-	        }
-			Field[] fields = criteria.getClass().getDeclaredFields();
-			for(int i=0; i<fields.length; i++)
-			{
-				fields[i].setAccessible(true);
-				String fieldName = fields[i].getName();
-				if(fields[i].getType().equals(HashMap.class))
-				{
-					HashMap mapValues = (HashMap)fields[i].get(criteria);
-					if((mapValues != null) && (mapValues.size() > 0))
-					{
+    
+    
+    
+    public Response query(Request r) throws DAOException {
+        Object obj = r.getRequest();
+        List resultList = new ArrayList();
+        HashMap tokenCollection = new HashMap();
+        gov.nih.nci.common.net.Response response = new Response();      
+
+        try {
+            Hashtable configs = r.getConfig();
+            EVSQueryImpl criteria = (EVSQueryImpl) obj;
+            if (criteria.getSecurityTokenCollection().size() > 0
+                    && criteria.getSecurityTokenCollection() != null) {
+                    tokenCollection = criteria.getSecurityTokenCollection();
+            }           
+            HashMap mapValues = new HashMap();
+            if(((HashMap)criteria.getClass().getField("descLogicValues").get(criteria)).size()>0){                
+                mapValues = (HashMap)criteria.getClass().getField("descLogicValues").get(criteria);
+            }else if(((HashMap)criteria.getClass().getField("metaThesaurusValues").get(criteria)).size()>0){                
+                mapValues = (HashMap)criteria.getClass().getField("metaThesaurusValues").get(criteria);
+            }
+            try {
+                response = queryEVS(configs, tokenCollection, mapValues);
+            } catch (Exception ex) {
+                String msg = " - ";
+                
+                if (ex.getMessage() == null) {
+                    msg = msg + "Exception in method: "+getMethodName(mapValues)+" - check the server log";
+                } else {
+                    msg = msg + ex.getMessage();
+                }
+                log.error(msg);
+                throw new DAOException(msg);
+            }   
+        } catch (Exception e) {
+            throw new DAOException(e.getMessage());
+        }
+        return response;
+    }
+       
+    private String getVocabularyName(HashMap mapValues){
+        String vocabularyName = null;
+        for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){                                    
+            String key = (String)it.next();
+            String name = key.substring(key.indexOf("$") + 1, key.length());
+            Object value = mapValues.get(key);            
+            if (name.equalsIgnoreCase("VocabularyName")){
+                vocabularyName = (String)value;
+                break;
+            }
+        }
+        return vocabularyName;
+    }
+    private String getMethodName(HashMap mapValues){ 
+        String methodName = null;
+        Iterator iter = mapValues.keySet().iterator();
+        String keyMethod = (String) iter.next();
+        if(keyMethod != null){
+            methodName = keyMethod.indexOf("$") > 0 ? keyMethod.substring(0, keyMethod.indexOf("$")): keyMethod;
+        }
+        return methodName; 
+    }
+    
+    private String getCacheKey(String methodName,HashMap mapValues){
+        String key = methodName;
+        for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){                                    
+            String name = (String)it.next();
+            Object value = mapValues.get(name);
+            key += "_"+String.valueOf(value);            
+        }
+        return key;
+    }
+    private boolean enableCache(Hashtable config){
+        boolean enableCache = true;
+        if(config.get("enableCache")!=null){
+            try{
+                enableCache = Boolean.valueOf((String)config.get("enableCache")).booleanValue();
+            }catch(Exception ex){}
+        }
+        return enableCache;
+    }
+    private Response queryEVS(Hashtable config, HashMap tokenCollection, HashMap mapValues) throws Exception{  
+        Response response = null;       
+        String vocabularyName = getVocabularyName(mapValues);
+        String methodName = getMethodName(mapValues);       
+        Method method = this.getClass().getDeclaredMethod(methodName, new Class[] { HashMap.class });       
+        if (method == null) {
+            log.error("Invalid method name");
+            throw new DAOException(getException("Invalid method name"));
+        }
+        String key = getCacheKey(methodName, mapValues);
+        boolean checkCache = false;        
+        EVSCacheManager evsCache = null;          
+        //Check if a security token is required to access the vocabulary
+        DAOSecurity security = null;
+        if(vocabularyName != null){
+            if(getSecurityAdapter(vocabularyName)!= null){
+            }
+        }
+        if(security != null){
+            SecurityToken securityToken = null;
+            if(tokenCollection.size()>0){
+                securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
+            }  
+            if(securityToken==null){
+                Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+                throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
+             }       
+            getSecurityKey(security, securityToken);
+        }else{
+            //Security token is not required to access the Vocabulary
+            //Check if cache needs to be enabled            
+            if(enableCache(config)){
+                evsCache = EVSCacheManager.getInstance();
+                if(evsCache != null){ 
+                    if(evsCache.isCacheNameValid(methodName)){
+                        checkCache = true;
                         try{
-                            adapter = new LexAdapter();
-                        }catch(Exception ex){
-                            throw new DAOException("Unable to connect to LexBIG - "+ ex.getMessage());
-                        }
-                        if(adapter == null){
-                            throw new DAOException("LexBIG Exception - unable to connect to server");
-                        }						
-						if(fieldName.equalsIgnoreCase("metaThesaurusValues"))
-						{
-                            try{
-                                if(adapter.setVocabulary("NCI MetaThesaurus")){
-                                    setVocabulary("NCI MetaThesaurus");
-                                    log.info("connecting to NCI MetaThesaurus");
-                                } 
-                            }catch(Exception ex){
-                            	//throw new Exception(getException(ex.getMessage()));
-                            	log.error("Unable to connect to NCI MetaThesaurus. Connecting to NCI Thesaurus");
-                                setVocabulary(defaultVocabularyName);
-                                log.info("NCI Thesaurus - found");
-                            }		
-							                                                      
-						}
-						Iterator iter = mapValues.keySet().iterator();
-						String key = (String)iter.next();
-						methodName = key.substring(0, key.indexOf("$"));
-						Method method = this.getClass().getDeclaredMethod(methodName, new Class[]{HashMap.class});
-							if(method == null){
-								log.error("Invalid method name");
-								throw new DAOException (getException("Invalid method name"));
-								}
-							else{
-								try{
-                                    Object result = method.invoke(this, new Object[]{mapValues});
-                                    response  = (Response)result;
-								}
-								catch(Exception ex){
-									String msg = null;
-									msg = "Exception in method - "+ methodName +": ";
-									if(ex.getMessage()==null){
-										if(pastEx.getMessage()==null){
-											if(fieldName.equalsIgnoreCase("descLogicValues")){
-												msg = msg + "caCORE - LexBIG Server Exception";
-											}else if(fieldName.startsWith("meta")){
-												msg = msg + "caCORE - Metaphrase Exception";
-											}
-										}else{
-											msg = msg + pastEx.getMessage();
-										}
-									}else{
-										msg = msg + ex.getMessage();
-									}
-									log.error(msg);
-									throw new DAOException(getException(msg));
-								}
-							}
-						}
-				}
-			}
-		}catch(Exception e)
-		{
-			log.error("Exception : query - "+  e.getMessage());
-			throw new DAOException (getException(e));
-		}
-		return response;
-	}
-
-
+                            //read data from cache
+                            Object results = evsCache.get(key, methodName);
+                            if(results != null){
+                                return (Response)results;
+                            }                            
+                        }catch(Exception ex){}                        
+                    }                       
+                 }                   
+            }
+        }
+        try{
+            //Query EVS Servers
+            makeRemoteConnection(config, vocabularyName);
+            response = (Response) method.invoke(this,new Object[] { mapValues });
+            //update cache
+            if(checkCache){
+                evsCache.put(key, response, methodName);                                             
+            }                               
+        }catch(Exception ex){
+            log.error( methodName + " throws Exception ");
+            throw new DAOException(ex.getMessage());
+        }         
+        return response;
+    }
+    
+    private void makeRemoteConnection(Hashtable configs, String vocabularyName)throws Exception{
+        try{
+            
+            if(adapters.size()<1){
+                EVSProperties evsProperties = EVSProperties.getInstance(configs);
+                String lg_config_file = null;
+                if(evsProperties.getConfigFileLocation() != null){
+                    lg_config_file = evsProperties.getConfigFileLocation();
+                    System.setProperty("LG_CONFIG_FILE", lg_config_file);
+                }            
+                log.debug("CONFIG FILE LOCATION: "+ lg_config_file);                
+                LexAdapter adapter = new LexAdapter();
+                try{
+                    log.debug("Connecting to "+ defaultVocabularyName);
+                    adapter.setVocabulary(defaultVocabularyName);
+                }catch(Exception ex){
+                    log.error("Unable to connect to "+ defaultVocabularyName);
+                }                
+                Vector vocabs = adapter.getVocabularyNames();
+                for(int i=0; i<vocabs.size(); i++){
+                    String vocabName = (String)vocabs.get(i);
+                    LexAdapter lexAdapter = new LexAdapter();
+                    log.debug("Connecting to "+ vocabName);
+                    try{
+                        lexAdapter.setVocabulary(vocabName);
+                        adapters.put(vocabName, lexAdapter);
+                        Vocabulary vocabulary = new Vocabulary();
+                        vocabulary.setName(vocabName);
+                        vocabulary.setDescription(lexAdapter.getVocabularyDescription(vocabName));
+                        vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabName));
+                        vocabularies.put(vocabName, vocabulary);
+                    }catch(Exception ex){
+                        log.error("Unable to connect to "+ vocabName);
+                        continue;
+                    }                        
+                }
+                if(adapters.get(metaVocabularyName)==null){
+                    try{
+                        LexAdapter meta = new LexAdapter();
+                        meta.setVocabulary(metaVocabularyName);
+                        adapters.put(metaVocabularyName, meta);
+                    }catch(Exception ex){
+                        log.error("Vocabulary error: "+ metaVocabularyName +" "+ ex.getMessage());
+                    }                                                
+                }
+            }                      
+        }catch(Exception ex){
+            throw new DAOException(getException(ex));
+        }
+        }
+    
+    
+     
+    
+    private LexAdapter getLexAdapter(String vocabularyName) throws DAOException{
+        if(adapters.get(vocabularyName)==null){
+            throw new DAOException("Unable to connect to Vocabulary "+ vocabularyName);
+        }
+        return (LexAdapter)adapters.get(vocabularyName);
+    }
+    
+    private LexAdapter getLexAdapterForMeta() throws Exception{
+        LexAdapter adapter = null;
+        try{
+            getLexAdapter(metaVocabularyName);
+            if(adapter == null){
+                adapter = getLexAdapter(defaultVocabularyName);
+                log.debug("Connecting to "+ defaultVocabularyName);
+            }
+        }catch(Exception ex){
+            log.error(ex.getMessage());
+        }
+        return adapter;
+    }
      /**
  	 * Gets the descendant concept codes for the specified concept
  	 * @param map - Holds the input parameters
@@ -216,7 +326,7 @@ public class EVSLexBigDAOImpl implements DAO
  					fBaseLineDate = (String)map.get(key);
  			}
 
- 			setVocabulary(vocabularyName);
+ 			LexAdapter adapter = getLexAdapter(vocabularyName);
  			descendants = adapter.getDescendantCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate));
  			if(descendants == null){
  				//log.info("No descendants found");
@@ -324,69 +434,47 @@ public class EVSLexBigDAOImpl implements DAO
 	 * @param vocabularyName
 	 * @throws Exception
 	 */
+    /*
 	private void setVocabulary(String vocabularyName) throws Exception
 	{  
-        
-        vocabulary = new Vocabulary();
         if(!StringHelper.hasValue(vocabularyName)){
         	log.error("vocabularyName cannot be null");
         	throw new DAOException(getException(" vocabularyName cannot be null"));
 		}
-        DAOSecurity security = null;
-        if(getSecurityAdapter(vocabularyName)!= null){
-            security = getSecurityAdapter(vocabularyName);
-        }       
-        if(security != null){
-            SecurityToken securityToken = null;
-            if(tokenCollection.size()>0){
-                securityToken = (SecurityToken)tokenCollection.get(vocabularyName);
-            }  
-            if(securityToken==null){
-                Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
-                throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
-             }       
-            getSecurityKey(security, securityToken);
+        boolean found = false;
+        try{
+            found = adapter.setVocabularyName(vocabularyName);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            throw new DAOException("Vocabulary error: "+ ex.getMessage()+ vocabularyName);
         }
-
-            boolean found = false;
-            try{
-                found = adapter.setVocabularyName(vocabularyName);
-            }catch(Exception ex){
-                ex.printStackTrace();
-                throw new DAOException("Vocabulary error: "+ ex.getMessage()+ vocabularyName);
-            }
-
-
-
-            if(!found){
+        if(!found){
                 throw new DAOException("LexBIG Exception - unable to connect to vocabulary "+ vocabularyName);
             }
-           vocabulary = populateVocabulary(vocabularyName);
+     
 	}
+    */
 
-    private gov.nih.nci.evs.domain.Vocabulary populateVocabulary(String vocabularyName){
-        gov.nih.nci.evs.domain.Vocabulary vocab = new gov.nih.nci.evs.domain.Vocabulary();        
-        vocab.setName(vocabularyName);
-        vocab.setDescription(adapter.getVocabularyDescription(vocabularyName));
-       	try{
-			vocab.setNamespaceId(adapter.getNamespaceId(vocabularyName.trim()));
-		}
-		catch(Exception ex){
-			}
+//    private gov.nih.nci.evs.domain.Vocabulary populateVocabulary(String vocabularyName){
+//        gov.nih.nci.evs.domain.Vocabulary vocab = new gov.nih.nci.evs.domain.Vocabulary();        
+//        vocab.setName(vocabularyName);
+//        vocab.setDescription(adapter.getVocabularyDescription(vocabularyName));
+//       	try{
+//			vocab.setNamespaceId(adapter.getNamespaceId(vocabularyName.trim()));
+//		}
+//		catch(Exception ex){
+//			}
+//
+//        return vocab;
+//    }
 
-        return vocab;
-    }
-
-    private Response getAllVocabularies(HashMap map){
+    private Response getAllVocabularies(HashMap map) throws DAOException{
         List vocabList = new ArrayList();
-        Vector names = adapter.getVocabularyNames();
-        for(int i=0; i<names.size(); i++){
-        	try{
-				setVocabulary((String)names.get(i));
+        for(Iterator i= vocabularies.keySet().iterator(); i.hasNext();){
+        	try{				
+                vocabList.add(vocabularies.get(i.next()));
 			}
-			catch(Exception ex){}
-
-            vocabList.add(vocabulary);
+			catch(Exception ex){}            
         }
         return new Response(vocabList);
     }
@@ -407,37 +495,41 @@ public class EVSLexBigDAOImpl implements DAO
 				if(vocabularyName.indexOf("*")>-1){
 					String searchString = null;
 					if(vocabularyName.length() == 1){
-						return getAllVocabularies(new HashMap());
+                        for(Iterator i=vocabularies.keySet().iterator(); i.hasNext();){
+                            Vocabulary v = (Vocabulary) i.next();
+                            vocabList.add(v);
+                        }
 						}
 					else if(vocabularyName.length() > 1){
 						if(vocabularyName.endsWith("*")){
-							searchString = vocabularyName.substring(0,vocabularyName.indexOf("*"));
-							Vector names = adapter.getVocabularyNames();
-							for(int i=0; i<names.size(); i++){
-								String vocabName = (String)names.get(i);
-								if(vocabName.toLowerCase().startsWith(searchString.toLowerCase())){
-									setVocabulary(vocabName);
-									vocabList.add(vocabulary);
+							searchString = vocabularyName.substring(0,vocabularyName.indexOf("*"));							
+							for(Iterator i=vocabularies.keySet().iterator(); i.hasNext();){
+                                Vocabulary v = (Vocabulary)i.next();
+								String vocabName = (String)v.getName();
+								if(vocabName.toLowerCase().startsWith(searchString.toLowerCase())){									
+									vocabList.add(v);
 									}
 								}
 						}
 						else if(vocabularyName.startsWith("*")){
-							searchString = vocabularyName.substring(1);							
-							Vector names = adapter.getVocabularyNames();
-							for(int i=0; i<names.size(); i++){
-								String vocabName = (String)names.get(i);
-								if(vocabName.toLowerCase().endsWith(searchString.toLowerCase())){
-									setVocabulary(vocabName);
-									vocabList.add(vocabulary);
+							searchString = vocabularyName.substring(1);
+							for(Iterator i=vocabularies.keySet().iterator(); i.hasNext();){
+                                Vocabulary v = (Vocabulary)i.next();
+								String vocabName = v.getName();
+								if(vocabName.toLowerCase().endsWith(searchString.toLowerCase())){									
+									vocabList.add(v);
 									}
 								}
 							}
 						}
-
 			}
 			else{
-				setVocabulary(vocabularyName);
-				vocabList.add(vocabulary);
+                for(Iterator i=vocabularies.keySet().iterator(); i.hasNext();){
+                    Vocabulary v = (Vocabulary) i.next();
+                    if(v.getName().equalsIgnoreCase(vocabularyName)){
+                        vocabList.add(v);
+                    }
+                }				
 			}
 
             }
@@ -454,20 +546,14 @@ public class EVSLexBigDAOImpl implements DAO
 	 * @return Returns a response that holds a list of DescLogicConcept Objects
 	 * @throws Exception
 	 */
-	private Response getDescLogicConcept(HashMap map) throws Exception
-	{
-
-
+	private Response getDescLogicConcept(HashMap map) throws Exception	{
 		String vocabularyName = null;
 		String conceptName = null;
 		boolean inputFlag =  false;
-
 		Vector v = new Vector();
 		ArrayList list = new ArrayList();
-
 		try
-		{
-
+        {
 			for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
 			{
 				String key = (String)iter.next();
@@ -479,35 +565,24 @@ public class EVSLexBigDAOImpl implements DAO
 					conceptName = (String)map.get(key);
 				else if(name.equalsIgnoreCase("inputFlag"))
 					inputFlag = ((Boolean)map.get(key)).booleanValue();
-
 			}
-
-			setVocabulary(vocabularyName);
 			boolean valid = true;
-		DescLogicConcept dlc = new DescLogicConcept();
-		Concept concept = new Concept();
-
-	       if(!inputFlag){
-	       		validateConceptName(conceptName);
+			DescLogicConcept dlc = new DescLogicConcept();
+			Concept concept = new Concept();
+			if(!inputFlag){
+	       		validateConceptName(conceptName, vocabularyName);
 	       	}
-	       else{
-	       		validateDLConceptCode(conceptName);
-
+			else{
+	       		validateDLConceptCode(conceptName, vocabularyName);
 	       	}
-	       dlc = buildDescLogicConcept(adapter.getConcept(conceptName, inputFlag, 1));
-	       //dlc = buildDescLogicConcept(concept);
+            Vocabulary vocab = (Vocabulary)vocabularies.get(vocabularyName);
+	       dlc = buildDescLogicConcept(((LexAdapter)adapters.get(vocabularyName)).getConcept(conceptName, inputFlag, 1), vocab);         
 	       list.add(dlc);
-
-
-
-
 		}catch(Exception e){
 			log.error(e.getMessage());
 			throw new DAOException (getException(e.getMessage()));
 		}
-
-
-				return new Response(list);
+		return new Response(list);
 	}
 
 	/**
@@ -544,31 +619,28 @@ public class EVSLexBigDAOImpl implements DAO
 					matchType = (String)map.get(key);
 				else if(name.equalsIgnoreCase("ASDIndex"))
 					ASDIndex = ((Integer)map.get(key)).intValue();
-			}
-			setVocabulary(vocabularyName);
+			}			
 	        if(!StringHelper.hasValue(searchTerm)){
 	        	log.warn("searchTerm cannot be null");
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
 	        Concept[] concepts = null;    	        
 	        try{
-	        	concepts = adapter.searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
+	        	concepts = ((LexAdapter)adapters.get(vocabularyName)).searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex);
 	        }catch(Exception ex){	        	
 	        	if(matchOption==0){
-	        		concepts = adapter.searchConcepts(searchTerm, limit);
+	        		concepts = ((LexAdapter)adapters.get(vocabularyName)).searchConcepts(searchTerm, limit);
 		        }
 	        	else{
 	        		throw new Exception("searchConcepts "+ex.getMessage());
 	        	}
-	        }		   
-            if(vocabulary == null){
-                populateVocabulary(vocabularyName);
-            }
-            if(concepts != null){
+	        }
+            if(concepts.length > 0){
+                Vocabulary vocab = (Vocabulary)vocabularies.get(vocabularyName);
             	DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
     	        for(int x=0; x<concepts.length; x++){
     	            dlc[x] = new DescLogicConcept();
-    	            dlc[x] = buildDescLogicConcept(concepts[x]);
+    	            dlc[x] = buildDescLogicConcept(concepts[x], vocab);                    
     	            list.add(dlc[x]);
     	        }
             }	        
@@ -659,9 +731,6 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
         	log.error("Root Node cannot be null");
         	throw new DAOException(getException(" Root Node cannot be null"));
         }
-
-		setVocabulary(vocabularyName);
-        int namespace = adapter.getNamespaceId(vocabularyName);
         DefaultMutableTreeNode tree = null;
 
         Vector v  = null;
@@ -689,18 +758,14 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 
 		  	try
 			{
-				setVocabulary(vocabularyName);
+				LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 
 				if((roles != null) && (roles.size() > 0)){
 				   tree = adapter.getTree(rootName, direction, depthLevel, attrib, isaFlag, roles);
 
 				}
-				else {
-					tree = adapter.getTree(rootName, direction, depthLevel, attrib);
-				}
-
                 if(tree == null){
-                    throw new DAOException(getException("LexBIG Exception"));
+                    throw new DAOException(getException("Unable to generate Tree  - LexBIG Exception"));
 
                 }
 
@@ -789,7 +854,7 @@ private Response getConceptWithPropertyMatching(HashMap map) throws Exception
 		}
 
 
-		setVocabulary(vocabularyName);
+		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 
 		v=adapter.findConceptsWithPropertyMatching(propertyName, propertyValue, limit);
 
@@ -843,7 +908,7 @@ private Response getConceptWithSiloMatching(HashMap map) throws Exception
 
 
 
-		setVocabulary(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 
 		v=adapter.findConceptsWithSiloMatching(searchTerm, limit);
 
@@ -894,7 +959,7 @@ private Response getDescLogicConceptNameByCode(HashMap map) throws Exception
 				conceptCode = (String)map.get(key);
 		}
 
-		setVocabulary(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 
 		conceptName = adapter.getConceptNameByCode(conceptCode);
 		if(conceptName != null){
@@ -944,9 +1009,9 @@ private Response isSubConcept(HashMap map) throws Exception
 		}
 
 
-		setVocabulary(vocabularyName);
-		this.validateConceptName(conceptName1);
-        this.validateConceptName(conceptName2);
+		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+		//this.validateConceptName(conceptName1);
+        //this.validateConceptName(conceptName2);
 		isSub=adapter.isChild(conceptName1,conceptName2);
         if(isSub==null){
             isSub = false;
@@ -990,7 +1055,7 @@ private Response isRetired(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("conceptCode"))
 				conceptCode = (String)map.get(key);
 		}
-		setVocabulary(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		retired = adapter.isRetired(conceptCode);
 	}
 	catch(Exception e)
@@ -1034,8 +1099,7 @@ private Response getPropertyValues(HashMap map) throws Exception
 				propertyName = (String)map.get(key);
 		}
 
-		setVocabulary(vocabularyName);
-
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		values = adapter.getPropertyValues(conceptName, propertyName);
 
 		if(values != null){
@@ -1093,8 +1157,7 @@ private Response getAncestors(HashMap map) throws Exception
 				fBaseLineDate = (String)map.get(key);
 		}
 
-		setVocabulary(vocabularyName);
-
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		ancestors = adapter.getAncestorCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate));
 
 		if(ancestors != null){
@@ -1151,8 +1214,7 @@ private Response getSubConcepts(HashMap map) throws Exception
 				outputFlag = (Boolean)map.get(key);
 		}
 
-		setVocabulary(vocabularyName);
-
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		subConcepts = adapter.getSubConcepts(conceptName, inputFlag, outputFlag);
 
 		if(subConcepts != null){
@@ -1211,8 +1273,7 @@ private Response getSuperConcepts(HashMap map) throws Exception
 		}
 
 
-		setVocabulary(vocabularyName);
-
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		superConcepts = adapter.getSuperConcepts(conceptName, inputFlag, outputFlag);
 
 		if(superConcepts.size()>0){
@@ -1264,12 +1325,9 @@ private Response getRolesByConceptName(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("conceptName"))
 				conceptName = (String)map.get(key);
 		}
-
-		setVocabulary(vocabularyName);
-
 		if(!StringHelper.hasValue(conceptName))
         	throw new DAOException("conceptName cannot be null");
-
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		roles = adapter.getRolesByConceptName(conceptName);
 		if(roles != null){
 
@@ -1322,16 +1380,10 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("conceptName"))
 				conceptName = (String)map.get(key);
 		}
-
-
-		setVocabulary(vocabularyName);
-
 		if(!StringHelper.hasValue(conceptName))
         	throw new DAOException(getException("conceptName cannot be null"));
-
-
-		properties = adapter.getPropertiesByConceptName(conceptName);
-
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);        
+        properties = adapter.getPropertiesByConceptName(conceptName);
 		if(properties == null){
 			log.info("No properties found....");
 			}
@@ -1349,10 +1401,6 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 			}
 
 			}
-
-
-
-
 	}
 	catch(Exception e)
 	{
@@ -1375,14 +1423,11 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
  */
 private Response getVocabularyNames(HashMap map) throws Exception
 {
-	Vector vocabularies = new Vector();
-	ArrayList list = new ArrayList();
+    ArrayList list = new ArrayList();
 	try
-	{
-		vocabularies = adapter.getVocabularyNames();
-		for(int i=0; i<vocabularies.size(); i++)
+	{	for(Iterator i= vocabularies.keySet().iterator(); i.hasNext();)
 		{
-			list.add(vocabularies.get(i));
+			list.add((String)i.next());
 		}
 	}
 	catch(Exception e)
@@ -1420,17 +1465,12 @@ private Response getConceptCodeByName(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("conceptName"))
 				conceptName = (String)map.get(key);
 		}
-
-
-		setVocabulary(vocabularyName);
 		if(!StringHelper.hasValue(conceptName)){
 			String msg = "conceptName cannot be null";
 			log.error(msg);
 			throw new DAOException(msg);
 		}
-
-
-		conceptCode = adapter.getConceptCodeByName(conceptName);
+		conceptCode = getLexAdapter(vocabularyName).getConceptCodeByName(conceptName);
 
 		if(conceptCode != null){
 			conceptList.add(conceptCode);
@@ -1475,9 +1515,7 @@ private Response getVocabularyHost(HashMap map) throws Exception
 			if(name.equalsIgnoreCase("vocabularyName"))
 				vocabularyName = (String)map.get(key);
 		}
-
-		setVocabulary(vocabularyName);
-		host = adapter.getVocabularyHost(vocabularyName);
+		host = getLexAdapter(vocabularyName).getVocabularyHost(vocabularyName);
 	}
 	catch(Exception e)
 	{
@@ -1515,10 +1553,7 @@ private Response getVocabularyPort(HashMap map) throws Exception
 			if(name.equalsIgnoreCase("vocabularyName"))
 				vocabularyName = (String)map.get(key);
 		}
-
-		setVocabulary(vocabularyName);
-
-		port = adapter.getVocabularyPort(vocabularyName);
+		port = getLexAdapter(vocabularyName).getVocabularyPort(vocabularyName);
 	}
 	catch(Exception e)
 	{
@@ -1550,10 +1585,7 @@ public Response getVocabularyVersion(HashMap map) throws Exception{
             if(name.equalsIgnoreCase("vocabularyName"))
                 vocabularyName = (String)map.get(key);
         }
-
-        setVocabulary(vocabularyName);
-
-       version.add(adapter.getVocabularyVersion(vocabularyName));
+       version.add(getLexAdapter(vocabularyName).getVocabularyVersion(vocabularyName));
        log.info("vocabulary version = "+ version);
 
     }
@@ -1598,15 +1630,12 @@ private Response getConceptEditAction(HashMap map) throws Exception
             else if(name.equalsIgnoreCase("editActionDate"))
                 editActionDate = (Date)map.get(key);
 		}
-
-		setVocabulary(vocabularyName);
-
         if(editActionDate == null){
-            editActions = adapter.getConceptEditAction(conceptCode);
+            editActions = getLexAdapter(vocabularyName).getConceptEditAction(conceptCode);
         }
         else{
             //editActions = adapter.getConceptEditAction(conceptCode, editActionDate);
-            editActions = adapter.getConceptEditAction(conceptCode);
+            editActions = getLexAdapter(vocabularyName).getConceptEditAction(conceptCode);
         }
 		
 		if(editActions != null){
@@ -1669,10 +1698,7 @@ private Response getConceptEditActionDates(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("action"))
 				action = (String)map.get(key);
 		}
-
-		setVocabulary(vocabularyName);
-
-		editActions = adapter.getConceptEditActionDates(conceptCode, action);
+		editActions = getLexAdapter(vocabularyName).getConceptEditActionDates(conceptCode, action);
 
 		if(editActions != null){
 			for(int i=0; i<editActions.size(); i++)
@@ -1717,19 +1743,12 @@ private Response getRootConcepts(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("allAttributes"))
 				allAttributes = ((Boolean)map.get(key)).booleanValue();
 		}
-
-		setVocabulary(vocabularyName);
-
-			concepts = adapter.getRootConcepts(allAttributes);
-
-
+			concepts = getLexAdapter(vocabularyName).getRootConcepts(allAttributes);
 		if(concepts.length >0){
-
 			for(int i=0; i<concepts.length; i++)
 			{
 				list.add(buildDescLogicConcept(concepts[i]));
 			}
-
 			}
 	}
 	catch(Exception e)
@@ -1737,8 +1756,6 @@ private Response getRootConcepts(HashMap map) throws Exception
 		log.error(e.getMessage());
 		throw new DAOException (getException( e.getMessage()));
 	}
-
-
 	return (new Response(list));
 }
 
@@ -1757,7 +1774,6 @@ private Vector convertProperties(Vector nciProps)
 		gov.nih.nci.evs.domain.Property p = new gov.nih.nci.evs.domain.Property();
 		p.setName(property.getName());
 		p.setValue(property.getValue());
-
 		p.setQualifierCollection(convertQualifiers(property.getQualifiers()));
 		properties.add(p);
 	}
@@ -1821,24 +1837,15 @@ private Response getConceptByName(HashMap map) throws Exception
 				conceptName = (String)map.get(key);
 
 		}
-
-		setVocabulary(vocabularyName);
-
-		if(validateConceptName(conceptName)){
-			Vector conceptVector = new Vector();
-			conceptVector.add(conceptName);
-			DescLogicConcept dlc = buildDescLogicConcept(adapter.findConcept(conceptName));
-			dlcList.add(dlc);
-			}
+        DescLogicConcept dlc = buildDescLogicConcept(getLexAdapter(vocabularyName).findConcept(conceptName), (Vocabulary)vocabularies.get(vocabularyName));
+        dlcList.add(dlc);		
 	}
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
 		throw new DAOException (getException(e.getMessage()));
 	}
-
-
-	return (new Response(dlcList));
+    return (new Response(dlcList));
 	}
 
 /**
@@ -1849,10 +1856,9 @@ private Response getConceptByName(HashMap map) throws Exception
  */
 private Response searchMetaThesaurus(HashMap map) throws Exception
 {
-
 	String searchTerm = null;
 	int limit = 10;
-	String source = "";
+	String source = "*";
 	boolean cui = true;
 	boolean shortResult = false;
 	boolean score = false;
@@ -1871,12 +1877,11 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("limit"))
 				limit = ((Integer)map.get(key)).intValue();
 			else if(name.equalsIgnoreCase("source")) {
-			    if(map.get(key)==null){			       
-			        source = "";
-			        }
-				source = (String)map.get(key);
+			    if(!(map.get(key)==null)){			       
+                    source = (String)map.get(key);
+			        }				
 				if (source.toLowerCase().equals("all sources")) {
-					source = "";
+					source = "*";
 				}
 			}
 			else if(name.equalsIgnoreCase("cui"))
@@ -1887,7 +1892,6 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 				score = ((Boolean)map.get(key)).booleanValue();
 		}
 		boolean checkSource = false;
-
 		if(!source.equals("*")){            
 			if(!(source.length() == 0 || source.indexOf("*") > 0)){				
                 if(!validateSource(source)){
@@ -1895,10 +1899,9 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 				}
 				checkSource = true;
 			}
-		}
-        if(!checkSource){
-            source = "";
-        }
+		}       
+        LexAdapter adapter = getLexAdapterForMeta();
+       
         
 		if(cui)
 		{
@@ -1906,29 +1909,25 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
             Concept concept  = adapter.findConceptByCode(searchTerm, 1);
             list.add(buildMetaThesaurusConcept(concept));
 		}
-		else
-		{
-            Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, source, 1);	
+		else if(source.equalsIgnoreCase("*")){
+		    List sourceList = getMetaSources();
+            for(int i=0; i<sourceList.size(); i++){
+                Source s = (Source)sourceList.get(i);
+                String sourceAbbr = s.getAbbreviation();                
+                try{
+                    Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, sourceAbbr, 1);                    
+                    for(int x=0; x<concepts.length; x++){
+                        list.add(buildMetaThesaurusConcept(concepts[x]));
+                     }
+                }catch(Exception ex){}
+            }
+        }else{
+            Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, source, 1);            
             for(int i=0; i<concepts.length; i++){
                 list.add(buildMetaThesaurusConcept(concepts[i]));
              }
            
-		}
-        
-        /**
-        if(cui && checkSource && concepts[0]!=null ){
-            MetaThesaurusConcept mtc = buildMetaThesaurusConcept(concepts[0]);
-            ArrayList sourceList = mtc.getSourceCollection();
-            for(int i=0; i<sourceList.size(); i++){
-                if(((Source)sourceList.get(i)).getAbbreviation().equalsIgnoreCase(source)){
-                    list.add(mtc);
-                    break;
-                }
-            }
-        }
-        */
-            
-       
+		}        
         	          
     }
 	catch(Exception e)
@@ -1948,12 +1947,10 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
  * @throws Exception
  */
 private boolean validateSource(String source) throws Exception{
-
 		boolean valid = false;
 		HashMap map = new HashMap();
 
 		try{
-
 			List metaSources = (List)getMetaSources(map).getResponse();
 			for(int i=0; i<metaSources.size(); i++){
 			String sourceName = ((Source)metaSources.get(i)).getAbbreviation();
@@ -1971,7 +1968,6 @@ private boolean validateSource(String source) throws Exception{
 			        }
 			throw new DAOException(getException(msg));
 			}
-
 		return valid;
 
 	}
@@ -2057,42 +2053,45 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
         ArrayList<SemanticType> semanticTypesCollection = new ArrayList();
         ArrayList<Atom> atomCollection = new ArrayList();
         ArrayList<Source> sourceCollection = new ArrayList();
-        ArrayList synonymCollection = new ArrayList();
-        
+        ArrayList synonymCollection = new ArrayList();        
         HashMap sourceMap = new HashMap();
-        
+        HashMap atoms = new HashMap();
+        HashSet synonyms = new HashSet();
+        HashMap semanticTypes = new HashMap();
+        HashMap definitions = new HashMap();
        
         Vector propertyCollection = metaConcept.getPropertyCollection();
         try{
             for(int p=0; p<propertyCollection.size(); p++){
-                gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) propertyCollection.get(p);         
-               
+                gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) propertyCollection.get(p);    
+                Vector qCollection = property.getQualifierCollection();
                 if(property.getName().toUpperCase().equalsIgnoreCase("FULL_SYN")){
                     gov.nih.nci.evs.domain.Atom atom = new gov.nih.nci.evs.domain.Atom();
-                    atom.setName(property.getValue());
-                    Vector qCollection = property.getQualifierCollection();
-                    gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();                
+                    atom.setName(property.getValue());  
                     for(int q=0; q< qCollection.size(); q++){
-                    	gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
+                        gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
+                        gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();
                         if(qualifier.getName().toLowerCase().equalsIgnoreCase("source")){
                             source.setAbbreviation(qualifier.getValue());                        
                         }else if(qualifier.getName().toLowerCase().equalsIgnoreCase("source-code")){
                             source.setCode(qualifier.getValue());                        
+                        }   
+                        if(source.getAbbreviation()!=null){
+                            sourceMap.put(source.getAbbreviation(), source);
+                            atom.setSource(source);                        
+                            atom.setOrigin(source.getAbbreviation());                        
+                            atoms.put(atom.getName() + source.getAbbreviation(),atom);
                         }                    
                     }
-                    atom.setSource(source);
-                    //sourceCollection.add(source);
-                    sourceMap.put(source.getAbbreviation(), source);
-                    synonymCollection.add(property.getValue());  
-                    atomCollection.add(atom);
+                    synonyms.add(property.getValue());
+                                        
                 }else if(property.getName().toUpperCase().equalsIgnoreCase("SEMANTIC_TYPE")){
                     SemanticType sType = new SemanticType();
                     sType.setName(property.getValue());
-                    semanticTypesCollection.add(sType);                
+                    semanticTypes.put(property.getValue(), sType);                
                 }else if(property.getName().toUpperCase().equalsIgnoreCase("DEFINITION")){
                     Definition definition = new Definition();
-                    definition.setDefinition(property.getValue());
-                    Vector qCollection = property.getQualifierCollection();
+                    definition.setDefinition(property.getValue());                    
                     gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();                
                     for(int q=0; q< qCollection.size(); q++){
                     	gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
@@ -2103,7 +2102,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                         }                    
                     }
                     definition.setSource(source);
-                    definitionsCollection.add(definition);             
+                    definitions.put(property.getValue(),definition);             
                     //sourceCollection.add(source);
                     sourceMap.put(source.getAbbreviation(), source);
                 }else if(property.getName().toUpperCase().equalsIgnoreCase("SOURCE")){
@@ -2112,17 +2111,32 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                     //sourceCollection.add(source);
                     sourceMap.put(source.getAbbreviation(), source);
                 }
-            }
-           
+               
+            }        
             
         }catch(Exception ex){
             throw new Exception(getException("\nException: buildMetaConcept: "+ ex.getMessage()));
         }   
       
-        metaThesaurusConcept.setSemanticTypeCollection(semanticTypesCollection);        
+        for(Iterator it = semanticTypes.keySet().iterator(); it.hasNext();){
+            semanticTypesCollection.add((SemanticType)semanticTypes.get(it.next()));
+        }
+        metaThesaurusConcept.setSemanticTypeCollection(semanticTypesCollection);
+        for(Iterator it = synonyms.iterator(); it.hasNext();){
+            synonymCollection.add(it.next());
+        }
 	    metaThesaurusConcept.setSynonymCollection((ArrayList)synonymCollection);
+        for(Iterator it = definitions.keySet().iterator(); it.hasNext();){
+            definitionsCollection.add((Definition)definitions.get(it.next()));
+        }
         metaThesaurusConcept.setDefinitionCollection(definitionsCollection);
-	    metaThesaurusConcept.setSourceCollection(sourceCollection);        
+        for(Iterator it = sourceMap.keySet().iterator(); it.hasNext();){
+            sourceCollection.add((Source)sourceMap.get(it.next()));
+        }
+	    metaThesaurusConcept.setSourceCollection(sourceCollection);
+        for(Iterator it = atoms.keySet().iterator(); it.hasNext();){
+            atomCollection.add((Atom)atoms.get(it.next()));
+        }        
 	    metaThesaurusConcept.setAtomCollection(atomCollection);
 
 
@@ -2151,7 +2165,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	{
        sourceList = buildMetaThesaurusConcept(metaphraseConcept).getSourceCollection();
 	}
-	catch(COM.Lexical.Metaphrase.MetaphraseException e)
+	catch(Exception e)
 	{
 		log.error(e.getMessage());
 		throw new DAOException(getException("Exception from Metaphrase Server while getting sources \n"+ e.getMessage()));
@@ -2189,7 +2203,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	 * @return
 	 * @throws Exception
 	 */
-	private Response searchSourceByCode(HashMap map) throws Exception
+	private Response searchSourceByAtomCode(HashMap map) throws Exception
 	{
 		String code = null;
 		String sourceAbbr = "*";
@@ -2230,7 +2244,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 
 			}	
 			for(int s=0; s<sourceList.size(); s++){
-				metaConcepts = adapter.findConceptsWithSourceCodeMatching((String)sourceList.get(s), code, limit);
+                System.out.println("find concept with source code matching");
+				metaConcepts = getLexAdapterForMeta().findConceptsWithSourceCodeMatching((String)sourceList.get(s), code, limit);
 	            for(int i=0; i<metaConcepts.size(); i++ ){
 	                list.add(this.buildMetaThesaurusConcept((Concept)metaConcepts.get(i)));
 	            }
@@ -2256,10 +2271,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	private Response getSemanticTypes(HashMap map) throws Exception
 	{
 		ArrayList list = new ArrayList();
-        setVocabulary(defaultVocabularyName);
+        
 		try
 		{
-		    HashMap types = adapter.getSemanticTypes();
+		    HashMap types = getLexAdapterForMeta().getSemanticTypes();
 		    for(Iterator i = types.keySet().iterator(); i.hasNext();){
                 String key = (String) i.next();
 		        SemanticType semanticType = new SemanticType();
@@ -2312,13 +2327,12 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                 throw new Exception("Please specify conceptCode");
             }
      /** check this ***/
-			metaConcepts = adapter.findConceptsWithSourceCodeMatching(sourceAbbr, conceptCode, 1);
+            System.out.println("findConceptWithSourceCodeMatching..."+ sourceAbbr +"\t"+ conceptCode);
+			metaConcepts = getLexAdapterForMeta().findConceptsWithSourceCodeMatching(sourceAbbr, conceptCode, 1);
             for(int i=0; i<metaConcepts.size(); i++){
-                Concept concept = (Concept)metaConcepts.get(i);
-                list.add(this.buildMetaThesaurusConcept(concept));
-                
-            }
-			
+                Concept concept = (Concept)metaConcepts.get(i);                
+                list.add(this.buildMetaThesaurusConcept(concept));                
+            }			
 		}
 		catch(Exception e)
 		{
@@ -2360,7 +2374,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				  throw new DAOException(getException(" Invalid concept code"));
 
 
-			metaConcept =	adapter.findConceptByCode(conceptCode, 1);
+			metaConcept =	getLexAdapterForMeta().findConceptByCode(conceptCode, 1);
 			conceptList.add(metaConcept.getName());
 
 
@@ -2376,11 +2390,11 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		return (new Response(conceptList));
 	}
 
-	private List getMetaSources() throws Exception{
+	private List getMetaSources() throws Exception{       
 		 List list = new ArrayList();	     
 			try
 			{            
-		 		Vector sources= adapter.getSupportedSources();	  		
+		 		Vector sources= getLexAdapterForMeta().getSupportedSources();	  		
 		  		for(int i=0; i< sources.size(); i++ )
 				{                
 	                Source source =  new Source();
@@ -2394,7 +2408,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				log.error(e.getMessage());
 				throw new DAOException (getException( e.getMessage()));
 			}
-
+			
 			return list;
 	}
 
@@ -2515,7 +2529,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 			{
 				sourceAbbr = "*";
 			}
-            adapter.setVocabulary("NCI_Thesaurus");
+            LexAdapter adapter = getLexAdapterForMeta();
             if(sourceAbbr.equals("*")){
                 if(relation.equalsIgnoreCase("RN") || relation.toUpperCase().equalsIgnoreCase("PAR")){
                     rc = adapter.getRelatedConcepts(conceptCode, false, relation);
@@ -2719,7 +2733,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				  throw new DAOException(getException(" Invalid Category - set value"));
 
 /**** check code ****/
-            metaConcepts = adapter.searchConcepts(conceptCode, 100, 1, category, 1);
+            metaConcepts = getLexAdapterForMeta().searchConcepts(conceptCode, 100, 1, category, 1);
 			
 
 /*
@@ -2785,9 +2799,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				conceptName = (String)map.get(key);
 
 		}
-
-		setVocabulary(vocabularyName);
-		inverseRole = adapter.containsInverseRole(roleName, roleValue, conceptName);
+		inverseRole = getLexAdapter(vocabularyName).containsInverseRole(roleName, roleValue, conceptName);
 	}catch(Exception e){
 		log.error(e.getMessage());
 		throw new DAOException(getException(e.getMessage()));
@@ -2832,9 +2844,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				conceptName = (String)map.get(key);
 
 		}
-
-		setVocabulary(vocabularyName);
-		inverseRole = adapter.containsRole(roleName, roleValue, conceptName);
+		inverseRole = getLexAdapter(vocabularyName).containsRole(roleName, roleValue, conceptName);
 	}catch(Exception e){
 		log.error(e.getMessage());
 		throw new DAOException(getException(e.getMessage()));
@@ -2871,10 +2881,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			else if(name.equalsIgnoreCase("term"))
    				term = (String)map.get(key);
    		}
-
-   		setVocabulary(vocabularyName);
-
-   		lexProperties = adapter.getPropertiesByConceptName(term);
+   		lexProperties = getLexAdapter(vocabularyName).getPropertiesByConceptName(term);
 
    	   	for(int i=0; i<lexProperties.size(); i++)
    	   	{
@@ -2917,10 +2924,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			else if(name.equalsIgnoreCase("term"))
    				term = (String)map.get(key);
    		}
-
-   		setVocabulary(vocabularyName);
-
-   		associations = adapter.getFetchedConceptAssociations(vocabularyName, term);
+   		associations = getLexAdapter(vocabularyName).getFetchedConceptAssociations(vocabularyName, term);
 
    	   	for(int i=0; i<associations.size(); i++)
    	   	{
@@ -2960,9 +2964,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    				vocabularyName = (String)map.get(key);
 
    		}
-
-   		setVocabulary(vocabularyName);
-   		associations = adapter.getAllAssociationTypes();
+   		associations = getLexAdapter(vocabularyName).getAllAssociationTypes();
    		for(int i=0 ;i<associations.size(); i++)
    		{
    			associationList.add((String)associations.get(i));
@@ -3000,9 +3002,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    				vocabularyName = (String)map.get(key);
 
    		}
-   		setVocabulary(vocabularyName);
-
-   		types = adapter.getAllConceptAssociationQualifierTypes();
+   		types = getLexAdapter(vocabularyName).getAllConceptAssociationQualifierTypes();
    		for(int i=0 ;i<types.size(); i++)
    		{
 
@@ -3039,8 +3039,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
       				vocabularyName = (String)map.get(key);
 
       		}
-      		setVocabulary(vocabularyName);
-      		types = adapter.getAllConceptAssociationTypes();
+      		types = getLexAdapter(vocabularyName).getAllConceptAssociationTypes();
       		for(int i=0 ;i<types.size(); i++)
       		{
       			typeList.add(types.get(i));
@@ -3075,9 +3074,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
      			if(name.equalsIgnoreCase("vocabularyName"))
      				vocabularyName = (String)map.get(key);
 
-     		}
-     		setVocabulary(vocabularyName);
-     		types = adapter.getAllConceptPropertyQualifierTypes();
+     		}     		
+     		types = getLexAdapter(vocabularyName).getAllConceptPropertyQualifierTypes();
      		for(int i=0 ;i<types.size(); i++)
      		{
      			typeList.add(types.get(i));
@@ -3113,9 +3111,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
      			if(name.equalsIgnoreCase("vocabularyName"))
      				vocabularyName = (String)map.get(key);
 
-     		}
-     		setVocabulary(vocabularyName);
-     		types = adapter.getAllConceptPropertyTypes();
+     		}     		
+     		types = getLexAdapter(vocabularyName).getAllConceptPropertyTypes();
      		for(int i=0 ;i<types.size(); i++)
      		{
      			typeList.add(types.get(i));
@@ -3153,9 +3150,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
      			if(name.equalsIgnoreCase("condition"))
      				condition = (String)map.get(key);
 
-     		}
-     		setVocabulary(vocabularyName);
-     		types = adapter.getAllLicenses();
+     		}     	
+     		types = getLexAdapter(vocabularyName).getAllLicenses();
      		for(int i=0 ;i<types.size(); i++)
      		{
      			typeList.add(types.get(i));
@@ -3191,9 +3187,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
      				vocabularyName = (String)map.get(key);
 
 
-     		}
-     		setVocabulary(vocabularyName);
-     		types = adapter.getAllQualifierTypes();
+     		}     		
+     		types = getLexAdapter(vocabularyName).getAllQualifierTypes();
      		for(int i=0 ;i<types.size(); i++)
      		{
      			typeList.add(types.get(i));
@@ -3230,9 +3225,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
      				vocabularyName = (String)map.get(key);
 
 
-     		}
-     		setVocabulary(vocabularyName);
-     		types = adapter.getAllRoleNames();
+     		}     		
+     		types = getLexAdapter(vocabularyName).getAllRoleNames();
      		for(int i=0 ;i<types.size(); i++)
      		{
      			typeList.add(types.get(i));
@@ -3275,9 +3269,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
      				conceptCode = (String)map.get(key);
 
 
-     		}
-     		setVocabulary(vocabularyName);
-     		types = adapter.getAllSubConceptCodes(conceptCode);
+     		}     		
+     		types = getLexAdapter(vocabularyName).getAllSubConceptCodes(conceptCode);
      		for(int i=0 ;i<types.size(); i++)
      		{
      			typeList.add(types.get(i));
@@ -3318,8 +3311,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 
 
      		}
-     		setVocabulary(vocabularyName);
-     		types = adapter.getAllSubConceptNames(conceptName);
+     		types = getLexAdapter(vocabularyName).getAllSubConceptNames(conceptName);
      		for(int i=0 ;i<types.size(); i++)
      		{
      			typeList.add((String)types.get(i));
@@ -3356,8 +3348,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	        				vocabularyName = (String)map.get(key);
 
 	        		}
-	        		setVocabulary(vocabularyName);
-	        		//types = adapter.getAllSynonymTypes();
+	        		types = getLexAdapter(vocabularyName).getAllSynonymTypes();
 	        		for(int i=0 ;i<types.size(); i++)
 	        		{
 	        			typeList.add(types.get(i));
@@ -3437,9 +3428,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	        			if(name.equalsIgnoreCase("vocabularyName"))
 	        				vocabularyName = (String)map.get(key);
 
-	        		}
-	        		setVocabulary(vocabularyName);
-	        		types = adapter.getAllConceptAssociationQualifierTypes();
+	        		}	        		
+	        		types = getLexAdapter(vocabularyName).getAllConceptAssociationQualifierTypes();
 	        		for(int i=0 ;i<types.size(); i++)
 	        		{
 	        			typeList.add(types.get(i));
@@ -3476,8 +3466,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    				vocabularyName = (String)map.get(key);
 
    		}
-   		setVocabulary(vocabularyName);
-   		types = adapter.getAllQualifierTypes();
+   		types = getLexAdapter(vocabularyName).getAllQualifierTypes();
    		for(int i=0 ;i<types.size(); i++)
    		{
    			typeList.add(types.get(i));
@@ -3513,10 +3502,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    				vocabularyName = (String)map.get(key);
 
    		}
-   		setVocabulary(vocabularyName);
+   		
    		//types = adapter.getAllPropertyTypes();
    		//gov.nih.nci.lexrpx.client.PropertyType[] properties = adapter.getAllPropertyTypes();
-   		PropertyType[] properties = adapter.getAllPropertyTypes();
+   		PropertyType[] properties = getLexAdapter(vocabularyName).getAllPropertyTypes();
 
    		for(int i=0 ;i< properties.length; i++)
    		{
@@ -3560,19 +3549,21 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		if(concept.getTreeNode()!=null){
 			dlc.setEdgeProperties(convertEdgeProperties(concept));
 			dlc.setTreeNode(convertTreeNode(concept));
-		    }
-
-		dlc.setSemanticTypeVector(getDLSemanticTypes(dlc));
-		if(vocabulary != null){
-            dlc.setVocabulary(vocabulary);
-        }
+		 }
+		dlc.setSemanticTypeVector(getDLSemanticTypes(dlc));		
    		return dlc;
    	}
 
+   private DescLogicConcept buildDescLogicConcept(gov.nih.nci.lexrpc.client.Concept concept, Vocabulary vocab){
+       DescLogicConcept dlc = buildDescLogicConcept(concept);
+       dlc.setVocabulary(vocab);
+       return dlc;
+   }
+   
    public Vector convertAssociations(Vector dtsrpcAssociations){
-       Vector associationVector = new Vector();
-       gov.nih.nci.evs.domain.Association association = new Association();
+       Vector associationVector = new Vector();       
        for(int i=0; i<dtsrpcAssociations.size(); i++){
+           gov.nih.nci.evs.domain.Association association = new Association();
            gov.nih.nci.lexrpc.client.ConceptAssociation dtsAssociation = (gov.nih.nci.lexrpc.client.ConceptAssociation)dtsrpcAssociations.get(i);
            association.setName(dtsAssociation.getName());
            association.setValue(dtsAssociation.getValue());
@@ -3633,19 +3624,17 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				asdIndex = ((Integer)map.get(key)).intValue();
 
    		}
-   		setVocabulary(vocabularyName);
-
    		Vector conceptNames = new Vector();
 
    		Concept[] superConcepts =  null;
    		if(!inputFlag){
-   		   	if(validateConceptName(conceptName)){   		   	   
-   		   		superConcepts = adapter.getDirectSups(conceptName, false, asdIndex);
+   		   	if(validateConceptName(conceptName, vocabularyName)){   		   	   
+   		   		superConcepts = getLexAdapter(vocabularyName).getDirectSups(conceptName, false, asdIndex);
    		   	    }
    		   	}
    		else{
-   		    if(validateDLConceptCode(conceptName)){		   	    
-   		    	superConcepts = adapter.getDirectSups(conceptName, false, asdIndex);
+   		    if(validateDLConceptCode(conceptName, vocabularyName)){		   	    
+   		    	superConcepts = getLexAdapter(vocabularyName).getDirectSups(conceptName, false, asdIndex);
 		   	    }
 		   	}	
 
@@ -3696,16 +3685,15 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    		 
 
    		}
-   		setVocabulary(vocabularyName);
-
    		Concept[] concepts = null;
+        LexAdapter adapter = getLexAdapter(vocabularyName);
 
    		   if(!inputFlag){
-   		   		validateConceptName(conceptName);
+   		   		validateConceptName(conceptName, vocabularyName);
    		   		concepts = adapter.getDirectSubs(conceptName,false, asdIndex);
    		   	}
    		   	else{
-				validateDLConceptCode(conceptName);
+				validateDLConceptCode(conceptName, vocabularyName);
 				concepts = adapter.getDirectSubs(conceptName,true, asdIndex);
 			}
 
@@ -3750,16 +3738,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	 				conceptName = (String)map.get(key);
 
    	   		}
-   	   		setVocabulary(vocabularyName);
-
-
-   	   		if(validateConceptName(conceptName)){
-
-   	   			found  = adapter.hasChildren(conceptName);
+   	   		if(validateConceptName(conceptName, vocabularyName)){
+   	   			found  = getLexAdapter(vocabularyName).hasChildren(conceptName);
    	   			hasList.add(found);
    	   		}
-
-
    	   		}catch(Exception e){
    	   		log.error(e.getMessage());
    	   		throw new DAOException(getException(e.getMessage()));
@@ -3794,16 +3776,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	 				conceptName = (String)map.get(key);
 
    	   		}
-   	   		setVocabulary(vocabularyName);
-
-
-   	   		if(validateConceptName(conceptName)){
-
-   	   			found  = adapter.hasParents(conceptName);
+   	   		if(validateConceptName(conceptName, vocabularyName)){
+   	   			found  = getLexAdapter(vocabularyName).hasParents(conceptName);
    	   			hasList.add(found);
    	   		}
-
-
    	   		}catch(Exception e){
    	   		log.error(e.getMessage());
    	   			throw new DAOException(getException(e.getMessage()));
@@ -3820,7 +3796,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
  	 * @return boolean value
  	 * @throws Exception
      */
-   private boolean validateConceptName (String conceptName)throws Exception{
+   private boolean validateConceptName (String conceptName, String vocabularyName)throws Exception{
 
    	boolean valid = true;
 
@@ -3829,7 +3805,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    		valid = false;
    		throw new DAOException (getException("Exception : Concept name cannot be a null value"));
    			}
-   	else if(adapter.getConceptCodeByName(conceptName) == null){
+   	else if(getLexAdapter(vocabularyName).getConceptCodeByName(conceptName) == null){
    			valid = false;
    			throw new DAOException (getException("Exception : Invalid concept name - "+conceptName));
    			}
@@ -3892,15 +3868,11 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				conceptCode = (String)map.get(key);
 
 		}
-
-
-		setVocabulary(vocabularyName);
-
 		if(conceptCode == null){
 			log.error(" Concept code cannot be a null value");
 			throw new DAOException (getException(" Invalid concept code"));
 			}
-		conceptName = adapter.getConceptNameByCode(conceptCode);
+		conceptName = getLexAdapter(vocabularyName).getConceptNameByCode(conceptCode);
 		list.add(conceptName);
 	}
 	catch(Exception e)
@@ -3908,11 +3880,9 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		log.error("Exception - getConceptNameByCode "+e.getMessage());
 		throw new DAOException (getException(" Exception - "+  e.getMessage()));
 	}
-
-
-	return (new Response(list));
-
+    return (new Response(list));
    	}
+   
    public Vector getDLSemanticTypes(DescLogicConcept dlc){
    	Vector semanticTypes = new Vector();
    	Vector properties = new Vector();
@@ -3927,6 +3897,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	}
    	return semanticTypes;
    	}
+   
    public Response getAllPropertyTypes(HashMap map)throws Exception{
 
    	String vocabularyName = null;
@@ -3942,9 +3913,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    				vocabularyName = (String)map.get(key);
 
    		}
-
-   		setVocabulary(vocabularyName);
-   		PropertyType[] propertyTypes = adapter.getAllPropertyTypes();
+   		PropertyType[] propertyTypes = getLexAdapter(vocabularyName).getAllPropertyTypes();
    		for(int i=0 ;i<propertyTypes.length; i++)
    		{
    			propertyList.add(propertyTypes[i].getName());
@@ -3960,11 +3929,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    private Exception getException(String msg){
    	Exception ex = new Exception(msg);
    	if(msg == null){
-   		ex = new Exception(pastEx.getMessage());
-   		}
-   	else{
-   		pastEx = new Exception(msg);
-   		}
+   		ex = new Exception("caCORE - LexBIG Exception");
+   		}   	
    	return ex;
    	}
 
@@ -3973,7 +3939,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	return getException(msg);
    	}
 
-   private boolean validateDLConceptCode(String code) throws Exception{
+   private boolean validateDLConceptCode(String code, String vocabularyName) throws Exception{
 
 	boolean valid = true;
 
@@ -3982,7 +3948,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    		valid = false;
    		throw new DAOException (getException("Exception : Concept code cannot be a null value"));
    			}
-   	else if(adapter.getConceptNameByCode(code) == null){
+   	else if(getLexAdapter(vocabularyName).getConceptNameByCode(code) == null){
    			valid = false;
    			throw new DAOException (getException("Exception : Invalid concept code - "+ code));
    			}
@@ -4019,13 +3985,11 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                 else if(name.equalsIgnoreCase("finalDate"))
                     finalDate = (Date)map.get(key);
              }
-
-            setVocabulary(vocabularyName);
             if(conceptCode != null){
-                validateDLConceptCode(conceptCode);
+                validateDLConceptCode(conceptCode, vocabularyName);
             }
-            int namespaceId = adapter.getNamespaceId(vocabularyName);
-            
+           System.out.println("History Date: "+ initialDate +"\t"+ conceptCode);
+            LexAdapter adapter = getLexAdapter(vocabularyName);
             if(conceptCode == null){
             	v = adapter.getHistoryDates();
             }
@@ -4094,9 +4058,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	   				vocabularyName = (String)map.get(key);
 
 	   		}
-
-	   		setVocabulary(vocabularyName);
-	   		Date startDate = adapter.getHistoryStartDate();
+	   		Date startDate = getLexAdapter(vocabularyName).getHistoryStartDate();
 	   		dateList.add(startDate);
 	   		}catch(Exception e){
 	   			log.error(e.getMessage());
@@ -4118,9 +4080,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	   			if(name.equalsIgnoreCase("vocabularyName"))
 	   				vocabularyName = (String)map.get(key);
 	   		}
-
-	   		setVocabulary(vocabularyName);
-	   		Date endDate = adapter.getHistoryEndDate();
+	   		Date endDate = getLexAdapter(vocabularyName).getHistoryEndDate();
 	   		dateList.add(endDate);
 	   		}catch(Exception e){
 	   			log.error(e.getMessage());
@@ -4130,18 +4090,48 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    }
    private Response getHistoryDates(HashMap map) throws Exception {
        List dateList = new ArrayList();
-       Vector dates = adapter.getHistoryDates();
-       for(int i=0; i< dates.size(); i++){
-           dateList.add(dates.get(i));
-       }
+       String vocabularyName = null;
+       try{
+            for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+            {
+                String key = (String)iter.next();
+                String name = key.substring(key.indexOf("$")+1, key.length());
+
+                if(name.equalsIgnoreCase("vocabularyName"))
+                    vocabularyName = (String)map.get(key);
+            }
+            Vector dates = getLexAdapter(vocabularyName).getHistoryDates();
+            for(int i=0; i< dates.size(); i++){
+                dateList.add(dates.get(i));
+            }            
+        }catch(Exception e){
+                log.error(e.getMessage());
+                throw new DAOException(getException( e.getMessage()));
+        }    
        return new Response(dateList);
    }
+   
    private Response getHistoryEndBaseLineDate(HashMap map) throws Exception {
        List dateList = new ArrayList();
-       Date date = adapter.getHistoryEndBaselineDate();
-       if(date!=null){
-           dateList.add(date);
-       }
+       String vocabularyName = null;
+       try{
+           for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+           {
+               String key = (String)iter.next();
+               String name = key.substring(key.indexOf("$")+1, key.length());
+
+               if(name.equalsIgnoreCase("vocabularyName"))
+                   vocabularyName = (String)map.get(key);
+           }
+           Date date = getLexAdapter(vocabularyName).getHistoryEndBaselineDate();
+           if(date!=null){
+               dateList.add(date);
+           }            
+       }catch(Exception e){
+               log.error(e.getMessage());
+               throw new DAOException(getException( e.getMessage()));
+       }    
+
        return new Response(dateList);
    }
    private Date stringToDate(String aString) throws Exception
@@ -4200,10 +4190,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
             else if(name.equalsIgnoreCase("action"))
                 action = (String)map.get(key);
    		}
-
-   		setVocabulary(vocabularyName);
    		if(action == null){
-   			children = adapter.getCodeActionChildren(conceptCode, baseLineDate);
+   			children = getLexAdapter(vocabularyName).getCodeActionChildren(conceptCode, baseLineDate);
    		}
    		
    		for(int i=0; i<children.size(); i++)
@@ -4247,9 +4235,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
             else if(name.equalsIgnoreCase("baseLineDate"))
                 baseLineDate = stringToDate((String)map.get(key));           
    		}
-
-   		setVocabulary(vocabularyName);
-   		parents = adapter.getCodeActionParents(conceptCode, baseLineDate);
+   		parents = getLexAdapter(vocabularyName).getCodeActionParents(conceptCode, baseLineDate);
    		for(int i=0; i<parents.size(); i++)
 			{                
 				list.add(parents.get(i));
@@ -4261,8 +4247,6 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    		throw new DAOException (getException( e.getMessage()));
    	}
    	return (new Response(list));
-
-   }
- 
+   } 
 
  }
