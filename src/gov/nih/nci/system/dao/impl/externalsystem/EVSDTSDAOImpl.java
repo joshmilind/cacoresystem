@@ -2837,7 +2837,8 @@ public class EVSDTSDAOImpl implements DAO {
 
 			setVocabulary(vocabularyName);
 
-			DTSProperties = dtsrpc.fetchDTSProperties(term);
+			//DTSProperties = dtsrpc.fetchDTSProperties(term);
+            DTSProperties = dtsrpc.getPropertiesByConceptName(term);
 
 			for (int i = 0; i < DTSProperties.size(); i++) {
 				list.add(DTSProperties.get(i));
