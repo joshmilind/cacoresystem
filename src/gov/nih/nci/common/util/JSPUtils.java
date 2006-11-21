@@ -294,7 +294,7 @@ public ArrayList getAssociations(String className) throws Exception{
                    continue;
                }  
                if(className.endsWith("DescLogicConcept")){
-                   roles.add("gov.nih.nci.evs.domain.HistoryRecord");
+                   roleNames.add("gov.nih.nci.evs.domain.HistoryRecord");
                }
                if(className.endsWith("Association") || className.endsWith("Property") ){
                    continue;
