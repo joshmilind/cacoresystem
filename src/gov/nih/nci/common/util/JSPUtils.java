@@ -289,8 +289,16 @@ public ArrayList getAssociations(String className) throws Exception{
            Field field = fields[i];
            String type = field.getType().getName();
            String fieldName = field.getName();
-           if(packageName.startsWith("gov.nih.nci.evs") && (fieldName.toLowerCase().endsWith("edgeproperties") || fieldName.toLowerCase().endsWith("treenode"))){
-               continue;
+           if(packageName.startsWith("gov.nih.nci.evs")){
+               if(fieldName.toLowerCase().endsWith("edgeproperties") || fieldName.toLowerCase().endsWith("treenode")){
+                   continue;
+               }  
+               if(className.endsWith("DescLogicConcept")){
+                   roles.add("gov.nih.nci.evs.domain.HistoryRecord");
+               }
+               if(className.endsWith("Association") || className.endsWith("Property") ){
+                   continue;
+               }
            }
            if(!field.getType().isPrimitive()){
                if(fieldName.endsWith("Collection") || (type.startsWith("java") && type.endsWith("Collection"))){
@@ -325,10 +333,7 @@ public ArrayList getAssociations(String className) throws Exception{
        ArrayList<String>roles = new ArrayList();
        for(Iterator i = roleNames.iterator(); i.hasNext();){
            roles.add((String)i.next());
-       }
-       if(className.endsWith("DescLogicConcept")){
-           roles.add("gov.nih.nci.evs.domain.HistoryRecord");
-       }
+       }       
        return roles;
    }
    private String locateClass(String beanName, String packageName){
