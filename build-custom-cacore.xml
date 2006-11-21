@@ -153,6 +153,9 @@
 		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.output.conf}" includes="*.xml"/>
 		</copy>
+		<copy todir="${dir.output.project.web}" overwrite="true">
+			<fileset dir="${dir.custom.conf}" includes="**/*"/>
+		</copy>
 	</target>
 	
 	<target name="-copy-template-files.custom" if="copy-template-files.custom.use">
