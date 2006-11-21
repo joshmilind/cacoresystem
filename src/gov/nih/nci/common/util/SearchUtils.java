@@ -733,10 +733,20 @@ public class SearchUtils {
                 }
             }
         else if(fieldType.equals("java.util.Date")){
-            SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy");
-            if(valueType.equals("java.lang.String")){
-                convertedValue = format.parse((String)value);
-                }
+            String dateString = (String)value;
+            SimpleDateFormat format = null;
+            if(dateString.indexOf("-")>0){
+                format = new SimpleDateFormat("MM-dd-yyyy");
+            }else if(dateString.indexOf("/")>0){
+                format = new SimpleDateFormat("MM/dd/yyyy");
+            }
+            try{
+                if(valueType.equals("java.lang.String")){
+                    convertedValue = format.parse((String)value);
+                    }
+            }catch(Exception ex){
+                throw new Exception("Invalid date format - please use MM-DD-YYYY");
+            }            
         }
         else{
             throw new Exception("type mismatch - "+valueType);
