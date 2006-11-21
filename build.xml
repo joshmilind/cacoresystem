@@ -11,7 +11,7 @@
 
 	<!-- The DEBUG_FLAG property has value on or off. Set off to hide any debugging information -->
 	<property name="DEBUG_FLAG" value="on" />
-	<import file="${basedir}/build.codegen.xml" />
+	<import file="${basedir}/build.xml" />
 
 	<target name="build-system">
 		<SDKecho message="BUILDING caCORE" />
