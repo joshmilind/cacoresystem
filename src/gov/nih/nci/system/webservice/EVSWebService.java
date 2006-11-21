@@ -157,15 +157,15 @@ public class EVSWebService {
                         results = getVocabularies();
                     }
 
-                } else if(searchObject.getClass().getName().endsWith("Silo")&& returnClassName.endsWith("Silo")){
+                } else if(searchObject.getClass().getName().endsWith("Silo")){
                     results = getMatchFromList(getAllSilos(),searchObject, "name");
-                } else if(searchObject.getClass().getName().endsWith("Association")&& returnClassName.endsWith("Association")){
+                } else if(searchObject.getClass().getName().endsWith("Association") && returnClassName.endsWith("Association")){
                     results = getMatchFromList(getAllAssociations(),searchObject, "name");
-                } else if(searchObject.getClass().getName().endsWith("Property")&& returnClassName.endsWith("Property")){
+                } else if(searchObject.getClass().getName().endsWith("Property") && returnClassName.endsWith("Property")){
                     results = getMatchFromList(getAllProperties(),searchObject, "name");
-                } else if(searchObject.getClass().getName().endsWith("Qualifier")&& returnClassName.endsWith("Qualifier")){
+                } else if(searchObject.getClass().getName().endsWith("Qualifier")){
                     results = getMatchFromList(getAllQualifiers(),searchObject, "name");
-                } else if(searchObject.getClass().getName().endsWith("Role")&& returnClassName.endsWith("Role")){
+                } else if(searchObject.getClass().getName().endsWith("Role")){
                     results = getMatchFromList(getAllRoles(),searchObject, "name");
                 }else{
                     results = searchDTSRPC(searchObject);
@@ -212,6 +212,7 @@ public class EVSWebService {
         metaList.add("Atom");
         metaList.add("Source");
         metaList.add("SemanticType");
+        metaList.add("Definition");
 
         for(int i=0; i<dtsrpcList.size(); i++){
             if(searchObject.getClass().getName().endsWith((String)dtsrpcList.get(i))){
@@ -380,7 +381,7 @@ public class EVSWebService {
         }else if(returnClassName.endsWith("Silo")){
             evsQuery.getAllSilos(defaultVocabulary);
         }else{
-            throw new Exception("Invalid search");
+            throw new Exception("Please specify search parameters");
         }
         results = query(evsQuery);
 
@@ -496,7 +497,7 @@ public class EVSWebService {
      * Returns a list of Properties for the objects in the List
      * @param This list consists of EVS domain objects
      */
-    private List getConceptProperties(List conceptList) throws Exception{
+    private List getConceptProperties(List conceptList) throws Exception{        
         if(!(conceptList.size()>0)){
             return new ArrayList();
         }
@@ -531,21 +532,66 @@ public class EVSWebService {
             if(field == null){
                 throw new Exception("Cannot locate "+returnClassName +" in " + className);
             }
-            Set values = new HashSet();
+            System.out.println("Field: "+ field.getName());
+            HashMap values = new HashMap();
             for(int i=0; i<conceptList.size(); i++){
                 Object concept = conceptList.get(i);
                 if(fieldType.endsWith("Collection")|| fieldType.endsWith("HashSet")|| fieldType.endsWith("Vector")|| fieldType.endsWith("ArrayList")){
                     for(Iterator it = ((Collection)field.get(concept)).iterator(); it.hasNext();){
                         Object value = it.next();
-                        values.add(value);
+                        if(value.getClass().getName().endsWith("Property")){
+                            Property p = (Property)value;
+                            String key = p.getName() + p.getValue();
+                            values.put(key, p);
+                        }else if(value.getClass().getName().endsWith("Qualifier")){                            
+                            Qualifier q = (Qualifier)value;
+                            String key = q.getName() + q.getValue();
+                            values.put(key, q);
+                        }else if(value.getClass().getName().endsWith("Association")){
+                            Association a = (Association)value;
+                            String key = a.getName() + a.getValue();
+                            values.put(key, a);
+                        }else if(value.getClass().getName().endsWith("Role")){
+                            Role r = (Role)value;
+                            String key = r.getName() + r.getValue();
+                            values.put(key, r);
+                        }else if(value.getClass().getName().endsWith("SemanticType")){
+                            SemanticType s = (SemanticType)value;
+                            String key = s.getName() + s.getId();
+                            values.put(key, s);
+                        }else if(value.getClass().getName().endsWith("Source")){
+                            Source s = (Source)value;
+                            String key = s.getAbbreviation();
+                            values.put(key, s);
+                        }else if(value.getClass().getName().endsWith("Vocabulary")){
+                            Vocabulary v = (Vocabulary)value;
+                            String key = v.getName();
+                            values.put(key, v);
+                        }else if(value.getClass().getName().endsWith("Definition")){
+                            Definition d = (Definition)value;
+                            String key = d.getDefinition();
+                            values.put(key, d);
+                        }else if(value.getClass().getName().endsWith("Silo")){
+                            Silo s = (Silo)value;
+                            String key = s.getName();
+                            values.put(key, s);
+                        }else if(value.getClass().getName().endsWith("Atom") && returnClassName.endsWith("Atom")){
+                            Atom a = (Atom)value;
+                            String key = a.getName() + a.getOrigin();
+                            values.put(key, a);
+                         }  
+                        
                     }
                 }
                 else{
-                    values.add(field.get(concept));
+                    values.put(i,field.get(concept));
                 }
             }
             if(values.size()>0){
-                resultList.addAll(values);
+                for(Iterator it=values.keySet().iterator(); it.hasNext();){
+                    resultList.add(values.get(it.next()));
+                }
+                
             }
         }
         return resultList;
@@ -735,6 +781,7 @@ public class EVSWebService {
       EVSQuery evsQuery = new EVSQueryImpl();
       List result = null;
       String conceptCode = null;
+      Date date = null;      
       if(criteria.getClass().getName().endsWith("DescLogicConcept")){
               DescLogicConcept dlc = (DescLogicConcept)criteria;
               conceptCode = dlc.getCode();
@@ -743,6 +790,9 @@ public class EVSWebService {
           History history = (History)criteria;
           if(history.getReferenceCode()!= null){
               conceptCode = history.getReferenceCode();
+              if(history.getEditActionDate() != null){
+                  date = history.getEditActionDate();
+              }              
           }
       }
       else if(criteria.getClass().getName().endsWith("HistoryRecord")){
@@ -752,7 +802,11 @@ public class EVSWebService {
           }
       }
       if(conceptCode != null){
-         evsQuery.getHistoryRecords(defaultVocabulary, conceptCode);
+          if(date != null){
+              evsQuery.getHistoryRecords(defaultVocabulary, String.valueOf(date), String.valueOf(date), conceptCode);
+          }else{
+              evsQuery.getHistoryRecords(defaultVocabulary, conceptCode);
+          }         
          result = query(evsQuery);
       }
       return result;
