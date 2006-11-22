@@ -329,7 +329,16 @@ public ArrayList getAssociations(String className) throws Exception{
                    }
                }
            }
-       }     
+       }
+       if(!(Class.forName(qualifiedName).getSuperclass().getName().equalsIgnoreCase("java.lang.Object"))){
+           String superClassName = Class.forName(qualifiedName).getSuperclass().getName();
+           List associations = getAssociations(superClassName);
+           for(int i=0; i<associations.size(); i++){
+               if(!(superClassName.equals((String)associations.get(i)))){
+                   roleNames.add((String)associations.get(i));
+               }               
+           }
+       }
        ArrayList<String>roles = new ArrayList();
        for(Iterator i = roleNames.iterator(); i.hasNext();){
            roles.add((String)i.next());
