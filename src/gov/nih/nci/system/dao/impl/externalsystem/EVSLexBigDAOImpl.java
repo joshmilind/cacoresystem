@@ -19,6 +19,7 @@ import gov.nih.nci.system.dao.security.*;
 import msso.validator.MSSOUserValidator;
 import org.LexGrid.LexBIG.admin.*;
 import gov.nih.nci.lexrpc.client.*;
+import gov.nih.nci.lexrpc.client.EditActionDate;
 import gov.nih.nci.lexrpc.server.LexAdapter;
 import gov.nih.nci.evs.security.*;
 
@@ -76,7 +77,7 @@ public class EVSLexBigDAOImpl implements DAO
     
     
     
-    public Response query(Request r) throws DAOException {
+    public Response query(Request r) throws DAOException {        
         Object obj = r.getRequest();
         List resultList = new ArrayList();
         HashMap tokenCollection = new HashMap();
@@ -95,13 +96,13 @@ public class EVSLexBigDAOImpl implements DAO
             }else if(((HashMap)criteria.getClass().getField("metaThesaurusValues").get(criteria)).size()>0){                
                 mapValues = (HashMap)criteria.getClass().getField("metaThesaurusValues").get(criteria);
             }
-            try {
+            try {                
                 response = queryEVS(configs, tokenCollection, mapValues);
             } catch (Exception ex) {
                 String msg = " - ";
                 
                 if (ex.getMessage() == null) {
-                    msg = msg + "Exception in method: "+getMethodName(mapValues)+" - check the server log";
+                    msg = msg + "Exception in method: "+getMethodName(mapValues)+" - check the server log for details";
                 } else {
                     msg = msg + ex.getMessage();
                 }
@@ -155,7 +156,7 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return enableCache;
     }
-    private Response queryEVS(Hashtable config, HashMap tokenCollection, HashMap mapValues) throws Exception{  
+    private Response queryEVS(Hashtable config, HashMap tokenCollection, HashMap mapValues) throws Exception{        
         Response response = null;       
         String vocabularyName = getVocabularyName(mapValues);
         String methodName = getMethodName(mapValues);       
@@ -164,14 +165,25 @@ public class EVSLexBigDAOImpl implements DAO
             log.error("Invalid method name");
             throw new DAOException(getException("Invalid method name"));
         }
-        String key = getCacheKey(methodName, mapValues);
+        String key = getCacheKey(methodName, mapValues);       
         boolean checkCache = false;        
         EVSCacheManager evsCache = null;          
         //Check if a security token is required to access the vocabulary
-        DAOSecurity security = null;
+        DAOSecurity security = null;        
         if(vocabularyName != null){
             if(getSecurityAdapter(vocabularyName)!= null){
+                security = getSecurityAdapter(vocabularyName);
             }
+        }else{
+            /*
+            try{
+                if(getLexAdapter(metaVocabularyName)!= null){
+                    key += "_"+ metaVocabularyName;
+                }
+            }catch(Exception ex){
+                key += "_"+ defaultVocabularyName;
+            } 
+            */                      
         }
         if(security != null){
             SecurityToken securityToken = null;
@@ -218,6 +230,7 @@ public class EVSLexBigDAOImpl implements DAO
     }
     
     private void makeRemoteConnection(Hashtable configs, String vocabularyName)throws Exception{
+        System.out.println("MAKE REMOTE CONNECTION..........");
         try{
             
             if(adapters.size()<1){
@@ -230,7 +243,7 @@ public class EVSLexBigDAOImpl implements DAO
                 log.debug("CONFIG FILE LOCATION: "+ lg_config_file);                
                 LexAdapter adapter = new LexAdapter();
                 try{
-                    log.debug("Connecting to "+ defaultVocabularyName);
+                    log.info("Connecting to "+ defaultVocabularyName);
                     adapter.setVocabulary(defaultVocabularyName);
                 }catch(Exception ex){
                     log.error("Unable to connect to "+ defaultVocabularyName);
@@ -253,18 +266,24 @@ public class EVSLexBigDAOImpl implements DAO
                         continue;
                     }                        
                 }
-                if(adapters.get(metaVocabularyName)==null){
-                    try{
+                try{
+                    if(adapters.get(metaVocabularyName)==null){
                         LexAdapter meta = new LexAdapter();
                         meta.setVocabulary(metaVocabularyName);
                         adapters.put(metaVocabularyName, meta);
-                    }catch(Exception ex){
-                        log.error("Vocabulary error: "+ metaVocabularyName +" "+ ex.getMessage());
-                    }                                                
+                    }                    
+                }catch(Exception ex){
+                    adapters.put(metaVocabularyName, null);
+                    log.error("Vocabulary error: "+ metaVocabularyName +" "+ ex.getMessage());
                 }
+                
             }                      
         }catch(Exception ex){
-            throw new DAOException(getException(ex));
+            throw new DAOException("Error: "+getException(ex));
+        }
+        System.out.println("CONNECTIONs ESTABLISHED....");
+        for(Iterator i = adapters.keySet().iterator(); i.hasNext();){
+            System.out.println("Adapter - "+  (String)i.next());
         }
         }
     
@@ -278,17 +297,20 @@ public class EVSLexBigDAOImpl implements DAO
         return (LexAdapter)adapters.get(vocabularyName);
     }
     
-    private LexAdapter getLexAdapterForMeta() throws Exception{
-        LexAdapter adapter = null;
+    private LexAdapter getLexAdapterForMeta() throws Exception{        
+        LexAdapter adapter = null;        
         try{
-            getLexAdapter(metaVocabularyName);
-            if(adapter == null){
+            if(getLexAdapter(metaVocabularyName) != null){                                
                 adapter = getLexAdapter(defaultVocabularyName);
-                log.debug("Connecting to "+ defaultVocabularyName);
+            }else{
+                log.info(metaVocabularyName +" is not available - connecting to "+ defaultVocabularyName);
+                adapter = getLexAdapter(defaultVocabularyName);
             }
+                                   
         }catch(Exception ex){
-            log.error(ex.getMessage());
-        }
+            log.info(metaVocabularyName +" is not available - connecting to "+ defaultVocabularyName);
+            adapter = getLexAdapter(defaultVocabularyName);
+        }        
         return adapter;
     }
      /**
@@ -1855,7 +1877,7 @@ private Response getConceptByName(HashMap map) throws Exception
  * @throws Exception
  */
 private Response searchMetaThesaurus(HashMap map) throws Exception
-{
+{    
 	String searchTerm = null;
 	int limit = 10;
 	String source = "*";
@@ -1900,8 +1922,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 				checkSource = true;
 			}
 		}       
-        LexAdapter adapter = getLexAdapterForMeta();
-       
+        LexAdapter adapter = getLexAdapterForMeta();       
         
 		if(cui)
 		{
@@ -2204,7 +2225,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	 * @throws Exception
 	 */
 	private Response searchSourceByAtomCode(HashMap map) throws Exception
-	{
+	{        
 		String code = null;
 		String sourceAbbr = "*";
         int limit = 100;
@@ -3995,7 +4016,19 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
             }
             else{
             	if(initialDate != null){
-            		v = adapter.getConceptEditAction(conceptCode, initialDate);
+            		Vector ead = adapter.getConceptEditAction(conceptCode, initialDate);                    
+                    for(int x=0; x<ead.size(); x++){
+                        if(ead.get(x).getClass().getName().endsWith("EditActionDate")){
+                            History h = new History();
+                            EditActionDate date = (EditActionDate)ead.get(x);
+                            h.setEditActionDate(date.getEditDate());                        
+                            h.setEditAction(getEditActionString(date.getAction()));
+                            h.setReferenceCode(conceptCode);
+                            v.add(h);
+                        }else {
+                            v = ead;
+                        }                        
+                    }
             	}else{
             		v = adapter.getConceptEditAction(conceptCode);
             	}
@@ -4045,6 +4078,27 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    }
 
 
+   /**
+    * Returns edit action string for a given code
+    * @param map
+    * @return
+    * @throws Exception
+    */
+   private String getEditActionString(int code){
+       String action = null;
+       if(code == 0){
+           action = "create";
+       }else if(code == 1){
+           action = "merge";
+       }else if(code == 2){
+           action = "modify";
+       }else if(code == 3){
+           action = "retire";
+       }else if(code == 4){
+           action = "split";
+       }
+       return action;
+   }
    private Response getHistoryStartDate(HashMap map) throws Exception{
 	   String vocabularyName = null;
 	   	List dateList = new ArrayList();
