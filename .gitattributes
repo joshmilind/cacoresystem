@@ -43,7 +43,6 @@ conf/xslt/evsFormat.xsl -text
 custom/src/gov/nih/nci/cadsr/domain/Context.java -text
 demo/EVSMonitor.java -text
 demo/EVSWSClient.java -text
-demo/TestCase.java -text
 demo/TestClient.java -text
 demo/TestDSR.java -text
 demo/TestEVS.java -text

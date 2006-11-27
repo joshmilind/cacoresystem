@@ -4,6 +4,7 @@ import java.util.*;
 import gov.nih.nci.cadsr.domain.*;
 import gov.nih.nci.cabio.domain.*;
 import gov.nih.nci.common.util.*;
+import gov.nih.nci.common.provenance.domain.*;
 import org.hibernate.criterion.*;
 import org.w3c.dom.Document;
 
@@ -512,7 +513,7 @@ public class TestClient {
                         Histopathology his = (Histopathology) iterator.next();
                         System.out.println(" result id = " + his.getId()
                                 + " | result description = "
-                                + his.getGrossDescription());
+                                + his.getComments());
                     }
                 }
 
@@ -617,23 +618,23 @@ public class TestClient {
 				// Test Case 19: Get Grid Identifier
 				Gene gene = new Gene();
 	            gene.setSymbol("brca*");
-	            System.out.println("Search Provenance for Gene: " + gene.getName());
+	            System.out.println("\n\n\nTest Case 19: Search Provenance for Gene grid identifier: " + gene.getSymbol());
 	            List results = appService.search("gov.nih.nci.cabio.domain.Gene", gene);
 	            for(int i=0; i<results.size(); i++){
 	                Gene g = (Gene)results.get(i);            
 	                System.out.println("Gene: "+ g.getId() +"\t"+ g.getSymbol() +"\t"+ g.getBigid());
-	                System.out.println("Big Id exists: "+appService.exist(g.getId()));
-		            Gene dataObject = (Gene)appService.getDataObject(g.getId());
+	                System.out.println("Big Id exists: " + appService.exist(g.getBigid()));
+		            Gene dataObject = (Gene)appService.getDataObject(g.getBigid());
 		            System.out.println("Result: "+ dataObject.getId() +"\t"+dataObject.getSymbol()+"\t"+dataObject.getBigid());
 	            }            
 	            
-				// Test Case 21: Test Provence Provenance
+				// Test Case 20: Test Provence Provenance
 				Protein pro = new Protein();
 				pro.setName("BRCA*");
-				System.out.println("Search Provenance for Protein: " + pro.getName());
+				System.out.println("\n\n\nTest Case 20: Search Provenance for Protein: " + pro.getName());
 				List protList = appService.search(Protein.class,pro);
 
-				for (int i=0;i<protList.size();i++)  {
+				for (int i=0; i < protList.size(); i++)  {
 					Protein protein = (Protein)protList.get(i);
 					System.out.println("Protein "+protein.getName()+":"+protein.getId());
 
@@ -659,15 +660,13 @@ public class TestClient {
 					URLSourceReference sourceReference =
 		                             (URLSourceReference)provenance.getSourceReference();
 		    			System.out.println("Type: "+sourceReference.getSourceReferenceType()+"\nURL: "+sourceReference.getSourceURL());
-
+				}
 			} catch (RuntimeException e2) {
-				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println("Test client throws Exception = " + ex);
 		}
-
 	}
 }
