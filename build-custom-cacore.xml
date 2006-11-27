@@ -256,7 +256,12 @@
 		     on XMI, not EVS code.  The build order is wrong. -->
 		<SDKecho message="Generating caCORE XML mapping files"/>
 		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.xmlmappinggeneration_cacore}"/>
-			
+		<jar destfile="${dir.output.project.package.client}/lib/${project_name}-client.jar" update="true">
+					<fileset dir="${dir.output.project.src}">
+						<include name="xml-mapping.xml"/>
+					</fileset>
+	    </jar>
+		
 		<!-- First, create test client files with current project information -->
 		<copy todir="${dir.output.project.package.client}" overwrite="true">
 			<fileset dir="${dir.custom.demo}">

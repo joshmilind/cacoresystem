@@ -41,7 +41,6 @@
 	<!-- ************************************************************************************************-->
 	<!--    Run EVS Client Demo                                                                          -->
 	<!-- ************************************************************************************************-->
-
 	<target name="runevsdemo">
 		<javac srcdir=".">
 			<include name="TestEVS.java" />
@@ -63,7 +62,6 @@
 	<!-- ************************************************************************************************-->
 	<!--    Run caDSR Client Demo                                                                        -->
 	<!-- ************************************************************************************************-->
-
 	<target name="rundsrdemo">
 		<javac srcdir=".">
 			<include name="TestDSR.java" />
@@ -106,7 +104,6 @@
 	<!-- ************************************************************************************************-->
 	<!--     Run SVG Client Demo                                                                         -->
 	<!-- ************************************************************************************************-->
-
 	<target name="runsvgdemo">
 		<javac srcdir=".">
 			<include name="TestSVG.java" />
@@ -129,7 +126,6 @@
 	<!-- ************************************************************************************************-->
 	<!--    Run Web Services Client Demo                                                                 -->
 	<!-- ************************************************************************************************-->
-
 	<target name="runwsdemo">
 		<javac srcdir=".">
 			<include name="WSTestClient.java" />
@@ -151,7 +147,6 @@
 	<!-- ************************************************************************************************-->
 	<!--    Run EVS Web Services Client Demo                                                             -->
 	<!-- ************************************************************************************************-->
-
 	<target name="runevswsdemo">
 		<javac srcdir=".">
 			<include name="EVSWSClient.java" />
@@ -169,50 +164,4 @@
 		</java>
 
 	</target>
-
-	
-	
-	<!-- ************************************************************************************************-->
-	<!--    Run EVS Monitor                                                                              -->
-	<!-- ************************************************************************************************-->
-
-	<target name="runevsmonitor">
-		<echo message="********************************************************************" />
-		<echo message="Please enter 2 args from the command line                         **" />
-		<echo message="The first arg is the number of time you want to run this monitor  **" />
-		<echo message="The second arg is the number of second you want to delay " />
-		<echo message="between number of time you want to run                            **" />
-		<!--<echo message="The default value is 1 time and 15 seconds.                       **"/>-->
-		<echo message="********************************************************************" />
-
-		<javac srcdir=".">
-			<include name="EVSMonitor.java" />
-			<classpath refid="cp" />
-			<classpath>
-				<pathelement location="${src.dir}" />
-			</classpath>
-		</javac>
-		<java classname="EVSMonitor" fork="true">
-			<classpath refid="cp" />
-			<arg value="${numberTimeToRun}" />
-			<arg value="${timeDelayInSecond}" />
-			<classpath>
-				<pathelement location="${src.dir}" />
-			</classpath>
-			<sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties" />
-		</java>
-
-	</target>
-	<!-- ************************************************************************************************-->
-	<!--                                             Deploy web services                                        -->
-	<!-- ************************************************************************************************-->
-	<target name="deploy">					
-			<java classname="org.apache.axis.client.AdminClient" fork="true">
-				<classpath refid="cp"/>
-				<classpath><pathelement location="${src.dir}"/>	</classpath>				
-				<arg value="-lhttp://localhost:8080/cacore32/ws/AdminService"/>
-				<arg value="${conf.dir}/deploy.wsdd"/>				
-				<sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties"/>
-			</java>
-	</target>		
 </project>

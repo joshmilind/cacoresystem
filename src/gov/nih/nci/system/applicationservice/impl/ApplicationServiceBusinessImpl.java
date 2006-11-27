@@ -20,7 +20,7 @@ import gov.nih.nci.system.dao.QueryException;
 import gov.nih.nci.system.servicelocator.ServiceLocator;
 import gov.nih.nci.system.servicelocator.ServiceLocatorException;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -340,7 +340,17 @@ public class ApplicationServiceBusinessImpl {
     }
     
     public Object getDataObject(String bigId) throws Exception {
-        IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface("./conf/svr_1");
+    	//TODO: Fix the path of the Grid Identifier Framework
+    	String CLASS_PATH = "DAOConfig.xml";
+    	String path = ".";
+    	try {
+    		path = Thread.currentThread().getContextClassLoader().getResource(CLASS_PATH).getPath();
+    		path = path.substring(0, path.indexOf(CLASS_PATH));
+    		path += "/conf/svr_1";
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+        IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface(path);
         
         ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
         
@@ -714,6 +724,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.10  2006/11/06 23:02:28  masondo
+// GF3105: Build refactoring to support SDK generated system
+//
 // Revision 1.9  2006/10/25 20:36:57  masondo
 // GF2896: Add Support for CQL Queries (SDK requirement pushed to the caCORE API.)
 //
