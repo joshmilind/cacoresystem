@@ -351,19 +351,20 @@ public class ApplicationServiceBusinessImpl {
             }
         } catch (Exception ex) {
             log.error( ex.getMessage());
-            throw new Exception(ex.getMessage());
+            throw new ApplicationException("Unable to connect to handler system");
         }
         return exist;
     }
     
     public Object getDataObject(String bigId) throws Exception { 
-        ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
-        String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));
-        Object dataObject = null; 
+    	try{  
+	        ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
+	        String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));
+	        Object dataObject = null; 
+	        
+	        //Generate criteria
+	        Field dataField = null;       
         
-        //Generate criteria
-        Field dataField = null;       
-        try{  
             Object value = null;
             gov.nih.nci.common.util.SearchUtils searchUtils = new gov.nih.nci.common.util.SearchUtils();                    
             dataField = searchUtils.getField(Class.forName(className), "bigid");
@@ -380,6 +381,7 @@ public class ApplicationServiceBusinessImpl {
             }
         }catch(Exception ex){
             ex.printStackTrace();
+            throw new ApplicationException("Unable to connect to handler system");
         }
         
         //Query database   
@@ -395,7 +397,7 @@ public class ApplicationServiceBusinessImpl {
             }
         } catch (Exception ex) {
             log.error("Exception " + ex.getMessage());
-            throw new Exception(ex.getMessage());
+            throw new ApplicationException("Unable to connect to handler system");
         }
         
         return result;
@@ -728,6 +730,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.12  2006/11/28 21:13:11  masondo
+// GF3105: fixed grid identifier build
+//
 // Revision 1.11  2006/11/27 23:17:18  masondo
 // GF3105: fixed demo build script
 //
