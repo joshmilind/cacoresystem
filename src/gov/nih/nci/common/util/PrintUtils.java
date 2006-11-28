@@ -635,6 +635,13 @@ public class PrintUtils {
                             System.out.println("\t\t"+ p.getName()+"\t"+p.getValue());
                             }
                         }
+                    else if(evsResults.get(0).getClass().getName().endsWith("Association")){
+                        System.out.println("\tAssociation ---> " + evsResults.size());
+                        for(int i=0; i< evsResults.size(); i++){
+                            Association a = (Association) evsResults.get(i);
+                            System.out.println("\t\t"+ a.getName()+"\t"+a.getValue());
+                            }
+                        }
                     else if(evsResults.get(0).getClass().getName().endsWith("Silo")){
                         System.out.println("\tSILO ---> " + evsResults.size());
                         for(int i=0; i< evsResults.size(); i++){
