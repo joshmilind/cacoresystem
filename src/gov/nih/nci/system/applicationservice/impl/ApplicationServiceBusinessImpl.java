@@ -100,10 +100,10 @@ public class ApplicationServiceBusinessImpl {
 				FileInputStream fis = new FileInputStream(new File(propertyFile));
 				properties.load(fis);				
 			}
+			idInterface = IDSvcInterfaceFactory.getInterface(properties.getProperty("handler_path"));
 		}catch(Exception ex){	
 			ex.printStackTrace();
 		}
-	    idInterface = IDSvcInterfaceFactory.getInterface(properties.getProperty("handler_path"));
 	}
     
 
@@ -730,6 +730,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.14  2006/11/28 21:47:17  masondo
+// GF3105: fixed grid identifier build
+//
 // Revision 1.13  2006/11/28 21:27:46  masondo
 // GF3105: fixed grid identifier build
 //
