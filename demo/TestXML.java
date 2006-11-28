@@ -81,41 +81,42 @@ public class TestXML {
 			try {
 				System.out.println("Scenario 1: Retrieving a Gene based on a Gene id.");
 				Gene gene = new Gene();
-				gene.setId(Long.valueOf(2));
+				gene.setSymbol("brca2");
 
-				try {
-					XMLUtility myUtil = new XMLUtility();
+				try {					
 					List resultList = appService.search(Gene.class, gene);
 					System.out.println("Result list size: " + resultList.size()	+ "\n");
 					long startTime = System.currentTimeMillis();
-					for (Iterator resultsIterator = resultList.iterator(); resultsIterator.hasNext();) {
-						Gene returnedGene = (Gene) resultsIterator.next();
+					for (Iterator resultsIterator = resultList.iterator(); resultsIterator.hasNext();) {						
+                        Gene returnedGene = (Gene) resultsIterator.next();
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 						System.out.println("Gene object right after search: \n\n");
 						System.out.println("   Id: " + returnedGene.getId()	+ "\n");
 						System.out.println("   Fullname: " + returnedGene.getFullName() + "\n");
 						System.out.println("   ClusterId: "	+ returnedGene.getClusterId() + "\n");
 						System.out.println("   Symbol: " + returnedGene.getSymbol() + "\n\n\n");
-
-						File myFile = new File("./test1.xml");
-						FileWriter myWriter = new FileWriter(myFile);
-						myUtil.toXML(returnedGene, myWriter);
-
-						DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-						Document document = parser.parse(myFile);
-						SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-						//Source schemaFile = new StreamSource(new File("C:/cacore/lib/gov.nih.nci.cabio.domain.xsd"));
-						//Schema schema = factory.newSchema(schemaFile);
-						//Validator validator = schema.newValidator();
-						//System.out.println("Validating gene against the schema......\n\n");
-						//validator.validate(new DOMSource(document));
-						//System.out.println("Gene has been validated!!!\n\n");
-
-						Gene myGene = (Gene) myUtil.fromXML(myFile);
+                        
+                        XMLUtility myUtil = new XMLUtility();
+                        File myFile = new File("./test1.xml");
+                        FileWriter myWriter = new FileWriter(myFile);
+                        myUtil.toXML(returnedGene, myWriter);
+                        DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                        Document document = parser.parse(myFile);
+                        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                        //Source schemaFile = new StreamSource(new File("C:/cacore/lib/gov.nih.nci.cabio.domain.xsd"));
+                        //Schema schema = factory.newSchema(schemaFile);
+                        //Validator validator = schema.newValidator();
+                        //System.out.println("Validating gene against the schema......\n\n");
+                        //validator.validate(new DOMSource(document));
+                        //System.out.println("Gene has been validated!!!\n\n");
+                        
+                        Gene myGene = (Gene) myUtil.fromXML(myFile);                        
 						System.out.println("Retrieving gene from xml ....\n\n");
 						System.out.println("   Id: " + myGene.getId() + "\n");
 						System.out.println("   Fullname: " + myGene.getFullName() + "\n");
 						System.out.println("   ClusterId: " + myGene.getClusterId() + "\n");
 						System.out.println("   Symbol: " + myGene.getSymbol() + "\n");
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 					}
 					long endTime = System.currentTimeMillis();
 					System.out.println("latency in miliseconds = " + (endTime - startTime));
@@ -133,39 +134,41 @@ public class TestXML {
 				e2.printStackTrace();
 			}
 			try {
+                System.out.println("===================================================");
 				System.out.println("\n\n\nScenario 2: Retrieving a Form based on an id.");
 				Form crf = new Form();
 				crf.setId("B27B3670-3E5E-21DA-E034-0003BA12F5E7");
 				crf.setDisplayName("Toxicity");
 				try {
-					XMLUtility myUtil1 = new XMLUtility();
+					
 					List resultList1 = appService.search(Form.class, crf);
 					System.out.println("Result list size: "	+ resultList1.size() + "\n");
 					long startTime = System.currentTimeMillis();
 					for (Iterator resultsIterator1 = resultList1.iterator(); resultsIterator1.hasNext();) {
 						Form returnedCRF = (Form) resultsIterator1.next();
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 						System.out.println("Form object right after search: \n\n");
 						System.out.println("   Id: " + returnedCRF.getId() + "\n");
+                        
+                        XMLUtility myUtil1 = new XMLUtility();
+                        File myFile1 = new File("./test2.xml");
+                        FileWriter myWriter1 = new FileWriter(myFile1);
+                        myUtil1.toXML(returnedCRF, myWriter1);
+                        DocumentBuilder parser1 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                        Document document1 = parser1.parse(myFile1);
+                        SchemaFactory factory1 = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                        //Source schemaFile1 = new StreamSource(new File("C:/cacore/lib/gov.nih.nci.cadsr.domain.xsd"));
+                        //Schema schema1 = factory1.newSchema(schemaFile1);
+                        //Validator validator1 = schema1.newValidator();
+                        //System.out.println("Validating Form against the schema......\n\n");
+                        //validator1.validate(new DOMSource(document1));
+                        //System.out.println("Form has been validated!!!\n\n");
 
-						File myFile1 = new File("./test2.xml");
-						FileWriter myWriter1 = new FileWriter(myFile1);
-						myUtil1.toXML(returnedCRF, myWriter1);
-
-						DocumentBuilder parser1 = DocumentBuilderFactory
-								.newInstance().newDocumentBuilder();
-						Document document1 = parser1.parse(myFile1);
-						SchemaFactory factory1 = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-						//Source schemaFile1 = new StreamSource(new File("C:/cacore/lib/gov.nih.nci.cadsr.domain.xsd"));
-						//Schema schema1 = factory1.newSchema(schemaFile1);
-						//Validator validator1 = schema1.newValidator();
-						//System.out.println("Validating Form against the schema......\n\n");
-						//validator1.validate(new DOMSource(document1));
-						//System.out.println("Form has been validated!!!\n\n");
-
-						Form myCRF = (Form) myUtil1.fromXML(myFile1);
+                        Form myCRF = (Form) myUtil1.fromXML(myFile1);                        
 						System.out.println("Retrieving Form from xml ....\n\n");
 						System.out.println("Form object right after search: \n\n");
 						System.out.println("   Id: " + myCRF.getId() + "\n");
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 					}
 					long endTime = System.currentTimeMillis();
 					System.out.println("latency in miliseconds = " + (endTime - startTime));
@@ -184,40 +187,41 @@ public class TestXML {
 			}
 
 			try {
-				System.out.println("\n\n\nScenario 3: Retrieving a PhysicalLocation based on an id.");
-				PhysicalLocation crf = new PhysicalLocation();
-				crf.setId(Long.valueOf(4268));
-				try {
-					XMLUtility myUtil1 = new XMLUtility();
-					List resultList1 = appService.search(PhysicalLocation.class, crf);
-					System.out.println("Result list size: "	+ resultList1.size() + "\n");
-					long startTime = System.currentTimeMillis();
-					for (Iterator resultsIterator1 = resultList1.iterator(); resultsIterator1.hasNext();) {
-						PhysicalLocation returnedCRF = (PhysicalLocation) resultsIterator1.next();
-						System.out.println("PhysicalLocation object right after search: \n\n");
-						System.out.println("   Id: " + returnedCRF.getId() + "\n");
-						System.out.println("   PreferredName: " + returnedCRF.getChromosomalStartPosition() + "\n");
-						System.out.println("   PreferredDefinition: " + returnedCRF.getChromosomalEndPosition() + "\n");
+                System.out.println("===================================================");
+                System.out.println("\n\n\nScenario 3: Retrieving a Chromosome based on number");
+                Chromosome chromosome = new Chromosome();
+                chromosome.setNumber("M*");
+                try {                    
+                    List resultList1 = appService.search(Chromosome.class, chromosome);
+                    System.out.println("Result list size: " + resultList1.size() + "\n");
+                    long startTime = System.currentTimeMillis();
+                    for (Iterator resultsIterator1 = resultList1.iterator(); resultsIterator1.hasNext();) {
+                        Chromosome returnedCRF = (Chromosome) resultsIterator1.next();
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        System.out.println("Chromosome object right after search: \n\n");
+                        System.out.println("   Id: " + returnedCRF.getId() + "\n");
+                        System.out.println("   Number: " + returnedCRF.getNumber() + "\n");                     
 
-						File myFile1 = new File("./test3.xml");
-						FileWriter myWriter1 = new FileWriter(myFile1);
-						myUtil1.toXML(returnedCRF, myWriter1);
-						DocumentBuilder parser1 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-						Document document1 = parser1.parse(myFile1);
-						SchemaFactory factory1 = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-						//Source schemaFile1 = new StreamSource(new File("C:/cacore/lib/gov.nih.nci.cadsr.domain.xsd"));
-						//Schema schema1 = factory1.newSchema(schemaFile1);
-						//Validator validator1 = schema1.newValidator();
-						//System.out.println("Validating CaseReportForm ......\n\n");
-						//validator1.validate(new DOMSource(document1));
-						//System.out.println("CaseReportForm has been validated!!!\n\n");
+                        XMLUtility myUtil1 = new XMLUtility();                     
+                        File myFile1 = new File("./test3.xml");
+                        FileWriter myWriter1 = new FileWriter(myFile1);
+                        myUtil1.toXML(returnedCRF, myWriter1);
+                        DocumentBuilder parser1 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                        Document document1 = parser1.parse(myFile1);
+                        SchemaFactory factory1 = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                        //Source schemaFile1 = new StreamSource(new File("C:/cacore/lib/gov.nih.nci.cadsr.domain.xsd"));
+                        //Schema schema1 = factory1.newSchema(schemaFile1);
+                        //Validator validator1 = schema1.newValidator();
+                        //System.out.println("Validating CaseReportForm ......\n\n");
+                        //validator1.validate(new DOMSource(document1));
+                        //System.out.println("CaseReportForm has been validated!!!\n\n");
 
-						PhysicalLocation myCRF = (PhysicalLocation) myUtil1.fromXML(myFile1);
-						System.out.println("Retrieving PhysicalLocation from xml ....\n\n");
-						System.out.println("   Id: " + myCRF.getId() + "\n");
-						System.out.println("   PreferredName: "+ myCRF.getChromosomalStartPosition() + "\n");
-						System.out.println("   PreferredDefinition: "+ myCRF.getChromosomalEndPosition() + "\n");
-					}
+                        Chromosome myCRF = (Chromosome) myUtil1.fromXML(myFile1);
+                        System.out.println("Retrieving Chromosome from xml ....\n\n");
+                        System.out.println("   Id: " + myCRF.getId() + "\n");
+                        System.out.println("   Number: "+ myCRF.getNumber() + "\n");
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");                        
+                    }
 					long endTime = System.currentTimeMillis();
 					System.out.println("latency in miliseconds = "+ (endTime - startTime));
 
@@ -235,26 +239,26 @@ public class TestXML {
 			}
 
 			try {
-				System.out
-						.println("\n\n\nScenario 4: Retrieving a DataElement based on an id.");
+                System.out.println("===================================================");
+				System.out.println("\n\n\nScenario 4: Retrieving a DataElement based on an id.");
 				DataElement crf = new DataElement();
 				crf.setId("DB97A435-C81B-2B4B-E034-0003BA12F5E7");
 
-				try {
-					XMLUtility myUtil1 = new XMLUtility();
+				try {					
 					List resultList1 = appService
 							.search(DataElement.class, crf);
 					System.out.println("Result list size: "+ resultList1.size() + "\n");
 					long startTime = System.currentTimeMillis();
 					for (Iterator resultsIterator1 = resultList1.iterator(); resultsIterator1.hasNext();) {
 						DataElement returnedCRF = (DataElement) resultsIterator1.next();
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 						System.out.println("DataElement object right after search: \n\n");
 						System.out.println("   Id: " + returnedCRF.getId()+ "\n");
 
+                        XMLUtility myUtil1 = new XMLUtility();
 						File myFile1 = new File("./test4.xml");
 						FileWriter myWriter1 = new FileWriter(myFile1);
 						myUtil1.toXML(returnedCRF, myWriter1);
-
 						DocumentBuilder parser1 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 						Document document1 = parser1.parse(myFile1);
 						SchemaFactory factory1 = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -263,11 +267,11 @@ public class TestXML {
 						//Validator validator1 = schema1.newValidator();
 						//System.out.println("Validating DataElement against the schema ......\n\n");
 						//validator1.validate(new DOMSource(document1));
-
 						System.out.println("DataElement has been validated!!!\n\n");
 						DataElement myCRF = (DataElement) myUtil1.fromXML(myFile1);
 						System.out.println("Retrieving DataElement from xml ....\n\n");
 						System.out.println("   Id: " + myCRF.getId() + "\n");
+                        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 					}
 					long endTime = System.currentTimeMillis();
 					System.out.println("latency in miliseconds = "+ (endTime - startTime));
