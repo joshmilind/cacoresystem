@@ -107,7 +107,7 @@ public class TestEVS {
             evsQuery[58].getHistoryStartDate( vocabularyName);
             evsQuery[59].getHistoryEndDate( vocabularyName);
             evsQuery[60].fetchDTSProperties( vocabularyName,  "Blood");
-            evsQuery[61].fetchTermAssociations( vocabularyName,  conceptName);
+            evsQuery[61].fetchTermAssociations( vocabularyName,  "Blood_Bank");
             
             //Metapharase calls
             evsQuery[62].searchMetaThesaurus( searchTerm,  2,  sourceAbbr, false,  false, false);
