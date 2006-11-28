@@ -89,6 +89,23 @@ public class ApplicationServiceBusinessImpl {
 	private static Logger log = Logger.getLogger(ApplicationServiceBusinessImpl.class.getName());
 
 	private boolean caseSensitivityFlag; // by default it is case
+	
+	// Loads the grid idenifier hanlder system
+	private static IDSvcInterface idInterface = null;
+	static {
+	   	String propertyFile = System.getProperty("gov.nih.nci.cacore.cacoreProperties");
+		Properties properties = new Properties();
+		try{
+			if(propertyFile != null && propertyFile.length() > 0){
+				FileInputStream fis = new FileInputStream(new File(propertyFile));
+				properties.load(fis);				
+			}
+		}catch(Exception ex){	
+			ex.printStackTrace();
+		}
+	    idInterface = IDSvcInterfaceFactory.getInterface(properties.getString("handler_path"));
+	}
+    
 
 	/**
 	 * Creates a new ApplicationService instance with the HTTP server address
@@ -339,21 +356,8 @@ public class ApplicationServiceBusinessImpl {
         return exist;
     }
     
-    public Object getDataObject(String bigId) throws Exception {
-    	//TODO: Fix the path of the Grid Identifier Framework
-    	String CLASS_PATH = "DAOConfig.xml";
-    	String path = ".";
-    	try {
-    		path = Thread.currentThread().getContextClassLoader().getResource(CLASS_PATH).getPath();
-    		path = path.substring(0, path.indexOf(CLASS_PATH));
-    		path += "/conf/svr_1";
-    	} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
-        IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface(path);
-        
+    public Object getDataObject(String bigId) throws Exception { 
         ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
-        
         String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));
         Object dataObject = null; 
         
@@ -724,6 +728,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.11  2006/11/27 23:17:18  masondo
+// GF3105: fixed demo build script
+//
 // Revision 1.10  2006/11/06 23:02:28  masondo
 // GF3105: Build refactoring to support SDK generated system
 //
