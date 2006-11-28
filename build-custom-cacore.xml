@@ -281,6 +281,8 @@
 				<filter token="AXIS_SERVICE" value="-l${url.project.axisservice}" />
 			</filterset>
 		</copy>
+		<!-- Compile test programs -->
+		<javac srcdir="${dir.output.project.package.client}" destdir="${dir.output.project.package.client}" classpathref="classpath" debug="${sdk.debug}" debuglevel="lines,vars,source"/>		
 		
 		<!-- Create ZIP file with client jar and all necessary libs/conf -->
 			<zip destfile="${dir.output.project.package}/${file.project.client.zip}">
