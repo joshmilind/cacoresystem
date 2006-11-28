@@ -133,7 +133,7 @@ public class TestXML {
 				e2.printStackTrace();
 			}
 			try {
-				System.out.println("Scenario 2: Retrieving a Form based on an id.");
+				System.out.println("\n\n\nScenario 2: Retrieving a Form based on an id.");
 				Form crf = new Form();
 				crf.setId("B27B3670-3E5E-21DA-E034-0003BA12F5E7");
 				crf.setDisplayName("Toxicity");
@@ -184,7 +184,7 @@ public class TestXML {
 			}
 
 			try {
-				System.out.println("Scenario 3: Retrieving a PhysicalLocation based on an id.");
+				System.out.println("\n\n\nScenario 3: Retrieving a PhysicalLocation based on an id.");
 				PhysicalLocation crf = new PhysicalLocation();
 				crf.setId(Long.valueOf(4268));
 				try {
@@ -199,7 +199,7 @@ public class TestXML {
 						System.out.println("   PreferredName: " + returnedCRF.getChromosomalStartPosition() + "\n");
 						System.out.println("   PreferredDefinition: " + returnedCRF.getChromosomalEndPosition() + "\n");
 
-						File myFile1 = new File("@CLIENT_DIR@/test3.xml");
+						File myFile1 = new File("./test3.xml");
 						FileWriter myWriter1 = new FileWriter(myFile1);
 						myUtil1.toXML(returnedCRF, myWriter1);
 						DocumentBuilder parser1 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -236,7 +236,7 @@ public class TestXML {
 
 			try {
 				System.out
-						.println("Scenario 4: Retrieving a DataElement based on an id.");
+						.println("\n\n\nScenario 4: Retrieving a DataElement based on an id.");
 				DataElement crf = new DataElement();
 				crf.setId("DB97A435-C81B-2B4B-E034-0003BA12F5E7");
 
@@ -251,7 +251,7 @@ public class TestXML {
 						System.out.println("DataElement object right after search: \n\n");
 						System.out.println("   Id: " + returnedCRF.getId()+ "\n");
 
-						File myFile1 = new File("@CLIENT_DIR@/test4.xml");
+						File myFile1 = new File("./test4.xml");
 						FileWriter myWriter1 = new FileWriter(myFile1);
 						myUtil1.toXML(returnedCRF, myWriter1);
 
