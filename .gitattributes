@@ -33,6 +33,7 @@ conf/svr_1/config.dct -text svneol=unset#application/octet-stream
 conf/svr_1/privkey.bin -text
 conf/svr_1/pubkey.bin -text
 conf/svr_1/siteinfo.bin -text
+conf/web/Footer.jsp -text svneol=unset#application/octet-stream
 conf/web/Happy.jsp -text
 conf/web/WEB-INF/web.xml -text
 conf/web/images/evs.gif -text
