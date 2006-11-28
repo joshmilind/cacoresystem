@@ -38,8 +38,7 @@ import gov.nih.nci.evs.security.*;
  */
 
 public interface EVSQuery extends Serializable{
-
-    public  static final long serialVersionUID =  1468599299281466395L;
+    private static final long serialVersionUID =  1468599299281466395L;
     /**
      * Adds the specified security token and vocabulary information 
      */
