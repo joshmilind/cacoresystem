@@ -103,7 +103,7 @@ public class ApplicationServiceBusinessImpl {
 		}catch(Exception ex){	
 			ex.printStackTrace();
 		}
-	    idInterface = IDSvcInterfaceFactory.getInterface(properties.getString("handler_path"));
+	    idInterface = IDSvcInterfaceFactory.getInterface(properties.getProperty("handler_path"));
 	}
     
 
@@ -357,15 +357,15 @@ public class ApplicationServiceBusinessImpl {
     }
     
     public Object getDataObject(String bigId) throws Exception { 
+        Object dataObject = null; 
+        //Generate criteria
+        Field dataField = null;
+        Object value = null;
+        
     	try{  
 	        ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
-	        String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));
-	        Object dataObject = null; 
-	        
-	        //Generate criteria
-	        Field dataField = null;       
-        
-            Object value = null;
+	        String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));      
+       
             gov.nih.nci.common.util.SearchUtils searchUtils = new gov.nih.nci.common.util.SearchUtils();                    
             dataField = searchUtils.getField(Class.forName(className), "bigid");
             if(!dataField.getType().getName().endsWith("String")){
@@ -730,6 +730,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.13  2006/11/28 21:27:46  masondo
+// GF3105: fixed grid identifier build
+//
 // Revision 1.12  2006/11/28 21:13:11  masondo
 // GF3105: fixed grid identifier build
 //
