@@ -2838,8 +2838,14 @@ public class EVSDTSDAOImpl implements DAO {
 			setVocabulary(vocabularyName);
 
 			//DTSProperties = dtsrpc.fetchDTSProperties(term);
-            DTSProperties = dtsrpc.getPropertiesByConceptName(term);
-
+            if(dtsrpc.getConceptCodeByName(term) == null){
+                Concept[] concept = dtsrpc.searchConcepts(term, 1, 0,"",1);
+                if(concept.length>0){
+                    DTSProperties = dtsrpc.getPropertiesByConceptName(concept[0].getName());
+                }                
+            }else{
+                DTSProperties = dtsrpc.getPropertiesByConceptName(term);
+            }
 			for (int i = 0; i < DTSProperties.size(); i++) {
 				list.add(DTSProperties.get(i));
 			}
@@ -2879,7 +2885,18 @@ public class EVSDTSDAOImpl implements DAO {
 
 			setVocabulary(vocabularyName);
 
-			associations = dtsrpc.fetchTermAssociations(term);
+			//associations = dtsrpc.fetchTermAssociations(term);
+            DescLogicConcept dlc = new DescLogicConcept();
+            if(dtsrpc.getConceptCodeByName(term) == null){
+                Concept[] concept = dtsrpc.searchConcepts(term, 1, 0,"",1);
+                if(concept[0]!=null){
+                    dlc = buildDescLogicConcept(concept[0], getVocabulary(vocabularyName));
+                }
+            }else{
+                dlc = buildDescLogicConcept(dtsrpc.getConcept(term, false, 1), getVocabulary(vocabularyName));
+            }
+            associations = dlc.getAssociationCollection();
+            
 
 			for (int i = 0; i < associations.size(); i++) {
 				list.add(associations.get(i));
