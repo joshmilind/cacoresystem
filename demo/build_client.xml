@@ -122,7 +122,6 @@
 
 	</target>
 
-	
 	<!-- ************************************************************************************************-->
 	<!--    Run Web Services Client Demo                                                                 -->
 	<!-- ************************************************************************************************-->
@@ -162,6 +161,26 @@
 			</classpath>
 			<sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties" />
 		</java>
-
 	</target>
+		
+
+    <!-- ************************************************************************************************-->
+    <!--    Run CQL               -->
+    <!-- ************************************************************************************************-->
+    <target name="runcqldemo">
+            <javac srcdir=".">
+                    <include name="TestCQL.java" />
+                    <classpath refid="cp" />
+                    <classpath>
+                            <pathelement location="${src.dir}" />
+                    </classpath>
+            </javac>
+            <java classname="TestCQL" fork="true">
+                    <classpath refid="cp" />
+                    <classpath>
+                            <pathelement location="${src.dir}" />
+                    </classpath>
+                    <sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties" />
+            </java>
+    </target>
 </project>
