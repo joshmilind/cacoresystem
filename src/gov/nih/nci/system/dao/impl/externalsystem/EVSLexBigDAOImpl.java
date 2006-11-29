@@ -308,11 +308,11 @@ public class EVSLexBigDAOImpl implements DAO
                 adapter = (LexAdapter)adapters.get(metaVocabularyName);
             }                        
         }catch(Exception ex){
-            log.error(ex.getMessage());
+            log.debug("Connection error "+metaVocabularyName +"\t"+ex.getMessage());
         }
             if(adapter == null){                
                 adapter = getLexAdapter(defaultVocabularyName);
-                log.debug("Unable to connect to "+ metaVocabularyName +"\nConnecting to "+ defaultVocabularyName);
+                log.debug(metaVocabularyName +" not found - \tConnecting to "+ defaultVocabularyName);
             }               
         return adapter;
     }
@@ -1896,35 +1896,49 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
         LexAdapter adapter = getLexAdapterForMeta();       
         
 		if(cui)
-		{
-            //concepts = adapter.searchConcepts(searchTerm, limit, 9, source, 1);
+		{            
             Concept concept  = adapter.findConceptByCode(searchTerm, 1);
-            list.add(buildMetaThesaurusConcept(concept));
-		}
-		else if(source.equalsIgnoreCase("*")){
-		    List sourceList = getMetaSources();
-            for(int i=0; i<sourceList.size(); i++){
-                Source s = (Source)sourceList.get(i);
-                String sourceAbbr = s.getAbbreviation();                
-                try{
-                    Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, sourceAbbr, 1);                    
-                    for(int x=0; x<concepts.length; x++){
-                        list.add(buildMetaThesaurusConcept(concepts[x]));
-                     }
-                }catch(Exception ex){}
+            MetaThesaurusConcept mtc = buildMetaThesaurusConcept(concept);
+            if(source.indexOf("*")>-1){
+                list.add(mtc);
+            }else{
+                ArrayList srcCollection = mtc.getSourceCollection();
+                for(int i=0; i<srcCollection.size(); i++){
+                    Source s = (Source)srcCollection.get(i);
+                    if(s.getAbbreviation().equalsIgnoreCase(source)){
+                        list.add(mtc);
+                        break;
+                    }
+                }                
             }
-        }else{
-            Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, source, 1);            
-            for(int i=0; i<concepts.length; i++){
-                list.add(buildMetaThesaurusConcept(concepts[i]));
-             }
-           
-		}        
+            
+		}
+		else {
+            if(source.indexOf("*")>-1){                
+                List sourceList = getMetaSources();
+                for(int i=0; i<sourceList.size(); i++){
+                    Source s = (Source)sourceList.get(i);
+                    String sourceAbbr = s.getAbbreviation();                    
+                    try{
+                        Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, sourceAbbr, 1);                    
+                        for(int x=0; x<concepts.length; x++){
+                            list.add(buildMetaThesaurusConcept(concepts[x]));
+                         }
+                    }catch(Exception ex){}
+                }
+            }else{
+                Concept[] concepts = adapter.searchConcepts(searchTerm, limit, 0, source, 1);            
+                for(int i=0; i<concepts.length; i++){
+                    list.add(buildMetaThesaurusConcept(concepts[i]));
+                 }
+               
+            }  
+        }      
         	          
     }
 	catch(Exception e)
 	{
-		log.error(e.getMessage());
+		log.error("Error: searchMetaThesaurus - "+e.getMessage());
 		throw new DAOException (getException( e.getMessage()));
 	}
 
@@ -1964,69 +1978,6 @@ private boolean validateSource(String source) throws Exception{
 
 	}
 
-/**
-private Response getMetaConceptCodeForSource(HashMap map) throws Exception{
-    List codeList = new ArrayList();
-    String abbreviation = null;
-    try{
-        for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
-        {
-            String key = (String)iter.next();
-            String name = key.substring(key.indexOf("$")+1, key.length());
-
-            if(name.equalsIgnoreCase("sourceAbbr")){
-                if(map.get(key)==null){
-                    throw new DAOException(getException("Invalid source"));
-                    }
-                abbreviation = (String)map.get(key);
-            }
-        }
-        if(validateSource(abbreviation)){
-            COM.Lexical.Metaphrase.Source metaSource = metaphrase.source(abbreviation);
-            codeList.add(getMetaConceptCodeForSource(metaSource));
-        }
-
-    }catch(Exception ex){
-        throw new DAOException(getException(ex.getMessage()));
-    }
-    return new Response(codeList);
-}
-
-private String getMetaConceptCodeForSource(COM.Lexical.Metaphrase.Source metaSource) throws Exception{
-    COM.Lexical.Metaphrase.Concept metaConcept = getMetaConceptForSource(metaSource);
-    return metaConcept.conceptID();
-}
-private COM.Lexical.Metaphrase.Concept getMetaConceptForSource(COM.Lexical.Metaphrase.Source metaSource) throws Exception{
-    COM.Lexical.Metaphrase.Partition metaPartition = metaSource.partition();
-    return metaPartition.concept();
-}
-private Response getSourceAbbreviation(HashMap map)throws Exception{
-    List sabList = new ArrayList();
-    String cui = null;
-    try{
-        for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
-        {
-            String key = (String)iter.next();
-            String name = key.substring(key.indexOf("$")+1, key.length());
-
-            if(name.equalsIgnoreCase("cui")){
-                cui = (String)map.get(key);
-            }
-            for(Enumeration e = metaphrase.getSources();e.hasMoreElements();){
-                COM.Lexical.Metaphrase.Source metaSource = (COM.Lexical.Metaphrase.Source)e.nextElement();
-                if(cui.equals(getMetaConceptCodeForSource(metaSource))){
-                    sabList.add(metaSource.SAB());
-                }
-            }
-        }
-
-    }catch(Exception ex){
-        throw new DAOException(getException(ex.getMessage()));
-    }
-    return new Response(sabList);
-
-}
-*/
 
 /**
  * Converts gov.nih.nci.lexrpc.client.Concept to gov.nih.nci.evs.domain.MetaThesaurusConcept
@@ -2202,8 +2153,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		String sourceAbbr = "*";
         int limit = 100;
 
-		ArrayList list = new ArrayList();
-		Vector metaConcepts = new Vector();
+		ArrayList list = new ArrayList();		
 		try
 		{
 
@@ -2225,24 +2175,26 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 						}catch(Exception ex){}						
 					}                    
 				}
+            Concept metaConcept = getLexAdapterForMeta().findConceptByCode(code, 1);
+            MetaThesaurusConcept mtc = buildMetaThesaurusConcept((Concept)metaConcept);
+            
 			List sourceList = new ArrayList();
-			if(sourceAbbr.equals("*") || sourceAbbr.length()<1){
-				sourceList = getMetaSources();
+			if(sourceAbbr.equals("*") || sourceAbbr == null){
+				list.add(mtc);
 			}
 			else{
 				if(!validateSource(sourceAbbr)){
 				    throw new DAOException (getException("invalid source abbreviation - "+ sourceAbbr));
 				    }
-				sourceList.add(sourceAbbr);
-
-			}	
-			for(int s=0; s<sourceList.size(); s++){
-                System.out.println("find concept with source code matching");
-				metaConcepts = getLexAdapterForMeta().findConceptsWithSourceCodeMatching((String)sourceList.get(s), code, limit);
-	            for(int i=0; i<metaConcepts.size(); i++ ){
-	                list.add(this.buildMetaThesaurusConcept((Concept)metaConcepts.get(i)));
-	            }
-			}          
+                ArrayList srcCollection = mtc.getSourceCollection();
+                for(int i=0; i< srcCollection.size(); i++){
+                    Source src = (Source)srcCollection.get(i);
+                    if(src.getAbbreviation().equalsIgnoreCase(sourceAbbr)){
+                        list.add(mtc);
+                        break;
+                    }
+                }
+			}                      
 		}
 		catch(Exception e)
 		{
