@@ -61,6 +61,7 @@ public class EVSLexBigDAOImpl implements DAO
     private static HashMap vocabularies = new HashMap();
     private final static String defaultVocabularyName = "NCI_Thesaurus";
     private final static String metaVocabularyName = "NCI MetaThesaurus";
+    private ThreadLocal threadLocal = new ThreadLocal();
 
    public EVSLexBigDAOImpl(){
        
@@ -99,10 +100,14 @@ public class EVSLexBigDAOImpl implements DAO
             try {                
                 response = queryEVS(configs, tokenCollection, mapValues);
             } catch (Exception ex) {
-                String msg = " - ";
-                
+                String msg = " - ";                
                 if (ex.getMessage() == null) {
-                    msg = msg + "Exception in method: "+getMethodName(mapValues)+" - check the server log for details";
+                    Exception e = (Exception)threadLocal.get();
+                    if(e.getMessage()==null){
+                        msg = msg + "Exception in method: "+getMethodName(mapValues) +" unable to execute query" ;
+                    }else{                        
+                        msg = e.getMessage();
+                    }                    
                 } else {
                     msg = msg + ex.getMessage();
                 }
@@ -176,7 +181,7 @@ public class EVSLexBigDAOImpl implements DAO
             }
         }else{            
             try{
-                if(adapters(metaVocabularyName)!= null){
+                if(adapters.get(metaVocabularyName)!= null){
                     key += "_"+ metaVocabularyName;
                 }else{
                     key += "_"+ defaultVocabularyName;
@@ -228,7 +233,7 @@ public class EVSLexBigDAOImpl implements DAO
             }                               
         }catch(Exception ex){
             log.error( methodName + " throws Exception ");
-            throw new DAOException(ex.getMessage());
+            throw new DAOException(getException(ex.getMessage()));
         }         
         return response;
     }
@@ -268,7 +273,7 @@ public class EVSLexBigDAOImpl implements DAO
                 }
             }                      
         }catch(Exception ex){
-            throw new DAOException("Error: "+getException(ex));
+            throw new DAOException(getException(ex));
         }                
         }
     /**
@@ -288,7 +293,7 @@ public class EVSLexBigDAOImpl implements DAO
                 vocabularies.put(vocabularyName, vocabulary);
             }catch(Exception ex){
                 log.error(vocabularyName +" " + ex.getMessage());
-                throw new DAOException("Unable to connect to Vocabulary "+ vocabularyName);
+                throw new DAOException(getException("Unable to connect to Vocabulary "+ vocabularyName));
             }
         }else{
           lexAdapter = (LexAdapter)adapters.get(vocabularyName);   
@@ -396,7 +401,7 @@ public class EVSLexBigDAOImpl implements DAO
         DAOSecurity security = getSecurityAdapter(vocabularyName);
         if(security != null){
             if(securityToken == null){
-                throw new SecurityException("Please specify security token to access "+ vocabularyName);
+                throw new SecurityException(getException("Please specify security token to access "+ vocabularyName));
             }
             try{
                 valid = validateToken(security, securityToken);                
@@ -406,7 +411,7 @@ public class EVSLexBigDAOImpl implements DAO
             }
             validList.add(valid);
         }else{
-            throw new SecurityException("Token not required to access " + vocabularyName );
+            throw new SecurityException(getException("Token not required to access " + vocabularyName ));
         }
         return new Response(valid);
     }
@@ -449,44 +454,6 @@ public class EVSLexBigDAOImpl implements DAO
         return security;
     }
 
-	/**
-	 * Sets Vocabulary
-	 * @param vocabularyName
-	 * @throws Exception
-	 */
-    /*
-	private void setVocabulary(String vocabularyName) throws Exception
-	{  
-        if(!StringHelper.hasValue(vocabularyName)){
-        	log.error("vocabularyName cannot be null");
-        	throw new DAOException(getException(" vocabularyName cannot be null"));
-		}
-        boolean found = false;
-        try{
-            found = adapter.setVocabularyName(vocabularyName);
-        }catch(Exception ex){
-            ex.printStackTrace();
-            throw new DAOException("Vocabulary error: "+ ex.getMessage()+ vocabularyName);
-        }
-        if(!found){
-                throw new DAOException("LexBIG Exception - unable to connect to vocabulary "+ vocabularyName);
-            }
-     
-	}
-    */
-
-//    private gov.nih.nci.evs.domain.Vocabulary populateVocabulary(String vocabularyName){
-//        gov.nih.nci.evs.domain.Vocabulary vocab = new gov.nih.nci.evs.domain.Vocabulary();        
-//        vocab.setName(vocabularyName);
-//        vocab.setDescription(adapter.getVocabularyDescription(vocabularyName));
-//       	try{
-//			vocab.setNamespaceId(adapter.getNamespaceId(vocabularyName.trim()));
-//		}
-//		catch(Exception ex){
-//			}
-//
-//        return vocab;
-//    }
 
     private Response getAllVocabularies(HashMap map) throws DAOException{
         List vocabList = new ArrayList();
@@ -605,7 +572,7 @@ public class EVSLexBigDAOImpl implements DAO
 	       dlc = buildDescLogicConcept(((LexAdapter)adapters.get(vocabularyName)).getConcept(conceptName, inputFlag, 1), vocab);         
 	       list.add(dlc);
 		}catch(Exception e){
-			log.error(e.getMessage());
+			log.error("Error: getDescLogicConcept  "+e.getMessage());            
 			throw new DAOException (getException(e.getMessage()));
 		}
 		return new Response(list);
@@ -658,7 +625,7 @@ public class EVSLexBigDAOImpl implements DAO
 	        		concepts = ((LexAdapter)adapters.get(vocabularyName)).searchConcepts(searchTerm, limit);
 		        }
 	        	else{
-	        		throw new Exception("searchConcepts "+ex.getMessage());
+	        		throw new Exception(getException(ex));
 	        	}
 	        }
             if(concepts.length > 0){
@@ -1352,7 +1319,7 @@ private Response getRolesByConceptName(HashMap map) throws Exception
 				conceptName = (String)map.get(key);
 		}
 		if(!StringHelper.hasValue(conceptName))
-        	throw new DAOException("conceptName cannot be null");
+        	throw new DAOException(getException("conceptName cannot be null"));
         LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		roles = adapter.getRolesByConceptName(conceptName);
 		if(roles != null){
@@ -1494,7 +1461,7 @@ private Response getConceptCodeByName(HashMap map) throws Exception
 		if(!StringHelper.hasValue(conceptName)){
 			String msg = "conceptName cannot be null";
 			log.error(msg);
-			throw new DAOException(msg);
+			throw new DAOException(getException(msg));
 		}
 		conceptCode = getLexAdapter(vocabularyName).getConceptCodeByName(conceptName);
 
@@ -2264,7 +2231,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 			}
 			else{
 				if(!validateSource(sourceAbbr)){
-				    throw new DAOException ("invalid source abbreviation - "+ sourceAbbr);
+				    throw new DAOException (getException("invalid source abbreviation - "+ sourceAbbr));
 				    }
 				sourceList.add(sourceAbbr);
 
@@ -2296,23 +2263,25 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	 */
 	private Response getSemanticTypes(HashMap map) throws Exception
 	{
-		ArrayList list = new ArrayList();
-        
+		ArrayList list = new ArrayList();                
 		try
 		{
-		    HashMap types = getLexAdapterForMeta().getSemanticTypes();
-		    for(Iterator i = types.keySet().iterator(); i.hasNext();){
-                String key = (String) i.next();
-		        SemanticType semanticType = new SemanticType();
-                semanticType.setId(key);
-                semanticType.setName((String)types.get(key));
-                list.add(semanticType);
-            }
+            LexAdapter adapter = getLexAdapterForMeta();
+          if(adapter.getSemanticTypes() != null){
+              HashMap types = adapter.getSemanticTypes();
+            for(Iterator i = types.keySet().iterator(); i.hasNext();){
+                  String key = (String) i.next();
+                SemanticType semanticType = new SemanticType();
+                  semanticType.setId(key);
+                  semanticType.setName((String)types.get(key));
+                  list.add(semanticType);
+              }
+          }              
 		}
 		catch(Exception e)
 		{
-			log.error(e.getMessage());
-			throw new DAOException (getException("Exception occured at : \n"+getClass().getName()+ e.getMessage()));
+			log.error("Exception occured on getSemanticTypes"+ e.getMessage());            
+			throw new DAOException (getException(e.getMessage()));
 		}
 
 		return (new Response(list));
@@ -2350,7 +2319,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 				  throw new DAOException(getException(" Invalid Source"));
 
             if(conceptCode == null){
-                throw new Exception("Please specify conceptCode");
+                throw new Exception(getException("Please specify conceptCode"));
             }
      /** check this ***/
             System.out.println("findConceptWithSourceCodeMatching..."+ sourceAbbr +"\t"+ conceptCode);
@@ -3953,16 +3922,24 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 
    	}
    private Exception getException(String msg){
-   	Exception ex = new Exception(msg);
-   	if(msg == null){
-   		ex = new Exception("caCORE - LexBIG Exception");
-   		}   	
+       String exMsg = msg;
+       if(msg == null){
+           if(threadLocal.get() != null){
+               Exception e = (Exception)threadLocal.get();
+               if(e.getMessage() == null){
+                   exMsg = "caCORE - LexBIG Exception";
+               }else{
+                   exMsg = e.getMessage();
+               }               
+           }           
+       }
+       Exception ex = new Exception(exMsg);
+       threadLocal.set(ex);   	  	
    	return ex;
    	}
 
-   private Exception getException(Exception ex){
-   	String msg = ex.getMessage();
-   	return getException(msg);
+   private Exception getException(Exception ex){   	
+   	return getException(ex.getMessage());
    	}
 
    private boolean validateDLConceptCode(String code, String vocabularyName) throws Exception{
