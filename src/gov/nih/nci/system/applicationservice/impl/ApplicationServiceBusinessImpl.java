@@ -697,6 +697,7 @@ public class ApplicationServiceBusinessImpl {
 	private Response query(gov.nih.nci.common.net.Request request) throws ApplicationException
 	{
 		ServiceLocator serviceLocator = null;
+		request.setCaseSensitivity(new Boolean(caseSensitivityFlag));
 		try
 		{
 			String domainObjectName = request.getDomainObjectName();
@@ -730,6 +731,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.15  2006/11/28 22:02:40  masondo
+// GF3105: fixed grid identifier build
+//
 // Revision 1.14  2006/11/28 21:47:17  masondo
 // GF3105: fixed grid identifier build
 //
