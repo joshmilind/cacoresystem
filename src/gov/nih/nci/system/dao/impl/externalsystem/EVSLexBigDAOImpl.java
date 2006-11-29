@@ -174,16 +174,16 @@ public class EVSLexBigDAOImpl implements DAO
             if(getSecurityAdapter(vocabularyName)!= null){
                 security = getSecurityAdapter(vocabularyName);
             }
-        }else{
-            /*
+        }else{            
             try{
-                if(getLexAdapter(metaVocabularyName)!= null){
+                if(adapters(metaVocabularyName)!= null){
                     key += "_"+ metaVocabularyName;
+                }else{
+                    key += "_"+ defaultVocabularyName;
                 }
             }catch(Exception ex){
                 key += "_"+ defaultVocabularyName;
-            } 
-            */                      
+            }                                 
         }
         if(security != null){
             SecurityToken securityToken = null;
@@ -192,13 +192,15 @@ public class EVSLexBigDAOImpl implements DAO
             }  
             if(securityToken==null){
                 Exception ex = new gov.nih.nci.system.applicationservice.SecurityException("Permission denied - Please set SecurityToken for "+ vocabularyName);
+                log.error(ex.getMessage());
                 throw new gov.nih.nci.system.applicationservice.SecurityException(getException(ex));
+                
              }       
             getSecurityKey(security, securityToken);
         }else{
             //Security token is not required to access the Vocabulary
             //Check if cache needs to be enabled            
-            if(enableCache(config)){
+            if(enableCache(config)){                
                 evsCache = EVSCacheManager.getInstance();
                 if(evsCache != null){ 
                     if(evsCache.isCacheNameValid(methodName)){
@@ -215,8 +217,10 @@ public class EVSLexBigDAOImpl implements DAO
             }
         }
         try{
-            //Query EVS Servers
-            makeRemoteConnection(config, vocabularyName);
+            //Query EVS Servers            
+            if(adapters.size()<1){
+                makeRemoteConnection(config, vocabularyName);
+            }           
             response = (Response) method.invoke(this,new Object[] { mapValues });
             //update cache
             if(checkCache){
@@ -229,10 +233,8 @@ public class EVSLexBigDAOImpl implements DAO
         return response;
     }
     
-    private void makeRemoteConnection(Hashtable configs, String vocabularyName)throws Exception{
-        System.out.println("MAKE REMOTE CONNECTION..........");
-        try{
-            
+    private void makeRemoteConnection(Hashtable configs, String vocabularyName)throws Exception{        
+        try{            
             if(adapters.size()<1){
                 EVSProperties evsProperties = EVSProperties.getInstance(configs);
                 String lg_config_file = null;
@@ -242,8 +244,7 @@ public class EVSLexBigDAOImpl implements DAO
                 }            
                 log.debug("CONFIG FILE LOCATION: "+ lg_config_file);                
                 LexAdapter adapter = new LexAdapter();
-                try{
-                    log.info("Connecting to "+ defaultVocabularyName);
+                try{                    
                     adapter.setVocabulary(defaultVocabularyName);
                 }catch(Exception ex){
                     log.error("Unable to connect to "+ defaultVocabularyName);
@@ -251,8 +252,7 @@ public class EVSLexBigDAOImpl implements DAO
                 Vector vocabs = adapter.getVocabularyNames();
                 for(int i=0; i<vocabs.size(); i++){
                     String vocabName = (String)vocabs.get(i);
-                    LexAdapter lexAdapter = new LexAdapter();
-                    log.debug("Connecting to "+ vocabName);
+                    LexAdapter lexAdapter = new LexAdapter();                    
                     try{
                         lexAdapter.setVocabulary(vocabName);
                         adapters.put(vocabName, lexAdapter);
@@ -266,51 +266,49 @@ public class EVSLexBigDAOImpl implements DAO
                         continue;
                     }                        
                 }
-                try{
-                    if(adapters.get(metaVocabularyName)==null){
-                        LexAdapter meta = new LexAdapter();
-                        meta.setVocabulary(metaVocabularyName);
-                        adapters.put(metaVocabularyName, meta);
-                    }                    
-                }catch(Exception ex){
-                    adapters.put(metaVocabularyName, null);
-                    log.error("Vocabulary error: "+ metaVocabularyName +" "+ ex.getMessage());
-                }
-                
             }                      
         }catch(Exception ex){
             throw new DAOException("Error: "+getException(ex));
+        }                
         }
-        System.out.println("CONNECTIONs ESTABLISHED....");
-        for(Iterator i = adapters.keySet().iterator(); i.hasNext();){
-            System.out.println("Adapter - "+  (String)i.next());
-        }
-        }
-    
-    
-     
-    
+    /**
+     * Returns an instance of LexAdapter for the specified vocabulary
+     */
     private LexAdapter getLexAdapter(String vocabularyName) throws DAOException{
+        LexAdapter lexAdapter = null;
         if(adapters.get(vocabularyName)==null){
-            throw new DAOException("Unable to connect to Vocabulary "+ vocabularyName);
+            try{
+                lexAdapter = new LexAdapter();
+                lexAdapter.setVocabulary(vocabularyName);
+                adapters.put(vocabularyName, lexAdapter);
+                Vocabulary vocabulary = new Vocabulary();
+                vocabulary.setName(vocabularyName);
+                vocabulary.setDescription(lexAdapter.getVocabularyDescription(vocabularyName));
+                vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabularyName));
+                vocabularies.put(vocabularyName, vocabulary);
+            }catch(Exception ex){
+                log.error(vocabularyName +" " + ex.getMessage());
+                throw new DAOException("Unable to connect to Vocabulary "+ vocabularyName);
+            }
+        }else{
+          lexAdapter = (LexAdapter)adapters.get(vocabularyName);   
         }
-        return (LexAdapter)adapters.get(vocabularyName);
+        return lexAdapter; 
     }
     
     private LexAdapter getLexAdapterForMeta() throws Exception{        
-        LexAdapter adapter = null;        
-        try{
-            if(getLexAdapter(metaVocabularyName) != null){                                
-                adapter = getLexAdapter(defaultVocabularyName);
-            }else{
-                log.info(metaVocabularyName +" is not available - connecting to "+ defaultVocabularyName);
-                adapter = getLexAdapter(defaultVocabularyName);
-            }
-                                   
+        LexAdapter adapter = null;      
+        try{                        
+            if(adapters.get(metaVocabularyName)!=null){
+                adapter = (LexAdapter)adapters.get(metaVocabularyName);
+            }                        
         }catch(Exception ex){
-            log.info(metaVocabularyName +" is not available - connecting to "+ defaultVocabularyName);
-            adapter = getLexAdapter(defaultVocabularyName);
-        }        
+            log.error(ex.getMessage());
+        }
+            if(adapter == null){                
+                adapter = getLexAdapter(defaultVocabularyName);
+                log.debug("Unable to connect to "+ metaVocabularyName +"\nConnecting to "+ defaultVocabularyName);
+            }               
         return adapter;
     }
      /**
@@ -505,6 +503,11 @@ public class EVSLexBigDAOImpl implements DAO
         Vocabulary vocab = new Vocabulary();
         List vocabList = new ArrayList();
 
+        System.out.println("VOCABULARIES....");
+        for(Iterator i=vocabularies.keySet().iterator(); i.hasNext();){
+            Vocabulary v = (Vocabulary)i.next();
+            System.out.println("Name: "+ v.getName());
+        }
         try{
             for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
             {
@@ -513,6 +516,7 @@ public class EVSLexBigDAOImpl implements DAO
                 if(name.equalsIgnoreCase("VocabularyName"))
                     vocabularyName = (String)map.get(key);
             }
+            System.out.println("Search for : "+ vocabularyName);
             if(vocabularyName != null){
 				if(vocabularyName.indexOf("*")>-1){
 					String searchString = null;
@@ -2089,6 +2093,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                 if(property.getName().toUpperCase().equalsIgnoreCase("FULL_SYN")){
                     gov.nih.nci.evs.domain.Atom atom = new gov.nih.nci.evs.domain.Atom();
                     atom.setName(property.getValue());  
+                    atom.setCode(metaConcept.getCode());
                     for(int q=0; q< qCollection.size(); q++){
                         gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
                         gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();
@@ -2688,7 +2693,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		String conceptCode = null;
 		String sourceAbbr = null;
 		Vector rc = new Vector();
-		String relation = null;
+		String relation = "*";
 
 		try
 		{
