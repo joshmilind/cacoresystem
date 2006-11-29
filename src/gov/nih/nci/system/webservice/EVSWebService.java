@@ -410,7 +410,7 @@ public class EVSWebService {
         String conceptName = null;
         String conceptCode = null;
         List sourceList = new ArrayList();
-        String source = null;
+        String source = "*";
         List atomList = new ArrayList();
         try {
             if(criteria.getClass().getName().endsWith("MetaThesaurusConcept")){
@@ -420,20 +420,14 @@ public class EVSWebService {
                 if (metaConcept.getSourceCollection() != null) {
                     sourceList = metaConcept.getSourceCollection();
                     if (sourceList.size() > 0) {
-                        source = ((Source) sourceList.get(0)).getAbbreviation();
-                        if (source.length() == 0) {
-                            source = "*";
+                        if(sourceList.get(0)!=null){
+                            source = ((Source) sourceList.get(0)).getAbbreviation();
                         }
-                    } else {
-                        source = "*";
                     }
-                } else {
-                    source = "*";
-                }
+                } 
                 if (metaConcept.getAtomCollection() != null) {
                     atomList = metaConcept.getAtomCollection();
                 }
-
             }
             else if(criteria.getClass().getName().endsWith("Atom")){
                 atomList.add(criteria);
@@ -451,7 +445,7 @@ public class EVSWebService {
                 source = ((Source)criteria).getAbbreviation();
             }
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            throw new Exception("Exception while processing MetaThesaurusConcept - "+e.getMessage());
         }
         EVSQuery evsQuery = new EVSQueryImpl();
         List results = new ArrayList();        
@@ -808,6 +802,8 @@ public class EVSWebService {
               evsQuery.getHistoryRecords(defaultVocabulary, conceptCode);
           }         
          result = query(evsQuery);
+      }else{
+          throw new Exception("Concept code not specified - Please enter a valid concept code");
       }
       return result;
   }
