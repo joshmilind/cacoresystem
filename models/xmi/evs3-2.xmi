@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1252"?>
-<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2006-11-13 11:21:29">
+<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2006-11-29 11:34:32">
 	<XMI.header>
 		<XMI.documentation>
 			<XMI.exporter>Enterprise Architect</XMI.exporter>
@@ -185,6 +185,8 @@
 																						<UML:TaggedValue tag="ea_localid" value="96"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the edit action" xmi.id="EAID_33273F67_A8C8_461c_8D8B_02DEC02054A6"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the action" xmi.id="EAID_CC074F90_19A1_458e_ABE1_BA3C12335AD7"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - returns the action" xmi.id="EAID_F3A39F9C_6778_4e53_9EE7_9EFE896A136D"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="editDate" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -214,6 +216,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{78AABE26-916C-4891-9D78-A2DD2821EE45}"/>
 																						<UML:TaggedValue tag="ea_localid" value="97"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the edit action date." xmi.id="EAID_0B80D464_E2FB_4eeb_9C66_A5FACB3529E8"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the edit date" xmi.id="EAID_8C3CF765_4D81_4de3_BBEE_7BDD9678875F"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - returns the edit date" xmi.id="EAID_A38E3E76_81FB_4e2f_9EF1_AB43FA910514"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																			</UML:Classifier.feature>
@@ -437,6 +441,7 @@
 																				<UML:TaggedValue tag="ea_localid" value="140"/>
 																				<UML:TaggedValue tag="ea_eleType" value="element"/>
 																				<UML:TaggedValue tag="style" value="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=0;HSwimLanes=0;BorderStyle=0;"/>
+																				<UML:TaggedValue tag="$ea_xref_property" value="$XREFPROP=$XID={AD6596B2-8884-428d-9F56-73DE901F2F36}$XID;$NAM=CustomProperties$NAM;$TYP=element property$TYP;$VIS=Public$VIS;$DES=@PROP=@NAME=isActive@ENDNAME;@TYPE=Boolean@ENDTYPE;@VALU=@ENDVALU;@PRMT=@ENDPRMT;@ENDPROP;$DES;$CLT={5A640FCE-A160-4450-A156-9F071B7DCFEB}$CLT;$SUP=&lt;none&gt;$SUP;$ENDXREF;"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Classifier.feature>
 																				<UML:Attribute name="name" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -654,7 +659,9 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{843AB899-B3F0-48cb-8431-EE8E3876E3B7}"/>
 																						<UML:TaggedValue tag="ea_localid" value="98"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - returns the id " xmi.id="EAID_5E84F348_13F9_4682_B040_3A6B411E71B1"/>
 																						<UML:TaggedValue tag="documentation" value="Identifier for this Semantic Type" xmi.id="EAID_68118891_0A7D_490b_95DB_6D7CFF93A492"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  -  Sets the id" xmi.id="EAID_B67EAEF7_FD28_4020_A0A4_5FA74521CA52"/>
 																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_C422C48A_B776_4b53_9FF3_E322649F9110"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
@@ -685,8 +692,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{8B399771-D152-460a-BE73-3FD86364671A}"/>
 																						<UML:TaggedValue tag="ea_localid" value="37"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified name for this SemanticType" xmi.id="EAID_45ABA8F6_F656_4317_8476_DC1B1935A27D"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the name of this SemanticType" xmi.id="EAID_47D7239E_5C69_42b8_9D1D_9E94CC4DA690"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified name for this SemanticType" xmi.id="EAID_45ABA8F6_F656_4317_8476_DC1B1935A27D"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the name of this SemanticType" xmi.id="EAID_47D7239E_5C69_42b8_9D1D_9E94CC4DA690"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the name " xmi.id="EAID_A388DF10_B48E_46f1_9083_27291C7C5CFD"/>
 																						<UML:TaggedValue tag="key-field" value="false" xmi.id="EAID_BF6CE765_4468_456c_89F8_B7E2FA1D9D7C"/>
 																					</UML:ModelElement.taggedValue>
@@ -791,9 +798,9 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{DEF576AD-BEE3-4ea6-A799-D91C3A83FD47}"/>
 																						<UML:TaggedValue tag="ea_localid" value="99"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the id for this Silo" xmi.id="EAID_86E7DEF1_A5B5_45ca_B3DC_772551CFC570"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated - Returns the id for this Silo" xmi.id="EAID_86E7DEF1_A5B5_45ca_B3DC_772551CFC570"/>
 																						<UML:TaggedValue tag="documentation" value="The  identifier of this Silo" xmi.id="EAID_B0F13861_2F52_4d4e_A82E_DD2B6E0C7C52"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified id for this Silo" xmi.id="EAID_CB0FDBFD_CE0E_4a02_AC0A_AA9E8443A369"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated - Sets the specified id for this Silo" xmi.id="EAID_CB0FDBFD_CE0E_4a02_AC0A_AA9E8443A369"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="name" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -991,8 +998,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{AC339BE0-8623-4beb-AB83-D3053D1E9DD0}"/>
 																						<UML:TaggedValue tag="ea_localid" value="102"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the namespace id" xmi.id="EAID_1296D33A_D025_4c33_82E8_360851D7A39B"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the namespace id" xmi.id="EAID_3B50F637_DE91_400b_94AF_5811C2AECE2C"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the namespace id value for this vocabulary" xmi.id="EAID_A19640BA_7D95_434d_95E7_442FF19CED3C"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated - Sets the namespace id" xmi.id="EAID_3B50F637_DE91_400b_94AF_5811C2AECE2C"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated - Returns the namespace id value for this vocabulary" xmi.id="EAID_A19640BA_7D95_434d_95E7_442FF19CED3C"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																			</UML:Classifier.feature>
@@ -1398,8 +1405,8 @@
 																						<UML:TaggedValue tag="ea_localid" value="18"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the source abbreviation" xmi.id="EAID_25B03C66_0630_4b74_9008_5D9E20C8B8CD"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the abbreviation of this Source" xmi.id="EAID_C9C45D00_7D12_4cf3_A7FD_933D726AB84D"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified abbreviation  for this Source" xmi.id="EAID_E92C49C3_FDE2_4928_8E33_4161153C54AF"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the abbreviation of this Source" xmi.id="EAID_C9C45D00_7D12_4cf3_A7FD_933D726AB84D"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified abbreviation  for this Source" xmi.id="EAID_E92C49C3_FDE2_4928_8E33_4161153C54AF"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="code" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -1428,8 +1435,8 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{A7C27B4C-73B6-4cd7-A36D-85F598A41405}"/>
 																						<UML:TaggedValue tag="ea_localid" value="105"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the code for this source" xmi.id="EAID_05D89AF2_51D0_4a8d_9DAD_9474CA18A88A"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified value as the code for this source" xmi.id="EAID_35B24983_7959_4258_95B9_E5C0132DA607"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the code for this source" xmi.id="EAID_05D89AF2_51D0_4a8d_9DAD_9474CA18A88A"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified value as the code for this source" xmi.id="EAID_35B24983_7959_4258_95B9_E5C0132DA607"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the source code" xmi.id="EAID_51459F89_63DE_43e2_9EA4_B7FC04164299"/>
 																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_82F4686B_D7D4_4d50_8909_070377FCEE33"/>
 																					</UML:ModelElement.taggedValue>
@@ -1461,9 +1468,9 @@
 																						<UML:TaggedValue tag="ea_guid" value="{9A90AB95-10D0-40b9-9EDB-996E31D9DBC3}"/>
 																						<UML:TaggedValue tag="ea_localid" value="19"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the description of this Source" xmi.id="EAID_6D3C6DF4_6218_4476_98F6_4BBEBE15D19B"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the description of this Source" xmi.id="EAID_6D3C6DF4_6218_4476_98F6_4BBEBE15D19B"/>
 																						<UML:TaggedValue tag="documentation" value="Textual description of the source" xmi.id="EAID_C310CE9C_5E56_4d5e_BAE7_9D046AF778F2"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified description for this Source" xmi.id="EAID_EBAA9153_3211_4f0a_B456_988DC4AF18E8"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified description for this Source" xmi.id="EAID_EBAA9153_3211_4f0a_B456_988DC4AF18E8"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																			</UML:Classifier.feature>
@@ -1672,8 +1679,8 @@
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies the name for an AttributeSetDescriptor instance" xmi.id="EAID_124E5273_BECB_4967_9FBC_5C69443D52A2"/>
 																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_23675188_5C76_4806_AE03_9463B7131DC2"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the name for this AttributeSetDescriptor" xmi.id="EAID_8D2FE5AF_D013_42c3_8962_662C0230E4BE"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the name of this AttributeSetDescriptor" xmi.id="EAID_F8BCE05A_C567_40c8_A662_2767EBEF7597"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the name for this AttributeSetDescriptor" xmi.id="EAID_8D2FE5AF_D013_42c3_8962_662C0230E4BE"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the name of this AttributeSetDescriptor" xmi.id="EAID_F8BCE05A_C567_40c8_A662_2767EBEF7597"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="WITH_ALL_ATTRIBUTES" changeable="frozen" visibility="private" ownerScope="instance" targetScope="instance">
@@ -2288,6 +2295,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{53AF22A9-6719-49c0-98D8-D28A42C57861}"/>
 																						<UML:TaggedValue tag="ea_localid" value="75"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - sets the namespace id " xmi.id="EAID_45EE1473_14CD_4397_A71E_4F5255AD2F97"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - returns the namespace id" xmi.id="EAID_471BAF03_BD73_4627_B2FB_B2AF603146C6"/>
 																						<UML:TaggedValue tag="documentation" value="The namespaceId is used to identify a set of concepts within a terminology such as the NCI Thesaurus." xmi.id="EAID_DD1D5FAC_2411_45d5_B3E6_B7153101B870"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
@@ -2526,9 +2535,9 @@
 																						<UML:TaggedValue tag="ea_guid" value="{ACF1E462-189F-4ca5-A864-8683347BF458}"/>
 																						<UML:TaggedValue tag="ea_localid" value="83"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified is-a value" xmi.id="EAID_05E1A04E_10FE_47bc_B33E_8E19C27F14A1"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified is-a value" xmi.id="EAID_05E1A04E_10FE_47bc_B33E_8E19C27F14A1"/>
 																						<UML:TaggedValue tag="documentation" value="Specifes the isa value for this concept. If a relationship type between this concept and the parent is a &quot;isa&quot; this value is set to true." xmi.id="EAID_21F3C0A2_31E4_464f_BC44_7521191C2942"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the is-a value for this EdgeProperties" xmi.id="EAID_8053DCBB_2BAF_4632_8C24_69BC600A1C3C"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the is-a value for this EdgeProperties" xmi.id="EAID_8053DCBB_2BAF_4632_8C24_69BC600A1C3C"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="links" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -2558,8 +2567,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{8A20430A-C8C7-4bbf-AF80-0AEBABC20C5C}"/>
 																						<UML:TaggedValue tag="ea_localid" value="86"/>
 																						<UML:TaggedValue tag="documentation" value="Specifes the link information used  to generate the concept tree" xmi.id="EAID_3DF9B79C_FC07_46d1_A876_D5F2F68D8E24"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified links for this EdgeProperties" xmi.id="EAID_57DD7642_2D41_4940_8AEC_AB59E0438D8C"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the links for this EdgeProperties" xmi.id="EAID_8A07DBFE_9F4C_4447_913A_2809D75E1B3F"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified links for this EdgeProperties" xmi.id="EAID_57DD7642_2D41_4940_8AEC_AB59E0438D8C"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the links for this EdgeProperties" xmi.id="EAID_8A07DBFE_9F4C_4447_913A_2809D75E1B3F"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="name" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -2589,8 +2598,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{DF415497-8AAF-46d9-B774-332BDA312F85}"/>
 																						<UML:TaggedValue tag="ea_localid" value="85"/>
 																						<UML:TaggedValue tag="documentation" value="Specifes the name for this instance" xmi.id="EAID_196BE0EE_E85C_426f_8F1B_E16C9C0A5073"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified name for this EdgeProperties" xmi.id="EAID_671DCC10_0507_45bb_938E_4F5889B8AC4B"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the name of this EdgeProperties" xmi.id="EAID_CC8F4338_60F6_4e3d_8E8F_403EDD5CDE6B"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified name for this EdgeProperties" xmi.id="EAID_671DCC10_0507_45bb_938E_4F5889B8AC4B"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the name of this EdgeProperties" xmi.id="EAID_CC8F4338_60F6_4e3d_8E8F_403EDD5CDE6B"/>
 																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_D5D13EC4_4637_41e6_A573_858886925027"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
@@ -2621,9 +2630,9 @@
 																						<UML:TaggedValue tag="ea_guid" value="{4444555B-5A06-4237-A7FF-DA9D18139B11}"/>
 																						<UML:TaggedValue tag="ea_localid" value="84"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the traverseDown value for this EdgeProperties" xmi.id="EAID_044E7643_6D62_44c8_8484_7BCBD9835AE0"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the traverseDown value for this EdgeProperties" xmi.id="EAID_044E7643_6D62_44c8_8484_7BCBD9835AE0"/>
 																						<UML:TaggedValue tag="documentation" value="The direction specified when the concept tree was generated. " xmi.id="EAID_85A82226_1F33_4980_A7DC_0F86FCDC5969"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified traverseDown value" xmi.id="EAID_EEBD046C_78E6_4de0_A9F8_2CA99976CCDC"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified traverseDown value" xmi.id="EAID_EEBD046C_78E6_4de0_A9F8_2CA99976CCDC"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																			</UML:Classifier.feature>
@@ -2866,9 +2875,9 @@
 																						<UML:TaggedValue tag="ea_guid" value="{E540D091-9C8B-4195-B084-A1CBC79C679A}"/>
 																						<UML:TaggedValue tag="ea_localid" value="64"/>
 																						<UML:TaggedValue tag="documentation" value="The code is a unique identifer within a source associated to the atom" xmi.id="EAID_22423B40_D571_4cfb_87AF_9F8C2B6E62B9"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified code for this Atom" xmi.id="EAID_2BAC6316_F993_4adc_B64B_2C1D52D7D777"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified code for this Atom" xmi.id="EAID_2BAC6316_F993_4adc_B64B_2C1D52D7D777"/>
 																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_46766F57_A642_4bec_A3A3_98C0D9DD6B92"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the code for this Atom" xmi.id="EAID_FF8556AC_2CAA_4a48_A412_4AD075E1B9F0"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the code for this Atom" xmi.id="EAID_FF8556AC_2CAA_4a48_A412_4AD075E1B9F0"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="lui" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -2899,8 +2908,8 @@
 																						<UML:TaggedValue tag="ea_localid" value="95"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
 																						<UML:TaggedValue tag="documentation" value="The lui holds the Lexical unique identifier for the atom" xmi.id="EAID_108140AD_06B4_41e3_8B54_352873837BA8"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the Lexical Unique ID for this Atom" xmi.id="EAID_755A932C_7277_40d0_AA79_0333629C4BF0"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the Lexical Unique ID of this Atom" xmi.id="EAID_7611E06B_EADC_4059_8D53_1671B23F7152"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the Lexical Unique ID for this Atom" xmi.id="EAID_755A932C_7277_40d0_AA79_0333629C4BF0"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the Lexical Unique ID of this Atom" xmi.id="EAID_7611E06B_EADC_4059_8D53_1671B23F7152"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																				<UML:Attribute name="name" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
@@ -2929,8 +2938,8 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{2DA57FAD-4771-45d2-9EAB-DC982169ABF1}"/>
 																						<UML:TaggedValue tag="ea_localid" value="65"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the name of this Atom" xmi.id="EAID_0C15FD43_8362_4bd4_835F_C5C7256E2DF2"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the name for this Atom" xmi.id="EAID_461E8A31_8527_4c62_8415_3F9BDF667C9B"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the name of this Atom" xmi.id="EAID_0C15FD43_8362_4bd4_835F_C5C7256E2DF2"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the name for this Atom" xmi.id="EAID_461E8A31_8527_4c62_8415_3F9BDF667C9B"/>
 																						<UML:TaggedValue tag="documentation" value="The name attribute stores the name of the term " xmi.id="EAID_A0A4A7F4_BFCD_41b2_A97B_513D3F6332E4"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
@@ -2961,9 +2970,9 @@
 																						<UML:TaggedValue tag="ea_guid" value="{2D3D6FB3-4963-476c-9665-40FD806FB6CF}"/>
 																						<UML:TaggedValue tag="ea_localid" value="67"/>
 																						<UML:TaggedValue tag="documentation" value="The origin attribute holds the origin of the atom" xmi.id="EAID_41B298B0_B498_41f2_BFED_DD1DF6588DAD"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified origin for this Atom" xmi.id="EAID_633D1490_AA1B_4f87_94E9_1BCAF97BEE6F"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified origin for this Atom" xmi.id="EAID_633D1490_AA1B_4f87_94E9_1BCAF97BEE6F"/>
 																						<UML:TaggedValue tag="metaphrase" value="true" xmi.id="EAID_EA30224B_97F1_42e7_95FD_B05165E8238F"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the origin of this Atom" xmi.id="EAID_EE01CFC1_2E7F_41f9_A6BF_36D76F9DC8A6"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the origin of this Atom" xmi.id="EAID_EE01CFC1_2E7F_41f9_A6BF_36D76F9DC8A6"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																			</UML:Classifier.feature>
@@ -3242,8 +3251,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{55158304-E5B8-4084-A04B-33B54D9B439B}"/>
 																						<UML:TaggedValue tag="ea_localid" value="9"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the namespaceId for this DescLogicConcept" xmi.id="EAID_75761B10_752F_42d6_B052_A2A4915DFB0A"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified namespaceId for this DescLogicConcept" xmi.id="EAID_76073945_7935_4c4c_88BA_4AFC9694D3EB"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the namespaceId for this DescLogicConcept" xmi.id="EAID_75761B10_752F_42d6_B052_A2A4915DFB0A"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified namespaceId for this DescLogicConcept" xmi.id="EAID_76073945_7935_4c4c_88BA_4AFC9694D3EB"/>
 																						<UML:TaggedValue tag="documentation" value="The namespaceId is used to identify a set of concepts within a terminology such as the NCI Thesaurus." xmi.id="EAID_B602CEB0_350B_477a_92A0_6BF50D5D9506"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
@@ -3273,10 +3282,10 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{814A8BD8-1835-42b1-B557-5F951830BC34}"/>
 																						<UML:TaggedValue tag="ea_localid" value="87"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the SemanticTypes of this DescLogicConcept" xmi.id="EAID_56535E4B_54EA_4d9d_9995_F4C1885C7EE4"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified Semantic Types for this DescLogicConcept" xmi.id="EAID_584AA389_90AE_4b2b_8A85_B6637E10DC94"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the SemanticTypes of this DescLogicConcept" xmi.id="EAID_56535E4B_54EA_4d9d_9995_F4C1885C7EE4"/>
+																						<UML:TaggedValue tag="deprecated" value="@deprecated  - The preferred way of getting a semantic type is by using the getPropertyCollection method. 'Semantic_Type' is the name of a property in a DescLogicConcept. " xmi.id="EAID_57489B34_B14C_4c5d_A115_811B2002FD04"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified Semantic Types for this DescLogicConcept" xmi.id="EAID_584AA389_90AE_4b2b_8A85_B6637E10DC94"/>
 																						<UML:TaggedValue tag="documentation" value="Stores the Semantic_Type property value for this DescLogicConcept" xmi.id="EAID_64DA8333_B32E_4007_B5B6_6E8EADDFD670"/>
-																						<UML:TaggedValue tag="depricated" value="@depricated - The preferred way of getting a semantic type is by using the getPropertyCollection method. 'Semantic_Type' is the name of a property in a DescLogicConcept. " xmi.id="EAID_AAB06590_8C3C_4c0c_8E3A_996C176C5BDB"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																			</UML:Classifier.feature>
@@ -3329,8 +3338,8 @@
 																						<UML:TaggedValue tag="ea_guid" value="{88644C55-FF5F-4c30-902A-068C2F65B2A5}"/>
 																						<UML:TaggedValue tag="ea_localid" value="40"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
-																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified definition text  for this Definition" xmi.id="EAID_647FCE77_2697_4bca_BBAC_322F3B4FDBBD"/>
-																						<UML:TaggedValue tag="documentation-get-method" value="Returns the definition text" xmi.id="EAID_F526C94A_0A1B_455f_9E65_47F8B996A622"/>
+																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified definition text  for this Definition" xmi.id="EAID_647FCE77_2697_4bca_BBAC_322F3B4FDBBD"/>
+																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the definition text" xmi.id="EAID_F526C94A_0A1B_455f_9E65_47F8B996A622"/>
 																						<UML:TaggedValue tag="key-field" value="true" xmi.id="EAID_FA670BD5_FD9D_4c2b_9267_EA1DE4B52508"/>
 																						<UML:TaggedValue tag="documentation" value="A textual description of a term" xmi.id="EAID_FE643A2B_82C0_43ff_B508_5C6B4996EF21"/>
 																					</UML:ModelElement.taggedValue>
@@ -3766,32 +3775,39 @@
 				<UML:DataType xmi.id="eaxmiid0" name="int" visibility="private" isRoot="false" isLeaf="false" isAbstract="false"/>
 			</UML:Namespace.ownedElement>
 		</UML:Model>
-		<UML:TaggedValue tag="depricated" xmi.id="EAID_BC84E343_4C5C_4052_AAE2_49C0659E0D07" value="@depricated - Please use History.class" modelElement="EAID_2AC20E60_2553_4d43_9B1F_4319F357DC4F"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_BC6CC8A7_A1D1_4629_B101_448A5DB36456" value="EditActionDate will not be supported in a future release" modelElement="EAID_2AC20E60_2553_4d43_9B1F_4319F357DC4F"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_FC1CEC86_F280_4176_8DFE_9E36018A72FF" value="This class holds the edit action and date information for a given concept" modelElement="EAID_2AC20E60_2553_4d43_9B1F_4319F357DC4F"/>
 		<UML:TaggedValue tag="deprecated" xmi.id="EAID_E370F495_CDEA_400d_B70B_6B3146AAAE31" value="The name of this object is misleading. The preferred class suggested by the EVSTeam is EdgeProperties." modelElement="EAID_566D1901_A22A_4cb7_A49F_A1FB3C5169A5"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_7EE8DDCF_E9BF_4862_9961_4DD9FE0CF62C" value="The TreeNode class specifies the relationship between a concept and its immediate parent when a  TREE is generated using the getTree method. " modelElement="EAID_566D1901_A22A_4cb7_A49F_A1FB3C5169A5"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_4AEF2A48_C429_4c99_8280_644CE24FB50E" value="An Association class relates a concept or a term to another concept or term. Association falls into 3 categories; concept association, term association and synonyms which are concept-term associations." modelElement="EAID_5A640FCE_A160_4450_A156_9F071B7DCFEB"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_1F51C925_16D7_41e7_AF6E_6D5FA907281B" value="SemanticType will not be supported in a future release" modelElement="EAID_619C6053_1CA6_4a3f_9D58_D058361CB1A9"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_DA8E9F76_CBE9_40f5_8537_B9A425B15BF4" value="Semantic type is a category defined in the semantic network that can be used to group similar concepts" modelElement="EAID_619C6053_1CA6_4a3f_9D58_D058361CB1A9"/>
 		<UML:TaggedValue tag="metaphrase" xmi.id="EAID_8A84D7E7_B5B6_4bb9_B84A_9EE4A7FAEC84" value="true" modelElement="EAID_619C6053_1CA6_4a3f_9D58_D058361CB1A9"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_9888F03A_8F87_43d2_823C_CB1478C349F0" value="Silo will not be supported in a future release" modelElement="EAID_869D6277_DA5E_44fa_80C3_5523BFC87C77"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_20E093A9_8903_44c1_AC6B_FD0EDD886030" value="Silo is a repository of customized concept terminology data from a knowledgebase. There can be a single silo or multiple silos, each consisting of semantically related concepts and extracted character strings associated with those concepts." modelElement="EAID_869D6277_DA5E_44fa_80C3_5523BFC87C77"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_01DF0703_B0A0_40bb_A041_255030A095F1" value="Specifies the vocabulary entity or namespace" modelElement="EAID_88B0CC13_E37F_41e6_AE23_652D18FE1A20"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_7BC8A81A_1F27_4bbe_8A7D_55F91454DF10" value="Property is an attribute of a concept. Examples of properties are &quot;Synonym&quot;, &quot;Preferred_Name&quot;, &quot;Semantic_Type&quot; etc." modelElement="EAID_9B85047F_0121_4078_9ADF_CF867CA9C9AF"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_FFDB2AD2_4D54_4ef1_9145_F22766A212FE" value="Source will not be supported in a future release" modelElement="EAID_A89F53B1_41AF_43da_A7C9_ACB22E37C1F0"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_EDDDEF8F_EC50_495e_A9E1_72AE04F56E4B" value="The source is a knowledge base." modelElement="EAID_A89F53B1_41AF_43da_A7C9_ACB22E37C1F0"/>
 		<UML:TaggedValue tag="metaphrase" xmi.id="EAID_068E4841_3D5C_432c_AB61_19EBDCD29492" value="true" modelElement="EAID_A89F53B1_41AF_43da_A7C9_ACB22E37C1F0"/>
 		<UML:TaggedValue tag="constructor" xmi.id="EAID_44D3C7BF_D3BE_49f4_88B5_C7693BBE5CA4" value="true" modelElement="EAID_A8EBC27B_AEA2_4ff3_8361_750D021E9A7B"/>
 		<UML:TaggedValue tag="constructor-parameter-name" xmi.id="EAID_AD50FCF1_491B_40a6_8618_7D4F954ADD05" value="name" modelElement="EAID_A8EBC27B_AEA2_4ff3_8361_750D021E9A7B"/>
 		<UML:TaggedValue tag="constructor-parameter-type" xmi.id="EAID_77D60AE8_A3E4_4416_9B3F_E8E2DC423708" value="java.lang.String" modelElement="EAID_A8EBC27B_AEA2_4ff3_8361_750D021E9A7B"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_5A6D2BCA_CB58_45b8_B414_903F074E07AF" value="AttributeSetDescriptor will not be supported in a future release" modelElement="EAID_A8EBC27B_AEA2_4ff3_8361_750D021E9A7B"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_D62C2A90_F5AE_4a92_8822_3DFF4100D177" value="AttributeSetDescriptor class specifies the set of concept attributes that should be retrieved by a given operation. " modelElement="EAID_A8EBC27B_AEA2_4ff3_8361_750D021E9A7B"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_E289267C_67CB_4624_BCA2_D13DFF01C335" value="MetaThesaurusConcept is the fundamental vocabulary entity in the NCI MetaThesaurus." modelElement="EAID_BDF7914F_69CD_41de_9B63_E3AE3122601C"/>
 		<UML:TaggedValue tag="metaphrase" xmi.id="EAID_30CF1AEA_A4B5_4e6d_B03D_33533AC24F09" value="true" modelElement="EAID_BDF7914F_69CD_41de_9B63_E3AE3122601C"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_26B7967C_2BFB_4640_BEBB_DED5D21EC5CF" value="A Qualifier is  attached to associations and properties of a concept. " modelElement="EAID_C1CADCB0_D2EB_4b68_9D11_2AA9DF68136E"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_B7B8BDE4_B3CD_4efb_8C7E_3A6474358662" value="The History class stores the concept history information." modelElement="EAID_CB04127D_B2C3_4d0f_AD48_80F800D01E0B"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_B547E925_8E8C_4d1e_B946_ECB584DD007B" value="The HistoryRecord holds history information for the specified concept" modelElement="EAID_CB2803B7_A2EE_4132_9B9C_7F0F28C98D9C"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_7C4A5345_0152_47de_9F7B_03F8B020040D" value="EdgeProperties will not be supported in a future release" modelElement="EAID_CFDFFD05_90B6_46eb_B6D4_F05DEA8C869F"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_893C93F3_9ECB_49b1_A855_28AE7F0629EB" value="The EdgeProperties class specifies the relationship between a concept and its immediate parent when a  TREE is generated using the getTree method. " modelElement="EAID_CFDFFD05_90B6_46eb_B6D4_F05DEA8C869F"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_A4CED27D_C297_4321_9462_6AE0AD8BC9DC" value="Defines a relationship between two concepts. " modelElement="EAID_DE3C222B_4AA5_4021_97B4_25A9A22FDF5D"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_B8FDA8B4_C863_4d88_99E8_58B87536F981" value="Atom will not be supported in a future release" modelElement="EAID_DFB984C8_7F2D_44d0_88E0_70C314A78A10"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_8DF30726_D77B_491c_8197_CBC0D79F5A95" value="Atom is an occurrence of a term in a source." modelElement="EAID_DFB984C8_7F2D_44d0_88E0_70C314A78A10"/>
 		<UML:TaggedValue tag="metaphrase" xmi.id="EAID_107C53BB_93AE_40a1_83F6_FD08D23F04CA" value="true" modelElement="EAID_DFB984C8_7F2D_44d0_88E0_70C314A78A10"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_8CC8391F_750F_41f8_838C_8345B1F1791D" value="The DescLogicConcept class represents the fundamental vocabulary entity in the NCI Thesaurus. " modelElement="EAID_E55B53F2_EBF4_4a34_A712_CC0FB4450D22"/>
+		<UML:TaggedValue tag="deprecated" xmi.id="EAID_228BAB19_CE97_42cc_BB59_FF419E2BC39E" value="Definition will not be supported in a future release" modelElement="EAID_F204D2E2_1F15_4675_AB69_336188C97F03"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_678377D8_4146_4d10_8C7F_89B089FF349B" value="Textual definition from an identified source" modelElement="EAID_F204D2E2_1F15_4675_AB69_336188C97F03"/>
 		<UML:TaggedValue tag="metaphrase" xmi.id="EAID_6DF8DCFA_A6C4_44be_AD46_E565ED0FC43E" value="true" modelElement="EAID_F204D2E2_1F15_4675_AB69_336188C97F03"/>
 		<UML:TaggedValue tag="documentation" xmi.id="EAID_4136EABA_1063_4fd8_943F_ECCED2B1D2E7" value="SecurityToken class implements security policy to EVS Vocabularies. Access request information can be specified in this class. This information will be used to grant or deny permission to access a specific vocabulary. " modelElement="EAID_60E93039_39C7_42fe_BA18_9909BB8FFCC3"/>
