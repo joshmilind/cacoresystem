@@ -79,7 +79,7 @@ public class TestXML {
 			ApplicationService appService = ApplicationServiceProvider.getApplicationService();
 
 			try {
-				System.out.println("Scenario 1: Retrieving a Gene based on a Gene id.");
+				System.out.println("Scenario 1: Retrieving a Gene based on a Gene Symbol.");
 				Gene gene = new Gene();
 				gene.setSymbol("brca2");
 
@@ -87,14 +87,15 @@ public class TestXML {
 					List resultList = appService.search(Gene.class, gene);
 					System.out.println("Result list size: " + resultList.size()	+ "\n");
 					long startTime = System.currentTimeMillis();
-					for (Iterator resultsIterator = resultList.iterator(); resultsIterator.hasNext();) {						
-                        Gene returnedGene = (Gene) resultsIterator.next();
+					//for (Iterator resultsIterator = resultList.iterator(); resultsIterator.hasNext();) {
+                    if(resultList.size()>0){
+                        Gene returnedGene = (Gene) resultList.get(0);
                         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-						System.out.println("Gene object right after search: \n\n");
-						System.out.println("   Id: " + returnedGene.getId()	+ "\n");
-						System.out.println("   Fullname: " + returnedGene.getFullName() + "\n");
-						System.out.println("   ClusterId: "	+ returnedGene.getClusterId() + "\n");
-						System.out.println("   Symbol: " + returnedGene.getSymbol() + "\n\n\n");
+                        System.out.println("Gene object right after search: \n\n");
+                        System.out.println("   Id: " + returnedGene.getId() + "\n");
+                        System.out.println("   Fullname: " + returnedGene.getFullName() + "\n");
+                        System.out.println("   ClusterId: " + returnedGene.getClusterId() + "\n");
+                        System.out.println("   Symbol: " + returnedGene.getSymbol() + "\n\n\n");
                         
                         XMLUtility myUtil = new XMLUtility();
                         File myFile = new File("./test1.xml");
@@ -111,13 +112,15 @@ public class TestXML {
                         //System.out.println("Gene has been validated!!!\n\n");
                         
                         Gene myGene = (Gene) myUtil.fromXML(myFile);                        
-						System.out.println("Retrieving gene from xml ....\n\n");
-						System.out.println("   Id: " + myGene.getId() + "\n");
-						System.out.println("   Fullname: " + myGene.getFullName() + "\n");
-						System.out.println("   ClusterId: " + myGene.getClusterId() + "\n");
-						System.out.println("   Symbol: " + myGene.getSymbol() + "\n");
+                        System.out.println("Retrieving gene from xml ....\n\n");
+                        System.out.println("   Id: " + myGene.getId() + "\n");
+                        System.out.println("   Fullname: " + myGene.getFullName() + "\n");
+                        System.out.println("   ClusterId: " + myGene.getClusterId() + "\n");
+                        System.out.println("   Symbol: " + myGene.getSymbol() + "\n");
                         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-					}
+                    }
+                        
+					//}
 					long endTime = System.currentTimeMillis();
 					System.out.println("latency in miliseconds = " + (endTime - startTime));
 
@@ -133,6 +136,7 @@ public class TestXML {
 			} catch (RuntimeException e2) {
 				e2.printStackTrace();
 			}
+            /**
 			try {
                 System.out.println("===================================================");
 				System.out.println("\n\n\nScenario 2: Retrieving a Form based on an id.");
@@ -288,6 +292,7 @@ public class TestXML {
 			} catch (RuntimeException e2) {
 				e2.printStackTrace();
 			}
+            */
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

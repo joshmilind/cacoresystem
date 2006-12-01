@@ -615,23 +615,30 @@ public class TestClient {
 				}
 
 				// Grid Identifier test
-				// Test Case 19: Get Grid Identifier
+				// Test Case 17: Get Grid Identifier
+                
 				Gene gene = new Gene();
 	            gene.setSymbol("brca*");
-	            System.out.println("\n\n\nTest Case 19: Search for Gene grid identifier: " + gene.getSymbol());
+	            System.out.println("\n\n\nTest Case 17: Search for Gene grid identifier: " + gene.getSymbol());
 	            List results = appService.search("gov.nih.nci.cabio.domain.Gene", gene);
 	            for(int i=0; i<results.size(); i++){
 	                Gene g = (Gene)results.get(i);            
 	                System.out.println("Gene: "+ g.getId() +"\t"+ g.getSymbol() +"\t"+ g.getBigid());
-	                System.out.println("\tGrid Id exists: " + appService.exist(g.getBigid()));
-		            Gene dataObject = (Gene)appService.getDataObject(g.getBigid());
-		            System.out.println("\tResult: "+ dataObject.getId() +"\t"+dataObject.getSymbol()+"\t"+dataObject.getBigid());
-	            }            
+	                try{
+                        System.out.println("\tGrid Id exists: " + appService.exist(g.getBigid()));
+                        Gene dataObject = (Gene)appService.getDataObject(g.getBigid());
+                        System.out.println("\tResult: "+ dataObject.getId() +"\t"+dataObject.getSymbol()+"\t"+dataObject.getBigid());
+                    }catch(Exception ex){
+                        System.out.println("\tError: "+ ex.getMessage());
+                    }
+                    
+	            }
+                            
 	            
-				// Test Case 20: Test Provence Provenance
+				// Test Case 18: Test Provence Provenance
 				Protein pro = new Protein();
 				pro.setName("BRCA*");
-				System.out.println("\n\n\nTest Case 20: Search Provenance for Protein: " + pro.getName());
+				System.out.println("\n\n\nTest Case 18: Search Provenance for Protein: " + pro.getName());
 				List protList = appService.search(Protein.class,pro);
 
 				for (int i=0; i < protList.size(); i++)  {
