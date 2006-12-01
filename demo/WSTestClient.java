@@ -60,9 +60,9 @@ public class WSTestClient
          * Get caCORE version number.
          */
         call.setOperationName(new QName("caCoreWebService", "getVersion"));
-        System.out.println("===========================================");
-        System.out.println("Version number: "+call.invoke(new Object[0]));
-        System.out.println("===========================================");
+        System.out.println("====================================================================");
+        System.out.println("1.Version number: "+call.invoke(new Object[0]));
+        System.out.println("\n====================================================================");
 
         /*
          * Example 2:
@@ -70,8 +70,8 @@ public class WSTestClient
          */
         call.setOperationName(new QName("caCoreWebService", "getRecordsPerQuery"));
         call.setReturnType(org.apache.axis.encoding.XMLType.XSD_INT);
-        System.out.println("Number of records returned per Query: "+call.invoke(new Object[0]));
-        System.out.println("===========================================");
+        System.out.println("2.Number of records returned per Query: "+call.invoke(new Object[0]));
+        System.out.println("====================================================================");
         
         /*
          * Example 3:
@@ -82,8 +82,8 @@ public class WSTestClient
         call.addParameter("arg1",org.apache.axis.encoding.XMLType.XSD_STRING,ParameterMode.IN);
         call.addParameter("arg2", org.apache.axis.encoding.XMLType.XSD_ANYTYPE, ParameterMode.IN);        
         call.setReturnType(org.apache.axis.encoding.XMLType.XSD_INT);
-        System.out.println("Total number of Genes found: " + call.invoke(new Object[] { "gov.nih.nci.cabio.domain.ws.Gene", new Gene() }));
-        System.out.println("===============================");
+        System.out.println("3.Total number of Genes found: " + call.invoke(new Object[] { "gov.nih.nci.cabio.domain.ws.Gene", new Gene() }));
+        System.out.println("\n====================================================================");
         
         /*
          * Example 4:
@@ -93,18 +93,15 @@ public class WSTestClient
 		call.setOperationName(new QName("caCoreWebService", "queryObject"));
 		call.setReturnType(org.apache.axis.encoding.XMLType.SOAP_ARRAY);
 		gov.nih.nci.cabio.domain.ws.Gene gene = new gov.nih.nci.cabio.domain.ws.Gene();
-		gene.setSymbol("NAT*");
+		gene.setSymbol("br*");
 		Taxon tax = new Taxon();
-		tax.setId(new Long(6));
+		tax.setId(new Long(5));
 		gene.setTaxon(tax);
-		Chromosome ch = new Chromosome();
-		ch.setId(new Long(37));
-		gene.setChromosome(ch);
-
+		
 		long start = System.currentTimeMillis();
 		Object[] resultList = (Object[])call.invoke(new Object[] { "gov.nih.nci.cabio.domain.ws.Gene", gene });
 		long end = System.currentTimeMillis();
-		System.out.println("Get Genes where gene symbol='NAT*', Taxon id=5 and Chromosome id=37\n\tTotal Genes Found: " + resultList.length );
+		System.out.println("4.Get Genes where gene symbol='br*', Taxon id=5 \n\tTotal Genes Found: " + resultList.length );
 		if (resultList.length > 0) {
 			for(int resultIndex = 0; resultIndex < resultList.length; resultIndex++) {
 				Gene g = (Gene)resultList[resultIndex];
@@ -112,7 +109,7 @@ public class WSTestClient
 			}
 		}
 		System.out.println("TIME LAG: MS - "+ (end - start));
-		System.out.println("===============================");
+        System.out.println("\n====================================================================");
 
         
 
@@ -134,31 +131,31 @@ public class WSTestClient
 		long startTime = System.currentTimeMillis();
 		Object[] parentGOCollection = (Object[])call.invoke(new Object[] { "gov.nih.nci.cabio.domain.ws.GeneOntologyRelationship", geneor });
 		long endTime = System.currentTimeMillis();
-		System.out.println("Query Parent GeneOntologyRelationship by setting childGeneOntology id =  5125");
-        System.out.println("tNumber of parent Gene Ontologies found: "+ parentGOCollection.length);
+		System.out.println("5. Query Parent GeneOntologyRelationship by setting childGeneOntology id =  5125");
+        System.out.println("\tNumber of parent Gene Ontologies found: "+ parentGOCollection.length);
 		for(int i=0; i<parentGOCollection.length; i++){
 			GeneOntologyRelationship data = new GeneOntologyRelationship();
 			data = (GeneOntologyRelationship)parentGOCollection[i];
-			System.out.println("Parent Gene Ontology Relationship id: " + data.getId());
+			System.out.println("\tParent Gene Ontology Relationship id: " + data.getId());
 		}
 		System.out.println("TIME LAG: MS - "+ (endTime - startTime));
-		System.out.println("================================");
+        System.out.println("\n====================================================================");
 
          /*
          * Example 6:
          * Query GeneOntology by Gene where symbol=brca. Using the result Gene Ontologies get the Child GeneOntologyRelationship
          */
         
-        Gene brca = new Gene();
-        brca.setSymbol("brca*");
-		Object[] ontologyCollection = (Object[])call.invoke(new Object[] { "gov.nih.nci.cabio.domain.ws.GeneOntology", brca });        
-		System.out.println("\nGet GeneOntology for gene symbol='brca*'");
-        System.out.println(ontologyCollection.length + " GeneOntologies found");
+        Gene nat = new Gene();
+        nat.setSymbol("nat*");
+		Object[] ontologyCollection = (Object[])call.invoke(new Object[] { "gov.nih.nci.cabio.domain.ws.GeneOntology", nat });        
+		System.out.println("\n6.Get GeneOntology for gene symbol='nat*'");
+        System.out.println(ontologyCollection.length + "\n\tGeneOntologies found");
         
 		for(int i=0; i<ontologyCollection.length; i++){
 			GeneOntology geneOnt = new GeneOntology();
 			geneOnt = (GeneOntology)ontologyCollection[i];
-            System.out.println("======================================================================");
+            System.out.println("\n====================================================================");
             System.out.println("\tGet Child GeneOntologyRelationship for GeneOntology: "+ geneOnt.getId() +"\t"+ geneOnt.getName());
            
 			GeneOntologyRelationship gor = new GeneOntologyRelationship();
@@ -166,10 +163,10 @@ public class WSTestClient
 			list.add(geneOnt);
 			gor.setParentGeneOntology(geneOnt);
 			Object[] childGOCollection = (Object[])call.invoke(new Object[] { "gov.nih.nci.cabio.domain.ws.GeneOntologyRelationship", gor });
-			System.out.println("\t"+ childGOCollection.length +" ChildGeneOntologyRelationships found");
+			System.out.println("\n\t"+ childGOCollection.length +" ChildGeneOntologyRelationships found\n\t");
 			for(int o=0; o<childGOCollection.length; o++){
 				GeneOntologyRelationship childGOR = (GeneOntologyRelationship)childGOCollection[o];
-				System.out.println("\t\tid: "+ childGOR.getId());
+				//System.out.print("id: "+ childGOR.getId()+"; ");
 			}
 
 		}
@@ -179,6 +176,7 @@ public class WSTestClient
          * Check if bigid = hdl://123.P/MWE exist
          */
 		/*
+        System.out.println("====================================================================");
         call = (Call)service.createCall();
         call.setTargetEndpointAddress(new java.net.URL(url));
         call.setOperationName(new QName("caCoreWebService", "exist"));
@@ -196,6 +194,7 @@ public class WSTestClient
          * get data object from  bigid = hdl://123.P/MWE 
          */
 		/*
+        System.out.println("====================================================================");
         call = (Call)service.createCall();
         call.setTargetEndpointAddress(new java.net.URL(url));
         call.setOperationName(new QName("caCoreWebService", "getDataObject"));
