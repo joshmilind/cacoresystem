@@ -262,6 +262,9 @@
 					</fileset>
 	    </jar>
 		
+		<!-- Delete caCORE SDK's client programs-->
+		<delete dir="${dir.output.project.package.client}" includes="**/*.java"/>
+		
 		<!-- First, create test client files with current project information -->
 		<copy todir="${dir.output.project.package.client}" overwrite="true">
 			<fileset dir="${dir.custom.demo}">
