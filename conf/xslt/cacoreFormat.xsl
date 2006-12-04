@@ -124,7 +124,7 @@
 	</xsl:template>
 	<xsl:template name="response" match="/xlink:httpQuery/queryResponse/class" mode="res">
 	
-		<table border="2" style="table-layout:fixed" cellpadding="0" cellspacing="0" bgcolor="#FAF8CC">
+		<table border="2" style="word-break:break-all;table-layout:fixed" cellpadding="0" cellspacing="0" bgcolor="#FAF8CC">
 <!--
 <table class="dataTable" border="1">
 -->
@@ -150,7 +150,7 @@
 							<br><xsl:value-of select="@name"/></br>	
 						</a>
 							<xsl:for-each select="field">
-								<th width="200">
+								<th width="300">
 									<xsl:value-of select="@name"/>
 								</th>
 							</xsl:for-each>
@@ -158,7 +158,7 @@
 					</xsl:if>
 					<tr align="left" valign="top">
 						<xsl:for-each select="field">
-							<td width="200" nowrap="off">
+							<td width="300" nowrap="off">
 								<xsl:choose>
 									<xsl:when test="$role = @xlink:type">
 										<a href="{@xlink:href}">
