@@ -87,9 +87,8 @@ public class TestXML {
 					List resultList = appService.search(Gene.class, gene);
 					System.out.println("Result list size: " + resultList.size()	+ "\n");
 					long startTime = System.currentTimeMillis();
-					//for (Iterator resultsIterator = resultList.iterator(); resultsIterator.hasNext();) {
-                    if(resultList.size()>0){
-                        Gene returnedGene = (Gene) resultList.get(0);
+					for (Iterator resultsIterator = resultList.iterator(); resultsIterator.hasNext();) {                    
+                        Gene returnedGene = (Gene) resultsIterator.next();
                         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                         System.out.println("Gene object right after search: \n\n");
                         System.out.println("   Id: " + returnedGene.getId() + "\n");
@@ -118,9 +117,8 @@ public class TestXML {
                         System.out.println("   ClusterId: " + myGene.getClusterId() + "\n");
                         System.out.println("   Symbol: " + myGene.getSymbol() + "\n");
                         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                    }
-                        
-					//}
+                    }                        
+				
 					long endTime = System.currentTimeMillis();
 					System.out.println("latency in miliseconds = " + (endTime - startTime));
 
@@ -136,7 +134,7 @@ public class TestXML {
 			} catch (RuntimeException e2) {
 				e2.printStackTrace();
 			}
-            /**
+            
 			try {
                 System.out.println("===================================================");
 				System.out.println("\n\n\nScenario 2: Retrieving a Form based on an id.");
@@ -292,7 +290,7 @@ public class TestXML {
 			} catch (RuntimeException e2) {
 				e2.printStackTrace();
 			}
-            */
+            
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
