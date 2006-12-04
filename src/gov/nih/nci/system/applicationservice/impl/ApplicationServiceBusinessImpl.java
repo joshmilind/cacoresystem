@@ -90,17 +90,16 @@ public class ApplicationServiceBusinessImpl {
 
 	private boolean caseSensitivityFlag; // by default it is case
 	
-	// Loads the grid idenifier hanlder system
-	private static IDSvcInterface idInterface = null;
+	private static Properties properties;
 	static {
 	   	String propertyFile = System.getProperty("gov.nih.nci.cacore.cacoreProperties");
-		Properties properties = new Properties();
+	   	log.info("Loading caCORE property file: " + propertyFile);
+		properties = new Properties();
 		try{
 			if(propertyFile != null && propertyFile.length() > 0){
 				FileInputStream fis = new FileInputStream(new File(propertyFile));
 				properties.load(fis);				
 			}
-			idInterface = IDSvcInterfaceFactory.getInterface(properties.getProperty("handler_path"));
 		}catch(Exception ex){	
 			ex.printStackTrace();
 		}
@@ -363,6 +362,7 @@ public class ApplicationServiceBusinessImpl {
         Object value = null;
         
     	try{  
+    		IDSvcInterface idInterface = IDSvcInterfaceFactory.getInterface(properties.getProperty("handler_path"));
 	        ResourceIdInfo info = idInterface.getBigIDInfo(new URI(bigId));
 	        String className = info.resourceIdentification.substring(0,info.resourceIdentification.indexOf("|"));      
        
@@ -731,6 +731,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.16  2006/11/29 14:09:47  masondo
+// GF3105: Fixed SDK CQL defect
+//
 // Revision 1.15  2006/11/28 22:02:40  masondo
 // GF3105: fixed grid identifier build
 //
