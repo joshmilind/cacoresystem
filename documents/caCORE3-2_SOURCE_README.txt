@@ -46,7 +46,7 @@
 
     Java 2 Platform Enterprise Edition (J2EE) or Standard
     Edition (J2SE) is required to compile and run caCORE. 
-    J2SDK jdk1.5.0.04 or later version is required. You can 
+    J2SDK jdk1.5.0_06 or later version is required. You can 
     download the JDK from Sun Microsystems, Inc. at the 
     following locations:
     
@@ -57,7 +57,7 @@
 2.2 Servlet Container
 ----------------------------------------------------------------
     This installation assumes that you have either JBoss 4.0.4 or 
-    later or Tomcat 4.1 or later installed.
+    later or Tomcat 5.5.17 or later installed.
 
     If using JBoss skip to section "4.0. Install in JBoss"
     If using Tomcat proceed to the next section.

@@ -115,7 +115,7 @@
 
     Edition (J2SE) is required to compile and run caCORE. 
 
-    J2SDK jdk1.5.0.04 or later version is required. You can 
+    J2SDK jdk1.5.0_06 or later version is required. You can 
 
     download the JDK from Sun Microsystems, Inc. at the 
 
