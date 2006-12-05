@@ -349,12 +349,11 @@
 	<!--***********************************************************************
 		*** CREATE caCORE DISTRIBUTION PACKAGE
 		*********************************************************************** -->
-			
 		<target name="package-cacore"
 			description="Creates a distribution of the caCORE API">
 			<SDKecho message="Creating caCORE distribution package"/>
-			<delete file="${dir.output.project.package}/${file.output.zip}" quiet="true"/>
-			<zip destfile="${dir.output.project.package}/${file.output.zip}">
+			<delete file="${dir.output.project.package}/${project_name}_SOURCE.zip" quiet="true"/>
+			<zip destfile="${dir.output.project.package}/${project_name}_SOURCE.zip">
 				<zipfileset dir="${basedir}" prefix="cacore">
 					<include name="conf/**/*"/>
 					<include name="lib/**/*"/>
