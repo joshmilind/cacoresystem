@@ -111,6 +111,7 @@
 			<replacefilter token="@WEB_SERVER_PORT@" value="${web_server_port}" />
 			<replacefilter token="@EVS_MODEL@" value="${dir.model}/${fixed_evs_model_filename}" />
 			<replacefilter token="@EVSPROPERTIESFILE@" value="evsBeans.properties" />
+			<replacefilter token="@EVSDAOCLASS@" value="${evs_dao_class}" />
 		</replace>
 	</target>
 
