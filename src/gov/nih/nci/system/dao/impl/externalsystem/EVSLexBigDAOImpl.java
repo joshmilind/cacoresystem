@@ -1051,8 +1051,6 @@ private Response getPropertyValues(HashMap map) throws Exception
 		}
 
         LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
-        log.info("getPropertyValues....");
-        log.info("Values: "+adapter.getPropertyValues(conceptName, propertyName));
 		values = adapter.getPropertyValues(conceptName, propertyName);
 
 		if(values != null){
@@ -1110,12 +1108,9 @@ private Response getAncestors(HashMap map) throws Exception
 		}
 
         LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
-        log.info("getAncestorCodes");
-        log.info(adapter.getAncestorCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate)));
 		ancestors = adapter.getAncestorCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate));
 
-		if(ancestors.size()> 0){
-            log.info("Ancestor: "+ ancestors.get(0).getClass().getName());
+		if(ancestors.size()> 0){            
 			for(int i=0; i<ancestors.size(); i++)
 			{
 				list.add(ancestors.get(i));
@@ -1170,13 +1165,11 @@ private Response getSubConcepts(HashMap map) throws Exception
 		}
 
         LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
-		subConcepts = adapter.getSubConcepts(conceptName, inputFlag, outputFlag);
-        log.info("Sub concepts: "+subConcepts);
+		subConcepts = adapter.getSubConcepts(conceptName, inputFlag, outputFlag);        
 
 		if(subConcepts != null){
 			for(int i=0; i<subConcepts.size(); i++)
-			{
-                log.info("SubConcept: "+ subConcepts.get(i).getClass().getName());
+			{                
 				list.add(subConcepts.get(i));
 			}
 
@@ -1543,8 +1536,6 @@ public Response getVocabularyVersion(HashMap map) throws Exception{
                 vocabularyName = (String)map.get(key);
         }
        version.add(getLexAdapter(vocabularyName).getVocabularyVersion(vocabularyName));
-       log.info("vocabulary version = "+ version);
-
     }
     catch(Exception e)
     {
@@ -2855,7 +2846,12 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			else if(name.equalsIgnoreCase("term"))
    				term = (String)map.get(key);
    		}
-   		associations = getLexAdapter(vocabularyName).getFetchedConceptAssociations(vocabularyName, term);
+        try{
+            associations = getLexAdapter(vocabularyName).fetchTermAssociations(term);
+        }catch(Exception ex){
+            throw new DAOException("LexBig Exception: Unable to execute method fetchTermAssociation");
+        }
+   		        
 
    	   	for(int i=0; i<associations.size(); i++)
    	   	{
@@ -3926,8 +3922,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
              }
             if(conceptCode != null){
                 validateDLConceptCode(conceptCode, vocabularyName);
-            }
-           log.info("History Date: "+ initialDate +"\t"+ conceptCode);
+            }          
             LexAdapter adapter = getLexAdapter(vocabularyName);
             if(conceptCode == null){
             	v = adapter.getHistoryDates();
