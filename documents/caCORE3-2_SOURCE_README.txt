@@ -13,18 +13,20 @@
           2.1 Java 2 Platform
           2.2 Servlet Container
         
-    3.0 Intall in Tomcat
+    3.0 Install in Tomcat
           3.1 Edit server.xml
           3.2 Deploy the war file
 
-    4.0 Intall in JBoss
+    4.0 Install in JBoss
           4.1 Edit oracle-ds.xml
           4.2 Deploy the war file
    
     5.0 Tests
-         6.1 Web application
+         5.1 Web application
         
-    6.0 License
+    6.0 Building caCORE
+    
+    7.0 License
     
 ================================================================
                        1.0 Introduction
@@ -46,7 +48,7 @@
 
     Java 2 Platform Enterprise Edition (J2EE) or Standard
     Edition (J2SE) is required to compile and run caCORE. 
-    J2SDK jdk1.5.0_06 or later version is required. You can 
+    J2SDK jdk1.5.0.04 or later version is required. You can 
     download the JDK from Sun Microsystems, Inc. at the 
     following locations:
     
@@ -57,7 +59,7 @@
 2.2 Servlet Container
 ----------------------------------------------------------------
     This installation assumes that you have either JBoss 4.0.4 or 
-    later or Tomcat 5.5.17 or later installed.
+    later or Tomcat 4.1 or later installed.
 
     If using JBoss skip to section "4.0. Install in JBoss"
     If using Tomcat proceed to the next section.
@@ -80,10 +82,10 @@
     data sources in the server.xml file.
 
 ----------------------------------------------------------------
- 3.1 Deploy the war files 
+ 3.2 Deploy the war file 
 ----------------------------------------------------------------
 
-    The following file cacore31.war should be dropped into the 
+    The following file, cacore31.war, should be dropped into the 
     tomcat webapps directory.
   
   
@@ -119,10 +121,10 @@
 
     
 ----------------------------------------------------------------
- 4.2 Deploy the war files 
+ 4.2 Deploy the war file 
 ----------------------------------------------------------------
 
-    The following file cacore32.war should be dropped into the 
+    The following file, cacore32.war, should be dropped into the 
     jboss default\deploy directory.
   
   
@@ -133,59 +135,62 @@
                           5.0 Tests
 ================================================================
 
-    Assuming you are running Tomcat or JBoss locally, the following should
+    Assuming you are running Tomcat or JBoss locally, the following test should
     work.
     
 ----------------------------------------------------------------
-6.1 Web application
+5.1 Web application
 ----------------------------------------------------------------
 
     Entering the following in a web browser should display
-    the Happy page for caBIO Example Project if everything is working
+    the Happy page for the caBIO Example Project if everything is working
     correctly:
    
         http://localhost:8080/cacore31/Happy.jsp
 
 
 ================================================================
-                          5.0 Building caCORE
+                          6.0 Building caCORE
 ================================================================
    	
-    To rebuild the caCORE war file  all you need to do is
+    To rebuild the caCORE war file, all you need to do is
     run "ant build-system" from your base installation directory. 
     The warfile will be saved to your output\package\localhost directory.
-    In order for the warfile to work properly with your client.jar you
+    In order for the warfile to work properly with your client.jar, you
     will need to configure your datasource connections for jboss or
     tomcat.
     
 ================================================================
-                         6.0 License
+                         7.0 License
 ================================================================
     
     The caBIO version 3.2 software is licensed under the terms
-    contained in the licence located at:
+    contained in the license located at:
     
-        - http://ncicb.nci.nih.gov/download/cabiolicenseagreement.jsp
+        http://ncicb.nci.nih.gov/download/cabiolicenseagreement.jsp
     
     This product includes software developed by the
     Apache Software Foundation (http://www.apache.org/).
-    Apache SOAP, Crimson, Xerces, and Xalan are part of Apache
-    XML project, Tomcat, ORO, and Lucene are part of Apache
-    Jakarta project. All aforementioned Apache projects are trademarks of 
-    The Apache Software Foundation. For further
+    -Apache SOAP, Crimson, Xerces, and Xalan are part of Apache
+    XML project.
+    -Tomcat, ORO, and Lucene are part of the Apache Jakarta project. 
+
+    All aforementioned Apache projects are trademarks of 
+    the Apache Software Foundation. For further
     open source licensing issues pertaining to Apache Software
     Foundation, visit:
     
-        - http://www.apache.org/LICENSE 
+        http://www.apache.org/LICENSE 
 
     Hibernate is Free Software. The LGPL license is sufficiently flexible 
     to allow the use of Hibernate in both open source and commercial projects.
-    http://www.gnu.org/copyleft/lesser.html
     
-    This product includes software developed by Castor (http://www.castor.org) which is
+        http://www.gnu.org/copyleft/lesser.html
+    
+    This product includes software developed by Castor (http://www.castor.org), which is
     licensed under the Exolab license:
 
-    	- http://www.castor.org/license.html
+        http://www.castor.org/license.html
 
 
     Sun, Sun Microsystems, Solaris, Java, JavaServer Web
@@ -194,7 +199,7 @@
     and jaxb-rt-1.0-ea.jar are redistributed as whole binary
     jars and are subject to the Sun license terms as stated in
     
-        - http://java.sun.com/xml/docs/summer02/LICENSE.html
+        http://java.sun.com/xml/docs/summer02/LICENSE.html
     
     UNIX is a registered trademark in the United States and
     other countries, exclusively licensed through X/Open

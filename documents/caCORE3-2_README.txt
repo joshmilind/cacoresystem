@@ -1,4 +1,3 @@
-
                          Readme.txt
 
     
@@ -62,29 +61,29 @@
 
         - TestClient - demonstrates various ways to execute
 
-                  searches with and without using Application Service
+                  searches with and without using Application Service.
 
         - TestEVS - demonstrates various ways to 
 
-                  searches the Enterprise Vocabulary Services (EVS)
+                  search the Enterprise Vocabulary Services (EVS).
 
-        - EVSWSClient - demonstrates various was to search
+        - EVSWSClient - demonstrates various ways to search
 
                   EVS using web services.
 
-        - WSTestClient - demonstrates various was to search
+        - WSTestClient - demonstrates various ways to search
 
                   web services.
 
-        - TestDSR - demonstrates various ways to search caDSR objects
+        - TestDSR - demonstrates various ways to search caDSR objects.
 
-        - TestXML - demonstrates the usage of the XMLUtility class
+        - TestXML - demonstrates the usage of the XMLUtility class.
         
         - TestCQL - demonstrates various ways to execute
 
-                  searches using the SDK Query Object
+                  searches using the SDK Query Object.
 
-        - TestSVG - demonstrates execute of the caBIO SVG manipulation tool 
+        - TestSVG - demonstrates the usage of the caBIO SVG manipulation tool 
  
 
     Please see the following for the associated release notes:
@@ -115,7 +114,7 @@
 
     Edition (J2SE) is required to compile and run caCORE. 
 
-    J2SDK jdk1.5.0_06 or later version is required. You can 
+    J2SDK jdk1.5.0.04 or later version is required. You can 
 
     download the JDK from Sun Microsystems, Inc. at the 
 
@@ -149,7 +148,7 @@
 
     
 
-         - http://ant.apache.org/
+        http://ant.apache.org/
 
 ================================================================
 
@@ -169,9 +168,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. In the directory which contains the TestClient.java file
+    2. In the directory that contains the TestClient.java file.
 
-       type "ant rundemo". The TestProgram will run.
+       Type "ant rundemo". The Test Program will run.
 
  
 
@@ -185,9 +184,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. cd to the direcorty which contains the TestEVS.java 
+    2. cd to the directory that contains the TestEVS.java file.
 
-       type "ant runevs". The Test Program will run.
+       Type "ant runevs". The Test Program will run.
 
     
 
@@ -203,9 +202,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. cd to the directory which contains the EVSWSClient.java file
+    2. cd to the directory that contains the EVSWSClient.java file.
 
-       type "ant runevsws". The Test Program will run.
+       Type "ant runevsws". The Test Program will run.
 
     
 
@@ -219,9 +218,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. cd to the directory which contains the WSTestClient.java file
+    2. cd to the directory that contains the WSTestClient.java file.
 
-       type "ant runws". The Test Program will run.
+       Type "ant runws". The Test Program will run.
 
  
 
@@ -235,9 +234,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. cd to the directory which contains the TestXML.java file
+    2. cd to the directory that contains the TestXML.java file.
 
-       type "ant runxmltest". The Test Program will run.
+       Type "ant runxmltest". The Test Program will run.
 
  
 
@@ -251,9 +250,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. cd to the directory which contains the TestDSR.java file
+    2. cd to the directory that contains the TestDSR.java file.
 
-       type "ant rundsr". The Test Program will run.
+       Type "ant rundsr". The Test Program will run.
 
  
 ----------------------------------------------------------------
@@ -266,9 +265,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. cd to the directory which contains the TestCQL.java file
+    2. cd to the directory that contains the TestCQL.java file.
 
-       type "ant runcqldemo". The Test Program will run.
+       Type "ant runcqldemo". The Test Program will run.
  
 
 ----------------------------------------------------------------
@@ -281,9 +280,9 @@
 
     1. Unzip the Client.zip file.
 
-    2. cd to the directory which contains the TestSVG.java file
+    2. cd to the directory that contains the TestSVG.java file.
 
-       type "ant runsvgdemo". The Test Program will run.
+       Type "ant runsvgdemo". The Test Program will run.
        
 ================================================================
 
@@ -299,7 +298,7 @@
 
     
 
-        - http://ncicb.nci.nih.gov/download/cabiolicenseagreement.jsp
+        http://ncicb.nci.nih.gov/download/cabiolicenseagreement.jsp
 
     
 
@@ -307,21 +306,23 @@
 
     Apache Software Foundation (http://www.apache.org/).
 
-    Apache SOAP, Crimson, Xerces, and Xalan are part of Apache
+    -Apache SOAP, Crimson, Xerces, and Xalan are part of the Apache
 
-    XML project, Tomcat, ORO, and Lucene are part of Apache
+    XML project.
+    
+    -Tomcat, ORO, and Lucene are part of the Apache Jakarta project. 
 
-    Jakarta project. All aforementioned Apache projects are trademarks of 
+    All aforementioned Apache projects are trademarks of 
 
-    The Apache Software Foundation. For further
+    the Apache Software Foundation. For further
 
-    open source licensing issues pertaining to Apache Software
+    open source licensing issues pertaining to the Apache Software
 
     Foundation, visit:
 
     
 
-        - http://www.apache.org/LICENSE 
+        http://www.apache.org/LICENSE 
 
     
 
@@ -337,7 +338,7 @@
 
     
 
-        - http://java.sun.com/xml/docs/summer02/LICENSE.html
+        http://java.sun.com/xml/docs/summer02/LICENSE.html
 
     
 
@@ -371,17 +372,17 @@
 
     to allow the use of Hibernate in both open source and commercial projects.
 
-    http://www.gnu.org/copyleft/lesser.html
+        http://www.gnu.org/copyleft/lesser.html
 
  
 
-    This product includes software developed by Castor (http://www.castor.org) which is
+    This product includes software developed by Castor (http://www.castor.org), which is
 
     licensed under the Exolab license:
 
  
 
-    http://www.castor.org/license.html
+        http://www.castor.org/license.html
 
  
 
