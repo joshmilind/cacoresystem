@@ -100,19 +100,19 @@ public class EVSLexBigDAOImpl implements DAO
             try {                
                 response = queryEVS(configs, tokenCollection, mapValues);
             } catch (Exception ex) {
-                String msg = " - ";                
-                if (ex.getMessage() == null) {
-                    Exception e = (Exception)threadLocal.get();
-                    if(e.getMessage()==null){
-                        msg = msg + "Exception in method: "+getMethodName(mapValues) +" unable to execute query" ;
-                    }else{                        
-                        msg = e.getMessage();
-                    }                    
+                DAOException e = null;                                
+                if(ex.getMessage() == null) {
+                    if(threadLocal.get() == null){
+                        e = new DAOException("Exception in method: "+getMethodName(mapValues) +" - unable to execute query") ; 
+                    }else{
+                        e = (DAOException)threadLocal.get();                        
+                    }                   
                 } else {
-                    msg = msg + ex.getMessage();
+                    e = new DAOException(ex.getMessage());
                 }
-                log.error(msg);
-                throw new DAOException(msg);
+                threadLocal.remove();
+                log.error(e.getMessage());
+                throw new DAOException(e.getMessage());
             }   
         } catch (Exception e) {
             throw new DAOException(e.getMessage());
@@ -1851,7 +1851,8 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
         LexAdapter adapter = getLexAdapterForMeta();       
         
 		if(cui)
-		{            
+		{   
+            validateMetaConceptCode(searchTerm, adapter);            
             Concept concept  = adapter.findConceptByCode(searchTerm, 1);
             MetaThesaurusConcept mtc = buildMetaThesaurusConcept(concept);
             if(source.indexOf("*")>-1){
@@ -1865,8 +1866,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
                         break;
                     }
                 }                
-            }
-            
+            }            
 		}
 		else {
             if(source.indexOf("*")>-1){
@@ -2150,7 +2150,9 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 						}catch(Exception ex){}						
 					}                    
 				}
-            Concept metaConcept = getLexAdapterForMeta().findConceptByCode(code, 1);
+            LexAdapter adapter = getLexAdapterForMeta();
+            validateMetaConceptCode(code, adapter);
+            Concept metaConcept = adapter.findConceptByCode(code, 1);
             MetaThesaurusConcept mtc = buildMetaThesaurusConcept((Concept)metaConcept);
             
 			List sourceList = new ArrayList();
@@ -2897,7 +2899,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			associationList.add((String)associations.get(i));
    		}
    		}catch(Exception e){
-   			log.error(e.getMessage());
+   			log.error(e.getMessage());            
    			throw new DAOException(getException( e.getMessage()));
 		}
 
@@ -3853,26 +3855,34 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	return new Response(propertyList);
 
    	}
-   private Exception getException(String msg){
-       String exMsg = msg;
-       if(msg == null){
-           if(threadLocal.get() != null){
-               Exception e = (Exception)threadLocal.get();
-               if(e.getMessage() == null){
-                   exMsg = "caCORE - LexBIG Exception";
-               }else{
-                   exMsg = e.getMessage();
-               }               
-           }           
-       }
-       Exception ex = new Exception(exMsg);
-       threadLocal.set(ex);   	  	
+   private Exception getException(String msg){       
+       DAOException ex = null;
+       if(threadLocal.get() != null){
+           ex = (DAOException)threadLocal.get();           
+       }else if(msg != null){
+           ex = new DAOException(msg);
+           threadLocal.set(ex);
+       }  	  	
    	return ex;
    	}
 
    private Exception getException(Exception ex){   	
    	return getException(ex.getMessage());
    	}
+   
+   private boolean validateMetaConceptCode(String code, LexAdapter adapter)throws Exception {
+       boolean valid = false;
+       try{
+           if(adapter.getConceptNameByCode(code)== null){
+               throw new DAOException("Invalid concept code "+ code);
+           }else{
+               valid = true;
+           }
+       }catch(Exception ex){
+           throw new DAOException(ex.getMessage());
+       }
+       return valid;
+   }
 
    private boolean validateDLConceptCode(String code, String vocabularyName) throws Exception{
 
@@ -3881,11 +3891,11 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	try{
    	if(code == null){
    		valid = false;
-   		throw new DAOException (getException("Exception : Concept code cannot be a null value"));
+   		throw new DAOException (" Concept code cannot be a null value");
    			}
    	else if(getLexAdapter(vocabularyName).getConceptNameByCode(code) == null){
    			valid = false;
-   			throw new DAOException (getException("Exception : Invalid concept code - "+ code));
+   			throw new DAOException (" Invalid concept code - "+ code);
    			}
 	}
    	catch(Exception e){
