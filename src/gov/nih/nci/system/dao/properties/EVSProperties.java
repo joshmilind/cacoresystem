@@ -54,7 +54,7 @@ public class EVSProperties {
 			dtsrpc = new DTSRPCClient(dtsServer, port);
 		}
 		if(dtsrpc == null){
-			throw new Exception("Unable to connect to the DTSRPC Server");
+			throw new Exception("Unable to connect to the DTSRPC Server: "+ dtsServer);
 		}
 		return dtsrpc ;
 		}
