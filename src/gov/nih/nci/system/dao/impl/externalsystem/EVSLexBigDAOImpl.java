@@ -583,7 +583,7 @@ public class EVSLexBigDAOImpl implements DAO
 	        		concepts = ((LexAdapter)adapters.get(vocabularyName)).searchConcepts(searchTerm, limit);
 		        }
 	        	else{
-	        		throw new Exception(getException(ex));
+	        		throw new DAOException(getException(ex));
 	        	}
 	        }
             if(concepts.length > 0){
@@ -651,7 +651,7 @@ public class EVSLexBigDAOImpl implements DAO
 		}catch(Exception e)
 		{
 			log.error(e.getMessage());
-			throw new DAOException(getException(" Exception in getTree: "+e.getMessage()));
+			throw new DAOException(getException(e.getMessage()));
 		}
 
 		return new gov.nih.nci.common.net.Response(list);
@@ -675,12 +675,12 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
     DefaultMutableTreeNode evsTree = new DefaultMutableTreeNode();
         if(!StringHelper.hasValue(vocabularyName)){
         	log.error("vocabularyName cannot be null");
-        	throw new DAOException(getException(" vocabularyName cannot be null"));
+        	throw new DAOException(" vocabularyName cannot be null");
         }
 
         if(!StringHelper.hasValue(rootName)){
         	log.error("Root Node cannot be null");
-        	throw new DAOException(getException(" Root Node cannot be null"));
+        	throw new DAOException(" Root Node cannot be null");
         }
         DefaultMutableTreeNode tree = null;
 
@@ -716,7 +716,7 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 
 				}
                 if(tree == null){
-                    throw new DAOException(getException("Unable to generate Tree  - LexBIG Exception"));
+                    throw new DAOException("Unable to generate Tree  - LexBIG Exception");
 
                 }
 
@@ -737,7 +737,7 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 		  	catch(Exception e)
 			{
 		  		log.error(e.getMessage());
-		  		throw new DAOException (getException("Exception - LexBIG call: \n" + e.getMessage()));
+		  		throw new DAOException (getException( e.getMessage()));
 			}
 
 		}
@@ -1276,7 +1276,7 @@ private Response getRolesByConceptName(HashMap map) throws Exception
 				conceptName = (String)map.get(key);
 		}
 		if(!StringHelper.hasValue(conceptName))
-        	throw new DAOException(getException("conceptName cannot be null"));
+        	throw new DAOException("conceptName cannot be null");
         LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
 		roles = adapter.getRolesByConceptName(conceptName);
 		if(roles != null){
@@ -1331,7 +1331,7 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 				conceptName = (String)map.get(key);
 		}
 		if(!StringHelper.hasValue(conceptName))
-        	throw new DAOException(getException("conceptName cannot be null"));
+        	throw new DAOException("conceptName cannot be null");
         LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);        
         properties = adapter.getPropertiesByConceptName(conceptName);
 		if(properties == null){
@@ -1843,7 +1843,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
 		if(!source.equals("*")){            
 			if(!(source.length() == 0 || source.indexOf("*") > 0)){				
                 if(!validateSource(source)){
-				throw new DAOException(getException("Invalid source"));
+				throw new DAOException("Invalid source "+ source);
 				}
 				checkSource = true;
 			}
@@ -2034,7 +2034,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
             }        
             
         }catch(Exception ex){
-            throw new Exception(getException("\nException: buildMetaConcept: "+ ex.getMessage()));
+            throw new DAOException("\nException: buildMetaConcept: "+ ex.getMessage());
         }   
       
         for(Iterator it = semanticTypes.keySet().iterator(); it.hasNext();){
@@ -2087,7 +2087,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	catch(Exception e)
 	{
 		log.error(e.getMessage());
-		throw new DAOException(getException("Exception from Metaphrase Server while getting sources \n"+ e.getMessage()));
+		throw new DAOException("MetaThesaurus exception - while getting sources \n"+ e.getMessage());
 	}
 	return sourceList;
   }
@@ -2161,7 +2161,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 			}
 			else{
 				if(!validateSource(sourceAbbr)){
-				    throw new DAOException (getException("invalid source abbreviation - "+ sourceAbbr));
+				    throw new DAOException ("invalid source abbreviation - "+ sourceAbbr);
 				    }
                 ArrayList srcCollection = mtc.getSourceCollection();
                 for(int i=0; i< srcCollection.size(); i++){
@@ -2245,10 +2245,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 			}
 
 			if(!StringHelper.hasValue(sourceAbbr))
-				  throw new DAOException(getException(" Invalid Source"));
+				  throw new DAOException(" Invalid Source");
 
             if(conceptCode == null){
-                throw new Exception(getException("Please specify conceptCode"));
+                throw new Exception("Please specify conceptCode");
             }
      /** check this ***/
             log.info("findConceptWithSourceCodeMatching..."+ sourceAbbr +"\t"+ conceptCode);
@@ -2295,7 +2295,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 			}
 
 			if(!StringHelper.hasValue(conceptCode))
-				  throw new DAOException(getException(" Invalid concept code"));
+				  throw new DAOException(" Invalid concept code");
 
 
 			metaConcept =	getLexAdapterForMeta().findConceptByCode(conceptCode, 1);
@@ -2447,7 +2447,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	  	{
 			if(!StringHelper.hasValue(conceptCode))
 			{
-				throw new DAOException(getException(" Invalid code, set concept code"));
+				throw new DAOException(" Invalid code, set concept code");
 			}
 			if(!StringHelper.hasValue(sourceAbbr))
 			{
@@ -2651,10 +2651,10 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 
 
 			if(!StringHelper.hasValue(conceptCode))
-				  throw new DAOException(getException(" invalid concept code "));
+				  throw new DAOException(" invalid concept code ");
 
 			if(!StringHelper.hasValue(category))
-				  throw new DAOException(getException(" Invalid Category - set value"));
+				  throw new DAOException(" Invalid Category - set value");
 
 /**** check code ****/
             metaConcepts = getLexAdapterForMeta().searchConcepts(conceptCode, 100, 1, category, 1);
@@ -2848,14 +2848,21 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			else if(name.equalsIgnoreCase("term"))
    				term = (String)map.get(key);
    		}
+        LexAdapter adapter = getLexAdapter(vocabularyName);
+        String code = term;            
         try{
-            associations = getLexAdapter(vocabularyName).fetchTermAssociations(term);
+            validateDLConceptCode(code, vocabularyName);               
         }catch(Exception ex){
-            throw new DAOException("LexBig Exception: Unable to execute method fetchTermAssociation");
+            try{
+                if(validateConceptName(code, vocabularyName)){
+                    code = adapter.getConceptCodeByName(term);
+                }
+            }catch(Exception exc){
+                throw new DAOException("Invalid concept identifier "+ code);
+            }                            
         }
-   		        
-
-   	   	for(int i=0; i<associations.size(); i++)
+        associations = adapter.fetchTermAssociations(code);        
+        for(int i=0; i<associations.size(); i++)
    	   	{
    	   		list.add(associations.get(i));
    	   	}
@@ -2863,7 +2870,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	catch(Exception e)
    	{
    		log.error(e.getMessage());
-   		throw new DAOException (getException( e.getMessage()));
+   		throw new DAOException(getException(e.getMessage()));
    	}
 
 
@@ -3162,7 +3169,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
      		}
      		}catch(Exception e){
      			log.error(e.getMessage());
-     			throw new DAOException(getException("\nException occured at "+ getClass().getName()+ e.getMessage()));
+     			throw new DAOException(getException(e.getMessage()));
   		}
 
   	return new Response(typeList);
@@ -3732,16 +3739,15 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	try{
    	if(conceptName == null){
    		valid = false;
-   		throw new DAOException (getException("Exception : Concept name cannot be a null value"));
+   		throw new DAOException(" Concept name cannot be a null value");
    			}
    	else if(getLexAdapter(vocabularyName).getConceptCodeByName(conceptName) == null){
    			valid = false;
-   			throw new DAOException (getException("Exception : Invalid concept name - "+conceptName));
+   			throw new DAOException(" Invalid concept name - "+conceptName);
    			}
 	}
-   	catch(Exception e){
-   		log.error(e.getMessage());
-   		throw new DAOException(getException(e.getMessage()));
+   	catch(Exception e){   		
+   		throw new DAOException(e.getMessage());
    	}
    		return valid;
    	}
@@ -3764,9 +3770,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			valid = true;
    			}
    		}
-   	if(!valid){
-   		log.error(" Invalid relation attribute");
-   		throw new DAOException(getException(" Invalid relation attribute "));
+   	if(!valid){   		
+   		throw new DAOException(" Invalid relation attribute "+ relation);
    		}
    	return valid;
 
@@ -3799,7 +3804,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		}
 		if(conceptCode == null){
 			log.error(" Concept code cannot be a null value");
-			throw new DAOException (getException(" Invalid concept code"));
+			throw new DAOException (" Invalid concept code");
 			}
 		conceptName = getLexAdapter(vocabularyName).getConceptNameByCode(conceptCode);
 		list.add(conceptName);
@@ -3807,7 +3812,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	catch(Exception e)
 	{
 		log.error("Exception - getConceptNameByCode "+e.getMessage());
-		throw new DAOException (getException(" Exception - "+  e.getMessage()));
+		throw new DAOException (getException( e.getMessage()));
 	}
     return (new Response(list));
    	}
@@ -3898,9 +3903,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    			throw new DAOException (" Invalid concept code - "+ code);
    			}
 	}
-   	catch(Exception e){
-   		log.error(e.getMessage());
-   		throw new DAOException(getException(e.getMessage()));
+   	catch(Exception e){  		
+   		throw new DAOException(e.getMessage());
    	}
    		return valid;
    	}
