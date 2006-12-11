@@ -57,12 +57,15 @@ import gov.nih.nci.evs.security.*;
 public class EVSLexBigDAOImpl implements DAO
 {
 	private static Logger log = Logger.getLogger(EVSLexBigDAOImpl.class.getName());   	
-    private static HashMap adapters = new HashMap();
-    private static HashMap vocabularies = new HashMap();
+    private static HashMap <String, LexAdapter> adapters = new HashMap<String, LexAdapter>();
+    private static HashMap <String, Vocabulary>vocabularies = new HashMap<String, Vocabulary>();
     private final static String defaultVocabularyName = "NCI_Thesaurus";
     private final static String metaVocabularyName = "NCI MetaThesaurus";
     private ThreadLocal threadLocal = new ThreadLocal();
 
+    /**
+     * Instantiates an EVSLexBigDAOImpl instance
+     */
    public EVSLexBigDAOImpl(){
        
    }
@@ -75,8 +78,6 @@ public class EVSLexBigDAOImpl implements DAO
 	 * @throws DAOException
 	 * @throws Exception
 	 */
-    
-    
     
     public Response query(Request r) throws DAOException {        
         Object obj = r.getRequest();
@@ -119,7 +120,12 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return response;
     }
-       
+      
+    /**
+     * Returns the vocabulary name specified
+     * @param mapValues 
+     * @return vocabulary name
+     */
     private String getVocabularyName(HashMap mapValues){
         String vocabularyName = null;
         for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){                                    
@@ -133,6 +139,12 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return vocabularyName;
     }
+    /**
+     * Returns the method name specified in the hashmap
+     * @param mapValues
+     * @return Method name specified in the map
+     */
+    
     private String getMethodName(HashMap mapValues){ 
         String methodName = null;
         Iterator iter = mapValues.keySet().iterator();
@@ -143,6 +155,12 @@ public class EVSLexBigDAOImpl implements DAO
         return methodName; 
     }
     
+    /**
+     * Generates a cache key based on the method name and map values
+     * @param methodName
+     * @param mapValues
+     * @return cache key 
+     */
     private String getCacheKey(String methodName,HashMap mapValues){
         String key = methodName;
         for(Iterator it = mapValues.keySet().iterator(); it.hasNext();){                                    
@@ -152,6 +170,12 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return key;
     }
+    
+    /**
+     * Returns true if the enableCache value in the config file is set to true
+     * @param config
+     * @return true if enableCache is set to true 
+     */
     private boolean enableCache(Hashtable config){
         boolean enableCache = true;
         if(config.get("enableCache")!=null){
@@ -161,6 +185,14 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return enableCache;
     }
+    
+    /**
+     * Executes the query
+     * @param config - specifies the values set in the config file
+     * @param tokenCollection - specifies the vocabulary tokens
+     * @param mapValues - specifies the search method and parameters
+     * @return result list is returned in a Response object
+     */
     private Response queryEVS(Hashtable config, HashMap tokenCollection, HashMap mapValues) throws Exception{        
         Response response = null;       
         String vocabularyName = getVocabularyName(mapValues);
@@ -224,7 +256,7 @@ public class EVSLexBigDAOImpl implements DAO
         try{
             //Query EVS Servers            
             if(adapters.size()<1){
-                makeRemoteConnection(config, vocabularyName);
+                makeRemoteConnection(config);
             }           
             response = (Response) method.invoke(this,new Object[] { mapValues });
             //update cache
@@ -238,7 +270,12 @@ public class EVSLexBigDAOImpl implements DAO
         return response;
     }
     
-    private void makeRemoteConnection(Hashtable configs, String vocabularyName)throws Exception{        
+    /**
+     * Creates a connection to the EVS Servers
+     * @param configs specifies the values set in the config file
+     * @param vocabularyName specifies the vocabulary name 
+     */
+    private void makeRemoteConnection(Hashtable configs)throws Exception{        
         try{            
             if(adapters.size()<1){
                 EVSProperties evsProperties = EVSProperties.getInstance(configs);
@@ -278,6 +315,7 @@ public class EVSLexBigDAOImpl implements DAO
         }
     /**
      * Returns an instance of LexAdapter for the specified vocabulary
+     * @param vocabularyName
      */
     private LexAdapter getLexAdapter(String vocabularyName) throws DAOException{
         LexAdapter lexAdapter = null;
@@ -300,7 +338,11 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return lexAdapter; 
     }
-    
+    /**
+     * Returns a LexAdapter instance for the MetaThesaurus
+     * @return
+     * @throws Exception
+     */
     private LexAdapter getLexAdapterForMeta() throws Exception{        
         LexAdapter adapter = null;      
         try{                        
@@ -357,24 +399,18 @@ public class EVSLexBigDAOImpl implements DAO
  				//log.info("No descendants found");
  				}
  			else{
-
  		 		for(int i=0; i<descendants.size(); i++)
  		 		{
  		 			list.add(descendants.get(i));
  		 		}
-
- 				}
-
+ 			}
  		}
  		catch(Exception e)
  		{
  			log.error(e.getMessage());
  			throw new DAOException (getException(e.getMessage()));
  		}
-
-
  		return new Response(list);
-
  	}
 
       /**
@@ -431,7 +467,12 @@ public class EVSLexBigDAOImpl implements DAO
         }       
         return valid;       
     }
-    
+    /**
+     * Returns the SecurityKey for the specified securityToken
+     * @param security 
+     * @param securityToken
+     * @return
+     */
     private SecurityKey getSecurityKey(DAOSecurity security, SecurityToken securityToken){
         SecurityKey key = null;        
         try{
@@ -453,8 +494,11 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return security;
     }
-
-
+    
+    /**
+     * Returns all vocabularies
+     * @param map specifies the search parameters
+     */
     private Response getAllVocabularies(HashMap map) throws DAOException{
         List vocabList = new ArrayList();
         for(Iterator i= vocabularies.keySet().iterator(); i.hasNext();){
@@ -465,6 +509,12 @@ public class EVSLexBigDAOImpl implements DAO
         }
         return new Response(vocabList);
     }
+    /**
+     * Returns the vocabulary for the name specifed
+     * @param map specifies the vocabulary name
+     * @return
+     * @throws Exception
+     */
     private Response getVocabularyByName(HashMap map) throws Exception{
         String vocabularyName = null;
         Vocabulary vocab = new Vocabulary();
@@ -537,7 +587,7 @@ public class EVSLexBigDAOImpl implements DAO
 	}
 
 	/**
-	 * Performs a search for DescLogicConcepts in the adapter server and returns a response
+	 * Performs a search for DescLogicConcepts in the LexBig server and returns a response
 	 * @param map Specifies the search criteria values
 	 * @return Returns a response that holds a list of DescLogicConcept Objects
 	 * @throws Exception
@@ -748,8 +798,13 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
         }
 		return evsTree;
     }
-
-public DefaultMutableTreeNode getChildNodes(DefaultMutableTreeNode dlNode, DefaultMutableTreeNode dtsrpcNode){
+/**
+ * Generates and returns a DefaultMutableTreeNode
+ * @param dlNode
+ * @param dtsrpcNode
+ * @return
+ */
+private DefaultMutableTreeNode getChildNodes(DefaultMutableTreeNode dlNode, DefaultMutableTreeNode dtsrpcNode){
     int childCounter = dtsrpcNode.getChildCount();
     for(int i=0; i<childCounter; i++){
         DefaultMutableTreeNode node = new DefaultMutableTreeNode();
@@ -828,7 +883,13 @@ private Response getConceptWithPropertyMatching(HashMap map) throws Exception
 
 	return (new Response(list));
 }
-
+/**
+ * Seaches for a concept in the specified silo 
+ * @param map
+ * @return
+ * @throws Exception
+ * @deprecated Silos are not supported in the LexBIG
+ */
 
 private Response getConceptWithSiloMatching(HashMap map) throws Exception
 {
@@ -960,9 +1021,7 @@ private Response isSubConcept(HashMap map) throws Exception
 		}
 
 
-		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
-		//this.validateConceptName(conceptName1);
-        //this.validateConceptName(conceptName2);
+		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);		
 		isSub=adapter.isChild(conceptName1,conceptName2);
         if(isSub==null){
             isSub = false;
@@ -974,12 +1033,7 @@ private Response isSubConcept(HashMap map) throws Exception
 		log.error(e.getMessage());
 		throw new DAOException (getException(e.getMessage()));
 	}
-
-
-
-
 	return (new Response(isSubList));
-
 }
 
 
@@ -3941,24 +3995,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
             if(conceptCode == null){
             	v = adapter.getHistoryDates();
             }
-            else{
-            	if(initialDate != null){
-            		Vector ead = adapter.getConceptEditAction(conceptCode, initialDate);                    
-                    for(int x=0; x<ead.size(); x++){
-                        if(ead.get(x).getClass().getName().endsWith("EditActionDate")){
-                            History h = new History();
-                            EditActionDate date = (EditActionDate)ead.get(x);
-                            h.setEditActionDate(date.getEditDate());                        
-                            h.setEditAction(getEditActionString(date.getAction()));
-                            h.setReferenceCode(conceptCode);
-                            v.add(h);
-                        }else {
-                            v = ead;
-                        }                        
-                    }
-            	}else{
-            		v = adapter.getConceptEditAction(conceptCode);
-            	}
+            else{            
+                v = adapter.getConceptEditAction(conceptCode);
                 if(v!=null && v.size()>0){
                     gov.nih.nci.evs.domain.HistoryRecord hr = new gov.nih.nci.evs.domain.HistoryRecord();
                     hr.setDescLogicConceptCode(conceptCode);
@@ -3968,7 +4006,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                         StringTokenizer st = new StringTokenizer(actionDate, "|");
                         while(st.hasMoreTokens()){
                             String action = st.nextToken();
-                            Date aDate = stringToDate(st.nextToken());                        
+                            Date aDate = stringToDate(st.nextToken());                            
                             gov.nih.nci.evs.domain.History h = new gov.nih.nci.evs.domain.History();
                             h.setEditAction(action);
                             h.setEditActionDate(aDate);
@@ -3985,7 +4023,21 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                             if(refCodes.length()>0){
                                 h.setReferenceCode(refCodes);
                             } 
-                            historyVector.add(h);                        
+                            if(initialDate != null && finalDate == null){
+                                if(initialDate.equals(aDate) || aDate.after(initialDate)){
+                                    historyVector.add(h);
+                                }
+                            }else if(initialDate == null && finalDate != null){
+                                if(finalDate.equals(aDate) || aDate.before(finalDate)){
+                                    historyVector.add(h);
+                                }
+                            }else if(initialDate != null && finalDate != null ){
+                                if(initialDate.equals(aDate) ||(aDate.after(initialDate) && aDate.before(finalDate)) || aDate.equals(finalDate)){
+                                    historyVector.add(h);
+                                }
+                            }else if(initialDate == null && finalDate == null){
+                                historyVector.add(h);
+                            }                                                    
                         }
                         hr.setHistoryCollection(historyVector);                    
                     }
