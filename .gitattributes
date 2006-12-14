@@ -128,5 +128,6 @@ src/gov/nih/nci/system/proxy/HTTPQuery.java -text
 src/gov/nih/nci/system/webservice/EVSWSTransformer.java -text
 src/gov/nih/nci/system/webservice/EVSWebService.java -text
 src/gov/nih/nci/system/webservice/WSQuery.java -text
+src/gov/nih/nci/system/webservice/WSTransformer.java -text
 src/test/jmeter/TestPlan.jmx -text
 src/test/jmeter/testObjects.txt -text
