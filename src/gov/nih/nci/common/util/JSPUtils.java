@@ -6,6 +6,8 @@
  */
 package gov.nih.nci.common.util;
 
+import gov.nih.nci.common.util.SearchUtils;
+
 import java.util.*;
 
 import javax.servlet.*;
@@ -304,34 +306,22 @@ public ArrayList getAssociations(String className) throws Exception{
                if(fieldName.endsWith("Collection") || (type.startsWith("java") && type.endsWith("Collection"))){
                    String roleClassName = null;
                    String beanName = null;
-                   if(fieldName.endsWith("Collection")){
-                       beanName = fieldName.substring(0, fieldName.lastIndexOf("Collection"));
+                   SearchUtils searchUtils = new SearchUtils();
+                   if(searchUtils.getTargetClassName(qualifiedName,fieldName)!=null){
+                       roleClassName = searchUtils.getTargetClassName(qualifiedName,fieldName);                              
                    }else{
-                       beanName = fieldName;
-                   }                   
-                   roleClassName = locateClass(beanName, packageName);
+                       if(fieldName.endsWith("Collection")){
+                           beanName = fieldName.substring(0, fieldName.lastIndexOf("Collection"));
+                       }else{
+                           beanName = fieldName;
+                       }                   
+                       roleClassName = locateClass(beanName, packageName);
+                   }                                      
                    if(roleClassName != null){
                        roleNames.add(roleClassName);
                    }                   
-               }else if(!type.startsWith("java")){
-                   if(type.startsWith(packageName)){
-                       roleNames.add(type);
-                   }else{
-                       int counter = 0;
-                       for(int x=0; x<packageName.length(); x++){
-                           if(packageName.charAt(x)== '.'){
-                               counter++;
-                           }
-                       }
-                       String pkg = packageName.substring(0, packageName.lastIndexOf("."));
-                       for(int x=counter; x>1; x--){
-                           if(type.startsWith("pkg")){
-                               roleNames.add(type);
-                               break;
-                           }
-                           pkg = pkg.substring(0, pkg.lastIndexOf("."));
-                       }
-                   }
+               }else if(locateClass(type)!= null){
+                   roleNames.add(type);                                    
                }
            }
        }
@@ -342,32 +332,31 @@ public ArrayList getAssociations(String className) throws Exception{
                if(!(superClassName.equals((String)associations.get(i)))){
                    roleNames.add((String)associations.get(i));
                }               
-           }
+           }           
        }
        ArrayList<String>roles = new ArrayList();
        for(Iterator i = roleNames.iterator(); i.hasNext();){
            roles.add((String)i.next());
-       }       
+       } 
        return roles;
    }
-   private String locateClass(String beanName, String packageName){
-       List classNameList = new ArrayList();
-       String className = null;
-       for(Iterator i = properties.keySet().iterator(); i.hasNext();){
-           String key = (String)i.next();
-           if(key.toLowerCase().endsWith(beanName.toLowerCase())){
-               if(key.startsWith(packageName)){
-               className = key;
-               break;
-               }
-               classNameList.add(key);
-           }
-       }
-       if(className == null && classNameList.size() == 1){
-           className = (String)classNameList.get(0);
-       }
-       return className; 
-   }
+private String locateClass(String className){
+    String qualifiedClassName = null;       
+    System.out.println("ClassName: "+ className);        
+    for(Iterator i = properties.keySet().iterator(); i.hasNext();){
+        String key = (String)i.next();
+        if(key.toLowerCase().equals(className.toLowerCase())){
+            qualifiedClassName = key;
+            break;
+        }
+    }      
+    return qualifiedClassName;
+}
+private String locateClass(String beanName, String packageName){
+   String className = packageName +"."+ beanName.substring(0).toUpperCase() + beanName.substring(1);
+   return locateClass(className); 
+}
+
    private static boolean validateEVSClass(String className){
        boolean valid = true;
        ArrayList<String>inValidClasses = new ArrayList();
