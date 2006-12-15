@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain.impl">
+  <class name="DesignationImpl" table="CABIO31_DESIGNATIONS_VIEW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="DESIG_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="languageName" type="java.lang.String" column="LAE_NAME" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="name" type="java.lang.String" column="NAME" />
+    <property name="type" type="java.lang.String" column="DETL_NAME" />
+    <many-to-one name="context" class="gov.nih.nci.cadsr.domain.impl.ContextImpl" column="CONTE_IDSEQ" lazy="proxy" />
+    <set name="designationClassSchemeItemCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="ATT_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.DesignationClassSchemeItemImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

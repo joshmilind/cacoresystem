@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain.impl">
+  <class name="ComponentConceptImpl" table="CABIO31_CC_VIEW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="CC_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="displayOrder" type="java.lang.Integer" column="DISPLAY_ORDER" />
+    <property name="primaryFlag" type="java.lang.String" column="PRIMARY_FLAG_IND" />
+    <property name="value" type="java.lang.String" column="CONCEPT_VALUE" />
+    <many-to-one name="concept" class="gov.nih.nci.cadsr.domain.impl.ConceptImpl" column="CON_IDSEQ" lazy="proxy" />
+    <many-to-one name="componentlevel" class="gov.nih.nci.cadsr.domain.impl.ComponentLevelImpl" column="CL_IDSEQ" lazy="proxy" />
+    <many-to-one name="derivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

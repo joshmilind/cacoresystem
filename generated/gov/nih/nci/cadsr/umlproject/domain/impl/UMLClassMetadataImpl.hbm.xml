@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.umlproject.domain.impl">
+  <class name="UMLClassMetadataImpl" table="UP_CLASS_METADATA_MVW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="CM_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="description" type="java.lang.String" column="DESCRIPTION" />
+    <property name="fullyQualifiedName" type="java.lang.String" column="FULLY_QUALIFIED_CLASS_NAME" />
+    <property name="name" type="java.lang.String" column="NAME" />
+    <many-to-one name="project" class="gov.nih.nci.cadsr.umlproject.domain.impl.ProjectImpl" column="CP_IDSEQ" lazy="proxy" />
+    <many-to-one name="UMLPackageMetadata" class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLPackageMetadataImpl" column="PG_IDSEQ" lazy="proxy" />
+    <many-to-one name="UMLGeneralizationMetadata" class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLGeneralizationMetadataImpl" column="GM_IDSEQ" lazy="proxy" />
+    <set name="UMLAttributeMetadataCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CM_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLAttributeMetadataImpl" />
+    </set>
+    <many-to-one name="objectClass" class="gov.nih.nci.cadsr.domain.impl.ObjectClassImpl" column="OC_IDSEQ" lazy="proxy" />
+    <set name="UMLAssociationMetadataCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="CM_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLAssociationMetadataImpl" />
+    </set>
+    <set name="semanticMetadataCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="CM_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.SemanticMetadataImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

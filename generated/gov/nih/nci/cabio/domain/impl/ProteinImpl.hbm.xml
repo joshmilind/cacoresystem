@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="ProteinImpl" table="NEW_PROTEIN" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="PROTEIN_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="copyrightStatement" type="java.lang.String" column="COPYRIGHTSTATEMENT" />
+    <set name="keywords" table="PROTEIN_KEYWORDS" lazy="false">
+      <cache usage="read-write" />
+      <key column="PROTEIN_ID" />
+      <element column="KEYWORD" type="java.lang.String" />
+    </set>
+    <property name="name" type="java.lang.String" column="NAME" />
+    <property name="primaryAccession" type="java.lang.String" column="PRIMARY_ACCESSION" />
+    <set name="secondaryAccession" table="PROTEIN_SECONDARY_ACCESSION" lazy="false">
+      <cache usage="read-write" />
+      <key column="PROTEIN_ID" />
+      <element column="SECONDARY_ACCESSION" type="java.lang.String" />
+    </set>
+    <property name="uniProtCode" type="java.lang.String" column="UNIPROTCODE" />
+    <set name="proteinAliasCollection" table="PROTEIN_PROTEIN_ALIAS" lazy="true">
+      <cache usage="read-write" />
+      <key column="PROTEIN_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.ProteinAliasImpl" column="PROTEIN_ALIAS_ID" />
+    </set>
+    <set name="geneCollection" table="GENE_PROTEIN_TV" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="PROTEIN_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.GeneImpl" column="GENE_ID" />
+    </set>
+    <set name="taxonCollection" table="PROTEIN_TAXON" lazy="true">
+      <cache usage="read-write" />
+      <key column="PROTEIN_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.TaxonImpl" column="TAXON_ID" />
+    </set>
+    <one-to-one name="proteinSequence" class="gov.nih.nci.cabio.domain.impl.ProteinSequenceImpl" property-ref="protein" />
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="Taxon" table="TAXON" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="TAXON_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="abbreviation" type="java.lang.String" column="ABBREVIATION" />
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="commonName" type="java.lang.String" column="COMMON_NAME" />
+    <property name="ethnicityStrain" type="java.lang.String" column="STRAIN_OR_ETHNICITY" />
+    <property name="scientificName" type="java.lang.String" column="SCIENTIFIC_NAME" />
+    <set name="cloneCollection" table="CLONE_TAXON" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TAXON_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Clone" column="CLONE_ID" />
+    </set>
+    <set name="tissueCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="SAMPLE_TAXON_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Tissue" />
+    </set>
+    <set name="geneCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TAXON_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Gene" />
+    </set>
+    <set name="pathwayCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TAXON" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Pathway" />
+    </set>
+    <set name="chromosomeCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TAXON_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Chromosome" />
+    </set>
+    <set name="proteinCollection" table="PROTEIN_TAXON" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TAXON_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Protein" column="PROTEIN_ID" />
+    </set>
+  </class>
+</hibernate-mapping>
+

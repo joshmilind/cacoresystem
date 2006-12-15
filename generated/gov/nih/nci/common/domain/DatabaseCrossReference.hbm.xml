@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.common.domain">
+  <class name="DatabaseCrossReference" table="DATABASE_CROSS_REFERENCE" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="crossReferenceId" type="java.lang.String" column="CROSS_REFERENCE_ID" />
+    <property name="dataSourceName" type="java.lang.String" column="SOURCE_NAME" />
+    <property name="sourceType" type="java.lang.String" column="SOURCE_TYPE" />
+    <property name="summary" type="java.lang.String" column="SUMMARY" />
+    <property name="type" type="java.lang.String" column="TYPE" />
+    <many-to-one name="gene" class="gov.nih.nci.cabio.domain.Gene" column="GENE_ID" lazy="proxy" />
+    <many-to-one name="SNP" class="gov.nih.nci.cabio.domain.SNP" column="SNP_ID" lazy="proxy" />
+    <many-to-one name="nucleicAcidSequence" class="gov.nih.nci.cabio.domain.NucleicAcidSequence" column="NUCLEIC_ACID_SEQ_ID" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

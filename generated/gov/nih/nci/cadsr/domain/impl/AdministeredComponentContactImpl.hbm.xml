@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain.impl">
+  <class name="AdministeredComponentContactImpl" table="CABIO31_AC_CONTACTS_VIEW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="ACC_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="contactRole" type="java.lang.String" column="CONTACT_ROLE" />
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="rank" type="java.lang.Integer" column="RANK_ORDER" />
+    <many-to-one name="classSchemeClassSchemeItem" class="gov.nih.nci.cadsr.domain.impl.ClassSchemeClassSchemeItemImpl" column="CS_CSI_IDSEQ" lazy="proxy" />
+    <many-to-one name="classificationSchemeItem" class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeItemImpl" column="CSI_IDSEQ" lazy="proxy" />
+    <many-to-one name="person" class="gov.nih.nci.cadsr.domain.impl.PersonImpl" column="PER_IDSEQ" lazy="proxy" />
+    <many-to-one name="organization" class="gov.nih.nci.cadsr.domain.impl.OrganizationImpl" column="ORG_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.common.provenance.domain">
+  <class name="Source" table="SOURCE" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="name" type="java.lang.String" column="NAME" />
+    <joined-subclass name="gov.nih.nci.common.provenance.domain.PublicationSource" table="PUBLICATION_SOURCE" lazy="true">
+      <key column="ID" />
+      <property name="authors" type="gov.nih.nci.common.util.StringClobType" column="AUTHORS" />
+      <property name="endPage" type="java.lang.Integer" column="END_PAGE" />
+      <property name="startPage" type="java.lang.Integer" column="START_PAGE" />
+      <property name="title" type="java.lang.String" column="TITLE" />
+      <property name="volume" type="java.lang.Integer" column="VOLUME" />
+      <property name="year" type="java.lang.Integer" column="YEAR" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.common.provenance.domain.InternetSource" table="INTERNET_SOURCE" lazy="true">
+      <key column="ID" />
+      <property name="ownerInstitution" type="java.lang.String" column="OWNER_INSTITUTION" />
+      <property name="ownerPersons" type="java.lang.String" column="OWNER_PERSONS" />
+      <property name="sourceURI" type="java.lang.String" column="SOURCE_URI" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.common.provenance.domain.ResearchInstitutionSource" table="RESEARCH_INSTITUTION_SOURCE" lazy="true">
+      <key column="ID" />
+      <property name="institutionAddress" type="java.lang.String" column="INSTITUTION_ADDRESS" />
+      <property name="institutionDepartment" type="java.lang.String" column="INSTITUTION_DEPT" />
+      <property name="institutionName" type="java.lang.String" column="INSTITUTION_NAME" />
+      <property name="institutionPersons" type="java.lang.String" column="INSTITUTION_PERSONS" />
+    </joined-subclass>
+  </class>
+</hibernate-mapping>
+

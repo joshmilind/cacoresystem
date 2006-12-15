@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.umlproject.domain.impl">
+  <class name="ProjectImpl" table="UP_CADSR_PROJECT_MVW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="CP_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="description" type="java.lang.String" column="DESCRIPTION" />
+    <property name="longName" type="java.lang.String" column="LONG_NAME" />
+    <property name="shortName" type="java.lang.String" column="SHORT_NAME" />
+    <property name="version" type="java.lang.String" column="VERSION" />
+    <set name="subProjectCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CP_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.SubProjectImpl" />
+    </set>
+    <set name="UMLPackageMetadataCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CP_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLPackageMetadataImpl" />
+    </set>
+    <many-to-one name="classificationScheme" class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeImpl" column="CS_IDSEQ" lazy="proxy" />
+    <set name="UMLClassMetadataCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CP_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLClassMetadataImpl" />
+    </set>
+    <set name="UMLAttributeMetadataCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CP_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLAttributeMetadataImpl" />
+    </set>
+    <set name="UMLAssociationMetadataCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CP_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLAssociationMetadataImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

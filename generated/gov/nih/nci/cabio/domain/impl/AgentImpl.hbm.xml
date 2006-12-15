@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="AgentImpl" table="AGENT" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="AGENT_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="comment" type="java.lang.String" column="AGENT_COMMENT" />
+    <property name="EVSId" type="java.lang.String" column="EVS_ID" />
+    <property name="isCMAPAgent" type="java.lang.Boolean" column="CMAP_AGENT" />
+    <property name="name" type="java.lang.String" column="AGENT_NAME" />
+    <property name="NSCNumber" type="java.lang.Long" column="NSC_NUMBER" />
+    <property name="source" type="java.lang.String" column="AGENT_SOURCE" />
+    <set name="clinicalTrialProtocolCollection" table="PROTOCOL_AGENTS" lazy="true">
+      <cache usage="read-write" />
+      <key column="AGENT_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.ClinicalTrialProtocolImpl" column="PRO_ID" />
+    </set>
+    <set name="targetCollection" table="TARGET_AGENT" lazy="true">
+      <cache usage="read-write" />
+      <key column="AGENT_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.TargetImpl" column="TARGET_ID" />
+    </set>
+  </class>
+</hibernate-mapping>
+

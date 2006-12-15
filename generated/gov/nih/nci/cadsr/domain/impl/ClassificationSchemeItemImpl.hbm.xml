@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain.impl">
+  <class name="ClassificationSchemeItemImpl" table="CABIO31_CSI_VIEW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="CSI_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="comments" type="java.lang.String" column="COMMENTS" />
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="description" type="java.lang.String" column="DESCRIPTION" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="name" type="java.lang.String" column="CSI_NAME" />
+    <property name="type" type="java.lang.String" column="CSITL_NAME" />
+    <set name="classSchemeClassSchemeItemCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CSI_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.ClassSchemeClassSchemeItemImpl" />
+    </set>
+    <set name="parentClassificationSchemeItemRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="P_CSI_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeItemRelationshipImpl" />
+    </set>
+    <set name="referenceDocumentCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CSI_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.ReferenceDocumentImpl" />
+    </set>
+    <set name="childClassificationSchemeItemRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="C_CSI_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeItemRelationshipImpl" />
+    </set>
+    <set name="administeredComponentContact" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CSI_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.AdministeredComponentContactImpl" />
+    </set>
+    <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

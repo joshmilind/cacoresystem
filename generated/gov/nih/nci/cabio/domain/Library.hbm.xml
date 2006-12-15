@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="Library" table="LIBRARY_OBJECT" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="LIBRARY_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="cloneProducer" type="java.lang.String" column="PRODUCER" />
+    <property name="clonesToDate" type="java.lang.Long" column="CLONES_TO_DATE" />
+    <property name="cloneVector" type="java.lang.String" column="CLONE_VECTOR" />
+    <property name="cloneVectorType" type="java.lang.String" column="CLONE_VECTOR_TYPE" />
+    <property name="creationDate" type="java.util.Date" column="CREATE_DATE" />
+    <property name="description" type="java.lang.String" column="DESCRIPTION" />
+    <property name="keyword" type="java.lang.String" column="KEYWORD" />
+    <property name="labHost" type="java.lang.String" column="LAB_HOST" />
+    <property name="name" type="java.lang.String" column="LIBRARY_NAME" />
+    <property name="rsite1" type="java.lang.String" column="R_SITE_1" />
+    <property name="rsite2" type="java.lang.String" column="R_SITE_2" />
+    <property name="sequencesToDate" type="java.lang.Long" column="SEQUENCES_TO_DATE" />
+    <property name="type" type="java.lang.String" column="LIBRARY_TYPE" />
+    <property name="uniGeneId" type="java.lang.Long" column="UNIGENE_ID" />
+    <set name="cloneCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="LIBRARY_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Clone" />
+    </set>
+    <many-to-one name="protocol" class="gov.nih.nci.cabio.domain.Protocol" column="LIBRARY_PROTOCOL_ID" lazy="proxy" />
+    <set name="geneCollection" table="LIBRARY_GENE" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="LIBRARY_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Gene" column="GENE_ID" />
+    </set>
+    <set name="histopathologyCollection" table="LIBRARY_HISTOPATHOLOGY" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="LIBRARY_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Histopathology" column="CONTEXT_CODE" />
+    </set>
+    <many-to-one name="tissue" class="gov.nih.nci.cabio.domain.Tissue" column="TISSUE_SAMPLE_ID" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

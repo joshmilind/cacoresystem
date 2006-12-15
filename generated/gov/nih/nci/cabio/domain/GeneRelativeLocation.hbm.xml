@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="GeneRelativeLocation" table="GENE_RELATIVE_LOCATION" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="type" type="java.lang.String" column="TYPE" />
+  </class>
+</hibernate-mapping>
+

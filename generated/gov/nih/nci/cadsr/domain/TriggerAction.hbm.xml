@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain">
+  <class name="TriggerAction" table="CABIO31_TA_VIEW" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="TA_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="action" type="java.lang.String" column="ACTION" />
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="criterionValue" type="java.lang.String" column="CRITERION_VALUE" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="forcedValue" type="java.lang.String" column="FORCED_VALUE" />
+    <property name="instruction" type="java.lang.String" column="TA_INSTRUCTION" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="triggerRelationship" type="java.lang.String" column="TRIGGER_REALTIONSHIP" />
+    <set name="protocolCollection" table="CABIO31_TA_PROTO_VIEW" lazy="true">
+      <cache usage="read-write" />
+      <key column="TA_IDSEQ" />
+      <many-to-many class="gov.nih.nci.cadsr.domain.Protocol" column="PROTO_IDSEQ" />
+    </set>
+    <set name="administeredComponentClassSchemeItemCollection" table="CABIO31_TA_AC_CSI_VIEW" lazy="true">
+      <cache usage="read-write" />
+      <key column="TA_IDSEQ" />
+      <many-to-many class="gov.nih.nci.cadsr.domain.AdministeredComponentClassSchemeItem" column="AC_CSI_IDSEQ" />
+    </set>
+    <many-to-one name="questionCondition" class="gov.nih.nci.cadsr.domain.QuestionCondition" column="QCON_IDSEQ" lazy="proxy" />
+    <many-to-one name="targetFormElement" class="gov.nih.nci.cadsr.domain.FormElement" column="T_QC_IDSEQ" lazy="proxy" />
+    <many-to-one name="enforcedCondition" class="gov.nih.nci.cadsr.domain.QuestionCondition" column="FORCED_QCON_IDSEQ" lazy="proxy" />
+    <many-to-one name="sourceFormElement" class="gov.nih.nci.cadsr.domain.FormElement" column="S_QC_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

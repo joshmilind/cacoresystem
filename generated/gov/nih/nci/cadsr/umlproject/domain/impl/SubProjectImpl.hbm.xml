@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.umlproject.domain.impl">
+  <class name="SubProjectImpl" table="UP_SUB_PROJECTS_MVW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="SP_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="description" type="java.lang.String" column="SUB_PROJECT_DESCRIPTION" />
+    <property name="name" type="java.lang.String" column="SUB_PROJECT_NAME" />
+    <set name="UMLPackageMetadataCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="SP_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLPackageMetadataImpl" />
+    </set>
+    <many-to-one name="project" class="gov.nih.nci.cadsr.umlproject.domain.impl.ProjectImpl" column="CP_IDSEQ" lazy="proxy" />
+    <many-to-one name="classSchemeClassSchemeItem" class="gov.nih.nci.cadsr.domain.impl.ClassSchemeClassSchemeItemImpl" column="CS_CSI_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

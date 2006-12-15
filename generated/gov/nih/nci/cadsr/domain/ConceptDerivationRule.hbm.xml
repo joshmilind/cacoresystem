@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain">
+  <class name="ConceptDerivationRule" table="CABIO31_CON_DER_RULES_VIEW" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="CONDR_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="name" type="java.lang.String" column="NAME" />
+    <set name="classificationSchemeItemCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ClassificationSchemeItem" />
+    </set>
+    <set name="objectClassRelationship" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ObjectClassRelationship" />
+    </set>
+    <set name="valueDomainCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ValueDomain" />
+    </set>
+    <set name="valueMeaningCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ValueMeaning" />
+    </set>
+    <set name="sourceRoleConcept" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="S_CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ObjectClassRelationship" />
+    </set>
+    <set name="classificationSchemeCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ClassificationScheme" />
+    </set>
+    <set name="representationCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.Representation" />
+    </set>
+    <set name="targetRoleConcept" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="T_CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ObjectClassRelationship" />
+    </set>
+    <many-to-one name="derivationType" class="gov.nih.nci.cadsr.domain.DerivationType" column="RULE" lazy="proxy" />
+    <set name="objectClassCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ObjectClass" />
+    </set>
+    <set name="propertyCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.Property" />
+    </set>
+    <set name="componentConceptCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ComponentConcept" />
+    </set>
+    <set name="conceptualDomainCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONDR_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ConceptualDomain" />
+    </set>
+  </class>
+</hibernate-mapping>
+

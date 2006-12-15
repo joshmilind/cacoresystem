@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="Anomaly" table="ANOMALY" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ANOMALY_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="description" type="java.lang.String" column="ANOMALY_TYPE" />
+    <many-to-one name="histopathology" class="gov.nih.nci.cabio.domain.Histopathology" column="CONTEXT_CODE" lazy="proxy" />
+    <set name="organOntologyCollection" table="ANOMALY_TISSUE_CODE" lazy="true">
+      <cache usage="read-write" />
+      <key column="ANOMALY_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.OrganOntology" column="TISSUE_CODE" />
+    </set>
+    <set name="vocabularyCollection" table="ANOMALY_VOCABULARY" lazy="true">
+      <cache usage="read-write" />
+      <key column="ANOMALY_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Vocabulary" column="VOCABULARY_ID" />
+    </set>
+  </class>
+</hibernate-mapping>
+

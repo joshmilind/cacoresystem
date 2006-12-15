@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="GenericArrayImpl" table="GENERIC_ARRAY" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="arrayName" type="java.lang.String" column="ARRAY_NAME" />
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="platform" type="java.lang.String" column="PLATFORM" />
+    <property name="type" type="java.lang.String" column="TYPE" />
+    <set name="genericReporterCollection" table="GENERIC_ARRAY_GENERIC_REPORTER" lazy="true">
+      <cache usage="read-write" />
+      <key column="GENERIC_ARRAY_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.GenericReporterImpl" column="GENERIC_REPORTER_ID" />
+    </set>
+  </class>
+</hibernate-mapping>
+

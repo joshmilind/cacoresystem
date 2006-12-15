@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.umlproject.domain.impl">
+  <class name="UMLAttributeMetadataImpl" table="UP_ATTRIBUTE_METADATA_MVW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="AM_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="description" type="java.lang.String" column="DESCRIPTION" />
+    <property name="fullyQualifiedName" type="java.lang.String" column="FULLY_QUALIFIED_NAME" />
+    <property name="name" type="java.lang.String" column="NAME" />
+    <many-to-one name="UMLClassMetadata" class="gov.nih.nci.cadsr.umlproject.domain.impl.UMLClassMetadataImpl" column="CM_IDSEQ" lazy="proxy" />
+    <many-to-one name="dataElement" class="gov.nih.nci.cadsr.domain.impl.DataElementImpl" column="DE_IDSEQ" lazy="proxy" />
+    <many-to-one name="project" class="gov.nih.nci.cadsr.umlproject.domain.impl.ProjectImpl" column="CP_IDSEQ" lazy="proxy" />
+    <many-to-one name="attributeTypeMetadata" class="gov.nih.nci.cadsr.umlproject.domain.impl.AttributeTypeMetadataImpl" column="AT_IDSEQ" lazy="proxy" />
+    <set name="semanticMetadataCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AM_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.impl.SemanticMetadataImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

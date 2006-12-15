@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="Histopathology" table="HISTOPATHOLOGY_TST" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="HISTOPATHOLOGY_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="ageOfOnset" type="java.lang.String" column="AGEOFONSET" />
+    <property name="comments" type="java.lang.String" column="COMMENTS" />
+    <property name="grossDescription" type="java.lang.String" column="GROSSDESCRIPTION" />
+    <property name="microscopicDescription" type="java.lang.String" column="MICROSCOPICDESCRIPTION" />
+    <property name="relationalOperation" type="java.lang.String" column="RELATIONALOPERATION" />
+    <property name="survivalInfo" type="java.lang.String" column="SURVIVALINFO" />
+    <property name="tumorIncidenceRate" type="java.lang.Float" column="TUMORINCIDENCERATE" />
+    <set name="anomalyCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONTEXT_CODE" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Anomaly" />
+    </set>
+    <many-to-one name="diseaseOntology" class="gov.nih.nci.cabio.domain.DiseaseOntology" column="HISTOLOGY_CODE" lazy="proxy" />
+    <set name="libraryCollection" table="LIBRARY_HISTOPATHOLOGY" lazy="true">
+      <cache usage="read-write" />
+      <key column="CONTEXT_CODE" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Library" column="LIBRARY_ID" />
+    </set>
+    <set name="clinicalTrialProtocolCollection" table="PROTOCOL_HISTOPATHOLOGY" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONTEXT_CODE" />
+      <many-to-many class="gov.nih.nci.cabio.domain.ClinicalTrialProtocol" column="PRO_ID" />
+    </set>
+    <set name="geneCollection" table="GENE_HISTOPATHOLOGY" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CONTEXT_CODE" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Gene" column="GENE_ID" />
+    </set>
+    <many-to-one name="organOntology" class="gov.nih.nci.cabio.domain.OrganOntology" column="TISSUE_CODE" lazy="proxy" />
+    <set name="metastasisCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="METASTASISOF" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Histopathology" />
+    </set>
+  </class>
+</hibernate-mapping>
+

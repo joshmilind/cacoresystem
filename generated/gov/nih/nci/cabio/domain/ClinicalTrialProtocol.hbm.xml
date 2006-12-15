@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="ClinicalTrialProtocol" table="PROTOCOLS" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="currentStatus" type="java.lang.String" column="CURRENT_STATUS" />
+    <property name="currentStatusDate" type="java.util.Date" column="CURRENT_STATUS_DATE" />
+    <property name="documentNumber" type="java.lang.String" column="DOCUMENT_NUMBER" />
+    <property name="leadOrganizationId" type="java.lang.String" column="LEAD_ORGANIZATION_CTEP_ID" />
+    <property name="leadOrganizationName" type="java.lang.String" column="LEAD_ORGANIZATION_NAME" />
+    <property name="NIHAdminCode" type="java.lang.String" column="NIH_ADMIN_CODE" />
+    <property name="participationType" type="java.lang.String" column="PARTICIPATION_TYPE" />
+    <property name="PDQIdentifier" type="java.lang.String" column="PDQ_PROTOCOL_CODE" />
+    <property name="phase" type="java.lang.String" column="PHASE" />
+    <property name="PIName" type="java.lang.String" column="PI_NAME" />
+    <property name="title" type="java.lang.String" column="TITLE" />
+    <property name="treatmentFlag" type="java.lang.String" column="TREATMENT_FLAG" />
+    <set name="protocolAssociationCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="PRO_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.ProtocolAssociation" />
+    </set>
+    <set name="histopathologyCollection" table="PROTOCOL_HISTOPATHOLOGY" lazy="true">
+      <cache usage="read-write" />
+      <key column="PRO_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Histopathology" column="CONTEXT_CODE" />
+    </set>
+    <set name="agentCollection" table="PROTOCOL_AGENTS" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="PRO_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Agent" column="AGENT_ID" />
+    </set>
+    <set name="diseaseOntologyCollection" table="PROTOCOL_HISTOLOGY" lazy="true">
+      <cache usage="read-write" />
+      <key column="PRO_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.DiseaseOntology" column="HISTOLOGY_CODE" />
+    </set>
+  </class>
+</hibernate-mapping>
+

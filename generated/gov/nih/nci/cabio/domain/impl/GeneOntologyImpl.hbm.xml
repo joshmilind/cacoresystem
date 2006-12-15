@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="GeneOntologyImpl" table="GO_ONTOLOGY" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="GO_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="name" type="java.lang.String" column="GO_NAME" />
+    <set name="parentGeneOntologyRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CHILD_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.GeneOntologyRelationshipImpl" />
+    </set>
+    <set name="geneCollection" table="GO_GENES" lazy="true">
+      <cache usage="read-write" />
+      <key column="GO_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.GeneImpl" column="GENE_ID" />
+    </set>
+    <set name="childGeneOntologyRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="PARENT_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.GeneOntologyRelationshipImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

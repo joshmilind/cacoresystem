@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="ProtocolAssociationImpl" table="PROTOCOL_DISEASES" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="CTEPNAME" type="java.lang.String" column="CTEP_NAME" />
+    <property name="diseaseCategory" type="java.lang.String" column="DISEASE_CATEGORY" />
+    <property name="diseaseSubCategory" type="java.lang.String" column="DISEASE_SUB_CATEGORY" />
+    <property name="IMTCODE" type="java.lang.Long" column="IMT_CODE" />
+    <many-to-one name="diseaseOntology" class="gov.nih.nci.cabio.domain.impl.DiseaseOntologyImpl" column="HISTOLOGY_CODE" lazy="proxy" />
+    <many-to-one name="clinicalTrialProtocol" class="gov.nih.nci.cabio.domain.impl.ClinicalTrialProtocolImpl" column="PRO_ID" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="PopulationFrequency" table="POPULATION_FREQUENCY" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="ethnicity" type="java.lang.String" column="ETHNICITY" />
+    <property name="majorAllele" type="java.lang.String" column="MAJOR_ALLELE" />
+    <property name="majorFrequency" type="java.lang.Double" column="MAJOR_FREQUENCY" />
+    <property name="minorAllele" type="java.lang.String" column="MINOR_ALLELE" />
+    <property name="minorFrequency" type="java.lang.Double" column="MINOR_FREQUENCY" />
+    <property name="type" type="java.lang.String" column="TYPE" />
+    <many-to-one name="SNP" class="gov.nih.nci.cabio.domain.SNP" column="SNP_ID" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

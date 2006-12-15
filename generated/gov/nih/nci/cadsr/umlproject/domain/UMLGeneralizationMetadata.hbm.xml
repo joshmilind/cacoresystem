@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.umlproject.domain">
+  <class name="UMLGeneralizationMetadata" table="UP_GEN_METADATA_MVW" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="GM_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <many-to-one name="objectClassRelationship" class="gov.nih.nci.cadsr.domain.ObjectClassRelationship" column="OCR_IDSEQ" lazy="proxy" />
+    <many-to-one name="superUMLClassMetadata" class="gov.nih.nci.cadsr.umlproject.domain.UMLClassMetadata" column="T_CM_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

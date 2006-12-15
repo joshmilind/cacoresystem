@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="SNP" table="SNP_TV" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="ID">
+      <generator class="assigned" />
+    </id>
+    <property name="alleleA" type="java.lang.String" column="ALLELE_A" />
+    <property name="alleleB" type="java.lang.String" column="ALLELE_B" />
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="DBSNPID" type="java.lang.String" column="DB_SNP_ID" />
+    <property name="validationStatus" type="java.lang.String" column="VALIDATION_STATUS" />
+    <set name="databaseCrossReferenceCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="SNP_ID" />
+      <one-to-many class="gov.nih.nci.common.domain.DatabaseCrossReference" />
+    </set>
+    <set name="locationCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="SNP_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Location" />
+    </set>
+    <set name="populationFrequencyCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="SNP_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.PopulationFrequency" />
+    </set>
+    <set name="geneRelativeLocationCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="SNP_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.GeneRelativeLocation" />
+    </set>
+  </class>
+</hibernate-mapping>
+

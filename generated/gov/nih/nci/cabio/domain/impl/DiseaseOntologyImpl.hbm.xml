@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="DiseaseOntologyImpl" table="HISTOLOGY_CODE" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="HISTOLOGY_CODE">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="name" type="java.lang.String" column="HISTOLOGY_NAME" />
+    <set name="clinicalTrialProtocolCollection" table="PROTOCOL_HISTOLOGY" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="HISTOLOGY_CODE" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.ClinicalTrialProtocolImpl" column="PRO_ID" />
+    </set>
+    <set name="histopathologyCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="HISTOLOGY_CODE" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.HistopathologyImpl" />
+    </set>
+    <set name="childDiseaseOntologyRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="PARENT_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.DiseaseOntologyRelationshipImpl" />
+    </set>
+    <set name="parentDiseaseOntologyRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CHILD_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.DiseaseOntologyRelationshipImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

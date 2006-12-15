@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain">
+  <class name="QuestionCondition" table="CABIO31_QUEST_CONDITION_VIEW" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="QCON_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <set name="question" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="QCON_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.Question" />
+    </set>
+    <set name="triggeredActionCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="FORCED_QCON_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.TriggerAction" />
+    </set>
+    <set name="questionCondition" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="P_QCON_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.QuestionConditionComponents" />
+    </set>
+    <set name="conditionComponentCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="C_QCON_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.QuestionConditionComponents" />
+    </set>
+    <set name="condtionMessage" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="QCON_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.ConditionMessage" />
+    </set>
+    <set name="forcedConditionTriggeredActionCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="QCON_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.TriggerAction" />
+    </set>
+  </class>
+</hibernate-mapping>
+

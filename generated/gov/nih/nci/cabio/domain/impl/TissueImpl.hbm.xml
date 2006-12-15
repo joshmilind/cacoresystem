@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="TissueImpl" table="TISSUE_OBJECT" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="TISSUE_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="cellLine" type="java.lang.String" column="CELL_LINE" />
+    <property name="cellType" type="java.lang.String" column="CELL_TYPE" />
+    <property name="description" type="java.lang.String" column="DESCRIPTION" />
+    <property name="developmentalStage" type="java.lang.String" column="DEVELOPMENT_STAGE" />
+    <property name="histology" type="java.lang.String" column="HISTOLOGY" />
+    <property name="name" type="java.lang.String" column="TISSUE_NAME" />
+    <property name="organ" type="java.lang.String" column="ORGAN" />
+    <property name="sex" type="java.lang.String" column="SEX" />
+    <property name="supplier" type="java.lang.String" column="SUPPLIER" />
+    <property name="type" type="java.lang.String" column="TISSUE_TYPE" />
+    <many-to-one name="protocol" class="gov.nih.nci.cabio.domain.impl.ProtocolImpl" column="TISSUE_PROTOCOL_ID" lazy="proxy" />
+    <set name="libraryCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TISSUE_SAMPLE_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.LibraryImpl" />
+    </set>
+    <many-to-one name="taxon" class="gov.nih.nci.cabio.domain.impl.TaxonImpl" column="SAMPLE_TAXON_ID" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

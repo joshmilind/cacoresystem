@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="ChromosomeImpl" table="CHROMOSOME" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="CHROMOSOME_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="number" type="java.lang.String" column="CHROMOSOME_NUMBER" />
+    <set name="geneCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CHROMOSOME_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.GeneImpl" />
+    </set>
+    <many-to-one name="taxon" class="gov.nih.nci.cabio.domain.impl.TaxonImpl" column="TAXON_ID" lazy="proxy" />
+    <set name="locationCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CHROMOSOME_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.impl.LocationImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain">
+  <class name="QuestionConditionComponents" table="CABIO31_CONDITION_COMP_VIEW" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="CMP_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="constantValue" type="java.lang.String" column="CONSTANT_VALUE" />
+    <property name="displayOrder" type="java.lang.Integer" column="DISPLAY_ORDER" />
+    <property name="logicalOperand" type="java.lang.String" column="LEFT_LOGICAL_OPERAND" />
+    <property name="operand" type="java.lang.String" column="RIGHT_OPERAND" />
+    <many-to-one name="question" class="gov.nih.nci.cadsr.domain.Question" column="QC_IDSEQ" lazy="proxy" />
+    <many-to-one name="questionCondition" class="gov.nih.nci.cadsr.domain.QuestionCondition" column="C_QCON_IDSEQ" lazy="proxy" />
+    <many-to-one name="parentQuestionCondition" class="gov.nih.nci.cadsr.domain.QuestionCondition" column="P_QCON_IDSEQ" lazy="proxy" />
+    <many-to-one name="function" class="gov.nih.nci.cadsr.domain.Function" column="RF_IDSEQ" lazy="proxy" />
+    <many-to-one name="validValue" class="gov.nih.nci.cadsr.domain.ValidValue" column="VV_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="OrganOntology" table="TISSUE_CODE" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="TISSUE_CODE">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="name" type="java.lang.String" column="TISSUE_NAME" />
+    <set name="anomalyCollection" table="ANOMALY_TISSUE_CODE" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TISSUE_CODE" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Anomaly" column="ANOMALY_ID" />
+    </set>
+    <set name="childOrganOntologyRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="PARENT_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.OrganOntologyRelationship" />
+    </set>
+    <set name="parentOrganOntologyRelationshipCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="CHILD_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.OrganOntologyRelationship" />
+    </set>
+    <set name="geneCollection" table="GENE_EXPRESSED_IN" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="ORGAN_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.Gene" column="GENE_ID" />
+    </set>
+    <set name="histopathologyCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TISSUE_CODE" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Histopathology" />
+    </set>
+  </class>
+</hibernate-mapping>
+

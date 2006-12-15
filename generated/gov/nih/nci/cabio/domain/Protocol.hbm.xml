@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain">
+  <class name="Protocol" table="PROTOCOL" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="PROTOCOL_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="description" type="java.lang.String" column="DESCRIPTION" />
+    <property name="name" type="java.lang.String" column="PROTOCOL_NAME" />
+    <property name="type" type="java.lang.String" column="PROTOCOL_TYPE" />
+    <set name="libraryCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="LIBRARY_PROTOCOL_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Library" />
+    </set>
+    <set name="tissueCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="TISSUE_PROTOCOL_ID" />
+      <one-to-many class="gov.nih.nci.cabio.domain.Tissue" />
+    </set>
+  </class>
+</hibernate-mapping>
+

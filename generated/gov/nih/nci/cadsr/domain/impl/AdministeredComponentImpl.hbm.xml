@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain.impl">
+  <class name="AdministeredComponentImpl" table="CABIO31_ADMIN_COMPONENTS_VIEW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="AC_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="beginDate" type="java.util.Date" column="BEGIN_DATE" />
+    <property name="changeNote" type="java.lang.String" column="CHANGE_NOTE" />
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="deletedIndicator" type="java.lang.String" column="DELETED_IND" />
+    <property name="endDate" type="java.util.Date" column="END_DATE" />
+    <property name="latestVersionIndicator" type="java.lang.String" column="LATEST_VERSION_IND" />
+    <property name="longName" type="java.lang.String" column="LONG_NAME" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="origin" type="java.lang.String" column="ORIGIN" />
+    <property name="preferredDefinition" type="java.lang.String" column="PREFERRED_DEFINITION" />
+    <property name="preferredName" type="java.lang.String" column="PREFERRED_NAME" />
+    <property name="publicID" type="java.lang.Long" column="PUBLIC_ID" />
+    <property name="registrationStatus" type="java.lang.String" column="REGISTRATION_STATUS" />
+    <property name="unresolvedIssue" type="java.lang.String" column="UNRESOLVED_ISSUE" />
+    <property name="version" type="java.lang.Float" column="VERSION" />
+    <property name="workflowStatusDescription" type="java.lang.String" column="WORKFLOW_STATUS_DESC" />
+    <property name="workflowStatusName" type="java.lang.String" column="ASL_NAME" />
+    <many-to-one name="context" class="gov.nih.nci.cadsr.domain.impl.ContextImpl" column="CONTE_IDSEQ" lazy="proxy" />
+    <set name="administeredComponentClassSchemeItemCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AC_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.AdministeredComponentClassSchemeItemImpl" />
+    </set>
+    <set name="designationCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AC_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.DesignationImpl" />
+    </set>
+    <set name="referenceDocumentCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AC_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.ReferenceDocumentImpl" />
+    </set>
+    <set name="administeredComponentContactCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AC_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.AdministeredComponentContactImpl" />
+    </set>
+    <set name="definitionCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AC_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.DefinitionImpl" />
+    </set>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ObjectClassImpl" table="CABIO31_OBJECT_CLASSES_VIEW" lazy="true">
+      <key column="OC_IDSEQ" />
+      <property name="definitionSource" type="java.lang.String" column="DEFINITION_SOURCE" />
+      <set name="targetObjectClassRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="T_OC_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ObjectClassRelationshipImpl" />
+      </set>
+      <set name="sourcObjectClassRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="S_OC_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ObjectClassRelationshipImpl" />
+      </set>
+      <set name="dataElementConceptCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="OC_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementConceptImpl" />
+      </set>
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeImpl" table="CABIO31_CLASS_SCHEMES_VIEW" lazy="true">
+      <key column="CS_IDSEQ" />
+      <property name="labelTypeFlag" type="java.lang.String" column="LABEL_TYPE_FLAG" />
+      <property name="type" type="java.lang.String" column="CSTL_NAME" />
+      <set name="classSchemeClassSchemeItemCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="CS_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ClassSchemeClassSchemeItemImpl" />
+      </set>
+      <set name="parentClassificationSchemeRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="P_CS_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeRelationshipImpl" />
+      </set>
+      <set name="childClassificationScheme" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="PAR_CS_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeImpl" />
+      </set>
+      <set name="childClassificationSchemeRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="C_CS_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeRelationshipImpl" />
+      </set>
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+      <many-to-one name="parentClassificationScheme" class="gov.nih.nci.cadsr.domain.impl.ClassificationSchemeImpl" column="PAR_CS_IDSEQ" lazy="proxy" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.DataElementConceptImpl" table="CABIO31_DE_CONCEPTS_VIEW" lazy="true">
+      <key column="DEC_IDSEQ" />
+      <many-to-one name="property" class="gov.nih.nci.cadsr.domain.impl.PropertyImpl" column="PROP_IDSEQ" lazy="proxy" />
+      <many-to-one name="conceptualDomain" class="gov.nih.nci.cadsr.domain.impl.ConceptualDomainImpl" column="CD_IDSEQ" lazy="proxy" />
+      <set name="dataElementCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="DEC_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementImpl" />
+      </set>
+      <set name="childDataElementConceptRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="C_DEC_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementConceptRelationshipImpl" />
+      </set>
+      <many-to-one name="objectClass" class="gov.nih.nci.cadsr.domain.impl.ObjectClassImpl" column="OC_IDSEQ" lazy="proxy" />
+      <set name="parentDataElementConceptRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="P_DEC_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementConceptRelationshipImpl" />
+      </set>
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.DataElementImpl" table="CABIO31_DATA_ELEMENTS_VIEW" lazy="true">
+      <key column="DE_IDSEQ" />
+      <many-to-one name="valueDomain" class="gov.nih.nci.cadsr.domain.impl.ValueDomainImpl" column="VD_IDSEQ" lazy="proxy" />
+      <set name="questionCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="DE_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.QuestionImpl" />
+      </set>
+      <set name="dataElementDerivationCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="C_DE_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementDerivationImpl" />
+      </set>
+      <set name="parentDataElementRelationshipsCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="P_DE_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementRelationshipImpl" />
+      </set>
+      <many-to-one name="dataElementConcept" class="gov.nih.nci.cadsr.domain.impl.DataElementConceptImpl" column="DEC_IDSEQ" lazy="proxy" />
+      <one-to-one name="derivedDataElement" class="gov.nih.nci.cadsr.domain.impl.DerivedDataElementImpl" property-ref="dataElement" />
+      <set name="childDataElementRelationshipsCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="C_DE_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementRelationshipImpl" />
+      </set>
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.FormElementImpl" table="CABIO31_FORM_ELEMENTS_VIEW" lazy="true">
+      <key column="QC_IDSEQ" />
+      <set name="instruction" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="PARENT_QC_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.InstructionImpl" />
+      </set>
+      <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ValidValueImpl" table="CABIO31_VALID_VALUES_VIEW" lazy="true">
+        <key column="QC_IDSEQ" />
+        <property name="description" type="java.lang.String" column="DESCRIPTION_TEXT" />
+        <property name="displayOrder" type="java.lang.Integer" column="DISPLAY_ORDER" />
+        <property name="meaningText" type="java.lang.String" column="MEANING_TEXT" />
+        <many-to-one name="question" class="gov.nih.nci.cadsr.domain.impl.QuestionImpl" column="QUESTION_IDSEQ" lazy="proxy" />
+        <many-to-one name="valueDomainPermissibleValue" class="gov.nih.nci.cadsr.domain.impl.ValueDomainPermissibleValueImpl" column="VP_IDSEQ" lazy="proxy" />
+        <set name="conditionComponent" lazy="true" inverse="true">
+          <cache usage="read-write" />
+          <key column="VV_IDSEQ" />
+          <one-to-many class="gov.nih.nci.cadsr.domain.impl.QuestionConditionComponentsImpl" />
+        </set>
+      </joined-subclass>
+      <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ModuleImpl" table="CABIO31_MODULES_VIEW" lazy="true">
+        <key column="QC_IDSEQ" />
+        <property name="displayOrder" type="java.lang.Integer" column="DISPLAY_ORDER" />
+        <property name="maximumQuestionRepeat" type="java.lang.Integer" column="REPEAT_NO" />
+        <many-to-one name="form" class="gov.nih.nci.cadsr.domain.impl.FormImpl" column="CRF_IDSEQ" lazy="proxy" />
+        <set name="questionCollection" lazy="true" inverse="true">
+          <cache usage="read-write" />
+          <key column="MODULE_IDSEQ" />
+          <one-to-many class="gov.nih.nci.cadsr.domain.impl.QuestionImpl" />
+        </set>
+      </joined-subclass>
+      <joined-subclass name="gov.nih.nci.cadsr.domain.impl.FormImpl" table="CABIO31_FORMS_VIEW" lazy="true">
+        <key column="QC_IDSEQ" />
+        <property name="displayName" type="java.lang.String" column="QCDL_NAME" />
+        <property name="type" type="java.lang.String" column="QTL_NAME" />
+        <set name="protocolCollection" table="CABIO31_PROTOCOL_FORMS_VIEW" lazy="true">
+          <cache usage="read-write" />
+          <key column="QC_IDSEQ" />
+          <many-to-many class="gov.nih.nci.cadsr.domain.impl.ProtocolImpl" column="PROTO_IDSEQ" />
+        </set>
+        <set name="moduleCollection" lazy="true" inverse="true">
+          <cache usage="read-write" />
+          <key column="CRF_IDSEQ" />
+          <one-to-many class="gov.nih.nci.cadsr.domain.impl.ModuleImpl" />
+        </set>
+      </joined-subclass>
+      <joined-subclass name="gov.nih.nci.cadsr.domain.impl.QuestionImpl" table="CABIO31_QUESTIONS_VIEW" lazy="true">
+        <key column="QC_IDSEQ" />
+        <property name="defaultValidValueId" type="java.lang.String" column="VV_IDSEQ" />
+        <property name="defaultValue" type="java.lang.String" column="DEFAULT_VALUE" />
+        <property name="displayOrder" type="java.lang.Integer" column="DISPLAY_ORDER" />
+        <property name="isEditable" type="java.lang.String" column="EDITABLE_IND" />
+        <property name="isMandatory" type="java.lang.String" column="MANDATORY_IND" />
+        <many-to-one name="dataElement" class="gov.nih.nci.cadsr.domain.impl.DataElementImpl" column="DE_IDSEQ" lazy="proxy" />
+        <many-to-one name="valueDomain" class="gov.nih.nci.cadsr.domain.impl.ValueDomainImpl" column="DN_VD_IDSEQ" lazy="proxy" />
+        <many-to-one name="questionCondition" class="gov.nih.nci.cadsr.domain.impl.QuestionConditionImpl" column="QCON_IDSEQ" lazy="proxy" />
+        <set name="validValueCollection" lazy="true" inverse="true">
+          <cache usage="read-write" />
+          <key column="QUESTION_IDSEQ" />
+          <one-to-many class="gov.nih.nci.cadsr.domain.impl.ValidValueImpl" />
+        </set>
+        <set name="questionComponentCollection" lazy="true" inverse="true">
+          <cache usage="read-write" />
+          <key column="QC_IDSEQ" />
+          <one-to-many class="gov.nih.nci.cadsr.domain.impl.QuestionConditionComponentsImpl" />
+        </set>
+        <many-to-one name="module" class="gov.nih.nci.cadsr.domain.impl.ModuleImpl" column="MODULE_IDSEQ" lazy="proxy" />
+        <set name="questionRepetitionCollection" lazy="true">
+          <cache usage="read-write" />
+          <key column="QC_IDSEQ" />
+          <one-to-many class="gov.nih.nci.cadsr.domain.impl.QuestionRepetitionImpl" />
+        </set>
+      </joined-subclass>
+      <joined-subclass name="gov.nih.nci.cadsr.domain.impl.QuestionRepetitionImpl" table="CABIO31_QUEST_REP_VIEW" lazy="true">
+        <key column="QV_IDSEQ" />
+        <property name="defaultValue" type="java.lang.String" column="VALUE" />
+        <property name="isEditable" type="java.lang.String" column="EDITABLE_IND" />
+        <property name="repeatSequenceNumber" type="java.lang.Integer" column="REPEAT_SEQUENCE" />
+        <many-to-one name="defaultValidValue" class="gov.nih.nci.cadsr.domain.impl.ValidValueImpl" column="VV_IDSEQ" lazy="proxy" />
+      </joined-subclass>
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ConceptImpl" table="CABIO31_CONCEPTS_VIEW" lazy="true">
+      <key column="CON_IDSEQ" />
+      <property name="definitionSource" type="java.lang.String" column="DEFINITION_SOURCE" />
+      <property name="evsSource" type="java.lang.String" column="EVS_SOURCE" />
+      <set name="valueDomainPermissibleValueCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="CON_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ValueDomainPermissibleValueImpl" />
+      </set>
+      <set name="componentConceptCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="CON_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ComponentConceptImpl" />
+      </set>
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.InstructionImpl" table="CABIO31_INSTRUCTIONS_VIEW" lazy="true">
+      <key column="QC_IDSEQ" />
+      <property name="type" type="java.lang.String" column="QTL_NAME" />
+      <many-to-one name="formElement" class="gov.nih.nci.cadsr.domain.impl.FormElementImpl" column="PARENT_QC_IDSEQ" lazy="proxy" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.RepresentationImpl" table="CABIO31_REP_VIEW" lazy="true">
+      <key column="REP_IDSEQ" />
+      <property name="definitionSource" type="java.lang.String" column="DEFINITION_SOURCE" />
+      <set name="valueDomainCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="REP_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ValueDomainImpl" />
+      </set>
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ObjectClassRelationshipImpl" table="CABIO31_OC_RECS_VIEW" lazy="true">
+      <key column="OCR_IDSEQ" />
+      <property name="dimensionality" type="java.lang.Integer" column="DIMENSIONALITY" />
+      <property name="direction" type="java.lang.String" column="DIRECTION" />
+      <property name="displayOrder" type="java.lang.Integer" column="DISPLAY_ORDER" />
+      <property name="isArray" type="java.lang.String" column="ARRAY_IND" />
+      <property name="name" type="java.lang.String" column="RL_NAME" />
+      <property name="sourceHighMultiplicity" type="java.lang.Integer" column="SOURCE_HIGH_MULTIPLICITY" />
+      <property name="sourceLowMultiplicity" type="java.lang.Integer" column="SOURCE_LOW_MULTIPLICITY" />
+      <property name="sourceRole" type="java.lang.String" column="SOURCE_ROLE" />
+      <property name="targetHighMultiplicity" type="java.lang.Integer" column="TARGET_HIGH_MULTIPLICITY" />
+      <property name="targetLowMultiplicity" type="java.lang.Integer" column="TARGET_LOW_MULTIPLICITY" />
+      <property name="targetRole" type="java.lang.String" column="TARGET_ROLE" />
+      <many-to-one name="targetConceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="T_CONDR_IDSEQ" lazy="proxy" />
+      <many-to-one name="targetObjectClassClassification" class="gov.nih.nci.cadsr.domain.impl.AdministeredComponentClassSchemeItemImpl" column="T_AC_CSI_IDSEQ" lazy="proxy" />
+      <many-to-one name="targetObjectClass" class="gov.nih.nci.cadsr.domain.impl.ObjectClassImpl" column="T_OC_IDSEQ" lazy="proxy" />
+      <many-to-one name="sourceObjectClassClassification" class="gov.nih.nci.cadsr.domain.impl.AdministeredComponentClassSchemeItemImpl" column="S_AC_CSI_IDSEQ" lazy="proxy" />
+      <many-to-one name="sourceConceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="S_CONDR_IDSEQ" lazy="proxy" />
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+      <many-to-one name="sourceObjectClass" class="gov.nih.nci.cadsr.domain.impl.ObjectClassImpl" column="S_OC_IDSEQ" lazy="proxy" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.PropertyImpl" table="CABIO31_PROPERTIES_VIEW" lazy="true">
+      <key column="PROP_IDSEQ" />
+      <property name="definitionSource" type="java.lang.String" column="DEFINITION_SOURCE" />
+      <set name="dataElementConceptCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="PROP_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementConceptImpl" />
+      </set>
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ConceptualDomainImpl" table="CABIO31_CD_VIEW" lazy="true">
+      <key column="CD_IDSEQ" />
+      <property name="dimensionality" type="java.lang.String" column="DIMENSIONALITY" />
+      <set name="valueMeaningCollection" table="CABIO31_CD_VMS_VIEW" lazy="true">
+        <cache usage="read-write" />
+        <key column="CD_IDSEQ" />
+        <many-to-many class="gov.nih.nci.cadsr.domain.impl.ValueMeaningImpl" column="VM_IDSEQ" />
+      </set>
+      <set name="valueDomainCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="CD_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ValueDomainImpl" />
+      </set>
+      <set name="dataElementConceptCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="CD_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementConceptImpl" />
+      </set>
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ValueDomainImpl" table="CABIO31_VALUE_DOMAINS_VIEW" lazy="true">
+      <key column="VD_IDSEQ" />
+      <property name="characterSetName" type="java.lang.String" column="CHAR_SET_NAME" />
+      <property name="datatypeAnnotation" type="java.lang.String" column="DTL_ANNOTATION" />
+      <property name="datatypeDescription" type="java.lang.String" column="DTL_DESCRIPTION" />
+      <property name="datatypeIsCodegenCompatible" type="java.lang.String" column="DTL_CODEGEN_COMPATIBILITY_IND" />
+      <property name="datatypeName" type="java.lang.String" column="DTL_NAME" />
+      <property name="datatypeSchemeReference" type="java.lang.String" column="DTL_SCHEME_REFERENCE" />
+      <property name="decimalPlace" type="java.lang.Integer" column="DECIMAL_PLACE" />
+      <property name="formatName" type="java.lang.String" column="FORML_NAME" />
+      <property name="highValueNumber" type="java.lang.String" column="HIGH_VALUE_NUM" />
+      <property name="lowValueNumber" type="java.lang.String" column="LOW_VALUE_NUM" />
+      <property name="maximumLengthNumber" type="java.lang.Integer" column="MAX_LENGTH_NUM" />
+      <property name="minimumLengthNumber" type="java.lang.Integer" column="MIN_LENGTH_NUM" />
+      <property name="UOMName" type="java.lang.String" column="UOML_NAME" />
+      <set name="parentValueDomainRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="P_VD_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ValueDomainRelationshipImpl" />
+      </set>
+      <set name="questionCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="DN_VD_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.QuestionImpl" />
+      </set>
+      <many-to-one name="conceptualDomain" class="gov.nih.nci.cadsr.domain.impl.ConceptualDomainImpl" column="CD_IDSEQ" lazy="proxy" />
+      <set name="dataElementCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="VD_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementImpl" />
+      </set>
+      <set name="childValueDomainRelationshipCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="C_VD_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.ValueDomainRelationshipImpl" />
+      </set>
+      <many-to-one name="represention" class="gov.nih.nci.cadsr.domain.impl.RepresentationImpl" column="REP_IDSEQ" lazy="proxy" />
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+      <joined-subclass name="gov.nih.nci.cadsr.domain.impl.NonenumeratedValueDomainImpl" table="CABIO31_N_VALUE_DOMAINS_VIEW" lazy="true">
+        <key column="VD_IDSEQ" />
+      </joined-subclass>
+      <joined-subclass name="gov.nih.nci.cadsr.domain.impl.EnumeratedValueDomainImpl" table="CABIO31_ENUM_VD_VIEW" lazy="true">
+        <key column="VD_IDSEQ" />
+        <set name="valueDomainPermissibleValueCollection" lazy="true" inverse="true">
+          <cache usage="read-write" />
+          <key column="VD_IDSEQ" />
+          <one-to-many class="gov.nih.nci.cadsr.domain.impl.ValueDomainPermissibleValueImpl" />
+        </set>
+      </joined-subclass>
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ProtocolImpl" table="CABIO31_PROTOCOLS_VIEW" lazy="true">
+      <key column="PROTO_IDSEQ" />
+      <property name="approvedBy" type="java.lang.String" column="APPROVED_BY" />
+      <property name="approvedDate" type="java.util.Date" column="APPROVED_DATE" />
+      <property name="changeNumber" type="java.lang.String" column="CHANGE_NUMBER" />
+      <property name="changeType" type="java.lang.String" column="CHANGE_TYPE" />
+      <property name="leadOrganizationName" type="java.lang.String" column="LEAD_ORG" />
+      <property name="phase" type="java.lang.String" column="PHASE" />
+      <property name="protocolID" type="java.lang.String" column="PROTOCOL_ID" />
+      <property name="reviewedBy" type="java.lang.String" column="REVIEWED_BY" />
+      <property name="reviewedDate" type="java.util.Date" column="REVIEWED_DATE" />
+      <property name="type" type="java.lang.String" column="TYPE" />
+      <set name="formCollection" table="CABIO31_PROTOCOL_FORMS_VIEW" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="PROTO_IDSEQ" />
+        <many-to-many class="gov.nih.nci.cadsr.domain.impl.FormImpl" column="QC_IDSEQ" />
+      </set>
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.cadsr.domain.impl.ValueMeaningImpl" table="CABIO31_VM_VIEW" lazy="true">
+      <key column="VM_IDSEQ" />
+      <property name="comments" type="java.lang.String" column="COMMENTS" />
+      <property name="description" type="java.lang.String" column="DESCRIPTION" />
+      <property name="shortMeaning" type="java.lang.String" column="SHORT_MEANING" />
+      <set name="permissibleValueCollection" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="VM_IDSEQ" />
+        <one-to-many class="gov.nih.nci.cadsr.domain.impl.PermissibleValueImpl" />
+      </set>
+      <many-to-one name="conceptDerivationRule" class="gov.nih.nci.cadsr.domain.impl.ConceptDerivationRuleImpl" column="CONDR_IDSEQ" lazy="proxy" />
+      <set name="conceptualDomainCollection" table="CABIO31_CD_VMS_VIEW" lazy="true" inverse="true">
+        <cache usage="read-write" />
+        <key column="VM_IDSEQ" />
+        <many-to-many class="gov.nih.nci.cadsr.domain.impl.ConceptualDomainImpl" column="CD_IDSEQ" />
+      </set>
+    </joined-subclass>
+  </class>
+</hibernate-mapping>
+

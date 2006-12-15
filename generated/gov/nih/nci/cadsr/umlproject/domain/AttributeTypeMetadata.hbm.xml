@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.umlproject.domain">
+  <class name="AttributeTypeMetadata" table="UP_ATTRIBUTE_TYPE_METADATA_MVW" lazy="true" polymorphism="explicit">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="AT_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="valueDomainDataType" type="java.lang.String" column="VD_DATATYPE" />
+    <property name="valueDomainLongName" type="java.lang.String" column="VD_LONG_NAME" />
+    <many-to-one name="valueDomain" class="gov.nih.nci.cadsr.domain.ValueDomain" column="VD_IDSEQ" lazy="proxy" />
+    <set name="typeEnumerationCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AT_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.TypeEnumerationMetadata" />
+    </set>
+    <set name="semanticMetadataCollection" lazy="true">
+      <cache usage="read-write" />
+      <key column="AT_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.umlproject.domain.SemanticMetadata" />
+    </set>
+  </class>
+</hibernate-mapping>
+

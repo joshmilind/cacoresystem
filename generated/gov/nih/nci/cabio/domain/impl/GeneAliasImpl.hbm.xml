@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cabio.domain.impl">
+  <class name="GeneAliasImpl" table="GENE_ALIAS_OBJECT_TV" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="GENE_ALIAS_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="bigid" type="java.lang.String" column="BIG_ID" />
+    <property name="name" type="java.lang.String" column="NAME" />
+    <property name="type" type="java.lang.String" column="ALIAS_TYPE" />
+    <set name="geneCollection" table="GENE_GENEALIAS" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="GENE_ALIAS_ID" />
+      <many-to-many class="gov.nih.nci.cabio.domain.impl.GeneImpl" column="GENE_ID" />
+    </set>
+  </class>
+</hibernate-mapping>
+

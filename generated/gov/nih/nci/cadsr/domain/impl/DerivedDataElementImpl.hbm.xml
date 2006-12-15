@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain.impl">
+  <class name="DerivedDataElementImpl" table="CABIO31_DERIVED_DE_VIEW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="P_DE_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="concatenationCharacter" type="java.lang.String" column="CONCAT_CHAR" />
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="methods" type="java.lang.String" column="METHODS" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="rule" type="java.lang.String" column="RULE" />
+    <many-to-one name="dataElement" class="gov.nih.nci.cadsr.domain.impl.DataElementImpl" column="DE_IDSEQ" unique="true" lazy="proxy" />
+    <set name="dataElementDerivationCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="P_DE_IDSEQ" />
+      <one-to-many class="gov.nih.nci.cadsr.domain.impl.DataElementDerivationImpl" />
+    </set>
+    <many-to-one name="derivationType" class="gov.nih.nci.cadsr.domain.impl.DerivationTypeImpl" column="DERIVATION_TYPE" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+

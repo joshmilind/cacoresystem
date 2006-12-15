@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.common.provenance.domain.impl">
+  <class name="SourceReferenceImpl" table="SOURCE_REFERENCE" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.Long" column="SOURCE_REFERENCE_ID">
+      <generator class="assigned" />
+    </id>
+    <property name="reference" type="gov.nih.nci.common.util.StringClobType" column="REFERENCE" />
+    <property name="sourceReferenceType" type="java.lang.String" column="SOURCE_REFERENCE_TYPE" />
+    <set name="provenanceCollection" lazy="true" inverse="true">
+      <cache usage="read-write" />
+      <key column="SOURCE_REFERENCE_ID" />
+      <one-to-many class="gov.nih.nci.common.provenance.domain.impl.ProvenanceImpl" />
+    </set>
+    <joined-subclass name="gov.nih.nci.common.provenance.domain.impl.WebServicesSourceReferenceImpl" table="WEB_SERV_SOURCE_REFERENCE" lazy="true">
+      <key column="ID" />
+      <property name="request" type="java.lang.String" column="REQUEST" />
+    </joined-subclass>
+    <joined-subclass name="gov.nih.nci.common.provenance.domain.impl.URLSourceReferenceImpl" table="URL_SOURCE_REFERENCE" lazy="true">
+      <key column="ID" />
+      <property name="sourceURL" type="java.lang.String" column="SOURCE_URL" />
+    </joined-subclass>
+  </class>
+</hibernate-mapping>
+

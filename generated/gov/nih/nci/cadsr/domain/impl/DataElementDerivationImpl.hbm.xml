@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.cadsr.domain.impl">
+  <class name="DataElementDerivationImpl" table="CABIO31_DE_DERIVATIONS_VIEW" lazy="true">
+    <cache usage="read-write" />
+    <id name="id" type="java.lang.String" column="CDR_IDSEQ">
+      <generator class="assigned" />
+    </id>
+    <property name="createdBy" type="java.lang.String" column="CREATED_BY" />
+    <property name="dateCreated" type="java.util.Date" column="DATE_CREATED" />
+    <property name="dateModified" type="java.util.Date" column="DATE_MODIFIED" />
+    <property name="displayOrder" type="java.lang.Integer" column="DISPLAY_ORDER" />
+    <property name="leadingCharacters" type="java.lang.String" column="LEFT_STRING" />
+    <property name="modifiedBy" type="java.lang.String" column="MODIFIED_BY" />
+    <property name="trailingCharacters" type="java.lang.String" column="RIGHT_STRING" />
+    <many-to-one name="dataElement" class="gov.nih.nci.cadsr.domain.impl.DataElementImpl" column="C_DE_IDSEQ" lazy="proxy" />
+    <many-to-one name="leftOperand" class="gov.nih.nci.cadsr.domain.impl.FunctionImpl" column="RF_IDSEQ" lazy="proxy" />
+    <many-to-one name="derivedDataElement" class="gov.nih.nci.cadsr.domain.impl.DerivedDataElementImpl" column="P_DE_IDSEQ" lazy="proxy" />
+  </class>
+</hibernate-mapping>
+
