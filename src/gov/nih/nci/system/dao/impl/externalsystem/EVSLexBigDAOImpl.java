@@ -278,20 +278,22 @@ public class EVSLexBigDAOImpl implements DAO
     private void makeRemoteConnection(Hashtable configs)throws Exception{        
         try{            
             if(adapters.size()<1){
+                LexAdapter adapter = null;
+                Vector vocabs = new Vector();
                 EVSProperties evsProperties = EVSProperties.getInstance(configs);
                 String lg_config_file = null;
                 if(evsProperties.getConfigFileLocation() != null){
                     lg_config_file = evsProperties.getConfigFileLocation();
                     System.setProperty("LG_CONFIG_FILE", lg_config_file);
                 }            
-                log.debug("CONFIG FILE LOCATION: "+ lg_config_file);                
-                LexAdapter adapter = new LexAdapter();
+                log.debug("CONFIG FILE LOCATION: "+ lg_config_file); 
                 try{                    
+                    adapter = new LexAdapter(); 
                     adapter.setVocabulary(defaultVocabularyName);
+                    vocabs = adapter.getVocabularyNames();
                 }catch(Exception ex){
-                    log.error("Unable to connect to "+ defaultVocabularyName);
-                }                
-                Vector vocabs = adapter.getVocabularyNames();
+                    log.error("Unable to connect to LexBig Server - check server log for details\n"+ ex.getMessage() );
+                }                                                
                 for(int i=0; i<vocabs.size(); i++){
                     String vocabName = (String)vocabs.get(i);
                     LexAdapter lexAdapter = new LexAdapter();                    
