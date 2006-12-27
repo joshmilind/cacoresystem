@@ -14,7 +14,7 @@
       <DataSource>EVS</DataSource>
       <enableCache>true</enableCache>
       <dtsrpcServer>ncidts.nci.nih.gov</dtsrpcServer>
-      <port>6550</port>
+      <port>6560</port>
       <metaphraseServer>ncimeta-api.nci.nih.gov</metaphraseServer>
       <database>NCI</database>
       <username>Guest</username>
