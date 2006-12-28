@@ -109,9 +109,6 @@ public class TestClient {
 					Gene gene = new Gene();
 					gene.setTaxon(taxon);
 
-					Gene geneEGFR = new Gene();
-					geneEGFR.setSymbol("TP53");
-
 					List geneList = new ArrayList();
 					geneList.add(gene);
 
