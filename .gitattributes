@@ -837,6 +837,7 @@ lib/lucene-snowball-9-26-06-nightly.jar -text
 models/caCORE3-0-EVS.eap -text
 models/caCORE3-1-EVS.eap -text
 models/caCORE3-2-EVS.eap -text
+models/caCORE3-2.EAP -text
 models/caCORE3-2.eap -text
 models/caCORE3-2.xmi -text svneol=unset#application/octet-stream
 models/xmi/caCORE3-2.xmi -text
