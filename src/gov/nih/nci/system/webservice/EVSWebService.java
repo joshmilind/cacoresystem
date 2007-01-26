@@ -507,7 +507,7 @@ public class EVSWebService {
         }
         else{
             String className = conceptList.get(0).getClass().getName();
-            Field[] fields = conceptList.get(0).getClass().getDeclaredFields();
+            Field[] fields = conceptList.get(0).getClass().getFields();
             Field field = null;
             String fieldType = null;
             for(int f=0; f<fields.length; f++){
@@ -1122,7 +1122,7 @@ public class EVSWebService {
                 String matchName = null;
                 try{
                     if(criteria.getClass().getName().equals(resultList.get(0).getClass().getName())){
-                        matchField = criteria.getClass().getDeclaredField(fieldName);
+                        matchField = criteria.getClass().getField(fieldName);
                         matchField.setAccessible(true);
                         if(matchField.get(criteria) != null){
                             matchName = ((String)matchField.get(criteria)).toLowerCase();
