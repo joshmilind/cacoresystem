@@ -101,8 +101,8 @@ public class WSTransformer {
                 }
                 Class newObjClass = Class.forName(newObjectName); 
                 newObject= newObjClass.newInstance();               
-                newObject = buildCriteria(obj, newObject);              
-            
+                newObject = buildCriteria(obj, newObject);                
+                
         }catch (Exception e) {
             log.error("WS Error"+ e.getMessage());              
             throw new Exception (e.getMessage());
@@ -114,18 +114,19 @@ public class WSTransformer {
       private Object buildCriteria(Object criteria, Object newObject){          
             try{
                 
-                Field[] fields = criteria.getClass().getDeclaredFields();
-                Field[] newFields = newObject.getClass().getDeclaredFields();
+               
+                Field[] fields = criteria.getClass().getFields();
+                Field[] newFields = newObject.getClass().getFields();
                 
                 for(int i=0; i<fields.length; i++){
                     fields[i].setAccessible(true);
                     Field field = fields[i];
                     String fieldName = field.getName();
-                    String fieldType = field.getType().getName();
-                    
+                    String fieldType = field.getType().getName();                    
                     if(fieldName.equalsIgnoreCase("serialVersionUID")){
                         continue;
                     }
+                    
                     if(field.get(criteria)!=null){
                         Object value = field.get(criteria);
                         Field newField = findFieldByName(newFields, fieldName);                 
