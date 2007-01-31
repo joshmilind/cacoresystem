@@ -287,7 +287,21 @@ public class EVSWebService {
                 criteria = concept.getRoleCollection().get(0);
             }
             if(concept.getVocabulary()!=null){
-                criteria = concept.getVocabulary();
+                vocabulary = concept.getVocabulary();
+                if(vocabulary.getName()!= null && vocabulary.getName().length()>0){
+                    defaultVocabulary = vocabulary.getName();
+                    if(vocabulary.getSecurityToken() != null){
+                        securityToken = vocabulary.getSecurityToken();
+                    }
+                }
+                if(vocabulary.getSiloCollection().size()>0){
+                    Silo silo = (Silo)vocabulary.getSiloCollection().get(0);
+                    if(silo.getName()!=null){
+                        siloName = silo.getName();
+                        matchOption = 3;
+                        matchType = siloName;
+                    }
+                }
             }
             if(concept.getAssociationCollection().size() >0){
 				criteria = concept.getAssociationCollection().get(0);
@@ -310,7 +324,6 @@ public class EVSWebService {
                 }
             }
         }
-
         if(conceptCode == null){
             if(criteria.getClass().getName().endsWith("Role")){
                 Role role = (Role) criteria;
