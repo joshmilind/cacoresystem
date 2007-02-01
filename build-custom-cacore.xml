@@ -33,6 +33,12 @@
 				<include name="${fixed_evs_model_filename}" />
 			</fileset>
 		</copy>
+		
+		<copy todir="models" overwrite="no" failonerror="false">
+			<fileset dir="${dir.custom}/models">
+				<include name="caCORE*" />
+			</fileset>
+		</copy>
 		<copy todir="${dir.conf.webservice}" overwrite="yes" failonerror="false">
 			<fileset dir="${dir.custom.wsdd}">
 				<include name="${file.server.config.wsdd}" />
@@ -353,12 +359,14 @@
 			description="Creates a distribution of the caCORE API">
 			<SDKecho message="Creating caCORE distribution package"/>
 			<delete file="${dir.output.project.package}/${project_name}_SOURCE.zip" quiet="true"/>
+			
 			<zip destfile="${dir.output.project.package}/${project_name}_SOURCE.zip">
 				<zipfileset dir="${basedir}" prefix="cacore">
 					<include name="conf/**/*"/>
 					<include name="lib/**/*"/>
-					<include name="models/**/*"/>
+					<include name="models/**/caC*"/>
 					<include name="src/**/*"/>
+					<include name="${dir.output.project}/src/**/domain/**"/>
 					<include name="*.xml"/>
 					<include name="*.properties"/>
 					<include name="*.txt"/>
