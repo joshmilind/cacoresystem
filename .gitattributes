@@ -26,6 +26,7 @@ conf/evs.properties -text
 conf/hibernate/hibernate.properties -text
 conf/orm1.cfg.xml -text
 conf/orm2.cfg.xml -text
+conf/resources/server/xml.properties -text
 conf/spring/SDKSpringBeanConfig.xml -text
 conf/svr_1/admpriv.bin -text
 conf/svr_1/admpub.bin -text
