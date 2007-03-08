@@ -20,13 +20,20 @@ import org.apache.log4j.Logger;
  * Shaziya Muhsin
  * 
  */
+/**
+ * Transforms a bean that belongs to a web service package (*.ws.*) to a non web service bean 
+ */
 public class WSTransformer {
     private static Logger log = Logger.getLogger(WSTransformer.class);  
     private Properties beanProperties = new Properties();    
     private boolean processOntology = true;
     private boolean implFlag;
     private boolean wsPackage = true;
-    
+    /**
+     * Constructor that instantiates an instance of a WSTransformer
+     * @param beanFileName specifies the properties file name
+     * @throws Exception
+     */
     public WSTransformer(String beanFileName) throws Exception{       
         try{
             if(beanFileName == null){
@@ -39,13 +46,20 @@ public class WSTransformer {
         }
         
     }
-    
+    /**
+     * Specify if this is a caBIO Ontology
+     * @param ontology Set true for a caBIO ontology type
+     */
     public void setProcessOntology (boolean ontology){
         processOntology = ontology;
     }
     
    
-    
+    /**
+     * Loads the properties file
+     * @param beanFileName
+     * @throws Exception
+     */
     private  void loadClassNames(String beanFileName) throws Exception{       
         List fileList = new ArrayList();
         if(beanFileName != null){
@@ -77,18 +91,23 @@ public class WSTransformer {
         }
     }
     
-    //====================
     
-//  ===========================================================================
+    
+/**
+ * Returns the processOntology value
+ * @return
+ */
     public boolean getProcessOntology(){
         return processOntology;
     }
-    //===========================================================================
-    
-
+ /**
+  * Generates a Search criteria object
+  * @param obj
+  * @return
+  * @throws Exception
+  */
     
       public Object buildSearchCriteria(Object obj) throws Exception{
-        
           Class objKlass;
           Object newObject;
           try {
@@ -106,97 +125,81 @@ public class WSTransformer {
         }catch (Exception e) {
             log.error("WS Error"+ e.getMessage());              
             throw new Exception (e.getMessage());
-        }
+        }        
         return newObject;
     }
       
-      //==========================================================================
+ 
+      /**
+       * Generates a search criteria object for a given web service criteria
+       * @param criteria
+       * @param newObject
+       * @return
+       */
       private Object buildCriteria(Object criteria, Object newObject){          
             try{
                 
+               List fields = getAllFields(criteria.getClass());
                
-                Field[] fields = criteria.getClass().getFields();
-                Field[] newFields = newObject.getClass().getFields();
-                
-                for(int i=0; i<fields.length; i++){
-                    fields[i].setAccessible(true);
-                    Field field = fields[i];
+                for(int i=0; i<fields.size(); i++){         
+                    Field field = (Field)fields.get(i);
+                    field.setAccessible(true);
                     String fieldName = field.getName();
                     String fieldType = field.getType().getName();                    
                     if(fieldName.equalsIgnoreCase("serialVersionUID")){
-                        continue;
-                    }
+                        continue;                    
+                        }
                     
                     if(field.get(criteria)!=null){
                         Object value = field.get(criteria);
-                        Field newField = findFieldByName(newFields, fieldName);                 
-                        newField.setAccessible(true);
-                        if(fieldName.endsWith("Collection")){
-                            if(((Collection)value).size()>0){                               
-                                String bean = fieldName.substring(0,fieldName.indexOf("Collection"));
-                                bean = bean.substring(0,1).toUpperCase() + bean.substring(1);
-                                String beanClassName =  getClassName(bean); 
-                              if(beanClassName == null){
-                                  beanClassName = getOntologyClassName(bean);
-                              }
-                             
-                                if(beanClassName != null){
-                                    Object assoObject = Class.forName(beanClassName).newInstance();                                 
-                                    List newList = new ArrayList();
-                                    Set setList = new HashSet();                        
-                                    Vector vector = new Vector();
-                                
-                                    for(Iterator it = ((Collection)value).iterator(); it.hasNext();){
-                                        assoObject = buildCriteria(it.next(),assoObject);
-                                        if(assoObject != null){
-                                            if(fieldType.endsWith("Collection")){
-                                                newList.add(assoObject);
-                                            }
-                                            else if(fieldType.endsWith("Vector")){
-                                                vector.add(assoObject);
-                                            }
-                                            else if(fieldType.endsWith("Set")){
-                                                setList.add(assoObject);
-                                            }                                               
-                                        }                           
-                                    }                                   
-                                    if(newList.size()>0){                                       
-                                        newField.set(newObject, newList);
+                        Field newField = getFieldByName(fieldName, newObject.getClass());
+                        if(fieldType.endsWith("Collection")|| fieldType.endsWith("Vector")|| fieldType.endsWith("Set")|| fieldType.endsWith("ArrayList")){
+                            if(((Collection)value).size()<1){
+                                continue;
+                            }
+                            List newList = new ArrayList();
+                            Set setList = new HashSet();                        
+                            Vector vector = new Vector();
+                            for(Iterator it = ((Collection)value).iterator(); it.hasNext();){
+                                Object element = it.next();
+                                if(element != null){
+                                    Object newValue = null;
+                                    if(element.getClass().getName().indexOf("domain.ws.")>0){
+                                        newValue = buildSearchCriteria(element);                                       
+                                    }else{
+                                        newValue = element;
                                     }
-                                    else if(setList.size()>0){                                      
-                                        newField.set(newObject, setList);
-                                    }
-                                    else if(vector.size()>0){                                       
-                                        newField.set(newObject, vector);
+                                    if(newValue != null){
+                                        if(fieldType.endsWith("Collection")){
+                                            newList.add(newValue);
+                                        }
+                                        else if(fieldType.endsWith("Vector")){
+                                            vector.add(newValue);
+                                        }
+                                        else if(fieldType.endsWith("Set")){
+                                            setList.add(newValue);
+                                        }     
                                     }
                                 }
-                            }                       
-                        } 
-                        else if(fieldType.startsWith("java") || field.getType().isPrimitive()){                 
+                            }                            
+                            if(newList.size()>0){
+                                newField.set(newObject,newList);
+                            }else if(setList.size()>0){
+                                newField.set(newObject, setList);
+                            }else if(vector.size()>0){
+                                newField.set(newObject,vector);
+                            }
+                        }else if(fieldType.indexOf(".domain.ws.")>0){
+                            Object newValue = buildSearchCriteria(value);                            
+                            if(newValue != null){                                
+                                newField.set(newObject,newValue);
+                            }                            
+                        }else if(fieldType.startsWith("java") || field.getType().isPrimitive()){                            
                             if(value != null){
                                 newField.set(newObject, value);
                             }
-                        }
-                        else{
-                            String bean = fieldType.substring(fieldType.lastIndexOf(Constant.DOT)+1);                        
-                            String beanClass = getClassName(bean);  
-                          
-                            if(beanClass != null){                          
-                                Object assoObject = Class.forName(newField.getType().getName()).newInstance();                          
-                                if(value != null){                              
-                                    assoObject = buildCriteria(value, assoObject);                              
-                                    try{
-                                        if(assoObject != null){                                     
-                                            newField.set(newObject, assoObject);                                        
-                                        }                                   
-                                    }
-                                    catch(Exception ex){                                    
-                                        log.error("Exception: ", ex);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                        }                        
+                      }
                 }
             }
             catch(Exception ex){
@@ -207,7 +210,9 @@ public class WSTransformer {
 
       
       //==========================================================================
-      
+      /**
+       * Returns a fully qualified class name for a given string
+       */
       private String getClassName(String className){
           boolean found = false;
           String cName = null;
@@ -232,7 +237,12 @@ public class WSTransformer {
             }
             return cName;
         }
-      //==========================================================================
+      /**
+       * Returns a field by name
+       * @param fields
+       * @param fieldName
+       * @return
+       */
       private Field findFieldByName(Field[] fields, String fieldName){          
             Field field = null;
             for(int i=0; i<fields.length; i++){             
@@ -244,7 +254,13 @@ public class WSTransformer {
             }
             return field;
         }
-      //==========================================================================
+      
+      /**
+       * Generates web service results
+       * @param results
+       * @return
+       * @throws Exception
+       */
       public List generateWSResults(List results) throws Exception{     
           
           List alteredResults = new ArrayList();
@@ -286,7 +302,15 @@ public class WSTransformer {
          
           return alteredResults;
       }
-      //==========================================================================
+      
+      /**
+       * Generates web service results
+       * @param result
+       * @param newResult
+       * @param resultClass
+       * @param newResultClass
+       * @throws Exception
+       */
       private void generateWSResults(Object result, Object newResult, Class resultClass, Class newResultClass) throws Exception{
           
           try{
@@ -334,7 +358,12 @@ public class WSTransformer {
           }
       }
      
-      //  ==========================================================================
+      /**
+       * Returns the search class name
+       * @param targetClassName
+       * @return
+       * @throws Exception
+       */
       
       public String getSearchClassName(String targetClassName)throws Exception{          
           String searchClassName = "";
@@ -381,7 +410,12 @@ public class WSTransformer {
           return searchClassName;
       }
     
-      //  ==========================================================================
+      /**
+       * Generates a search criteria
+       * @param criteria
+       * @return
+       * @throws Exception
+       */
       public Object getSearchCriteria(Object criteria)throws Exception{
           Object searchCriteria = null;
           try{
@@ -396,7 +430,11 @@ public class WSTransformer {
           }
          return searchCriteria; 
       }
-      //==========================================================================
+     /**
+      * Returns the Ontology class name
+      * @param beanName
+      * @return
+      */
     private String getOntologyClassName(String beanName){
         String ontologyBeanName = null;
         String ontologyClassName = null;
@@ -415,7 +453,40 @@ public class WSTransformer {
         
         return ontologyClassName;
     } 
-      //==========================================================================
 
+/**
+ * Returns all the fields
+ * @param criteriaClass
+ * @return
+ */
+    private List getAllFields(Class criteriaClass){
+        List fieldList = new ArrayList();
+        for(Class c = criteriaClass; !c.getName().equals("java.lang.Object") && c != null; c = c.getSuperclass()){
+            Field[] fs = c.getDeclaredFields();
+            for(int i=0; i<fs.length; i++){                
+                fieldList.add(fs[i]);                
+            }
+        }
+        return fieldList;
+        
+    }
    
+  
+    /**
+     * Returns a field by name
+     */
+    private Field getFieldByName(String fieldName, Class newClass){
+        Field field = null;
+        List fieldList = getAllFields(newClass);
+        for(int i=0; i<fieldList.size(); i++){
+            Field f = (Field)fieldList.get(i);
+            f.setAccessible(true);
+            if(f.getName().equals(fieldName)){
+                field = f;
+                break;
+            }
+        }
+        return field;
+    }
+
 }
