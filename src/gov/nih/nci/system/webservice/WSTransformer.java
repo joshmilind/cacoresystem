@@ -236,7 +236,7 @@ public class WSTransformer {
                 }
             }
             return cName;
-        }
+           }
 
       /**
        * Generates web service results
@@ -294,32 +294,37 @@ public class WSTransformer {
                             continue;
                         }                      
                       if(!isAssociation(resultClass, field)){                         
-                          if(isCollectionType(field)){                              
-                              Collection list = new ArrayList();
-                              Set setList = new HashSet();
-                              Vector vList = new Vector();
-                              for(Iterator it = ((Collection)field.get(result)).iterator(); it.hasNext();){
-                                  Object value = it.next();                                  
-                                  if(value != null){
-                                      if(getClassName(value.getClass().getName())== null){
-                                          if(field.getType().getName().endsWith("Set")){
-                                              setList.add(value);
-                                          }else if(field.getType().getName().endsWith("Collection")){
-                                              list.add(value);
-                                          }if(field.getType().getName().endsWith("Vector")){
-                                              vList.add(value);
-                                          }                                          
-                                      }
-                                       
-                                     }                  
-                                   }
-                              if(field.getType().getName().endsWith("Set")){
-                                  newField.set(newResult,setList);
-                              }else if(field.getType().getName().endsWith("Collection")){
-                                  newField.set(newResult,list);
-                              }if(field.getType().getName().endsWith("Vector")){
-                                  newField.set(newResult,vList);
-                              }                              
+                          if(isCollectionType(field)){
+                              try{
+                                  Collection list = new ArrayList();
+                                  Set setList = new HashSet();
+                                  Vector vList = new Vector();
+                                  for(Iterator it = ((Collection)field.get(result)).iterator(); it.hasNext();){
+                                      Object value = it.next();                                  
+                                      if(value != null){
+                                          if(getClassName(value.getClass().getName())== null){
+                                              if(field.getType().getName().endsWith("Set")){
+                                                  setList.add(value);
+                                              }else if(field.getType().getName().endsWith("Collection")){
+                                                  list.add(value);
+                                              }if(field.getType().getName().endsWith("Vector")){
+                                                  vList.add(value);
+                                              }                                          
+                                          }
+                                           
+                                         }                  
+                                       }
+                                  if(field.getType().getName().endsWith("Set")){
+                                      newField.set(newResult,setList);
+                                  }else if(field.getType().getName().endsWith("Collection")){
+                                      newField.set(newResult,list);
+                                  }if(field.getType().getName().endsWith("Vector")){
+                                      newField.set(newResult,vList);
+                                  }  
+                              }catch(Exception exce){
+                                  log.error("Error in Field: "+ field.getName()+"\n"+exce.getMessage());
+                                  continue;
+                              }                                                          
                           }else{
                               if(field.get(result)!=null && newField != null){                                  
                                   Object value = field.get(result);
@@ -412,30 +417,7 @@ public class WSTransformer {
           }
          return searchCriteria;
       }
-     /**
-      * Returns the Ontology class name
-      * @param beanName
-      * @return
-      */
-    private String getOntologyClassName(String beanName){
-        String ontologyBeanName = null;
-        String ontologyClassName = null;
-        if(beanName.indexOf("Ontology")>0 && processOntology){
-            if(beanName.startsWith("Child") && beanName.length()>5){
-                ontologyBeanName = beanName.substring(5);
-            }
-            else if(beanName.startsWith("Parent")){
-                ontologyBeanName = beanName.substring(6);
-            }
-
-            if(ontologyBeanName != null){
-                ontologyClassName = getClassName(ontologyBeanName);
-            }
-        }
-
-        return ontologyClassName;
-    }
-
+   
 /**
  * Returns all the fields
  * @param criteriaClass
@@ -477,19 +459,37 @@ public class WSTransformer {
      * @param field
      * @return
      */
-    private boolean isAssociation(Class resultClass, Field field){
+    private boolean isAssociation(Class resultClass, Field field){        
         boolean isAssociation = false;
         String type = field.getType().getName();
         String name = field.getName();        
         if(getClassName(type)!= null){
             isAssociation = true;
         }else if(name.endsWith("Collection")){
-            String bean = name.substring(0, name.lastIndexOf("Collection"));
+            String bean = name.substring(0, name.lastIndexOf("Collection"));            
             if(getClassName(bean.substring(0,1).toUpperCase() + bean.substring(1))!= null){
                 isAssociation = true;
             }
-        }        
+            //Quick fix for parent,child, source and target type of associations
+            if(!isAssociation && locateBean(resultClass, name)){
+                isAssociation = true;
+            }  
+        }       
         return isAssociation;
+    }
+    
+    private boolean locateBean(Class resultClass, String name){        
+        boolean found = false;
+        for(Class c = resultClass; !c.getName().equals("java.lang.Object") && c != null; c = c.getSuperclass()){
+            if(c.getName().lastIndexOf(".")>0){
+               String bean = c.getName().substring(c.getName().lastIndexOf(".")+1);               
+                if(name.indexOf(bean)>0){                    
+                    found = true;
+                    break;
+                }
+            }
+        }
+        return found;
     }
 
     /**
