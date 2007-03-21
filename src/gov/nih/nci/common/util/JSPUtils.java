@@ -235,8 +235,7 @@ public class JSPUtils
                 try
                 {
                     fileName = (String)fileList.get(i);
-                    properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));
-                    //System.out.println("reading properties ...  " + fileName);
+                    properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));                    
                 }catch(Exception ex)
                 {
                     log.warn("Cannot locate the file: " + fileName);
@@ -360,11 +359,11 @@ public ArrayList getAssociations(String className) throws Exception{
        for(Iterator i = roleNames.iterator(); i.hasNext();){
            roles.add((String)i.next());
        } 
+       Collections.sort(roles);
        return roles;
    }
 private String locateClass(String className){
-    String qualifiedClassName = null;       
-    System.out.println("ClassName: "+ className);        
+    String qualifiedClassName = null;   
     for(Iterator i = properties.keySet().iterator(); i.hasNext();){
         String key = (String)i.next();
         if(key.toLowerCase().equals(className.toLowerCase())){
