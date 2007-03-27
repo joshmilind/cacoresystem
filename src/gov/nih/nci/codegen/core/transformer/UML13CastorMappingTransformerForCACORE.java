@@ -13,18 +13,19 @@ import gov.nih.nci.codegen.framework.Transformer;
 import gov.nih.nci.common.exception.XMLUtilityException;
 import gov.nih.nci.common.util.Constant;
 import gov.nih.nci.common.util.caCOREMarshaller;
+
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator; 
-
-import java.util.Properties;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.Properties;
+import java.lang.reflect.*;
+
 import javax.jmi.reflect.RefObject;
+
 import org.apache.log4j.Logger;
 import org.jdom.DocType;
 import org.jdom.Document;
@@ -34,11 +35,11 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.omg.uml.foundation.core.AssociationEnd;
 import org.omg.uml.foundation.core.Classifier;
-import org.omg.uml.foundation.core.UmlClass;
 import org.omg.uml.foundation.core.ModelElement;
+import org.omg.uml.foundation.core.UmlClass;
 import org.omg.uml.modelmanagement.Model;
 import org.omg.uml.modelmanagement.UmlPackage;
-import java.io.*;
+
 /**
  * <!-- LICENSE_TEXT_START -->
 * Copyright 2001-2004 SAIC. Copyright 2001-2003 SAIC. This software was developed in conjunction with the National Cancer Institute,
@@ -109,7 +110,7 @@ import java.io.*;
  */
 public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLConfigurable {
 
-    private static Logger log = Logger.getLogger(UML13CastorMappingTransformerForCACORE.class);
+    private static Logger log = Logger.getLogger(UML13CastorMappingTransformer.class);
     public static final String PROPERTIES_FILENAME = "xml.properties";
     public static final String PROPERTIES_CONTEXT_KEY = "context";
     public static final String PROPERTIES_CLASSIFICATION_KEY = "classification";
@@ -117,6 +118,8 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
     public static final String PROPERTIES_NS_PREFIX_KEY = "ns_prefix";
     private UML13ClassifierFilter _classifierFilt;
     private String _pkgName;
+    private boolean _includeAssociations = false;    
+    private boolean _includeFieldHandler = false;    
     private Properties _properties;
     private String context;
     private String classification;
@@ -125,7 +128,7 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
     private String outputDir , evsFileName;
     private Properties evsProperties = new Properties();
     private boolean createEVS = false;
-
+    
     /**
      *
      */
@@ -142,25 +145,6 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
             }
         }
          return _properties.getProperty(key);
-    }
-    private String getClassName(String name){
-    	String className = null;
-    	 if(evsProperties != null){
-             Set keys = evsProperties.keySet();
-             Iterator i=keys.iterator();
-             for(;i.hasNext();){
-                 String key = (String)i.next();
-                 String beanName = key;
-                 if(!(name.indexOf(".")>0)){
-                	 beanName = key.substring(key.lastIndexOf(".")+1);
-                 }
-                 if(beanName.equals(name)){
-                	 className = key;
-                	 break;
-                 }
-             }
-         }
-    	return className;
     }
     /**
      * @see gov.nih.nci.codegen.framework.Transformer#execute(javax.jmi.reflect.RefObject,
@@ -198,51 +182,65 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
     }
 
     private Document generateRepository(Collection classifiers) {
-        Element mappingEl = new Element("mapping");
-        //DocType docType = new DocType("mapping","SYSTEM","mapping.dtd");
-        DocType docType = new DocType("mapping","-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN","http://www.castor.org/mapping.dtd");
 
-        Document doc = new Document();
-		doc.setDocType(docType);
-		ArrayList list = new ArrayList();
-		for (Iterator i = classifiers.iterator(); i.hasNext();) {
-	            list.add(i.next());
-		}
+
+            Element mappingEl = new Element("mapping");
+            //DocType docType = new DocType("mapping","SYSTEM","mapping.dtd");
+            DocType docType = new DocType("mapping","-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN","http://www.castor.org/mapping.dtd");
+
+            Document doc = new Document();
+			doc.setDocType(docType);
+			Collection sortedClassifier = sortClassifiers(classifiers);
+	        for (Iterator i = sortedClassifier.iterator(); i.hasNext();) {
+	            UmlClass klass = (UmlClass) i.next();
+	            try {
+	            	doMapping(klass, mappingEl);
+	            } catch (XMLUtilityException ex) {
+	            	log.error("XMLUtilityException: ", ex);
+	            }
+	        }
+	        try {
+	        System.out.println("Create EVS Value: "+ createEVS);
+        		if(createEVS){
+        			doMappingForEVS(mappingEl);
+        		}
+	        } catch (XMLUtilityException ex) {
+    	    	ex.printStackTrace();
+        	}
+	        
+            doc.setRootElement(mappingEl);
+            return doc;
+	    }
+
+    private Collection sortClassifiers(Collection classifiers)
+	{
 	    // The caCOREMarsheller has problem with forward references.   Sorting
 		// the class with the list generalizations to the top.
 		class caCOREComparer implements Comparator {
             public int compare(Object obj1, Object obj2)
             {
-                    int i1 = ((UmlClass)obj1).getGeneralization().size();
-                    int i2 = ((UmlClass)obj2).getGeneralization().size();
-    
-                    return Math.abs(i1) - Math.abs(i2);
+            	return determineWeight((UmlClass)obj1) - determineWeight((UmlClass)obj2);
             }
-		}
+            
+            private int determineWeight(UmlClass obj)
+            {
+            	int count = -1;
+            	UmlClass superClass = obj;
+            	do 
+            	{
+            		superClass = UML13Utils.getSuperClass(superClass);
+            		count++;
+            	}while (superClass!=null);
+            	return count;
+            }
+		};
 
+ 		ArrayList list = new ArrayList(classifiers);
 		Collections.sort(list, new caCOREComparer());
-        for (Iterator i = list.iterator(); i.hasNext();) {
-            UmlClass klass = (UmlClass) i.next();
-            try {
-            	doMapping(klass, mappingEl);
-            } catch (XMLUtilityException ex) {
-            	ex.printStackTrace();
-            }
-        }
-
-        try {
-        	if(createEVS){
-        		doMappingForEVS(mappingEl);
-        	}
-        } catch (XMLUtilityException ex) {
-        	ex.printStackTrace();
-        }
-
-        doc.setRootElement(mappingEl);
-        return doc;
-    }
-
-     private String getNamespaceURI(UmlClass klass) throws XMLUtilityException{
+		return list;
+	}
+     
+	private String getNamespaceURI(UmlClass klass) throws XMLUtilityException{
     	 StringBuffer nsURI = new StringBuffer();
     	 try {
     	 context = loadProperty(this.PROPERTIES_CONTEXT_KEY);
@@ -256,32 +254,11 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
     	 String packageName = getPackage(klass);
     	 nsURI.append(nsprefix);
     	 nsURI.append(classification);
-    	 nsURI.append(".");
+    	 nsURI.append(Constant.DOT);
     	 nsURI.append(context);
-    	 nsURI.append("/");
+    	 nsURI.append(Constant.FORWARD_SLASH);
     	 nsURI.append(version);
-    	 nsURI.append("/");
-    	 nsURI.append(packageName);
-    	 return nsURI.toString();
-     }
-     private String getNamespaceURI(String packageName) throws XMLUtilityException{
-    	 StringBuffer nsURI = new StringBuffer();
-    	 try {
-    	 context = loadProperty(this.PROPERTIES_CONTEXT_KEY);
-    	 classification = loadProperty(this.PROPERTIES_CLASSIFICATION_KEY);
-    	 version = loadProperty(this.PROPERTIES_VERSION_KEY);
-    	 nsprefix= loadProperty(this.PROPERTIES_NS_PREFIX_KEY);
-     } catch (IOException e) {
-         log.error("Error reading default xml mapping file " + e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
-         throw new XMLUtilityException("Error reading default xml mapping file " + e.getMessage(), e);
-     }
-    	 nsURI.append(nsprefix);
-    	 nsURI.append(classification);
-    	 nsURI.append(".");
-    	 nsURI.append(context);
-    	 nsURI.append("/");
-    	 nsURI.append(version);
-    	 nsURI.append("/");
+    	 nsURI.append(Constant.FORWARD_SLASH);
     	 nsURI.append(packageName);
     	 return nsURI.toString();
      }
@@ -290,229 +267,133 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
     	 String superClassName =null;
     	 UmlClass superClass = UML13Utils.getSuperClass(klass);
          if (superClass != null) {
- 		   superClassName = getPackage(superClass)+ "."+superClass.getName();
-         }
+ 		   superClassName = getPackage(superClass)+ Constant.DOT+superClass.getName();
+         } 	    
          String classElName = "class";
          Element classEl = new Element(classElName);
          mappingEl.addContent(classEl);
-         classEl.setAttribute("name", getPackage(klass)+"."+klass.getName());
+         classEl.setAttribute("name", getPackage(klass)+Constant.DOT+klass.getName());
+         classEl.setAttribute("identity", "id");
          if (superClassName!=null){
         	 classEl.setAttribute("extends", superClassName);
-         }
-         String qName = null;
-         String packageName = getPackage(klass);
-         if(packageName.indexOf("gov.nih.nci.")>-1){
-        	 qName = packageName.substring(12);
-        	 if(qName.indexOf(".")>0){
-        		 qName = qName.substring(0,qName.indexOf("."));
-        	 }
-         }
-         else{
-        	 qName = packageName;
          }
          Element maptoelement = new Element("map-to");
          maptoelement.setAttribute("xml", klass.getName());
          String nsURI = getNamespaceURI(klass);
          maptoelement.setAttribute("ns-uri",nsURI);
-         maptoelement.setAttribute("ns-prefix",qName);
          classEl.addContent(maptoelement);
          //Do properties
          for (Iterator i = UML13Utils.getAttributes(klass).iterator(); i.hasNext();) {
              org.omg.uml.foundation.core.Attribute att = (org.omg.uml.foundation.core.Attribute) i.next();
              Element field = new Element("field");
              field.setAttribute("name", att.getName());
-             Element bind = new Element("bind-xml");
-
-             if (getQualifiedName(att.getType()).equals("collection")) {
+             log.debug("Field name: " + att.getName());
+             
+             String qName = getQualifiedName(att.getType());
+             if (qName.equalsIgnoreCase("collection")) {
+            	 log.debug("Handling type 'collection' - qName: " + qName);            	 
             	 field.setAttribute("type", "string");
-            	 field.setAttribute("collection", "collection");
-            	 bind.setAttribute("name", qName +":"+ att.getName());
-            	 Namespace namespace = Namespace.getNamespace(qName, nsURI);
-             	 bind.setAttribute("QName-prefix",qName,namespace);
-             } else {
-            	 field.setAttribute("type", getQualifiedName(att.getType()));
-            	 bind.setAttribute("name", att.getName());
-             }
-             bind.setAttribute("node", "attribute");
-             field.addContent(bind);
-             classEl.addContent(field);
-	      }
-         /*
-         for (Iterator i = UML13Utils.getAssociationEnds(klass).iterator(); i.hasNext();) {
-             AssociationEnd thisEnd = (AssociationEnd) i.next();
-             AssociationEnd otherEnd = UML13Utils.getOtherAssociationEnd(thisEnd);
-             addSequenceAssociationElement(classEl, klass,thisEnd, otherEnd);
-         }
-         */
-     }
-
-     public void loadEVSProperties() throws Exception{         
-         evsProperties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(evsFileName));
-     }
-
-     private void doMappingForEVS(Element mappingEl) throws XMLUtilityException {
-    	 try{
-    		 loadEVSProperties();
-    	 }catch(Exception ex){
-    		 ex.printStackTrace();
-    	 }
-    	 String className = null;
-    	 String packageName = null;
-         if(evsProperties != null){
-             Set keys = evsProperties.keySet();
-             Iterator i=keys.iterator();
-             for(;i.hasNext();){
-                 className = (String)i.next();
-                 packageName = (String)evsProperties.get(className);
-                 doMappingForEVS(mappingEl , className, packageName);
-             }
-         }
-     }
-     private void doMappingForEVS(Element mappingEl, String className, String packageName) throws XMLUtilityException {
-    	 String superClassName =null;
-         String classElName = "class";
-         Element classEl = new Element(classElName);
-         mappingEl.addContent(classEl);
-         classEl.setAttribute("name", className);
-         Element maptoelement = new Element("map-to");
-         String qName = null;
-
-         if(packageName.indexOf("gov.nih.nci.")>-1){
-        	 qName = packageName.substring(12);
-        	 if(qName.indexOf(".")>0){
-        		 qName = qName.substring(0,qName.indexOf("."));
-        	 }
-         }
-         else{
-        	 qName = packageName;
-         }
-         maptoelement.setAttribute("ns-prefix",qName);
-         if(className.indexOf(".")>0){
-        	 maptoelement.setAttribute("xml", className.substring(className.lastIndexOf(".")+1));
-         }
-         else{
-        	 maptoelement.setAttribute("xml", className);
-         }
-         String nsURI = getNamespaceURI(packageName);
-         maptoelement.setAttribute("ns-uri",nsURI);
-         classEl.addContent(maptoelement);
-         Field[] fields = null;
-         try{
-        	 fields = Class.forName(className).getDeclaredFields();
-         }catch(Exception ex){}
-         //Do properties
-         for (int i=0; i< fields.length; i++) {
-        	 fields[i].setAccessible(true);
-        	 String fieldType = fields[i].getType().getName();
-        	 String type = "string";
-        	 boolean collectionType = false;
-        	 if(fields[i].getName().equalsIgnoreCase("serialVersionUID")){
-        		 continue;
-        	 }
-             if(className.endsWith("AttributeSetDescriptor")){
-                 if(fields[i].getName().startsWith("WITH_")){
-                     continue;
-                 }
-             }
-        	 if(fieldType.indexOf("Collection")>0 || fieldType.endsWith("HashSet") || fieldType.endsWith("ArrayList") || fieldType.indexOf("Vector")>0){
-        		 collectionType = true;
-        	 }
-        	 if(!(fieldType.indexOf(".evs.")>0) && !collectionType){
-                 Element field = new Element("field");
-                 field.setAttribute("name", fields[i].getName());
-                 field.setAttribute("type", getQualifiedName(fieldType));
+            	 field.setAttribute("collection", qName);
+            	 Namespace namespace = Namespace.getNamespace(qName,nsURI);
+            	 
                  Element bind = new Element("bind-xml");
-                 bind.setAttribute("name", fields[i].getName());
+            	 bind.setAttribute("name", qName + ":" + att.getName());
+            	 bind.setAttribute("QName-prefix",qName,namespace);
                  bind.setAttribute("node", "attribute");
                  field.addContent(bind);
-                 classEl.addContent(field);
+             } else {
+            	 field.setAttribute("type", getQualifiedName(att.getType()));
+                 Element bind = new Element("bind-xml");
+                 bind.setAttribute("name", att.getName());
+                 bind.setAttribute("node", "attribute");
+                 field.addContent(bind);         	 
+             }
 
-        	 }else if(fieldType.indexOf(".evs.")>0 || collectionType){        		
-        			 Element field = new Element("field");
-                     field.setAttribute("name", fields[i].getName());
-                     String beanName = null;
-                     String dataType = null;
-                     if(fieldType.indexOf(".evs.")>0){
-                         beanName = fieldType.substring(fieldType.lastIndexOf(".")+1);
-                      }
-                      else{
-                          beanName = fields[i].getName();
-                      }
-                     if(collectionType) {
-                         String qFieldType = this.getQualifiedName(fieldType);
-                         if(qFieldType.equalsIgnoreCase("hashset")){
-                             qFieldType = "set";
-                         }
-                    	 if (fields[i].getName().equals("semanticTypeVector") || fields[i].getName().equals("links") ||fields[i].getName().equals("synonymCollection")) {
-                        	 field.setAttribute("type", "string");
-                             field.setAttribute("collection", qFieldType);
-                         }else{
-
-                        	 if(beanName.endsWith("Collection")){
-                        		 if(beanName.startsWith("inverse")){
-                            		 beanName = beanName.substring(7);
-                            	 }
-                        		 beanName = beanName.substring(0, beanName.indexOf("Collection"));
-                        		 dataType = beanName.substring(0,1).toUpperCase() + beanName.substring(1);
-                        	 }
-
-                        	 if(getClassName(dataType)==null){
-                        		 log.error(dataType +" is not a valid class");
-                        	 }else{
-                        		 type = getClassName(dataType);
-                                 className = type;
-                        	 }
-                        	 field.setAttribute("type", type);
-                        	 field.setAttribute("collection", qFieldType);
-                         }
-
-                     } else {
-                    	 type = fieldType;
-                    	 field.setAttribute("type", type);
-
-                     }
-                     Namespace namespace = Namespace.getNamespace(qName, nsURI);
-                     Element bind = new Element("bind-xml");
-                     bind.setAttribute( "name",qName+":"+ fields[i].getName());
-                     bind.setAttribute("QName-prefix",qName,namespace);
-                     bind.setAttribute("node", "element");
-
-                     field.addContent(bind);
-                     classEl.addContent(field);
-        	 }
+             classEl.addContent(field);
 	      }
+         
+         if (_includeAssociations) {
+	         log.debug("*********** klass: " + klass.getName());
+	         log.debug("*********** UML13Utils.getAssociationEnds(klass).size(): " + UML13Utils.getAssociationEnds(klass).size());
+	         
+	         for (Iterator i = UML13Utils.getAssociationEnds(klass).iterator(); i.hasNext();) {
+	             AssociationEnd thisEnd = (AssociationEnd) i.next();
+	             AssociationEnd otherEnd = UML13Utils.getOtherAssociationEnd(thisEnd);
+	             addSequenceAssociationElement(classEl, klass,thisEnd, otherEnd);
+	         }
+         }
+         
      }
 
-     private void addSequenceAssociationElement(Element mappingEl, UmlClass klass, AssociationEnd thisEnd, AssociationEnd otherEnd) {
+     private void addSequenceAssociationElement(Element mappingEl, UmlClass klass, AssociationEnd thisEnd, AssociationEnd otherEnd) throws XMLUtilityException {
          if (otherEnd.isNavigable()) {
              /** If classes belong to the same package then do not qualify the association
               *
               */
+    		 log.debug("mappingEl.getName(): " + mappingEl);
+    		 log.debug("klass.getName(): " + klass.getName());
+    		 log.debug("thisEnd.getName(): " + thisEnd.getName());
+    		 log.debug("thisEnd.getType().getName(): " + thisEnd.getType().getName());    		 
+    		 log.debug("otherEnd.getName(): " + otherEnd.getName()); 
+    		 log.debug("otherEnd.getType().getName(): " + otherEnd.getType().getName());  
+  		 
         	 if (UML13Utils.isMany2One(thisEnd, otherEnd)) {
-             if (UML13Utils.getLowerBound(thisEnd, otherEnd).toString().equals("1")) {
+       		 
+            	 log.debug("UML13Utils.isMany2One(thisEnd, otherEnd): " + true);
+        		 log.debug("lowerBound: " + UML13Utils.getLowerBound(thisEnd, otherEnd));
+        		 log.debug("upperBound: " + UML13Utils.getUpperBound(thisEnd, otherEnd));
+
             	 Element field = new Element("field");
             	 field.setAttribute("name", otherEnd.getName());
             	 String associationPackage = getPackage(otherEnd.getType());
-            	 field.setAttribute("type", associationPackage+"." + otherEnd.getType().getName());
+            	 field.setAttribute("type", associationPackage + Constant.DOT + otherEnd.getType().getName());
+            	 if (_includeFieldHandler) {
+            		 field.setAttribute("handler", "gov.nih.nci.common.util.CastorDomainObjectFieldHandler" );
+            	 }
             	 Element bind = new Element("bind-xml");
-                 bind.setAttribute("name", otherEnd.getName());
+                 bind.setAttribute("name", otherEnd.getType().getName());  //otherEnd.getName()
+            	 bind.setAttribute("type", associationPackage + Constant.DOT+otherEnd.getType().getName());
+                 bind.setAttribute("location", otherEnd.getName());	                 
                  bind.setAttribute("node", "element");
                  field.addContent(bind);
+                 
                  mappingEl.addContent(field);
-             }
-        	 } else if (UML13Utils.isMany2Many(thisEnd, otherEnd) || UML13Utils.isOne2Many(thisEnd, otherEnd)){
-        		 if (UML13Utils.getLowerBound(thisEnd, otherEnd).toString().equals("1")) {
-                	 Element field = new Element("field");
-                	 field.setAttribute("name", otherEnd.getName());
-                	 field.setAttribute("type", "java.util.Collection" );
-                	 Element bind = new Element("bind-xml");
-                     bind.setAttribute("name", otherEnd.getName());
-                     bind.setAttribute("node", "element");
-                     field.addContent(bind);
-                     mappingEl.addContent(field);
-                 }
-        	 }
 
+           	 } else if (UML13Utils.isMany2Many(thisEnd, otherEnd) || UML13Utils.isOne2Many(thisEnd, otherEnd)){
+            	 log.debug("UML13Utils.isMany2Many(thisEnd, otherEnd): " + UML13Utils.isMany2Many(thisEnd, otherEnd));
+            	 log.debug("UML13Utils.isOne2Many(thisEnd, otherEnd): " + UML13Utils.isOne2Many(thisEnd, otherEnd));
+        		 log.debug("lowerBound: " + UML13Utils.getLowerBound(thisEnd, otherEnd));
+        		 log.debug("upperBound: " + UML13Utils.getUpperBound(thisEnd, otherEnd));
+            	 Element field = new Element("field");
+            	 field.setAttribute("name", otherEnd.getName());
+            	 String associationPackage = getPackage(otherEnd.getType());
+            	 field.setAttribute("type", associationPackage + Constant.DOT+otherEnd.getType().getName());
+            	 field.setAttribute("collection", "collection" );
+            	 if (_includeFieldHandler) {
+            		 field.setAttribute("handler", "gov.nih.nci.common.util.CastorCollectionFieldHandler" );
+            	 }
+            	 
+            	 //for container = false
+            	 //field.setAttribute("container", "false" );
+
+            	 Element bind = new Element("bind-xml");
+                 //bind.setAttribute("auto-naming", "deriveByClass");
+            	 
+            	 // for container = false
+            	 //bind.setAttribute("name", otherEnd.getName());
+
+            	 
+            	 // for container = true
+            	 bind.setAttribute("name", otherEnd.getType().getName());
+            	 bind.setAttribute("type", associationPackage+Constant.DOT+otherEnd.getType().getName());
+                 bind.setAttribute("location", otherEnd.getName());
+                 bind.setAttribute("node", "element");
+                 
+                 field.addContent(bind);
+                 mappingEl.addContent(field);
+        		 
+        	 }
+        	 
          }
      }
     /**
@@ -541,7 +422,7 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
     /**
      * @see gov.nih.nci.codegen.core.JDOMConfigurable#configure(org.jdom.Element)
      */
-    public void configure(org.w3c.dom.Element config)throws ConfigurationException {
+    public void configure(org.w3c.dom.Element config) throws ConfigurationException {
         org.w3c.dom.Element filterEl = XMLUtils.getChild(config, "filter");
         if (filterEl == null) {
         	log.error("no child filter element found");
@@ -555,29 +436,33 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
         }
         _pkgName = getParameter(config, "basePackage");
         outputDir = getParameter(config, "evs_outputDir");
-        evsFileName = getParameter(config, "evsFileName");        
+        evsFileName = getParameter(config, "evsFileName"); 
+        System.out.println("EVS File: "+ evsFileName);
+        System.out.println("EVS output: " + outputDir);
         log.debug("basePackage: " + _pkgName);
-        
-
-        int found = -1;
+                int found = -1;
         try{            
             found = Thread.currentThread().getContextClassLoader().getResourceAsStream(evsFileName).available();
             if(found != -1){
                 createEVS = true;
                 this.loadEVSProperties();
             }
-        }
-        catch (FileNotFoundException fnfex) {
+        }catch(Exception ex){
             createEVS = false;
-            log.error("Error: the file '" + evsFileName + "' could not be found", fnfex);
+            log.error("Error:" + evsFileName + "' - " + ex.getMessage(), ex);
         }
-        catch (IOException ioex) {
-            createEVS = false;
-            log.error("Error: could not read file '" + evsFileName + "'", ioex);
-        }
-        catch(Exception ex){
-            createEVS = false;
-            log.error("Error: an unknown error occurred while trying to find/access '" + evsFileName + "' - " + ex.getMessage(), ex);
+        
+        
+        String isIncludeAssociations = getParameter(config, "includeAssociations");
+        log.debug("includeAssociations: " + isIncludeAssociations);
+        if (isIncludeAssociations != null && isIncludeAssociations.length() > 0) {
+        	_includeAssociations = new Boolean(isIncludeAssociations).booleanValue();
+        }        
+        
+        String isIncludeFieldHandler = getParameter(config, "includeFieldHandler");
+        log.debug("includeFieldHandler: " + isIncludeFieldHandler);
+        if (isIncludeFieldHandler != null && isIncludeFieldHandler.length() > 0) {
+        	_includeFieldHandler = new Boolean(isIncludeFieldHandler).booleanValue();
         }
 
         try {
@@ -601,21 +486,24 @@ private String getQualifiedName(ModelElement me) {
         } else {
             pkg = UML13Utils.getModel(me);
         }
-        qName = UML13Utils.getNamespaceName(pkg, me) + "." + me.getName();
-        int i = qName.lastIndexOf(".");
+        qName = UML13Utils.getNamespaceName(pkg, me) + Constant.DOT + me.getName();
+        int i = qName.lastIndexOf(Constant.DOT);
         if (qName.startsWith(".") || qName.startsWith("java")) {
 			qName = qName.substring(i+1);
 		}
+        
+        if ("HashSet".equalsIgnoreCase(qName)) {
+        	return "set";
+        }
+        
+        if ("HashMap".equalsIgnoreCase(qName)){
+        	return "map";
+        }
+        
+        log.debug("*** qName: " + qName);
         return qName.toLowerCase();
     }
 
-private String getQualifiedName(String dataType) {
-        String qName = dataType;
-        if(dataType.indexOf(".")>0 && dataType.toLowerCase().startsWith("java")){
-        	qName = dataType.substring(dataType.lastIndexOf(".")+1);
-        }
-        return qName.toLowerCase();
-    }
     /**
      * @param klass
      * @return
@@ -642,7 +530,7 @@ private String getQualifiedName(String dataType) {
         return UML13Utils.getNamespaceName(pkg, klass);
 
     }
-
+    
 
     private String getParameter(org.w3c.dom.Element config, String paramName) {
         String param = null;
@@ -658,4 +546,192 @@ private String getQualifiedName(String dataType) {
 
         return param;
     }
+    private String getClassName(String name){
+    	String className = null;
+    	 if(evsProperties != null){
+             Set keys = evsProperties.keySet();
+             Iterator i=keys.iterator();
+             for(;i.hasNext();){
+                 String key = (String)i.next();
+                 String beanName = key;
+                 if(!(name.indexOf(".")>0)){
+                	 beanName = key.substring(key.lastIndexOf(".")+1);
+                 }
+                 if(beanName.equals(name)){
+                	 className = key;
+                	 break;
+                 }
+             }
+         }
+    	return className;
+    }
+         private String getNamespaceURI(String packageName) throws XMLUtilityException{
+    	 StringBuffer nsURI = new StringBuffer();
+    	 try {
+    	 context = loadProperty(this.PROPERTIES_CONTEXT_KEY);
+    	 classification = loadProperty(this.PROPERTIES_CLASSIFICATION_KEY);
+    	 version = loadProperty(this.PROPERTIES_VERSION_KEY);
+    	 nsprefix= loadProperty(this.PROPERTIES_NS_PREFIX_KEY);
+     } catch (IOException e) {
+         log.error("Error reading default xml mapping file " + e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
+         throw new XMLUtilityException("Error reading default xml mapping file " + e.getMessage(), e);
+     }
+    	 nsURI.append(nsprefix);
+    	 nsURI.append(classification);
+    	 nsURI.append(".");
+    	 nsURI.append(context);
+    	 nsURI.append("/");
+    	 nsURI.append(version);
+    	 nsURI.append("/");
+    	 nsURI.append(packageName);
+    	 return nsURI.toString();
+     }
+    private String getQualifiedName(String dataType) {
+    System.out.println("getQualifiedName: "+ dataType);
+        String qName = dataType;
+        if(dataType.indexOf(".")>0 && dataType.toLowerCase().startsWith("java")){
+        	qName = dataType.substring(dataType.lastIndexOf(".")+1);
+        }
+        return qName.toLowerCase();
+    }
+    private void doMappingForEVS(Element mappingEl) throws XMLUtilityException {
+   	 try{
+   		 loadEVSProperties();
+   	 }catch(Exception ex){
+   		 ex.printStackTrace();
+   	 }
+   	 String className = null;
+   	 String packageName = null;
+        if(evsProperties != null){
+            Set keys = evsProperties.keySet();
+            Iterator i=keys.iterator();
+            for(;i.hasNext();){
+                className = (String)i.next();
+                packageName = (String)evsProperties.get(className);
+                doMappingForEVS(mappingEl , className, packageName);
+            }
+        }
+    }
+    private void doMappingForEVS(Element mappingEl, String className, String packageName) throws XMLUtilityException {
+   	 String superClassName =null;
+        String classElName = "class";
+        Element classEl = new Element(classElName);
+        mappingEl.addContent(classEl);
+        classEl.setAttribute("name", className);
+        Element maptoelement = new Element("map-to");
+        String qName = null;
+
+        if(packageName.indexOf("gov.nih.nci.")>-1){
+       	 qName = packageName.substring(12);
+       	 if(qName.indexOf(".")>0){
+       		 qName = qName.substring(0,qName.indexOf("."));
+       	 }
+        }
+        else{
+       	 qName = packageName;
+        }
+        maptoelement.setAttribute("ns-prefix",qName);
+        if(className.indexOf(".")>0){
+       	 maptoelement.setAttribute("xml", className.substring(className.lastIndexOf(".")+1));
+        }
+        else{
+       	 maptoelement.setAttribute("xml", className);
+        }
+        String nsURI = getNamespaceURI(packageName);
+        maptoelement.setAttribute("ns-uri",nsURI);
+        classEl.addContent(maptoelement);
+        Field[] fields = null;
+        try{
+       	 fields = Class.forName(className).getDeclaredFields();
+        }catch(Exception ex){}
+        //Do properties
+        for (int i=0; i< fields.length; i++) {
+       	 fields[i].setAccessible(true);
+       	 String fieldType = fields[i].getType().getName();
+       	 String type = "string";
+       	 boolean collectionType = false;
+       	 if(fields[i].getName().equalsIgnoreCase("serialVersionUID")){
+       		 continue;
+       	 }
+            if(className.endsWith("AttributeSetDescriptor")){
+                if(fields[i].getName().startsWith("WITH_")){
+                    continue;
+                }
+            }
+       	 if(fieldType.indexOf("Collection")>0 || fieldType.endsWith("HashSet") || fieldType.endsWith("ArrayList") || fieldType.indexOf("Vector")>0){
+       		 collectionType = true;
+       	 }
+       	 if(!(fieldType.indexOf(".evs.")>0) && !collectionType){
+                Element field = new Element("field");
+                field.setAttribute("name", fields[i].getName());
+                field.setAttribute("type", getQualifiedName(fieldType));
+                Element bind = new Element("bind-xml");
+                bind.setAttribute("name", fields[i].getName());
+                bind.setAttribute("node", "attribute");
+                field.addContent(bind);
+                classEl.addContent(field);
+
+       	 }else if(fieldType.indexOf(".evs.")>0 || collectionType){        		
+       			 Element field = new Element("field");
+                    field.setAttribute("name", fields[i].getName());
+                    String beanName = null;
+                    String dataType = null;
+                    if(fieldType.indexOf(".evs.")>0){
+                        beanName = fieldType.substring(fieldType.lastIndexOf(".")+1);
+                     }
+                     else{
+                         beanName = fields[i].getName();
+                     }
+                    if(collectionType) {
+                        String qFieldType = this.getQualifiedName(fieldType);
+                        if(qFieldType.equalsIgnoreCase("hashset")){
+                            qFieldType = "set";
+                        }
+                   	 if (fields[i].getName().equals("semanticTypeVector") || fields[i].getName().equals("links") ||fields[i].getName().equals("synonymCollection")) {
+                       	 field.setAttribute("type", "string");
+                            field.setAttribute("collection", qFieldType);
+                        }else{
+
+                       	 if(beanName.endsWith("Collection")){
+                       		 if(beanName.startsWith("inverse")){
+                           		 beanName = beanName.substring(7);
+                           	 }
+                       		 beanName = beanName.substring(0, beanName.indexOf("Collection"));
+                       		 dataType = beanName.substring(0,1).toUpperCase() + beanName.substring(1);
+                       	 }
+
+                       	 if(getClassName(dataType)==null){
+                       		 log.error(dataType +" is not a valid class");
+                       	 }else{
+                       		 type = getClassName(dataType);
+                                className = type;
+                       	 }
+                       	 field.setAttribute("type", type);
+                       	 field.setAttribute("collection", qFieldType);
+                        }
+
+                    } else {
+                   	 type = fieldType;
+                   	 field.setAttribute("type", type);
+
+                    }
+                    Namespace namespace = Namespace.getNamespace(qName, nsURI);
+                    Element bind = new Element("bind-xml");
+                    bind.setAttribute( "name",qName+":"+ fields[i].getName());
+                    bind.setAttribute("QName-prefix",qName,namespace);
+                    bind.setAttribute("node", "element");
+
+                    field.addContent(bind);
+                    classEl.addContent(field);
+       	 }
+	      }
+    }
+    
+
+    public void loadEVSProperties() throws Exception{         
+        evsProperties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(evsFileName));
+    }
+
+
+
 }
