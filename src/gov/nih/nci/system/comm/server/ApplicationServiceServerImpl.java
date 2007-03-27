@@ -11,7 +11,7 @@ import gov.nih.nci.system.applicationservice.ApplicationService;
 import gov.nih.nci.system.applicationservice.AuthorizationException;
 import gov.nih.nci.system.comm.common.ApplicationServiceProxy;
 import gov.nih.nci.system.server.mgmt.SecurityEnabler;
-
+import gov.nih.nci.common.util.SecurityConfiguration;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -30,7 +30,7 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 	 */
 	public ApplicationServiceServerImpl()
 	{
-		securityEnabler = new SecurityEnabler(Constant.APPLICATION_NAME);
+		securityEnabler = new SecurityEnabler(SecurityConfiguration.getApplicationName());
 		ApplicationContext ctx = new ClassPathXmlApplicationContext(Constant.APPLICATION_SERVICE_FILE_NAME);
 		applicationService = (ApplicationService) ctx.getBean(Constant.APPLICATION_SERVICE);
 	}

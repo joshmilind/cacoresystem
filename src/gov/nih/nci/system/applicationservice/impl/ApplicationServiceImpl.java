@@ -10,7 +10,7 @@ import gov.nih.nci.system.dao.WritableDAO;
 import gov.nih.nci.evs.query.EVSQuery;
 import gov.nih.nci.system.query.cql.CQLQuery;
 import gov.nih.nci.system.server.mgmt.SecurityEnabler;
-
+import gov.nih.nci.common.util.SecurityConfiguration;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -40,7 +40,7 @@ public class ApplicationServiceImpl extends ApplicationService
 	{
 		this.applicationServiceBusinessImpl = ApplicationServiceBusinessImpl.getLocalInstance();
 		this.writableDAO = new WritableDAO();
-		this.securityEnabler = new SecurityEnabler(Constant.APPLICATION_NAME);
+		this.securityEnabler = new SecurityEnabler(SecurityConfiguration.getApplicationName());
 	}
 
 
