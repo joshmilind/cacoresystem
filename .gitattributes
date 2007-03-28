@@ -14,6 +14,7 @@ conf/codegen/control-files/daogeneration.xml -text
 conf/codegen/control-files/evsPackageUtil.xml -text
 conf/codegen/control-files/evs_schemageneration.xml -text
 conf/codegen/control-files/wsddEVSUtil.xml -text
+conf/codegen/control-files/xmlunmarshallermappinggeneration_cacore.xml -text
 conf/codegen/resources/xml.properties -text
 conf/codegen/template/BeanEVSImpl.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanEVSWS.javajet -text svneol=unset#application/octet-stream
