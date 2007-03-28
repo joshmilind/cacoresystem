@@ -199,8 +199,7 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
 	            	log.error("XMLUtilityException: ", ex);
 	            }
 	        }
-	        try {
-	        System.out.println("Create EVS Value: "+ createEVS);
+	        try {	        
         		if(createEVS){
         			doMappingForEVS(mappingEl);
         		}
@@ -437,8 +436,6 @@ public class UML13CastorMappingTransformerForCACORE implements Transformer, XMLC
         _pkgName = getParameter(config, "basePackage");
         outputDir = getParameter(config, "evs_outputDir");
         evsFileName = getParameter(config, "evsFileName"); 
-        System.out.println("EVS File: "+ evsFileName);
-        System.out.println("EVS output: " + outputDir);
         log.debug("basePackage: " + _pkgName);
                 int found = -1;
         try{            
@@ -586,8 +583,7 @@ private String getQualifiedName(ModelElement me) {
     	 nsURI.append(packageName);
     	 return nsURI.toString();
      }
-    private String getQualifiedName(String dataType) {
-    System.out.println("getQualifiedName: "+ dataType);
+    private String getQualifiedName(String dataType) {    
         String qName = dataType;
         if(dataType.indexOf(".")>0 && dataType.toLowerCase().startsWith("java")){
         	qName = dataType.substring(dataType.lastIndexOf(".")+1);
