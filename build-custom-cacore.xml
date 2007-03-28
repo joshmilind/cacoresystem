@@ -263,6 +263,9 @@
 		     on XMI, not EVS code.  The build order is wrong. -->
 		<SDKecho message="Generating caCORE XML mapping files"/>
 		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.xmlmappinggeneration_cacore}"/>
+		<SDKecho message="Generating caCORE Unmarshaller XML mapping file"/>
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.xmlunmarshallermappinggeneration_cacore}"/>
+		
 		<jar destfile="${dir.output.project.package.client}/lib/${project_name}-client.jar" update="true">
 					<fileset dir="${dir.output.project.src}">
 						<include name="xml-mapping.xml"/>
