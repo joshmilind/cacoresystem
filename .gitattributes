@@ -69,6 +69,7 @@ documents/caCORE3-2_README.txt -text
 documents/caCORE3-2_SOURCE_README.txt -text
 documents/caCORE3.0.1.1_notes.txt -text
 documents/caCORE3.0.1_notes.txt -text
+documents/caCORE_ArchitecturalReviewChecklist.doc -text
 documents/oracle-ds.xml -text
 generated/gov/nih/nci/cabio/domain/Agent.hbm.xml -text
 generated/gov/nih/nci/cabio/domain/Agent.java -text
