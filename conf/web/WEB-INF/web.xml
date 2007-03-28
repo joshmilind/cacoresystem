@@ -102,4 +102,12 @@
       	<url-pattern>/Happy</url-pattern>
     </servlet-mapping>
 
+	<!-- This forces the initialization of the hibernate sessions -->
+	<servlet>
+		<servlet-name>cacorestartup</servlet-name>
+		<servlet-class>
+			gov.nih.nci.common.util.WebStartupUtil
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 </web-app>
