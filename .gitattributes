@@ -15,11 +15,9 @@ conf/codegen/control-files/evsPackageUtil.xml -text
 conf/codegen/control-files/evs_schemageneration.xml -text
 conf/codegen/control-files/wsddEVSUtil.xml -text
 conf/codegen/control-files/xmlunmarshallermappinggeneration_cacore.xml -text
-conf/codegen/resources/xml.properties -text
 conf/codegen/template/BeanEVSImpl.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanEVSWS.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanSkel_EVS.skeleton -text svneol=unset#application/octet-stream
-conf/codegen/template/BeancaCORE.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/EVSBeanSkel.skeleton -text svneol=unset#application/octet-stream
 conf/core-deploy.properties -text
 conf/ehcache_evs.xml -text
@@ -852,10 +850,8 @@ orm/gov/nih/nci/cabio/domain/Location.hbm.xml -text
 orm/gov/nih/nci/cabio/domain/impl/LocationImpl.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/Provenance.hbm.xml -text
 orm/gov/nih/nci/common/provenance/domain/impl/ProvenanceImpl.hbm.xml -text
-src/gov/nih/nci/codegen/core/transformer/UML13CastorMappingTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13CastorMappingTransformerForCACORE.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13DAOTransformer.java -text
-src/gov/nih/nci/codegen/core/transformer/UML13SchemaTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13SchemaTransformerForEVS.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13WSDDTransformerForEVS.java -text
 src/gov/nih/nci/common/util/HTTPUtils.java -text
