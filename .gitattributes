@@ -829,6 +829,7 @@ lib/handlerservice.jar -text
 lib/lbAdmin.jar -text
 lib/lbImpl.jar -text
 lib/lbInterfaces.jar -text
+lib/lbMessage.jar -text
 lib/lbModel.jar -text
 lib/lexrpcclient.jar -text
 lib/lexrpcserver.jar -text
