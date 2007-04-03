@@ -23,6 +23,18 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.InputStreamResource;
 
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.LexBIG.Extensions.Query.*;
+import org.LexGrid.LexBIG.DataModel.Collections.*;
+import org.LexGrid.LexBIG.Extensions.Generic.*;
+import org.LexGrid.LexBIG.History.*;
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.codingSchemes.*;
+import org.LexGrid.LexBIG.DataModel.Core.*;
+import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.*;
+import org.LexGrid.LexBIG.Exceptions.*;
+import org.LexGrid.valueDomains.ValueDomain;
+
 public class ApplicationServiceClientImpl extends ApplicationService
 {
 
@@ -276,5 +288,70 @@ public class ApplicationServiceClientImpl extends ApplicationService
 		applicationServiceProxy.removeObject(getClientInfo(), object);
 	}
 	/*@WRITABLE_API_END@*/
-	
+	/*****************************/
+    
+       public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException {
+            return applicationServiceProxy.getCodingSchemeConcepts(codingScheme, versionOrTag);
+         }
+
+        public  CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException {
+            return applicationServiceProxy.getCodingSchemeConcepts(codingScheme, versionOrTag, activeOnly);
+        }
+        public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException {
+            return applicationServiceProxy.getCodingSchemeConcepts(nodeSet);
+        }
+        public Filter   getFilter(java.lang.String name) throws LBException {
+            return applicationServiceProxy.getFilter(name);
+        }
+        public  ExtensionDescriptionList    getFilterExtensions(){
+            return applicationServiceProxy.getFilterExtensions();
+            }
+        public GenericExtension   getGenericExtension(java.lang.String name)throws LBException {
+            return applicationServiceProxy.getGenericExtension(name);
+        } 
+        public ExtensionDescriptionList   getGenericExtensions(){
+            return applicationServiceProxy.getGenericExtensions();
+        }
+        public HistoryService     getHistoryService(java.lang.String codingScheme)throws LBException {
+            return applicationServiceProxy.getHistoryService(codingScheme);
+        } 
+        public java.util.Date     getLastUpdateTime() throws LBInvocationException {
+            return applicationServiceProxy.getLastUpdateTime();
+        }
+        public ModuleDescriptionList  getMatchAlgorithms(){
+            return applicationServiceProxy.getMatchAlgorithms();
+        }
+        public CodedNodeGraph     getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws LBException {
+            return applicationServiceProxy.getNodeGraph(codingScheme,versionOrTag,relationsName);
+        } 
+        public LexBIGServiceManager   getServiceManager(java.lang.Object credentials)throws LBException {
+            return applicationServiceProxy.getServiceManager(credentials);
+        } 
+        public LexBIGServiceMetadata  getServiceMetadata() throws LBException {
+            return applicationServiceProxy.getServiceMetadata();
+        }
+        public Sort   getSortAlgorithm(java.lang.String name) throws LBException {
+            return applicationServiceProxy.getSortAlgorithm(name);
+        }
+        public SortDescriptionList    getSortAlgorithms(SortContext context) {
+            return applicationServiceProxy.getSortAlgorithms(context);
+        } 
+        public CodingSchemeRenderingList   getSupportedCodingSchemes()throws LBInvocationException {
+            return applicationServiceProxy.getSupportedCodingSchemes();
+        } 
+        public ValueDomainRenderingList  getSupportedValueDomains() throws LBInvocationException {
+            return applicationServiceProxy.getSupportedValueDomains();
+        }
+        public ValueDomainEntryNodeSet  getValueDomainEntries(ValueDomainNodeSet nodeSet) throws LBException {
+            return applicationServiceProxy.getValueDomainEntries(nodeSet);
+        }
+        public ValueDomainNodeSet  getValueDomains(boolean activeOnly) throws LBException{
+            return applicationServiceProxy.getValueDomains(activeOnly);
+        }
+        public CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException {
+            return applicationServiceProxy.resolveCodingScheme(codingScheme, versionOrTag);
+        }
+        public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
+            return applicationServiceProxy.resolveValueDomain(valueDomain, versionOrTag);
+        }	
 }

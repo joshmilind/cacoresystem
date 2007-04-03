@@ -19,6 +19,18 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.LexBIG.Extensions.Query.*;
+import org.LexGrid.LexBIG.DataModel.Collections.*;
+import org.LexGrid.LexBIG.Extensions.Generic.*;
+import org.LexGrid.LexBIG.History.*;
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.codingSchemes.*;
+import org.LexGrid.LexBIG.DataModel.Core.*;
+import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.*;
+import org.LexGrid.LexBIG.Exceptions.*;
+import org.LexGrid.valueDomains.ValueDomain;
+
 public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 {
 
@@ -220,5 +232,69 @@ public class ApplicationServiceServerImpl implements ApplicationServiceProxy
 		return applicationService.getObjects(domainobject);
 	}
 	/*@WRITABLE_API_END@*/
+    /***********************************/
+    public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException {
+        return applicationService.getCodingSchemeConcepts(codingScheme, versionOrTag);
+     }
 
+    public  CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException {
+        return applicationService.getCodingSchemeConcepts(codingScheme, versionOrTag, activeOnly);
+    }
+    public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet)throws LBException {
+        return applicationService.getCodingSchemeConcepts(nodeSet);
+    }
+    public Filter   getFilter(java.lang.String name) throws LBException {
+        return applicationService.getFilter(name);
+    }
+    public  ExtensionDescriptionList    getFilterExtensions(){
+        return applicationService.getFilterExtensions();
+        }
+    public GenericExtension   getGenericExtension(java.lang.String name) throws LBException{
+        return applicationService.getGenericExtension(name);
+    } 
+    public ExtensionDescriptionList   getGenericExtensions(){
+        return applicationService.getGenericExtensions();
+    }
+    public HistoryService     getHistoryService(java.lang.String codingScheme)throws LBException {
+        return applicationService.getHistoryService(codingScheme);
+    } 
+    public java.util.Date     getLastUpdateTime() throws LBInvocationException {
+        return applicationService.getLastUpdateTime();
+    }
+    public ModuleDescriptionList  getMatchAlgorithms(){
+        return applicationService.getMatchAlgorithms();
+    }
+    public CodedNodeGraph     getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws LBException {
+        return applicationService.getNodeGraph(codingScheme,versionOrTag,relationsName);
+    } 
+    public LexBIGServiceManager   getServiceManager(java.lang.Object credentials)throws LBException {
+        return applicationService.getServiceManager(credentials);
+    } 
+    public LexBIGServiceMetadata  getServiceMetadata() throws LBException {
+        return applicationService.getServiceMetadata();
+    }
+    public Sort   getSortAlgorithm(java.lang.String name) throws LBException {
+        return applicationService.getSortAlgorithm(name);
+    }
+    public SortDescriptionList    getSortAlgorithms(SortContext context) {
+        return applicationService.getSortAlgorithms(context);
+    } 
+    public CodingSchemeRenderingList   getSupportedCodingSchemes()throws LBInvocationException {
+        return applicationService.getSupportedCodingSchemes();
+    } 
+    public ValueDomainRenderingList   getSupportedValueDomains()throws LBInvocationException {
+        return applicationService.getSupportedValueDomains();
+    } 
+    public ValueDomainEntryNodeSet   getValueDomainEntries(ValueDomainNodeSet nodeSet)throws LBException {
+        return applicationService.getValueDomainEntries(nodeSet);
+    } 
+    public ValueDomainNodeSet   getValueDomains(boolean activeOnly)throws LBException {
+        return applicationService.getValueDomains(activeOnly);
+    }
+    public CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException {
+        return applicationService.resolveCodingScheme(codingScheme, versionOrTag);
+    }
+    public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
+        return applicationService.resolveValueDomain(valueDomain, versionOrTag);
+    }
 }

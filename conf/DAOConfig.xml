@@ -19,7 +19,7 @@
       <database>NCI</database>
       <username>Guest</username>
       <password>NCI-EVS</password>
-      <lexGridConfigFile>/local/content/EVS/LexBIG/config.props</lexGridConfigFile>
+      <lexGridConfigFile>K:/LexBIG_current/resources/config/config.props</lexGridConfigFile>
   </domainObjects>
 </DAOConfiguration>
 

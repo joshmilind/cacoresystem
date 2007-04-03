@@ -6,4 +6,5 @@
 	  <bean name="EVS" class="@EVSDAOCLASS@" singleton="false"/> 
 	  <bean name="MedDRA" class="gov.nih.nci.system.dao.security.MedDRASecurity" singleton="true"/> 
 	  <bean name="ServiceLocator" class="gov.nih.nci.system.servicelocator.ServiceLocator" singleton="true"/>	
+	  <bean name="LexService" class="gov.nih.nci.system.dao.impl.externalsystem.LexCOREService" singleton="true"/>	
 </beans>

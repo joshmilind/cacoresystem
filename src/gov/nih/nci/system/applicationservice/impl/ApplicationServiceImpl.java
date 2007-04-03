@@ -18,6 +18,18 @@ import org.hibernate.criterion.DetachedCriteria;
 
 import org.apache.log4j.Logger;
 
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.LexBIG.Extensions.Query.*;
+import org.LexGrid.LexBIG.DataModel.Collections.*;
+import org.LexGrid.LexBIG.Extensions.Generic.*;
+import org.LexGrid.LexBIG.History.*;
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.codingSchemes.*;
+import org.LexGrid.LexBIG.DataModel.Core.*;
+import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.*;
+import org.LexGrid.LexBIG.Exceptions.*;
+import org.LexGrid.valueDomains.ValueDomain;
+
 /**
  * @author Kunal Modi (Ekagra Software Technologies Ltd.)
  * 
@@ -502,5 +514,198 @@ public class ApplicationServiceImpl extends ApplicationService
 		return writableDAO.getObjects(domainobject);
 	}
 	/*@WRITABLE_API_END@*/
+    /*************************/
+
+    public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException{
+        try {
+          return this.applicationServiceBusinessImpl.getCodingSchemeConcepts(codingScheme, versionOrTag);
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+     }
+
+    public  CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException{
+        try {
+        return this.applicationServiceBusinessImpl.getCodingSchemeConcepts(codingScheme, versionOrTag, activeOnly);
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public CodedNodeSet  getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException{
+        try {
+        return this.applicationServiceBusinessImpl.getCodingSchemeConcepts(nodeSet);
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public Filter   getFilter(java.lang.String name) throws LBException {
+        try {
+        return this.applicationServiceBusinessImpl.getFilter(name);
+        }     
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public  ExtensionDescriptionList    getFilterExtensions() {
+        try {
+        return this.applicationServiceBusinessImpl.getFilterExtensions();
+        }   
+        catch (Exception e)
+        {
+             return null;
+        }
+        }
+    public GenericExtension   getGenericExtension(java.lang.String name) throws LBException {
+        try {
+        return this.applicationServiceBusinessImpl.getGenericExtension(name);
+        }   
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    } 
+    public ExtensionDescriptionList   getGenericExtensions() {
+        try {
+        return this.applicationServiceBusinessImpl.getGenericExtensions();
+        }
+        catch (Exception e)
+        {
+             return null;
+        }
+    }
+    public HistoryService     getHistoryService(java.lang.String codingScheme)throws LBException{
+        try {
+        return this.applicationServiceBusinessImpl.getHistoryService(codingScheme);
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    } 
+    public java.util.Date     getLastUpdateTime() throws LBInvocationException{
+        try {
+        return this.applicationServiceBusinessImpl.getLastUpdateTime();
+        }    
+        catch (Exception e)
+        {
+             throw new LBInvocationException(e.getMessage(), null);
+        }
+    }
+    public ModuleDescriptionList  getMatchAlgorithms() {
+        try {
+        return this.applicationServiceBusinessImpl.getMatchAlgorithms();
+        } 
+        catch (Exception e)
+        {
+             return null;
+        }
+    }
+    public CodedNodeGraph     getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws LBException{
+        try {
+        return this.applicationServiceBusinessImpl.getNodeGraph(codingScheme,versionOrTag,relationsName);
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }     
+    } 
+    public LexBIGServiceManager   getServiceManager(java.lang.Object credentials)throws LBException {
+        try {
+        return this.applicationServiceBusinessImpl.getServiceManager(credentials);
+        }    
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    } 
+    public LexBIGServiceMetadata  getServiceMetadata() throws LBException{
+        try {
+        return this.applicationServiceBusinessImpl.getServiceMetadata();
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public Sort   getSortAlgorithm(java.lang.String name) throws LBException {
+        try {
+        return this.applicationServiceBusinessImpl.getSortAlgorithm(name);
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public SortDescriptionList    getSortAlgorithms(SortContext context) {
+        try {
+        return this.applicationServiceBusinessImpl.getSortAlgorithms(context);     
+        } 
+        catch (Exception e)
+        {
+             return null;
+        }
+    } 
+    public CodingSchemeRenderingList   getSupportedCodingSchemes()throws LBInvocationException{
+        try {
+        return this.applicationServiceBusinessImpl.getSupportedCodingSchemes();
+        }    
+        catch (Exception e)
+        {
+             throw new LBInvocationException(e.getMessage(), null);
+        }
+    } 
+    public ValueDomainRenderingList  getSupportedValueDomains() throws LBInvocationException {
+        try {
+        return this.applicationServiceBusinessImpl.getSupportedValueDomains();
+        }   
+        catch (Exception e)
+        {
+             throw new LBInvocationException(e.getMessage(), null);
+        }
+    } 
+    public ValueDomainEntryNodeSet  getValueDomainEntries(ValueDomainNodeSet nodeSet) throws LBException{
+        try {
+        return this.applicationServiceBusinessImpl.getValueDomainEntries(nodeSet);
+        }    
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public ValueDomainNodeSet  getValueDomains(boolean activeOnly) throws LBException {
+        try {
+        return this.applicationServiceBusinessImpl.getValueDomains(activeOnly);
+        }     
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException{
+        try {
+        return this.applicationServiceBusinessImpl.resolveCodingScheme(codingScheme, versionOrTag);
+        }
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+    public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
+        try {
+        return this.applicationServiceBusinessImpl.resolveValueDomain(valueDomain, versionOrTag);
+        }   
+        catch (Exception e)
+        {
+             throw new LBException(e.getMessage());
+        }
+    }
+
 
 }

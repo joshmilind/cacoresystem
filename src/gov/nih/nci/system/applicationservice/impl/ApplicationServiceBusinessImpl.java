@@ -42,6 +42,19 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.LexBIG.Extensions.Query.*;
+import org.LexGrid.LexBIG.DataModel.Collections.*;
+import org.LexGrid.LexBIG.Extensions.Generic.*;
+import org.LexGrid.LexBIG.History.*;
+import org.LexGrid.LexBIG.LexBIGService.*;
+import org.LexGrid.codingSchemes.*;
+import org.LexGrid.LexBIG.DataModel.Core.*;
+import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.*;
+import gov.nih.nci.system.dao.impl.externalsystem.*;
+import org.LexGrid.LexBIG.Exceptions.*;
+import org.LexGrid.valueDomains.ValueDomain;
+
 /**
  * <!-- LICENSE_TEXT_START -->
  * Copyright 2001-2004 SAIC. Copyright 2001-2003 SAIC. This software was developed in conjunction with the National Cancer Institute,
@@ -728,9 +741,78 @@ public class ApplicationServiceBusinessImpl {
 			throw new ApplicationException("Exception in Base Delegate while getting datasource information: ", exception);
 		}
 	}
+    
+    /*****************LEX GRID INTEGRATION ***********************/
+    public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(codingScheme, versionOrTag);
+     }
+
+    public  CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(codingScheme, versionOrTag, activeOnly);
+    }
+    public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException, ApplicationException {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(nodeSet);
+    }
+    public Filter   getFilter(java.lang.String name)throws LBException, ApplicationException, Exception  {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getFilter(name);
+    }
+    public  ExtensionDescriptionList    getFilterExtensions() throws Exception{
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getFilterExtensions();
+        }
+    public GenericExtension   getGenericExtension(java.lang.String name) throws ApplicationException, Exception{
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getGenericExtension(name);
+    } 
+    public ExtensionDescriptionList   getGenericExtensions() throws Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getGenericExtensions();
+    }
+    public HistoryService     getHistoryService(java.lang.String codingScheme)throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getHistoryService(codingScheme);
+    } 
+    public java.util.Date     getLastUpdateTime() throws LBInvocationException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getLastUpdateTime();
+    }
+    public ModuleDescriptionList  getMatchAlgorithms() throws ApplicationException, Exception{
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getMatchAlgorithms();
+    }
+    public CodedNodeGraph     getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getNodeGraph(codingScheme,versionOrTag,relationsName);
+    } 
+    public LexBIGServiceManager   getServiceManager(java.lang.Object credentials)throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getServiceManager(credentials);
+    } 
+    public LexBIGServiceMetadata  getServiceMetadata() throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getServiceMetadata();
+    }
+    public Sort   getSortAlgorithm(java.lang.String name) throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getSortAlgorithm(name);
+    }
+    public SortDescriptionList    getSortAlgorithms(SortContext context) throws ApplicationException, Exception{
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getSortAlgorithms(context);
+    } 
+    public CodingSchemeRenderingList   getSupportedCodingSchemes()throws LBInvocationException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getSupportedCodingSchemes();
+    }
+    public ValueDomainRenderingList   getSupportedValueDomains() throws LBInvocationException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getSupportedValueDomains();
+    } 
+    public ValueDomainEntryNodeSet  getValueDomainEntries(ValueDomainNodeSet nodeSet)  throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getValueDomainEntries(nodeSet);
+    }
+    public ValueDomainNodeSet getValueDomains(boolean activeOnly) throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getValueDomains(activeOnly);
+    }
+    public CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException, ApplicationException,Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).resolveCodingScheme(codingScheme, versionOrTag);
+    }
+    public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException, ApplicationException, Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).resolveValueDomain(valueDomain, versionOrTag);
+    }
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17  2006/12/04 20:36:58  masondo
+// GF3105: Fixed demo files
+//
 // Revision 1.16  2006/11/29 14:09:47  masondo
 // GF3105: Fixed SDK CQL defect
 //
