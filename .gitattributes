@@ -831,6 +831,7 @@ lib/lbImpl.jar -text
 lib/lbInterfaces.jar -text
 lib/lbMessage.jar -text
 lib/lbModel.jar -text
+lib/lbPatch.jar -text
 lib/lexrpcclient.jar -text
 lib/lexrpcserver.jar -text
 lib/lgModel.jar -text
