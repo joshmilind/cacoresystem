@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1252"?>
-<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2006-11-29 11:34:32">
+<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2007-04-09 11:53:01">
 	<XMI.header>
 		<XMI.documentation>
 			<XMI.exporter>Enterprise Architect</XMI.exporter>
@@ -581,6 +581,7 @@
 																				<UML:TaggedValue tag="privatedata5" value="EDGE=4;SX=-1;SY=-1;EX=-1;EY=-1;"/>
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified associations for this DescLogicConcept" xmi.id="EAID_13C33FE9_FACF_445c_BA2A_C1AF11364CDB"/>
+																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_2DA321FB_C1F3_4df5_86EB_5F9BBFB07BB6"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the associations of this DescLogicConcept" xmi.id="EAID_9A7B10A8_1BD6_47ae_B12D_2E4B75D06ED4"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
@@ -722,6 +723,7 @@
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the Semantic Types of this MetaThesaurusConcept" xmi.id="EAID_11C61344_A089_4773_8A4E_3B0E1A252C9A"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the Semantic Types for this MetaThesaurusConcept" xmi.id="EAID_32B9E5A5_0490_4800_88CA_F92C33996248"/>
 																				<UML:TaggedValue tag="association-end-type" value="java.util.List" xmi.id="EAID_AC0DBBDD_4035_4782_B794_CAAEE561E74B"/>
+																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_B55C1C93_922D_4507_B794_3D78A08BCB31"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_BDF7914F_69CD_41de_9B63_E3AE3122601C">
@@ -1268,6 +1270,7 @@
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified properties for this DescLogicConcept" xmi.id="EAID_3890E6A1_3AAC_45d8_8807_4D86451852FC"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the properties of this DescLogicConcept" xmi.id="EAID_67E1622E_9436_4df2_B2BF_6C93ED558BB8"/>
+																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_F611F756_1BBD_4de2_9647_8FAD78167B7F"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_E55B53F2_EBF4_4a34_A712_CC0FB4450D22">
@@ -2065,6 +2068,7 @@
 																				<UML:TaggedValue tag="ea_sourceID" value="61"/>
 																				<UML:TaggedValue tag="ea_targetID" value="138"/>
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
+																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_02A0BF30_E33C_48ec_A3DA_E151253EE327"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the Atoms of this MetaThesaurusConcept" xmi.id="EAID_4159F353_BA72_4788_B95F_7EC4C2F5CCEF"/>
 																				<UML:TaggedValue tag="association-end-type" value="java.util.List" xmi.id="EAID_85E8E0C7_DE9E_4d2d_B080_B331D27E34DC"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified Atoms for this MetaThesaurusConcept" xmi.id="EAID_D375399C_767D_47e5_92B1_D33F03B0B5B5"/>
@@ -2796,6 +2800,7 @@
 																				<UML:TaggedValue tag="ea_targetID" value="64"/>
 																				<UML:TaggedValue tag="privatedata5" value="SX=0;SY=-1;EX=0;EY=-1;"/>
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
+																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_12887010_DA33_43b3_A945_357E4137DABA"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the roles of this DescLogicConcept" xmi.id="EAID_19727F58_6264_4d0f_A514_2CEDEF696EC4"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified roles for this DescLogicConcept" xmi.id="EAID_CBDF6168_9E51_4780_95D7_D026EA5E9331"/>
 																			</UML:ModelElement.taggedValue>
@@ -2997,6 +3002,7 @@
 																				<UML:TaggedValue tag="ea_localid" value="60"/>
 																				<UML:TaggedValue tag="ea_eleType" value="element"/>
 																				<UML:TaggedValue tag="style" value="BackColor=-1;BorderColor=-1;BorderWidth=-1;FontColor=-1;VSwimLanes=0;HSwimLanes=0;BorderStyle=0;"/>
+																				<UML:TaggedValue tag="$ea_xref_property" value="$XREFPROP=$XID={FB7D9246-9F88-4687-B0D7-D00D5A13B341}$XID;$NAM=CustomProperties$NAM;$TYP=element property$TYP;$VIS=Public$VIS;$DES=@PROP=@NAME=isActive@ENDNAME;@TYPE=Boolean@ENDTYPE;@VALU=@ENDVALU;@PRMT=@ENDPRMT;@ENDPROP;$DES;$CLT={E55B53F2-EBF4-4a34-A712-CC0FB4450D22}$CLT;$SUP=&lt;none&gt;$SUP;$ENDXREF;"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Classifier.feature>
 																				<UML:Attribute name="code" changeable="none" visibility="private" ownerScope="instance" targetScope="instance">
