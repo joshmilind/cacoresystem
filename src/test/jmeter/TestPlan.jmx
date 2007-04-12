@@ -42,10 +42,10 @@
         <hashTree/>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Session Init" enabled="true"/>
         <hashTree>
-          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore32/Happy.jsp" enabled="true">
+          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore40/Happy.jsp" enabled="true">
             <stringProp name="HTTPSampler.domain"></stringProp>
             <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
-            <stringProp name="HTTPSampler.path">/cacore32/Happy.jsp</stringProp>
+            <stringProp name="HTTPSampler.path">/cacore40/Happy.jsp</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -86,10 +86,10 @@
             </HeaderManager>
             <hashTree/>
           </hashTree>
-          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore32/Packages.jsp" enabled="true">
+          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore40/Packages.jsp" enabled="true">
             <stringProp name="HTTPSampler.domain"></stringProp>
             <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
-            <stringProp name="HTTPSampler.path">/cacore32/Packages.jsp</stringProp>
+            <stringProp name="HTTPSampler.path">/cacore40/Packages.jsp</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -123,7 +123,7 @@
                   <stringProp name="Header.name">User-Agent</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
-                  <stringProp name="Header.value">http://localhost:8080/cacore32/Happy.jsp</stringProp>
+                  <stringProp name="Header.value">http://localhost:8080/cacore40/Happy.jsp</stringProp>
                   <stringProp name="Header.name">Referer</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
@@ -134,10 +134,10 @@
             </HeaderManager>
             <hashTree/>
           </hashTree>
-          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore32/Classes.jsp" enabled="true">
+          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore40/Classes.jsp" enabled="true">
             <stringProp name="HTTPSampler.domain"></stringProp>
             <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
-            <stringProp name="HTTPSampler.path">/cacore32/Classes.jsp</stringProp>
+            <stringProp name="HTTPSampler.path">/cacore40/Classes.jsp</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -171,7 +171,7 @@
                   <stringProp name="Header.name">User-Agent</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
-                  <stringProp name="Header.value">http://localhost:8080/cacore32/Happy.jsp</stringProp>
+                  <stringProp name="Header.value">http://localhost:8080/cacore40/Happy.jsp</stringProp>
                   <stringProp name="Header.name">Referer</stringProp>
                 </elementProp>
                 <elementProp name="" elementType="Header">
@@ -182,10 +182,10 @@
             </HeaderManager>
             <hashTree/>
           </hashTree>
-          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore32/Criteria.jsp" enabled="true">
+          <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore40/Criteria.jsp" enabled="true">
             <stringProp name="HTTPSampler.domain"></stringProp>
             <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
-            <stringProp name="HTTPSampler.path">/cacore32/Criteria.jsp</stringProp>
+            <stringProp name="HTTPSampler.path">/cacore40/Criteria.jsp</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -246,10 +246,10 @@
             <stringProp name="IfController.condition">${__javaScript(&quot;${domainObject}&quot; != &quot;&lt;EOF&gt;&quot;)}</stringProp>
           </IfController>
           <hashTree>
-            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore32/Criteria.jsp" enabled="true">
+            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore40/Criteria.jsp" enabled="true">
               <stringProp name="HTTPSampler.domain"></stringProp>
               <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
-              <stringProp name="HTTPSampler.path">/cacore32/Criteria.jsp</stringProp>
+              <stringProp name="HTTPSampler.path">/cacore40/Criteria.jsp</stringProp>
               <stringProp name="HTTPSampler.method">GET</stringProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments">
@@ -291,7 +291,7 @@
                     <stringProp name="Header.name">User-Agent</stringProp>
                   </elementProp>
                   <elementProp name="" elementType="Header">
-                    <stringProp name="Header.value">http://localhost:8080/cacore32/Classes.jsp</stringProp>
+                    <stringProp name="Header.value">http://localhost:8080/cacore40/Classes.jsp</stringProp>
                     <stringProp name="Header.name">Referer</stringProp>
                   </elementProp>
                 </collectionProp>
@@ -307,10 +307,10 @@
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
-            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore32/Result.jsp" enabled="true">
+            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore40/Result.jsp" enabled="true">
               <stringProp name="HTTPSampler.domain"></stringProp>
               <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
-              <stringProp name="HTTPSampler.path">/cacore32/Result.jsp</stringProp>
+              <stringProp name="HTTPSampler.path">/cacore40/Result.jsp</stringProp>
               <stringProp name="HTTPSampler.method">POST</stringProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments">
@@ -367,7 +367,7 @@
                     <stringProp name="Header.name">Pragma</stringProp>
                   </elementProp>
                   <elementProp name="" elementType="Header">
-                    <stringProp name="Header.value">http://localhost:8080/cacore32/Criteria.jsp?klassName=${domainObject}</stringProp>
+                    <stringProp name="Header.value">http://localhost:8080/cacore40/Criteria.jsp?klassName=${domainObject}</stringProp>
                     <stringProp name="Header.name">Referer</stringProp>
                   </elementProp>
                 </collectionProp>
@@ -383,10 +383,10 @@
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
-            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore32/GetHTML" enabled="true">
+            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="/cacore40/GetHTML" enabled="true">
               <stringProp name="HTTPSampler.domain"></stringProp>
               <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
-              <stringProp name="HTTPSampler.path">/cacore32/GetHTML</stringProp>
+              <stringProp name="HTTPSampler.path">/cacore40/GetHTML</stringProp>
               <stringProp name="HTTPSampler.method">GET</stringProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments">
@@ -438,7 +438,7 @@
                     <stringProp name="Header.name">Pragma</stringProp>
                   </elementProp>
                   <elementProp name="" elementType="Header">
-                    <stringProp name="Header.value">http://localhost:8080/cacore32/Criteria.jsp?klassName=${domainObject}</stringProp>
+                    <stringProp name="Header.value">http://localhost:8080/cacore40/Criteria.jsp?klassName=${domainObject}</stringProp>
                     <stringProp name="Header.name">Referer</stringProp>
                   </elementProp>
                 </collectionProp>

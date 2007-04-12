@@ -40,15 +40,15 @@ import gov.nih.nci.evs.security.*;
 public interface EVSQuery extends Serializable{
     public static final long serialVersionUID =  1468599299281466395L;
     /**
-     * Adds the specified security token and vocabulary information 
+     * Adds the specified security token and vocabulary information
      */
     public void addSecurityToken(String vocabularyName, SecurityToken token) throws Exception;
-    
+
     /**
      * Validates the security token aganist a vocabulary
      */
     public void validateToken(String vocabularyName, SecurityToken token);
-    
+
 	/**
 	 * Generates a DefaultMutableTreeNode for the specified rootName <br>
 	 * Eeach node is a DescLogicConcept instance
@@ -56,11 +56,11 @@ public interface EVSQuery extends Serializable{
 	 * @param rootName - RootNode of the tree
 	 * @param direction - a boolean value (true if traverse down)
 	 * @param isaFlag - a boolean value (true if relationship is child)
-	 * @param attributes - Sets the AttributeSetDescriptor value for the root node. 
+	 * @param attributes - Sets the AttributeSetDescriptor value for the root node.
 	 * @param levels - the depth of the tree
 	 * @param roles - the names of role relationships
 	 */
-    
+
 	public void getTree(String vocabularyName, String rootName, boolean direction,
                         boolean isaFlag, int attributes, String levels, Vector roles);
 
@@ -71,7 +71,7 @@ public interface EVSQuery extends Serializable{
      * @param rootName - RootNode of the tree
      * @param direction - a boolean value (true if traverse down)
      * @param isaFlag - a boolean value (true if relationship is child)
-     * @param attributes - Sets the AttributeSetDescriptor value for the root node. 
+     * @param attributes - Sets the AttributeSetDescriptor value for the root node.
      * @param levels - the depth of the tree
      * @param roles - the names of role relationships
      */
@@ -251,12 +251,12 @@ public interface EVSQuery extends Serializable{
     public void getVocabularyNames();
 
     /**
-     * Returns a list of populated Vocabulary objects from the EVS server via the ApplicationService 
+     * Returns a list of populated Vocabulary objects from the EVS server via the ApplicationService
      */
     public void getAllVocabularies();
 
     /**
-     * Returns the specified vocabulary in a List  
+     * Returns the specified vocabulary in a List
      */
     public void getVocabularyByName(String vocabularyName);
 
@@ -374,7 +374,7 @@ public interface EVSQuery extends Serializable{
     /**
      * Search the specified vocabulary for a given code
      * @param code - Concepts unique identifier within the given source
-     * @param sourceAbbr - specifies the source abbreviation     
+     * @param sourceAbbr - specifies the source abbreviation
      * @deprecated - The preferred method is searchSourceByAtomCode
      */
 
@@ -398,8 +398,8 @@ public interface EVSQuery extends Serializable{
      * @deprecated
      */
     public void getMetaConceptsForAllSources();
-    
-   
+
+
 	/**
 	 * gets MetaThesaurusConcept name
 	 * @param conceptCode - specifies the concept code
@@ -624,7 +624,7 @@ public interface EVSQuery extends Serializable{
 	 */
 	public void getParentConcepts(String vocabularyName, String conceptName, boolean inputFlag);
 
-	
+
 	 /**
 	 * Gets a parent DescLogicConcept for a given concept name
 	 * @param vocabularyName - Specifies the namespace
@@ -698,9 +698,9 @@ public interface EVSQuery extends Serializable{
      * @param inputFlag - If a concept code is entered this value is a true. If a concept name has been entered this value should be false.
      */
     public void getDescLogicConcept(String vocabularyName, String conceptName, boolean inputFlag);
-    
+
     /**
-     * Gets List of HistoryRecords for a given concept code  
+     * Gets List of HistoryRecords for a given concept code
      * @param vocabularyName
      * @param conceptCode
      */
@@ -727,14 +727,74 @@ public interface EVSQuery extends Serializable{
      * @param vocabularyName
      * @param conceptCode
      * @param baseLineDate
-     * @param action    
+     * @param action
      */
     public void getCodeActionChildren(String vocabularyName, String conceptCode, String baseLineDate, String action);
     /**
      * Gets parent concept codes for the specified concept.
      * @param vocabularyName
      * @param conceptCode
-     * @param baseLineDate      
+     * @param baseLineDate
      */
     public void getCodeActionParents(String vocabularyName, String conceptCode, String baseLineDate );
+    /**
+     * Gets source for the specified concept.
+     * @param vocabularyName
+     * @param conceptCode
+     */
+    public void getSourcebyCode(int namespaceId, String conceptCode);
+    /**
+     * Gets associations for the specified concept.
+     * @param vocabularyName
+     * @param conceptCode
+     */
+    public void getAssociationCollectionbyCode(int namespaceId, String conceptCode);
+    /**
+     * Gets TreeNode for the specified concept.
+     * @param vocabularyName
+     * @param conceptCode
+     */
+    public void getTreeNodebyCode(int namespaceId, String conceptCode);
+
+     /**
+     * Gets get Semantic Types for the specified concept.
+     * @param conceptCode
+     */
+    public void getEdgePropertiesbyCode(int namespaceId, String conceptCode);
+
+    public void getSemanticTypeVectorbyCode(int namespaceId, String cui);
+
+    public void getSemanticTypeCollectionbyCui(String cui);
+
+    public void getSynonymCollectionbyCui(String cui);
+
+    public void getQualifierCollectionbyName(String name);
+
+    public void getAtomCollectionbyCui(String cui);
+
+    public void getSourceCollectionbyCui(String cui);
+
+    public void getSourcebyDefinition(String definition);
+
+    public void getDefinitionCollectionbyCui(String cui);
+
+    public void getHistoryCollectionbyDescLogicConceptCode(String descLogicConceptCode);
+
+    public void getSiloCollectionbyName(String name);
+
+    public void getSecurityTokenbyName(String name);
+
+    public void getPropertyCollectionbyName(String name);
+
+    public void getPropertyCollectionbyCode(int namespaceId, String conceptCode);
+
+    //public void getRoleCollectionbyName(String name);
+
+    public void getRoleCollectionbyCode(int namespaceId, String conceptCode);
+
+    public void getInverseRoleCollectionbyCode(int namespaceId, String conceptCode);
+
+    public void getInverseAssociationCollectionbyCode(int namespaceId, String conceptCode);
+
+    public void getVocabularybyCode(int namespaceId, String conceptCode);
 }

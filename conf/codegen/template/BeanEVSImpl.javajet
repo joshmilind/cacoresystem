@@ -19,6 +19,12 @@ if (isAbstract.equals("abstract")){
 package <%=UML13Utils.getNamespaceName(UML13Utils.getPackage(UML13Utils.getModel(klass), basePkg), klass)%>;
 
 import java.util.*;
+import gov.nih.nci.system.applicationservice.*;
+
+import org.apache.log4j.Logger;
+import gov.nih.nci.evs.query.EVSQuery;
+import gov.nih.nci.evs.query.EVSQueryImpl;
+
 <%
 if(klass.getName().endsWith("Vocabulary")){
 %>
@@ -42,7 +48,6 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 	implements java.io.Serializable
 {
 	private static final long serialVersionUID = 1234567890L;
-
 	<%if(getConstructorValue(klass).equalsIgnoreCase("true")){%>
 	<%=getConstructor(klass)%>;	<%}%>	
 	<% for(Iterator i = UML13Utils.getAttributes((UmlClass)klass).iterator(); i.hasNext();){ %>
@@ -63,17 +68,72 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 	/**
 	* <%=UML13Utils.getTaggedValue(att,"deprecated").getValue()%>
 	*/
-	<%}%>   
+	<%}%>  
 	/**
 	* <%if(UML13Utils.getTaggedValue(att,"documentation-get-method")!=null){%><%=UML13Utils.getTaggedValue(att,"documentation-get-method").getValue()%><%}%>	   
 	* @return - <%=att.getName()%>
 	*/
 	public <%if(getQualifiedName(att.getType(), basePkg).startsWith(".")){%><%=getQualifiedName(att.getType(), basePkg).substring(1)%><%} else { %> <%=getQualifiedName(att.getType(),basePkg)%><%}%> get<%=capFirst(att.getName())%>(){
+	<%if(UML13Utils.getTaggedValue(att,"lazy")!=null){
+		if(UML13Utils.getTaggedValue(att,"lazy").getValue().equalsIgnoreCase("true")){%>
+		
+			if (<%=att.getName()%>==null){
+			try{
+				ApplicationService appService = ApplicationService.getInstance();
+				EVSQuery evsQuery = new EVSQueryImpl(); 
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String keyAttName = keyAtt.getName();
+				if(klass.getName().equals("DescLogicConcept")){
+				%>
+				evsQuery.get<%=capFirst(att.getName())%>by<%=capFirst(keyAttName)%>(namespaceId, <%=keyAttName%>);
+				<%}else{%>
+				evsQuery.get<%=capFirst(att.getName())%>by<%=capFirst(keyAttName)%>(<%=keyAttName%>);
+				<%}%>
+	    		List resultList = (List)appService.evsSearch(evsQuery);	
+	    		<%if(getQualifiedName(att.getType(), basePkg).endsWith("Vector")){%>
+	    		<%=att.getName()%> = (Vector)resultList;
+	    		<%}else{%>			
+				<%=att.getName()%> = (ArrayList)resultList;
+				<%}%>
+    		}catch(Exception ex) 
+			{
+				Logger log = Logger.getLogger("<%=klass.getName()%>");
+				log.error("get<%=capFirst(att.getName())%> throws exception ... ...",ex);
+			}
+    	}
+		<%}
+		}%>	
 	      return <%=att.getName()%>;
 	      }   
 	   <% if(getDeprecateValue(att).equalsIgnoreCase("true")){%>	  
 	<%=getDeprecateJavaDoc(att)%>
 	public <%if(getQualifiedName(att.getType(), basePkg).startsWith(".")){%><%=getQualifiedName(att.getType(), basePkg).substring(1)%><%} else { %> <%=getQualifiedName(att.getType(),basePkg)%><%}%> <%=att.getName()%>(){
+	<%if(UML13Utils.getTaggedValue(att,"lazy")!=null){
+		if(UML13Utils.getTaggedValue(att,"lazy").getValue().equalsIgnoreCase("true")){%>
+		
+			if (<%=att.getName()%>==null){
+			try{
+				ApplicationService appService = ApplicationService.getInstance();
+				EVSQuery evsQuery = new EVSQueryImpl(); 
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String keyAttName = keyAtt.getName();
+				if(klass.getName().equals("DescLogicConcept")){
+				%>
+				evsQuery.get<%=capFirst(att.getName())%>by<%=capFirst(keyAttName)%>(namespaceId, <%=keyAttName%>);
+				<%}else{%>
+				evsQuery.get<%=capFirst(att.getName())%>by<%=capFirst(keyAttName)%>(<%=keyAttName%>);
+				<%}%>
+	    		List resultList = (List)appService.evsSearch(evsQuery);				
+				<%=att.getName()%> = (ArrayList)resultList;
+    		}catch(Exception ex) 
+			{
+				Logger log = Logger.getLogger("<%=klass.getName()%>");
+				log.error("get<%=capFirst(att.getName())%> throws exception ... ...",ex);
+			}
+    	}
+		<%}
+		}%>
+	
 	   	      return <%=att.getName()%>;
 	   	   }	   	   
 	   <%  }   %>		
@@ -92,16 +152,38 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 	   <% if(otherEnd.getAssociation()!=null){ asso = otherEnd.getAssociation();}%>
 	   <% if(otherEnd.isNavigable() && !getCreateMethod(otherEnd).equalsIgnoreCase("false")){ %>
 	      <% if(UML13Utils.isMany2Many(thisEnd, otherEnd) || UML13Utils.isOne2Many(thisEnd, otherEnd)){ %>	      		
-	      		<%if(getMetaphraseValue(klass).equalsIgnoreCase("true")){%>	      				
+	      		<%if(getMetaphraseValue(klass).equalsIgnoreCase("true")){%>
 	private java.util.ArrayList <%=otherEnd.getName()%> = new java.util.ArrayList();
-	
 	/**
 	* <%if(UML13Utils.getTaggedValue(asso,"otherend-get-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-get-method").getValue()%><%}%>	   
 	* @return - <%=otherEnd.getName()%>
 	*/
-
 	public java.util.ArrayList get<%=capFirst(otherEnd.getName())%>(){
-	      	return <%=otherEnd.getName()%>;
+	<%if(UML13Utils.getTaggedValue(asso,"lazy")!=null){
+		if(UML13Utils.getTaggedValue(asso,"lazy").getValue().equalsIgnoreCase("true")){%>
+		if (<%=otherEnd.getName()%>==null){
+			try{
+				ApplicationService appService = ApplicationService.getInstance();
+				EVSQuery evsQuery = new EVSQueryImpl(); 
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String keyAttName = keyAtt.getName();
+				if(klass.getName().equals("DescLogicConcept")){
+				%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(namespaceId, <%=keyAttName%>);
+				<%}else{%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(<%=keyAttName%>);
+				<%}%>
+	    		List resultList = (List)appService.evsSearch(evsQuery);				
+				<%=otherEnd.getName()%> = (ArrayList)resultList;
+    		}catch(Exception ex) 
+			{
+				Logger log = Logger.getLogger("<%=klass.getName()%>");
+				log.error("get<%=capFirst(otherEnd.getName())%> throws exception ... ...",ex);
+			}
+    	}
+    	<%}
+    	}%>
+		return <%=otherEnd.getName()%>;	
 	}
 	      		<%}else	{%>
 	private java.util.Vector <%=otherEnd.getName()%> = new java.util.Vector();
@@ -109,8 +191,31 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 	* <%if(UML13Utils.getTaggedValue(asso,"otherend-get-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-get-method").getValue()%><%}%>	   
 	* @return - <%=otherEnd.getName()%>
 	*/
-
 	public java.util.Vector get<%=capFirst(otherEnd.getName())%>(){
+	<%if(UML13Utils.getTaggedValue(asso,"lazy")!=null){
+		if(UML13Utils.getTaggedValue(asso,"lazy").getValue().equalsIgnoreCase("true")){%>
+		if (<%=otherEnd.getName()%>==null){
+			try{
+				ApplicationService appService = ApplicationService.getInstance();
+				EVSQuery evsQuery = new EVSQueryImpl();
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String keyAttName = keyAtt.getName();
+				if(klass.getName().equals("DescLogicConcept")){
+				%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(namespaceId, <%=keyAttName%>);
+				<%}else{%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(<%=keyAttName%>);
+				<%}%>
+	    		List resultList = (List)appService.evsSearch(evsQuery);				 
+				<%=otherEnd.getName()%> = (java.util.Vector)resultList;
+    		}catch(Exception ex) 
+			{
+				Logger log = Logger.getLogger("<%=klass.getName()%>");
+				log.error("get<%=capFirst(otherEnd.getName())%> throws exception ... ...",ex);
+			}
+    	}
+    	<%}
+    	}%>
 		return <%=otherEnd.getName()%>;
 	}
 	              	<%}%>  
@@ -125,9 +230,37 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 	* <%if(UML13Utils.getTaggedValue(asso,"otherend-get-method")!=null){%><%=UML13Utils.getTaggedValue(asso,"otherend-get-method").getValue()%><%}%>	   
 	* @return - <%=otherEnd.getName()%>
 	*/
-
 	public <%=fullBeanName%> get<%=capFirst(otherEnd.getName())%>(){
-		return <%=otherEnd.getName()%>;			
+		<%if(UML13Utils.getTaggedValue(asso,"lazy")!=null){
+		 	if(UML13Utils.getTaggedValue(asso,"lazy").getValue().equalsIgnoreCase("true")){%>
+		if (<%=otherEnd.getName()%>==null){
+			try{
+				ApplicationService appService = ApplicationService.getInstance();
+				EVSQuery evsQuery = new EVSQueryImpl();
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String keyAttName = keyAtt.getName();
+				if(klass.getName().equals("DescLogicConcept")){
+				%>
+					evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(namespaceId, <%=keyAttName%>);
+				<%}else{%>
+					evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(<%=keyAttName%>);
+				<%}%>
+		    		List resultList = (List)appService.evsSearch(evsQuery);				 
+				if (resultList!=null && resultList.size()>0) 
+					<%=otherEnd.getName()%> = (<%=fullBeanName%>)resultList.get(0);
+				else
+					<%=otherEnd.getName()%> = null;
+	    		}catch(Exception ex) 
+				{
+					Logger log = Logger.getLogger("<%=klass.getName()%>");
+					log.error("get<%=capFirst(otherEnd.getName())%> throws exception ... ...",ex);
+				}
+	    	}
+		 	
+		 	<%}
+		}
+		%>
+		return <%=otherEnd.getName()%>;		
         }		   
 	      <% }else if(UML13Utils.isOne2One(thisEnd, otherEnd)){ %>
 			<%
@@ -139,9 +272,37 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 	<%if(getDeprecateJavaDoc(otherEnd)!=null){%>
 	<%=getDeprecateJavaDoc(otherEnd)%>
 	<%}%>
-
 	public <%=fullBeanName%> get<%=capFirst(otherEnd.getName())%>(){
-		return <%=otherEnd.getName()%>;			
+		<%if(UML13Utils.getTaggedValue(asso,"lazy")!=null){
+			if(UML13Utils.getTaggedValue(asso,"lazy").getValue().equalsIgnoreCase("true")){%>
+		if (<%=otherEnd.getName()%>==null){
+			try{
+				ApplicationService appService = ApplicationService.getInstance();
+				EVSQuery evsQuery = new EVSQueryImpl();
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String keyAttName = keyAtt.getName();
+				if(klass.getName().equals("DescLogicConcept")){
+				%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(namespaceId, <%=keyAttName%>);
+				<%}else{%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>by<%=capFirst(keyAttName)%>(<%=keyAttName%>);
+				<%}%>				
+	    		List resultList = (List)appService.evsSearch(evsQuery);				 
+				if (resultList!=null && resultList.size()>0) 
+					<%=otherEnd.getName()%> = (<%=fullBeanName%>)resultList.get(0);
+				else
+					<%=otherEnd.getName()%> = null;		
+    		}catch(Exception ex) 
+			{
+				Logger log = Logger.getLogger("<%=klass.getName()%>");
+				log.error("get<%=capFirst(otherEnd.getName())%> throws exception ... ...",ex);
+			}
+    	 	}
+			 	
+			<%}
+		}%>
+
+		return <%=otherEnd.getName()%>;
        	}                        
 	      <% }else{ %>
 		     <% if(true) throw new RuntimeException("Unknown association multiplicity: " + thisEnd.getType().getName() + "." + thisEnd.getName() + ".upper=" + ((MultiplicityRange)thisEnd.getMultiplicity().getRange().iterator().next()).getUpper() + ", " + otherEnd.getType().getName() + "." + otherEnd.getName() + ".upper=" + ((MultiplicityRange)otherEnd.getMultiplicity().getRange().iterator().next()).getUpper()); %>
@@ -187,13 +348,36 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 	<% if(otherEnd.getAggregation().equals(AggregationKindEnum.AK_AGGREGATE)){ %>
 	private Long <%=otherEnd.getName()%>Id;
 	public Long get<%=capFirst(otherEnd.getName())%>Id(){
-	      return <%=otherEnd.getName()%>Id;
+		if (<%=otherEnd.getName()%>==null){
+			try{
+				ApplicationService appService = ApplicationService.getInstance();
+				EVSQuery evsQuery = new EVSQueryImpl();
+				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
+				String keyAttName = keyAtt.getName();
+				if(klass.getName().equals("DescLogicConcept")){
+				%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>Idby<%=capFirst(keyAttName)%>(namespaceId, <%=keyAttName%>);
+				<%}else{%>
+				evsQuery.get<%=capFirst(otherEnd.getName())%>Idby<%=capFirst(keyAttName)%>(<%=keyAttName%>);
+				<%}%>
+	    		List resultList = (List)appService.evsSearch(evsQuery);				 
+				if (resultList!=null && resultList.size()>0) 
+					<%=otherEnd.getName()%> = (Long)resultList.get(0);
+				else
+					<%=otherEnd.getName()%> = null;		
+    		}catch(Exception ex) 
+			{
+				Logger log = Logger.getLogger("<%=klass.getName()%>");
+				log.error("get<%=capFirst(otherEnd.getName())%> throws exception ... ...",ex);
+			}
+    	}
+	    return <%=otherEnd.getName()%>Id;
 	}
 	      <% } %><% } %><% } %>
 	public boolean equals(Object obj){
 		boolean eq = false;
 		if(obj instanceof <%=klass.getName() %>) {
-			<%=klass.getName() %> c =(<%=klass.getName() %>)obj; 
+			<%=klass.getName() %> c =(<%=klass.getName() %>)obj;
 				<% Attribute keyAtt = getKeyAtt((UmlClass)klass);
 				String methodName = "get" + capFirst(keyAtt.getName());	%>				
 				<%=keyAtt.getType().getName()%> thisKey =  <%=methodName%>();			
@@ -213,6 +397,4 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 		}
 		return h;
 	}
-	
-	
 }

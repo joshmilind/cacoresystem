@@ -134,7 +134,7 @@ public class TestSVG {
             svgM.reset();
             
 			svgM.setGeneInfoLocation(
-                    "http://cabio-qa.nci.nih.gov/cacore32/GetHTML?query=Gene");
+                    "http://cabio-qa.nci.nih.gov/@PROJECT_NAME@/GetHTML?query=Gene");
 
 			// Change the color of a Gene in the SVG diagram
 			Map geneColors = new HashMap();

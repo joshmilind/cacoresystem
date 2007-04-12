@@ -68,6 +68,8 @@ documents/caCORE3-2_README.txt -text
 documents/caCORE3-2_SOURCE_README.txt -text
 documents/caCORE3.0.1.1_notes.txt -text
 documents/caCORE3.0.1_notes.txt -text
+documents/caCORE4-0_README.txt -text
+documents/caCORE4-0_SOURCE_README.txt -text
 documents/caCORE_ArchitecturalReviewChecklist.doc -text
 documents/oracle-ds.xml -text
 generated/gov/nih/nci/cabio/domain/Agent.hbm.xml -text
@@ -843,9 +845,13 @@ models/caCORE3-1-EVS.eap -text
 models/caCORE3-2-EVS.eap -text
 models/caCORE3-2.eap -text
 models/caCORE3-2.xmi -text svneol=unset#application/octet-stream
+models/caCORE4-0-EVS.eap -text
+models/caCORE4-0.eap -text
 models/xmi/caCORE3-2.xmi -text
+models/xmi/caCORE4-0.xmi -text svneol=unset#application/octet-stream
 models/xmi/evs3-1.xmi -text
 models/xmi/evs3-2.xmi -text svneol=unset#application/octet-stream
+models/xmi/evs4-0.xmi -text svneol=unset#application/octet-stream
 models/xmi/fixed_evs3-1.xmi -text
 models/xmi/fixed_evs3-2.xmi -text svneol=unset#application/octet-stream
 orm/gov/nih/nci/cabio/domain/Location.hbm.xml -text
