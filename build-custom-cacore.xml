@@ -212,7 +212,6 @@
 	<target name="-build-schema.custom" if="build-schema.custom.use" />
 	<target name="-build-system.custom" if="build-system.custom.use" />
 	<target name="-compile-beans.custom" if="compile-beans.custom.use" />
-	<target name="-package-client-resources.custom" if="package-client-resources.custom.use" />
 	<target name="-package-client-jar.custom" if="package-client-jar.custom.use" />
 	<target name="-package-thickclient-resources.custom" if="package-thickclient-resources.custom.use" />
 	<target name="-package-war.custom" if="package-war.custom.use" />
@@ -256,6 +255,22 @@
 	</target>
 
 	<!-- client package -->
+	<target name="-package-client-resources.custom" if="package-client-resources.custom.use">
+		<SDKecho message="Packaging caCORE client resources"/>
+		<copy todir="${dir.output.project.package.client}/lib">
+			<fileset dir="${dir.lib}">
+				<!-- used for the lexbig distributed client -->
+				<include name="lbImpl.jar"/>
+				<include name="lbInterfaces.jar"/>
+				<include name="lbMessage.jar"/>
+				<include name="lbModel.jar"/>
+				<include name="lbPatch.jar"/>
+				<include name="lgModel.jar"/>
+				<include name="lgUtility.jar"/>
+			</fileset>
+		</copy>
+	</target>
+	
 	<target name="-package-client.custom" if="package-client.custom.use">
 		<SDKecho message="Packaging caCORE client resources" />
 		
