@@ -10,6 +10,9 @@ import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
 
+
+
+
 public interface ApplicationServiceProxy
 {
 

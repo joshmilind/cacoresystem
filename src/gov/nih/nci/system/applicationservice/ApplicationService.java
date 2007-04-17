@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
 
+
 /**
  * @author Kunal Modi (Ekagra Software Technologies Ltd.)
  * 
@@ -89,5 +90,6 @@ public abstract class ApplicationService
 	/*@WRITABLE_API_START@*/
 	public abstract List getObjects(Object object) throws ApplicationException;
 	/*@WRITABLE_API_END@*/
+
 
 }

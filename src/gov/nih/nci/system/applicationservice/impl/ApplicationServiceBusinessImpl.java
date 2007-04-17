@@ -42,6 +42,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+
+
 /**
  * <!-- LICENSE_TEXT_START -->
  * Copyright 2001-2004 SAIC. Copyright 2001-2003 SAIC. This software was developed in conjunction with the National Cancer Institute,
@@ -728,9 +730,17 @@ public class ApplicationServiceBusinessImpl {
 			throw new ApplicationException("Exception in Base Delegate while getting datasource information: ", exception);
 		}
 	}
+    
+
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.17.2.1  2007/04/03 12:28:51  safrant
+// GF5376: Added ability to access LexBIGService through httpinvoker
+//
+// Revision 1.17  2006/12/04 20:36:58  masondo
+// GF3105: Fixed demo files
+//
 // Revision 1.16  2006/11/29 14:09:47  masondo
 // GF3105: Fixed SDK CQL defect
 //

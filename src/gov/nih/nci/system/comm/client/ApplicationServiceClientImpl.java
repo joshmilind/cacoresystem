@@ -23,6 +23,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.InputStreamResource;
 
+
 public class ApplicationServiceClientImpl extends ApplicationService
 {
 
@@ -276,5 +277,5 @@ public class ApplicationServiceClientImpl extends ApplicationService
 		applicationServiceProxy.removeObject(getClientInfo(), object);
 	}
 	/*@WRITABLE_API_END@*/
-	
+	/*****************************/
 }
