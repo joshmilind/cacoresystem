@@ -185,6 +185,26 @@
 	</target>
 
 	<!-- ************************************************************************************************-->
+	<!--    Run EVS LexBIG Distributed TestClient               -->
+	<!-- ************************************************************************************************-->
+	<target name="rundlbdemo">
+		<javac srcdir=".">
+			<include name="TestDLB.java" />
+			<classpath refid="cp" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+			</classpath>
+		</javac>
+		<java classname="TestDLB" fork="true">
+			<classpath refid="cp" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+			</classpath>
+			<sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties" />
+		</java>
+	</target>
+
+	<!-- ************************************************************************************************-->
 	<!--    Compiles all the source code              -->
 	<!-- ************************************************************************************************-->
 	<target name="compile">

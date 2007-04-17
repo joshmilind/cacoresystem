@@ -49,6 +49,7 @@ demo/EVSMonitor.java -text
 demo/EVSWSClient.java -text
 demo/TestCQL.java -text
 demo/TestClient.java -text
+demo/TestDLB.java -text
 demo/TestDSR.java -text
 demo/TestEVS.java -text
 demo/TestSVG.java -text
