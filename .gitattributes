@@ -824,6 +824,8 @@ generated/gov/nih/nci/evs/domain/ws/TreeNode.java -text
 generated/gov/nih/nci/evs/domain/ws/Vocabulary.java -text
 generated/gov/nih/nci/evs/security/SecurityToken.java -text
 generated/gov/nih/nci/evs/security/ws/SecurityToken.java -text
+junit/client/ReadMe.txt -text
+junit/server/ReadMe.txt -text
 lib/MSSOUserValidator.jar -text
 lib/dtsrpcclient.jar -text
 lib/handle.jar -text
