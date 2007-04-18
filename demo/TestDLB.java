@@ -55,17 +55,15 @@ public class TestDLB {
 			String prodUrl = "http://cabio.nci.nih.gov/cacore40/http/remoteService";
 			String stageUrl = "http://cabio-stage.nci.nih.gov/cacore40/http/remoteService";
 			String qaUrl = "http://cabio-qa.nci.nih.gov/cacore40/http/remoteService";
-			String genUrl = "http://cbioapp506.nci.nih.gov:8080/cacore32/http/remoteService";
-	        //String genUrl = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
+			String genUrl = "http://cbioapp506.nci.nih.gov:59080/cacore40/http/evsService";
+	                String localUrl = "http://localhost:8080/cacore40/http/evsService";
 			//ApplicationService appService = ApplicationService.getRemoteInstance(prodUrl);
 
-			EVSApplicationService service = EVSApplicationService
-					.getRemoteInstance(genUrl);
+			EVSApplicationService service = EVSApplicationService.getRemoteInstance(genUrl);
 
 			try {
 				System.out.println("LexGrid service search....");
-				System.out
-						.println("calling appService.getSupportedCodingSchemes()");
+				System.out.println("calling appService.getSupportedCodingSchemes()");
 				// CodingSchemeRenderingList schemes =
 				// appService.getSupportedCodingSchemes();
 
