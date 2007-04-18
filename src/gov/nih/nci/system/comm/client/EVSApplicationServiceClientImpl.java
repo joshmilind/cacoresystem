@@ -110,21 +110,21 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 	
 	private static EVSApplicationServiceProxy getRemoteServiceFromClassPath()
 	{
-		ApplicationContext ctx = new ClassPathXmlApplicationContext(Constant.REMOTE_SERVICE_FILE_NAME);
-		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(Constant.REMOTE_APPLICATION_SERVICE);
+		ApplicationContext ctx = new ClassPathXmlApplicationContext(Constant.EVS_SERVICE_FILE_NAME);
+		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(Constant.EVS_REMOTE_APPLICATION_SERVICE);
 		return applicationServiceProxy;
 	}
 
 	private static EVSApplicationServiceProxy getRemoteServiceFromPath(String URL)
 	{
-		String xmlFileString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org/dtd/spring-beans.dtd\"><beans><bean id=\"remoteService\" class=\"org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean\"><property name=\"serviceUrl\"><value>" + URL + "</value></property><property name=\"serviceInterface\"><value>gov.nih.nci.system.comm.common.ApplicationServiceProxy</value></property></bean></beans>";
+		String xmlFileString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org/dtd/spring-beans.dtd\"><beans><bean id=\"evsService\" class=\"org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean\"><property name=\"serviceUrl\"><value>" + URL + "</value></property><property name=\"serviceInterface\"><value>gov.nih.nci.system.comm.common.EVSApplicationServiceProxy</value></property></bean></beans>";
 		GenericApplicationContext ctx = new GenericApplicationContext();
 		XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
 		InputStream inputStream = new ByteArrayInputStream(xmlFileString.getBytes());
 		InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
 		xmlReader.loadBeanDefinitions(inputStreamResource);
 		ctx.refresh();
-		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(Constant.REMOTE_APPLICATION_SERVICE);
+		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(Constant.EVS_REMOTE_APPLICATION_SERVICE);
 		return applicationServiceProxy;
 	}	
 

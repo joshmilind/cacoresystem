@@ -81,7 +81,7 @@ public class EVSApplicationServiceProvider {
 		{
 			try 
 			{
-				Class applicationServiceImplClass = Class.forName("gov.nih.nci.system.applicationservice.impl.ApplicationServiceImpl");
+				Class applicationServiceImplClass = Class.forName("gov.nih.nci.system.applicationservice.impl.EVSApplicationServiceImpl");
 				try 
 				{
 					applicationService = (EVSApplicationService)applicationServiceImplClass.newInstance();
@@ -109,7 +109,7 @@ public class EVSApplicationServiceProvider {
 		{
 			try 
 			{
-				Class applicationServiceClientImplClass = Class.forName("gov.nih.nci.system.comm.client.ApplicationServiceClientImpl");
+				Class applicationServiceClientImplClass = Class.forName("gov.nih.nci.system.comm.client.EVSApplicationServiceClientImpl");
 				try 
 				{
 					applicationService = (EVSApplicationService)applicationServiceClientImplClass.newInstance();
@@ -138,7 +138,7 @@ public class EVSApplicationServiceProvider {
 		{
 			try 
 			{
-				Class applicationServiceClientImplClass = Class.forName("gov.nih.nci.system.comm.client.ApplicationServiceClientImpl");
+				Class applicationServiceClientImplClass = Class.forName("gov.nih.nci.system.comm.client.EVSApplicationServiceClientImpl");
 				try 
 				{
 					applicationService = (EVSApplicationService)applicationServiceClientImplClass.newInstance();

@@ -52,8 +52,8 @@ public class EVSApplicationServiceServerImpl implements EVSApplicationServicePro
 	public EVSApplicationServiceServerImpl()
 	{
 		securityEnabler = new SecurityEnabler(SecurityConfiguration.getApplicationName());
-		ApplicationContext ctx = new ClassPathXmlApplicationContext(Constant.APPLICATION_SERVICE_FILE_NAME);
-		applicationService = (EVSApplicationService) ctx.getBean(Constant.APPLICATION_SERVICE);
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("evsApplicationService.xml");
+		applicationService = (EVSApplicationService) ctx.getBean("evsApplicationService");
 	}
 	
 	/* (non-Javadoc)
