@@ -831,6 +831,7 @@ lib/MSSOUserValidator.jar -text
 lib/dtsrpcclient.jar -text
 lib/handle.jar -text
 lib/handlerservice.jar -text
+lib/hibernate3.jar -text
 lib/lbAdmin.jar -text
 lib/lbImpl.jar -text
 lib/lbInterfaces.jar -text
