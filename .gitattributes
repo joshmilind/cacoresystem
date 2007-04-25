@@ -10,6 +10,7 @@ conf/codegen/control-files/beanevswsgeneration.xml -text
 conf/codegen/control-files/beangeneration_cacore.xml -text
 conf/codegen/control-files/castormappinggeneration.xml -text
 conf/codegen/control-files/castormappinggeneration_cacore.xml -text
+conf/codegen/control-files/coreindexutil.xml -text
 conf/codegen/control-files/daogeneration.xml -text
 conf/codegen/control-files/evsPackageUtil.xml -text
 conf/codegen/control-files/evs_schemageneration.xml -text
@@ -870,6 +871,7 @@ orm/gov/nih/nci/common/provenance/domain/impl/ProvenanceImpl.hbm.xml -text
 src/gov/nih/nci/codegen/core/transformer/UML13CastorMappingTransformerForCACORE.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13DAOTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13SchemaTransformerForEVS.java -text
+src/gov/nih/nci/codegen/core/transformer/UML13SearchIndexTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13WSDDTransformerForEVS.java -text
 src/gov/nih/nci/common/util/HTTPUtils.java -text
 src/gov/nih/nci/common/util/JSPUtils.java -text
