@@ -881,6 +881,7 @@ src/gov/nih/nci/common/util/SearchUtils.java -text
 src/gov/nih/nci/evs/query/EVSQuery.java -text
 src/gov/nih/nci/evs/query/EVSQueryImpl.java -text
 src/gov/nih/nci/search/RangeFilter.java -text
+src/gov/nih/nci/search/SearchQuery.java -text
 src/gov/nih/nci/system/applicationservice/ApplicationService.java -text
 src/gov/nih/nci/system/applicationservice/EVSApplicationService.java -text
 src/gov/nih/nci/system/applicationservice/EVSApplicationServiceProvider.java -text
