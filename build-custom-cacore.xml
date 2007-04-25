@@ -118,6 +118,7 @@
 			<replacefilter token="@EVS_MODEL@" value="${dir.model}/${fixed_evs_model_filename}" />
 			<replacefilter token="@EVSPROPERTIESFILE@" value="evsBeans.properties" />
 			<replacefilter token="@EVSDAOCLASS@" value="${evs_dao_class}" />
+			<replacefilter token="@SHOWSQL@" value="${show_sql}" />
 		</replace>
 	</target>
 
