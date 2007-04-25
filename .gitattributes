@@ -829,8 +829,10 @@ junit/client/ReadMe.txt -text
 junit/server/ReadMe.txt -text
 lib/MSSOUserValidator.jar -text
 lib/dtsrpcclient.jar -text
+lib/ejb3-persistence.jar -text
 lib/handle.jar -text
 lib/handlerservice.jar -text
+lib/hibernate-annotations.jar -text
 lib/hibernate3.jar -text
 lib/lbAdmin.jar -text
 lib/lbImpl.jar -text
