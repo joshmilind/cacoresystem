@@ -18,6 +18,7 @@ conf/codegen/control-files/xmlunmarshallermappinggeneration_cacore.xml -text
 conf/codegen/template/Bean.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanEVSImpl.javajet -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanEVSWS.javajet -text svneol=unset#application/octet-stream
+conf/codegen/template/BeanSkel.skeleton -text svneol=unset#application/octet-stream
 conf/codegen/template/BeanSkel_EVS.skeleton -text svneol=unset#application/octet-stream
 conf/codegen/template/EVSBeanSkel.skeleton -text svneol=unset#application/octet-stream
 conf/core-deploy.properties -text
