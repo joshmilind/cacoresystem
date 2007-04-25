@@ -58,7 +58,9 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 	private static int recordsCount = 0;
 	private static int maxRecordsCount = 0;
 	private static boolean caseSensitivity = false;	
-
+	//TODO: Move EVS constants 
+	final static private String EVS_REMOTE_APPLICATION_SERVICE = "evsService";
+	final static private String EVS_SERVICE_FILE_NAME = "applicationService.xml";
 	private static Logger log= Logger.getLogger(ApplicationServiceClientImpl.class.getName());	
 
 	/* (non-Javadoc)
@@ -110,8 +112,8 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 	
 	private static EVSApplicationServiceProxy getRemoteServiceFromClassPath()
 	{
-		ApplicationContext ctx = new ClassPathXmlApplicationContext(Constant.EVS_SERVICE_FILE_NAME);
-		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(Constant.EVS_REMOTE_APPLICATION_SERVICE);
+		ApplicationContext ctx = new ClassPathXmlApplicationContext(EVS_SERVICE_FILE_NAME);
+		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(EVS_REMOTE_APPLICATION_SERVICE);
 		return applicationServiceProxy;
 	}
 
@@ -124,7 +126,7 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 		InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
 		xmlReader.loadBeanDefinitions(inputStreamResource);
 		ctx.refresh();
-		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(Constant.EVS_REMOTE_APPLICATION_SERVICE);
+		EVSApplicationServiceProxy applicationServiceProxy = (EVSApplicationServiceProxy) ctx.getBean(EVS_REMOTE_APPLICATION_SERVICE);
 		return applicationServiceProxy;
 	}	
 
