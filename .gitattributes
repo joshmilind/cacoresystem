@@ -876,6 +876,7 @@ src/gov/nih/nci/codegen/core/transformer/UML13SearchIndexTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13WSDDTransformerForEVS.java -text
 src/gov/nih/nci/common/util/HTTPUtils.java -text
 src/gov/nih/nci/common/util/JSPUtils.java -text
+src/gov/nih/nci/common/util/ObjectBridge.java -text
 src/gov/nih/nci/common/util/PrintUtils.java -text
 src/gov/nih/nci/common/util/SVGManipulator.java -text
 src/gov/nih/nci/common/util/SearchUtils.java -text
