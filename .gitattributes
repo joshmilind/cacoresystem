@@ -904,6 +904,9 @@ src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSLexBigDAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/LexCOREService.java -text
 src/gov/nih/nci/system/dao/impl/search/SearchAPIDAO.java -text
+src/gov/nih/nci/system/dao/impl/search/service/FullTextSearch.java -text
+src/gov/nih/nci/system/dao/impl/search/service/HibernateSearch.java -text
+src/gov/nih/nci/system/dao/impl/search/service/Searchable.java -text
 src/gov/nih/nci/system/dao/impl/search/utils/IndexGenerator.java -text
 src/gov/nih/nci/system/dao/impl/search/utils/Indexer.java -text
 src/gov/nih/nci/system/dao/impl/search/utils/SearchORMUtils.java -text
