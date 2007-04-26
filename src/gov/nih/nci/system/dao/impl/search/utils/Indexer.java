@@ -57,7 +57,7 @@ public class Indexer extends Thread{
                 breakPoint = 0;
                 fullTextSession.clear();                
             }
-            counter++;
+            breakPoint++;
         }
         long end = System.currentTimeMillis();
         results.last();        
