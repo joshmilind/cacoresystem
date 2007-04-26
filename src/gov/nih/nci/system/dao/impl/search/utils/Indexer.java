@@ -42,19 +42,20 @@ public class Indexer extends Thread{
      */
     public void run(){
         long start = System.currentTimeMillis();
-        String hqlQuery = "from "+ persister.getEntityName();        
+        String hqlQuery = "from "+ persister.getEntityName();          
         //ScrollableResults results = fullTextSession.createQuery(hqlQuery).setCacheMode(CacheMode.IGNORE).setReadOnly(true).scroll(ScrollMode.FORWARD_ONLY);
         ScrollableResults results = fullTextSession.createQuery(hqlQuery).setCacheMode(CacheMode.IGNORE).setReadOnly(true).scroll();
-        int counter = 0;
+        int breakPoint = 0;
         while(results.next()){
             try{
-                fullTextSession.index(results.get(0));
+                fullTextSession.index(results.get(0));                
             }catch(Exception ex){
                 System.out.println("Error indexing: "+ex.getMessage());
             }            
-            if(counter == 100){
-                counter = 0;
-                fullTextSession.clear();
+            if(breakPoint == 100){
+                System.out.println("Entity: "+ persister.getEntityName() +"\t"+ results.getRowNumber());
+                breakPoint = 0;
+                fullTextSession.clear();                
             }
             counter++;
         }
