@@ -52,7 +52,7 @@ public class Indexer extends Thread{
             }catch(Exception ex){
                 System.out.println("Error indexing: "+ex.getMessage());
             }            
-            if(breakPoint = 100){                
+            if(breakPoint == 100){                
                 breakPoint = 0;
                 fullTextSession.clear();                
             }
