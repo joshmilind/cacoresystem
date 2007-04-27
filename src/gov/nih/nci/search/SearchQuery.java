@@ -83,7 +83,7 @@ public class SearchQuery implements Serializable {
         return rangeFilter;
     }
     
-    private boolean fuzzySearch = false;
+    private Boolean fuzzySearch = false;
     public void setFuzzySearch(boolean fuzzy){
         this.fuzzySearch = fuzzy;
     }
