@@ -78,8 +78,7 @@ public class FullTextSearch implements Searchable {
             for(Iterator i= fieldList.iterator(); i.hasNext();){
                 searchFields[index]=(String)i.next();
                 index++;
-            }
-            System.out.println("SearchFields: "+ searchFields.toString());
+            }            
             return searchFields;
         }
         
@@ -133,7 +132,7 @@ public class FullTextSearch implements Searchable {
      * @throws Exception
      */
     public Hits luceneSearch(String searchString) throws Exception{
-            System.out.println("Lucene Search");
+            
             ParallelMultiSearcher multiSearcher = null;
             Query query = null;
             IndexReader reader;
