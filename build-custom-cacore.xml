@@ -9,6 +9,10 @@
 			<istrue value="${fix-xmi.custom.use}" />
 		</and>
 	</condition>
+	<condition property="generate_index_yes">
+		<equals arg1="${generate_index}" arg2="yes" casesensitive="false" trim="true" />
+	</condition>
+
 	
 	<!--***********************************************************************
 	*** Initialization and Cleanup
@@ -118,6 +122,7 @@
 			<replacefilter token="@EVS_MODEL@" value="${dir.model}/${fixed_evs_model_filename}" />
 			<replacefilter token="@EVSPROPERTIESFILE@" value="evsBeans.properties" />
 			<replacefilter token="@EVSDAOCLASS@" value="${evs_dao_class}" />
+			<replacefilter token="@INDEXBASE@" value="${index_base}" />
 		</replace>
 	</target>
 
@@ -252,6 +257,25 @@
 	<target name="-generate-beans.custom" if="generate-beans.custom.use">
 		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanevsgeneration}" />
 		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanevswsgeneration}" />
+		<antcall target="generate-index-properties"/>
+	</target>
+	<!-- generate index properties file -->
+	<target name="generate-index-properties">
+		<SDKecho message="Generating index properties file"/>
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.coreindexutil}"/>		
+	</target>	
+	<!-- generate indexes -->
+	<target name="generate-index" if="generate_index_yes">	
+	<SDKecho message="Generating indexes"/>
+		<mkdir dir="${index_base}" />
+		<java classname="gov.nih.nci.system.dao.impl.search.utils.IndexGenerator" fork="true" maxmemory="1024m">
+			<classpath refid="classpath"/>
+			<classpath>
+				<pathelement location="${dir.output.project.src}" />
+			</classpath>			
+			<arg value="${file.control.coreindexutil}" />
+			
+		</java>
 	</target>
 
 	<!-- client package -->
@@ -348,6 +372,9 @@
 		<copy todir="${cacore_home}/output" overwrite="true">
 			<fileset dir="${dir.output.project.package}" />
 		</copy>
+		<!--
+			<antcall target="generate-index"/>
+		-->
 	</target>
 	
 	<target name="-rundemo.custom" if="rundemo.custom.use" />
