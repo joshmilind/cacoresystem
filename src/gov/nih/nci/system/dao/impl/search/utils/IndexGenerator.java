@@ -32,13 +32,9 @@ public class IndexGenerator{
 
 
     public static void main(String[] args)throws Exception{
-
-        System.out.println("SearchIndexGenerator generating indexes");
-        System.out.println("getIndexedClasses");
         try{
             SessionFactory sessionFactory = new AnnotationConfiguration().configure("orm3.cfg.xml").buildSessionFactory();            
-            Set classSet = getIndexedClasses(sessionFactory, "gov.nih.nci.cabio.domain");
-            System.out.println("Number of indexed classes: "+ classSet.size());
+            Set classSet = getIndexedClasses(sessionFactory, "gov.nih.nci.cabio.domain");            
 
             if(classSet.size()>0){
                 Thread[] t = new Thread[classSet.size()];

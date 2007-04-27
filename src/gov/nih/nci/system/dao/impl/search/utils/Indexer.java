@@ -52,8 +52,7 @@ public class Indexer extends Thread{
             }catch(Exception ex){
                 System.out.println("Error indexing: "+ex.getMessage());
             }            
-            if(breakPoint == 100){
-                System.out.println("Entity: "+ persister.getEntityName() +"\t"+ results.getRowNumber());
+            if(breakPoint = 100){                
                 breakPoint = 0;
                 fullTextSession.clear();                
             }
