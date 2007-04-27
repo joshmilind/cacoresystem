@@ -60,7 +60,7 @@ public class Indexer extends Thread{
         }
         long end = System.currentTimeMillis();
         results.last();        
-        System.out.println("Total number of: "+ persister.getEntityName() +"\t"+ results.getRowNumber());
+        System.out.println("Indexed:  "+ persister.getEntityName() +"\t"+ results.getRowNumber());
         fullTextSession.close();
 
     }
