@@ -1,5 +1,4 @@
 <%@page contentType="text/html"%>
-<!-- This is a test page -->
 <HTML>
 <HEAD>
 <title>SearchIndex</title>
@@ -26,6 +25,7 @@
 <!-- end of logo --> 
 
 <%@ page import="gov.nih.nci.search.*,
+		 gov.nih.nci.common.util.*,	
 		 gov.nih.nci.system.applicationservice.*,
 		 java.lang.reflect.*,
 		 java.util.*" %>
@@ -54,7 +54,7 @@
  		</td>
  		<tr>
  		<td align=center>
- 			<INPUT TYPE=CHECKBOX NAME="FULL_TEXT_SEARCH" VALUE="YES" CHECKED/>Quick Search
+ 			<INPUT TYPE=CHECKBOX NAME="FULL_TEXT_SEARCH" VALUE="YES"/>Quick Search
  		</td>
  		</tr>
   		<tr>
@@ -133,11 +133,28 @@ try{
 			%>	
 				<tr><td><B><U><%=hit%>.<%=r.getClassName()%></B></U></td></tr>
 			<%
+				String info = null;
+				for(Iterator it=properties.keySet().iterator();it.hasNext();){
+					String key = (String) it.next();
+					String value = (String)properties.get(key);
+					if(JSPUtils.getKeyDescription(r.getKeyword(), value)!=null){
+						info = JSPUtils.getKeyDescription(r.getKeyword(), value);
+						break;
+					}
+					
+				}
+				if(info !=null){
+					%>
+						<tr><td></td><td><%=info%></td></tr>
+					<%
+				}				
 				for(Iterator it=properties.keySet().iterator();it.hasNext();){
 					String key = (String) it.next();
 					String value = (String)properties.get(key);
 					
+					
 					if(!key.equalsIgnoreCase("_hibernate_class")){
+						
 						%>
 						<tr><td></td><td><%=key%> - <%=value%></td></tr>
 						<%
@@ -232,8 +249,9 @@ try{
 	System.out.println("JSP Error: "+ ex.getMessage());
 }
 %>
+<br>
 <hr>
-
+<br>
 <!-- footer begins -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ftrTable">
         <tr>
