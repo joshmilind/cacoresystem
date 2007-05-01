@@ -3,7 +3,7 @@ package gov.nih.nci.system.dao.impl.search.service;
 import gov.nih.nci.search.*;
 import gov.nih.nci.search.RangeFilter;
 import gov.nih.nci.system.dao.*;
-
+import gov.nih.nci.system.dao.impl.search.SearchAPIDAO;
 import java.util.*;
 import java.io.*;
 
@@ -56,30 +56,8 @@ public class FullTextSearch implements Searchable {
          * @return
          * @throws Exception
          */
-    private String[] getIndexedFields() throws Exception{
-            Properties properties = new Properties();
-            Set<String> fieldList = new HashSet<String>();
-            try{
-                properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(indexPropertyFile));
-            }catch(Exception ex){
-                throw new Exception(ex.getMessage());
-            }
-            if(properties.size()>0){
-                for(Iterator it = properties.keySet().iterator(); it.hasNext();){
-                    String key = (String)it.next();
-                    StringTokenizer st = new StringTokenizer(properties.getProperty(key),";");
-                    while(st.hasMoreTokens()){
-                        fieldList.add(st.nextToken());
-                    }
-                }
-            }
-            String[] searchFields = new String[fieldList.size()];
-            int index = 0;
-            for(Iterator i= fieldList.iterator(); i.hasNext();){
-                searchFields[index]=(String)i.next();
-                index++;
-            }            
-            return searchFields;
+    private String[] getIndexedFields() throws Exception{               
+            return SearchAPIDAO.getIndexedFields();
         }
         
     /**
