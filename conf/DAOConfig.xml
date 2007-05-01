@@ -12,6 +12,11 @@
        <database>oracle</database>
   </domainObjects>
    -->
+     <domainObjects name="gov.nih.nci.search.SearchQuery,gov.nih.nci.search.SearchResult">
+           <DataSource>SEARCH</DataSource>
+           <tool>hibernate</tool>
+           <database>oracle</database>
+      </domainObjects>
   <domainObjects name="gov.nih.nci.evs.query.EVSQueryImpl">
       <DataSource>EVS</DataSource>
       <enableCache>true</enableCache>
