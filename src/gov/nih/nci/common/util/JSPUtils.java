@@ -29,6 +29,7 @@ public class JSPUtils
     private static Set packages = new HashSet();
     private static final String SEMICOLON_SEPARATOR = ";";
     private static final String COMMA_SEPARATOR = ",";
+    private static Set indexedFields = new HashSet();
        
    
     /**
@@ -50,6 +51,7 @@ public class JSPUtils
                 fileList = getFileList(beanFiles);
                 
                 loadProperties(fileList);
+                loadIndexedFields();
             }
         }
         catch(Exception e)
@@ -394,6 +396,67 @@ private String locateClass(String beanName, String packageName){
            }
        }
        return valid;       
+   }
+   private static void loadIndexedFields() throws Exception{       
+       Properties fieldNames = new Properties();
+       fieldNames.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("indexedFields.properties"));
+       for(Iterator i= fieldNames.keySet().iterator(); i.hasNext();){
+           String className = (String)i.next();
+           String fields = fieldNames.getProperty(className);
+           StringTokenizer st = new StringTokenizer(fields,";");
+           while(st.hasMoreTokens()){
+               indexedFields.add(st.nextToken());
+           }          
+       }
+   }
+   public static Set getIndexedFields(){
+       return indexedFields;
+   }
+   public static String getKeyDescription(String keywords, String doc){
+       String keyDescription = null;
+       StringTokenizer st = new StringTokenizer(keywords, " ");
+       Set keys = new HashSet();
+       while(st.hasMoreTokens()){
+           keys.add(st.nextToken());
+       }
+       for(StringTokenizer lines = new StringTokenizer(doc, ".");lines.hasMoreTokens();){
+           String sentence = lines.nextToken();
+           String start = "";   
+           for(Iterator it = keys.iterator(); it.hasNext();){
+               String key = (String)it.next();   
+               if(sentence.indexOf(key)>-1){
+                   //tokenize sentence
+                   if(keyDescription == null){
+                       keyDescription = sentence;
+                   }
+                   String newSentence = "";
+                   for(StringTokenizer tokens = new StringTokenizer(keyDescription, " ");tokens.hasMoreTokens();){
+                       String token = tokens.nextToken();
+                       if(key.equalsIgnoreCase(token)){
+                           newSentence += " <b> " + token +" </b> ";
+                       }else{
+                           newSentence += token +" ";
+                       }
+                   }
+                   keyDescription = newSentence;
+                   /**
+                   if(keyDescription.indexOf(key)==0){
+                       keyDescription = " <b> "+ key +" </b> " + keyDescription.substring(key.length());
+                       
+                   }else{
+                       start = keyDescription.substring(0, keyDescription.indexOf(key));
+                       String end = keyDescription.substring(start.length()+ key.length());
+                       keyDescription = start +" <b> " + key + " </b> " + end;                                             
+                   }  
+                   */ 
+               }
+           }           
+       }
+       if(keyDescription != null){
+           System.out.println(doc + " Key: "+ keyDescription);
+       }
+       
+     return keyDescription;  
    }
     
 }
