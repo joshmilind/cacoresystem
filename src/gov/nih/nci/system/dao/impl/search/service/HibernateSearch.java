@@ -23,13 +23,8 @@ import org.hibernate.search.FullTextSession;
  */
 
 public class HibernateSearch implements Searchable{
-    private static Logger log = Logger.getLogger(HibernateSearch.class.getName());
-    private static SearchAPIDAO searchAPI = new SearchAPIDAO();
-    private static String[] searchFields;
-    private static String indexPropertyFile = "indexedFields.properties";
-
-    public HibernateSearch() throws Exception {
-        loadSearchFields();
+    private static Logger log = Logger.getLogger(HibernateSearch.class.getName());    
+    public HibernateSearch() throws Exception {        
     }
 
     public List query(String queryString) throws DAOException{
@@ -47,7 +42,7 @@ public class HibernateSearch implements Searchable{
       try{
           String keyword = queryString;          
           System.out.println("Quering for "+ keyword);
-          org.apache.lucene.queryParser.QueryParser parser = new MultiFieldQueryParser(searchFields, new StandardAnalyzer());//
+          org.apache.lucene.queryParser.QueryParser parser = new MultiFieldQueryParser(getIndexedFields(), new StandardAnalyzer());//
           org.apache.lucene.search.Query luceneQuery = parser.parse( keyword );
           Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
           resultList = fullTextQuery.list();          
@@ -86,31 +81,9 @@ public class HibernateSearch implements Searchable{
     }
 
     
-    private void loadSearchFields() throws Exception{
-        Properties properties = new Properties();
-        Set<String> fieldList = new HashSet<String>();
-        try{
-            properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(indexPropertyFile));
-        }catch(Exception ex){
-            throw new Exception(ex.getMessage());
-        }
-        if(properties.size()>0){
-            for(Iterator it = properties.keySet().iterator(); it.hasNext();){
-                String key = (String)it.next();
-                StringTokenizer st = new StringTokenizer(properties.getProperty(key),";");
-                while(st.hasMoreTokens()){
-                    fieldList.add(st.nextToken());
-                }
-            }
-            searchFields = new String[fieldList.size()+1];
-            int index = 0;
-            for(Iterator i= fieldList.iterator(); i.hasNext();){
-                searchFields[index]=(String)i.next();
-                index++;
-            }
-            searchFields[index]="_hibernate_class";
-            System.out.println("SearchFields: "+ searchFields);
-        }
+    
+    private String[] getIndexedFields() throws Exception{
+        return SearchAPIDAO.getIndexedFields();
     }
 
 }
