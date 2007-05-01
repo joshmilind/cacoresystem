@@ -464,6 +464,11 @@ public class ApplicationServiceBusinessImpl {
 	public List search(String path, List objList) throws ApplicationException {
 
 		try{
+			if(path == null){
+				path = objList.get(0).getClass().getName();
+			}else if(objList.get(0) instanceof gov.nih.nci.search.SearchQuery){
+				path = objList.get(0).getClass().getName();
+			}
 			boolean inputImplFlag = containsImplInTarget(path);
 			List pathList = preparePathList(path);
 			
@@ -735,6 +740,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.18  2007/04/17 13:25:15  safrant
+// GF5376: extended ApplicationService to EVSApplicationService
+//
 // Revision 1.17.2.1  2007/04/03 12:28:51  safrant
 // GF5376: Added ability to access LexBIGService through httpinvoker
 //
