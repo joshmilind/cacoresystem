@@ -160,17 +160,12 @@ public class ORMDAOImpl implements DAO
 				{
 					if(isCount != null && isCount.booleanValue())
 				    {
-						log.debug("ORMDAOImpl.  isCount .... .... | converter.getCountQuery() = " + converter.getCountQuery().getQueryString());
-						System.out.println("Row counter: "+ rowCount);
-                        System.out.println("Class: "+ converter.getCountQuery().uniqueResult().getClass().getName()+"\t"+ converter.getCountQuery().uniqueResult().toString());
-						//rowCount = (Integer)converter.getCountQuery().uniqueResult();
-                        
-                        Long count = (Long)converter.getCountQuery().uniqueResult();
-                        System.out.println("Count: "+ count);
+						log.debug("ORMDAOImpl.  isCount .... .... | converter.getCountQuery() = " + converter.getCountQuery().getQueryString());						
+						Long count = (Long)converter.getCountQuery().uniqueResult();                        
                         rowCount = Integer.valueOf(String.valueOf(count));
                         
 						log.debug("ORMDAOImpl HQL ===== count = " + rowCount);
-						System.out.println("Row counter: "+ rowCount);
+						
                         
 					}
 					else if((isCount != null && !isCount.booleanValue()) || isCount == null)
@@ -253,9 +248,9 @@ public class ORMDAOImpl implements DAO
 				if(isCount != null && isCount.booleanValue())
 			    {
 					rowCount = new Integer(hqlQuery.list().size());
-                    System.out.println("Row count: "+ rowCount);
+                    
                     Query tQuery = session.createQuery("select count(*)"+ hql );
-                    System.out.println("Count: "+ tQuery.list().get(0));
+                    
 				}
 				else if((isCount != null && !isCount.booleanValue()) || isCount == null)
 			    {
@@ -280,7 +275,7 @@ public class ORMDAOImpl implements DAO
 			        {
 			        	hqlQuery.setMaxResults(recordsPerQuery);
 			        }
-                   System.out.println("");
+                   
 			    	rs = hqlQuery.list();
 			    }
 			}
