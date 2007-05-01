@@ -775,12 +775,8 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 		  	try
 			{
 				LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
-
-				if((roles != null) && (roles.size() > 0)){
-				   tree = adapter.getTree(rootName, direction, depthLevel, attrib, isaFlag, roles);
-
-				}
-                if(tree == null){
+				tree = adapter.getTree(rootName, direction, depthLevel, attrib, isaFlag, roles);
+				if(tree == null){
                     throw new DAOException("Unable to generate Tree  - LexBIG Exception");
 
                 }
