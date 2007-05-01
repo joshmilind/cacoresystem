@@ -412,7 +412,7 @@ private String locateClass(String beanName, String packageName){
    public static Set getIndexedFields(){
        return indexedFields;
    }
-   public static String getKeyDescription(String keywords, String doc){
+   public String getKeyDescription(String keywords, String doc){
        String keyDescription = null;
        StringTokenizer st = new StringTokenizer(keywords, " ");
        Set keys = new HashSet();
