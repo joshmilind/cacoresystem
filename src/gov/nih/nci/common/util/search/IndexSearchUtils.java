@@ -94,22 +94,12 @@ public class IndexSearchUtils {
                     for(StringTokenizer tokens = new StringTokenizer(keyDescription, " ");tokens.hasMoreTokens();){
                         String token = tokens.nextToken();
                         if(key.equalsIgnoreCase(token)){
-                            newSentence += " <b> " + token +" </b> ";
+                            newSentence += " <b><i> " + token +" </i>></b> ";
                         }else{
                             newSentence += token +" ";
                         }
                     }
-                    keyDescription = newSentence;
-                    /**
-                    if(keyDescription.indexOf(key)==0){
-                        keyDescription = " <b> "+ key +" </b> " + keyDescription.substring(key.length());
-                        
-                    }else{
-                        start = keyDescription.substring(0, keyDescription.indexOf(key));
-                        String end = keyDescription.substring(start.length()+ key.length());
-                        keyDescription = start +" <b> " + key + " </b> " + end;                                             
-                    }  
-                    */ 
+                    keyDescription = newSentence;                   
                 }
             }           
         }
