@@ -59,7 +59,7 @@
 			System.out.println("Old term: "+ oldTerm);
 			if(oldTerm != null && searchString != null){
 				if(!oldTerm.equals(searchString)){
-					searchUtils = new SearchUtils();
+					searchUtils = new IndexSearchUtils();
 					searchUtils.setNewQuery(true);	
 					searchQuery.setQueryType("FULL_TEXT_SEARCH");				
 				}

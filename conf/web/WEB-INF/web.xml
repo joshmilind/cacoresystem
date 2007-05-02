@@ -60,11 +60,18 @@
     	<servlet-name>GetHTML</servlet-name>
     	<servlet-class>gov.nih.nci.system.proxy.HTTPQuery</servlet-class>        	
     </servlet>
+      <servlet>
+    	<servlet-name>IndexService</servlet-name>
+    	<servlet-class>gov.nih.nci.system.proxy.IndexSearchService</servlet-class>        	
+    </servlet>
 	<servlet>
     	<servlet-name>Happy</servlet-name>
 		<jsp-file>Happy.jsp</jsp-file>     	
     </servlet>
-    
+    <servlet>
+    	<servlet-name>search</servlet-name>
+		<jsp-file>indexSearch.jsp</jsp-file>     	
+    </servlet>
 	<servlet-mapping>
 		<servlet-name>httpinvoker</servlet-name>
 		<url-pattern>/http/*</url-pattern>
@@ -92,6 +99,10 @@
     	<servlet-name>GetXML</servlet-name>
     	<url-pattern>/GetXML</url-pattern>
     </servlet-mapping>
+     <servlet-mapping>
+    	<servlet-name>IndexService</servlet-name>
+    	<url-pattern>/IndexService</url-pattern>
+    </servlet-mapping>
     
     <servlet-mapping>
     	<servlet-name>GetHTML</servlet-name>
@@ -100,6 +111,10 @@
     <servlet-mapping>
     	<servlet-name>Happy</servlet-name>
       	<url-pattern>/Happy</url-pattern>
+    </servlet-mapping>
+       <servlet-mapping>
+    	<servlet-name>search</servlet-name>
+      	<url-pattern>/search</url-pattern>
     </servlet-mapping>
 
 	<!-- This forces the initialization of the hibernate sessions -->
