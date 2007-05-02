@@ -123,6 +123,7 @@
 			<replacefilter token="@EVSPROPERTIESFILE@" value="evsBeans.properties" />
 			<replacefilter token="@EVSDAOCLASS@" value="${evs_dao_class}" />
 			<replacefilter token="@INDEXBASE@" value="${index_base}" />
+			<replacefilter token="@SHOWSQL@" value="${show_sql}" />
 		</replace>
 	</target>
 
