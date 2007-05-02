@@ -36,7 +36,6 @@ public class SearchAPIDAO implements DAO {
 			indexedFields = loadIndexedFields();
 		} catch (Exception ex) {
 			log.error(ex);
-			throw new DAOException(ex.getMessage());
 		}
 	}
 
