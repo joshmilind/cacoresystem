@@ -51,6 +51,20 @@ public class SearchResult implements Serializable{
         this.properties = properties;
     }
     
+    private String displayText;
+    public String getDisplayText(){
+        return displayText;
+    }
+    public void setDisplayText(String txt){
+        displayText = txt;
+    }
+    private String id;
+    public void setId(String id){
+        this.id = id;
+    }
+    public String getId(){
+        return id;
+    }
     public int hashCode()
     {
         int h = 0;
