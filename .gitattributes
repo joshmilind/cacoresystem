@@ -60,6 +60,7 @@ demo/TestDLB.java -text
 demo/TestDSR.java -text
 demo/TestEVS.java -text
 demo/TestSVG.java -text
+demo/TestSearchAPI.java -text
 demo/TestXML.java -text
 demo/WSTestClient.java -text
 demo/build_client.xml -text

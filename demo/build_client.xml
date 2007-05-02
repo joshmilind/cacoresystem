@@ -204,6 +204,28 @@
 		</java>
 	</target>
 
+	
+	<!-- ************************************************************************************************-->
+	<!--    Run caCORE SearchAPI TestClient               -->
+	<!-- ************************************************************************************************-->
+	<target name="runsearchdemo">
+		<javac srcdir=".">
+			<include name="TestSearchAPI.java" />
+			<classpath refid="cp" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+			</classpath>
+		</javac>
+		<java classname="TestSearchAPI" fork="true">
+			<classpath refid="cp" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+			</classpath>
+			<sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties" />
+		</java>
+	</target>
+	
+	
 	<!-- ************************************************************************************************-->
 	<!--    Compiles all the source code              -->
 	<!-- ************************************************************************************************-->
