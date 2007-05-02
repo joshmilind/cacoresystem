@@ -36,6 +36,7 @@ public class IndexSearchService extends HttpServlet {
             }else{
                 try{
                     List results = query(searchUtils.getSearchQuery());
+                    searchUtils = new IndexSearchUtils();
                     searchUtils.setResultSet(results);
                     searchUtils.setResultCounter(results.size());
                     searchUtils.setNewQuery(false);
