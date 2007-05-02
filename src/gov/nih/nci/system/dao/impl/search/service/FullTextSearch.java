@@ -145,6 +145,9 @@ public class FullTextSearch implements Searchable {
                 if(field.name().equalsIgnoreCase("_hibernate_class")){
                     result.setClassName(field.stringValue());
                 }
+                if(field.name().equalsIgnoreCase("id")){
+                    result.setId(field.stringValue());
+                }
             }
             result.setProperties(properties);
             int num = i;
@@ -164,7 +167,7 @@ public class FullTextSearch implements Searchable {
             try{
                 for(int i=0; i< hits.length(); i++){
                         Document doc = hits.doc(i);
-                        SearchResult result = getSearchResult(doc,i+1,searchString);
+                        SearchResult result = getSearchResult(doc,i,searchString);
                         resultList.add(result);                        
                     }
             }catch(Exception ex){
