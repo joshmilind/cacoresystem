@@ -24,7 +24,8 @@
 
 <%@ page import="gov.nih.nci.search.*,
 		 gov.nih.nci.common.util.*,
-		 gov.nih.nci.common.util.search.*,		 
+		 gov.nih.nci.common.util.search.*,
+		 java.lang.reflect.*,
 		 java.util.*" %>
 <%
 	IndexSearchUtils searchUtils = (IndexSearchUtils)session.getAttribute("indexSearchUtils");
@@ -33,30 +34,34 @@
 	int pageSize = searchUtils.getPageSize();
 	String expand = request.getParameter("expand")!= null?request.getParameter("expand"):"false";
 	String recordNumber = request.getParameter("recordNumber")!= null?request.getParameter("recordNumber"):null;
-	System.out.println("Record number:" + recordNumber);
+	
 	String startIndex = request.getParameter("startIndex")!=null?request.getParameter("startIndex"):null;
 	
 %>
-<HR COLOR=BLUE>
 <form method=post action="searchService.jsp" name=form1>
 <table width="100%">
 	<tr valign="top" align="left">
-		<td>
+	<%
+	String adrs = request.getContextPath()+"/indexSearch.jsp";
+	%>
+		<td><a href="<%=adrs%>">
  			<img src="images/minisearch.jpg" name="caCORE Search API" border="0" align=middle>
+ 			</a>
  		</td>
  		
  		<td align=left valign=top>
  			<INPUT TYPE=TEXT SIZE=60 name="searchString" value="<%=searchString%>">					
-			<INPUT TYPE=SUBMIT NAME="submit" VALUE="Search">					
+			<INPUT TYPE=SUBMIT NAME="submit" VALUE="Search">
+			<INPUT TYPE=HIDDEN NAME="FULL_TEXT_SEARCH" value="FULL_TEXT_SEARCH">
  		</td>
- 		<hr color=blue>
+ 		
 <tr bgColor="#FAF8CC"><td align=left><%=searchUtils.getResultCounter()%> records found</td><td align=right>
 <%
 if(startIndex != null){
 	searchUtils.setStartIndex(Integer.parseInt(startIndex));
 	results = searchUtils.getDisplayResults();
 }
-System.out.println("StartIndex: "+ searchUtils.getStartIndex());
+
 if(searchUtils.getResultCounter() >= pageSize){
 	if(searchUtils.getStartIndex() > 0 && searchUtils.getStartIndex()>= pageSize){
 	    int preStartIndex = searchUtils.getStartIndex() - pageSize;
@@ -77,8 +82,6 @@ if(searchUtils.getResultCounter() >= pageSize){
 </table>
 </form>
 
-
-<hr color=black>
 <table>
 <%
 
@@ -87,16 +90,16 @@ int recordCounter = 0;
 if(recordNumber != null){
 	recordCounter = Integer.parseInt(recordNumber);
 }
-
+if(searchUtils.getSearchQuery().getQueryType().equals("FULL_TEXT_SEARCH")){
 	for(int i=0; i<results.size(); i++){	
 		SearchResult result = (SearchResult)results.get(i);	
 		String className = result.getClassName();
 		Integer hit = result.getHit();
 		String id = result.getId()!=null?result.getId():null;
 		String queryString = queryUrl + className +"[id="+id+"]";
-		System.out.println("queryString: "+ queryString);
+		
 			%>
-			<tr><td><p><a href="<%=queryString%> target='_blank'"><b><font size=4 color=blue><%=hit%>.<%=className%></font></b></a></p></td></tr>			
+			<tr><td><font color=blue><a href="<%=queryString%> target='_BLANK'"><div class="aheading"><%=hit%>.<%=className%></div></a></font></td></tr>			
 			<%
 		String infoText = null;
 		if(expand.equals("true") && recordCounter == i){
@@ -105,7 +108,7 @@ if(recordNumber != null){
 						String value = (String)result.getProperties().get(key);
 						if(!key.equalsIgnoreCase("_hibernate_class")){
 							%>							
-							<tr><td><b><i><font size:4><%=key%>:</b></i> <%=value%></font></td></tr>
+							<tr><td><b><i><div class="apara"><%=key%>:</b></i> <%=value%></div></td></tr>
 							<%
 						}
 			}
@@ -123,8 +126,8 @@ if(recordNumber != null){
 					if(infoText != null && infoText.trim().length()>10){
 						String num = String.valueOf(i);
 						%>						
-						<tr><td><br><p><font size=4><%=infoText%></font>
-						<a href="searchResults.jsp?expand=true&recordNumber=<%=num%>"><font size:2>more...</font></a>
+						<tr><td><div class="apara"><%=infoText%></div>
+						<a href="searchResults.jsp?expand=true&recordNumber=<%=num%>"><div class="alink">more...</div></a>
 						</p>
 						<br></td></tr>
 						<%
@@ -135,8 +138,8 @@ if(recordNumber != null){
 						if(!key.equalsIgnoreCase("_hibernate_class")){
 							%>
 							<br>
-							<table>
-							<tr><td><b><i><font size:4><%=key%>:</b></i> <%=value%></font></td></tr>
+							<table style="word-break:break-all;table-layout:fixed" >
+							<tr><td cellpadding=2><div class="apara"><b><i><%=key%>:</b></i> <%=value%></div></td></tr>
 							</table>
 							<%
 						}
@@ -145,7 +148,65 @@ if(recordNumber != null){
 		}
 			
 	}
+}else{
+	//hibernate search
+	for(int i=0; i<results.size(); i++){
+		Object result = results.get(i);
+		int counter = i + 1;
+		%>
+		<tr><td><div class="aheading"<%=counter%>.<%=result.getClass().getName()%></a></td></tr>
+		<%
+		Field[] fields = result.getClass().getDeclaredFields();
+		for(int f=0; f<fields.length; f++){
+		Field field = fields[f];
+		field.setAccessible(true);
+		if(field.get(result)!=null){
+		String fieldName = field.getName();
+		String fieldValue = "";
+		try{
+			if(field.getType().getName().startsWith("java")&& field.get(result)!=null){
+				fieldValue = String.valueOf(field.get(result));
+			}
+			
+		}catch(Exception ex){
+		}
+		if(!fieldValue.equals("")){
+		%>
+		<tr>
+		<td></td>
+		<td><%=fieldName%></td>
+		<td><%=fieldValue%></td>
+		</tr>
+		<%
+		
+		}
+		
+		}
+		}	
+	}
+
+}
 	%>
 </table>
+<HR COLOR=BLUE>
+
+<br>
+<hr>
+<br>
+<!-- footer begins -->
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ftrTable">
+        <tr>
+          <td valign="top">
+            <div align="center">
+              <a href="http://www.cancer.gov/"><img src="images/footer_nci.gif" width="63" height="31" alt="National Cancer Institute" border="0"/></a>
+              <a href="http://www.dhhs.gov/"><img src="images/footer_hhs.gif" width="39" height="31" alt="Department of Health and Human Services" border="0"/></a>
+              <a href="http://www.nih.gov/"><img src="images/footer_nih.gif" width="46" height="31" alt="National Institutes of Health" border="0"/></a>
+              <a href="http://www.firstgov.gov/"><img src="images/footer_firstgov.gif" width="91" height="31" alt="FirstGov.gov" border="0"/></a>
+            </div>
+          </td>
+        </tr>
+      </table>
+  <!-- footer ends -->
+
 </BODY>
 </HTML>

@@ -11,77 +11,43 @@
 		 java.util.*" %>
 <%
 
-	String searchString = request.getParameter("searchString")!= null?request.getParameter("searchString"):null;
-	String queryType = request.getParameter("FULL_TEXT_SEARCH")!= null?request.getParameter("FULL_TEXT_SEARCH"):null;
-	String fuzzySearch = request.getParameter("FUZZY_SEARCH")!= null?request.getParameter("FUZZY_SEARCH"):null;
-	String pageSize = request.getParameter("PAGE_SIZE")!= null?request.getParameter("PAGE_SIZE"):null;	
-	String startIndex = request.getParameter("startIndex")!= null?request.getParameter("startIndex"):null;	
+	String searchString = request.getParameter("searchString")!= null?request.getParameter("searchString"):"";
+	String queryType = request.getParameter("FULL_TEXT_SEARCH")!= null?request.getParameter("FULL_TEXT_SEARCH"):"";
+	String fuzzySearch = request.getParameter("FUZZY_SEARCH")!= null?request.getParameter("FUZZY_SEARCH"):"";
+	String pageSize = request.getParameter("PAGE_SIZE")!= null?request.getParameter("PAGE_SIZE"):"";	
+	String startIndex = request.getParameter("startIndex")!= null?request.getParameter("startIndex"):"";	
 	System.out.println("SearchService: "+searchString+queryType+fuzzySearch+pageSize+"\t"+startIndex);	
 	
-	
-	IndexSearchUtils searchUtils = null;
+	IndexSearchUtils searchUtils = new IndexSearchUtils();
 	SearchQuery searchQuery = null;
-	
-	
-	if(searchString != null){
-		    searchQuery = new SearchQuery();
-		    searchQuery.setKeyword(searchString);	    
-		    if(fuzzySearch != null){
-		        searchQuery.setFuzzySearch(true);
-		    }
-		    if(queryType == null){
-		       searchQuery.setQueryType("HIBERNATE_SEARCH");		       
-		    }
-		}
-		
-		if(session.isNew()){
-		    searchUtils = new IndexSearchUtils();
-		    searchUtils.setStartIndex(0);
-		    if(pageSize != null){
-		        searchUtils.setPageSize(Integer.parseInt(pageSize));
-		    }
-		}else{
-		    System.out.println("Session value of utils: "+ session.getAttribute("indexSearchUtils") );
-			
-			   if(session.getAttribute("indexSearchUtils") == null){
-			   System.out.println("null session");
-				    searchUtils = new IndexSearchUtils();
-				    searchUtils.setStartIndex(0);
-				    if(pageSize != null){
-				        searchUtils.setPageSize(Integer.parseInt(pageSize));
-				    }
-			   }else{
-				    searchUtils = (IndexSearchUtils)session.getAttribute("indexSearchUtils");			    
-			   }		
-		}
-		if(searchUtils.getSearchQuery()!=null){
-			String oldTerm = searchUtils.getSearchQuery().getKeyword();
-			System.out.println("Old term: "+ oldTerm);
-			if(oldTerm != null && searchString != null){
-				if(!oldTerm.equals(searchString)){
-					searchUtils = new IndexSearchUtils();
-					searchUtils.setNewQuery(true);	
-					searchQuery.setQueryType("FULL_TEXT_SEARCH");				
-				}
-				
-			}
-		}
-		
-		if(searchQuery != null){
-			searchUtils.setSearchQuery(searchQuery);
-		}else if(startIndex != null){		
-			int start = Integer.parseInt(startIndex);
-			searchUtils.setStartIndex(start);		   	
-		}
-		
-	
-	
-	session.setAttribute("indexSearchUtils", searchUtils);
-	System.out.println("Session attribute: "+ session.getAttribute("indexSearchUtils"));
 	String url = request.getContextPath()+"/IndexService";
-	System.out.println("url: "+url);
-	response.sendRedirect(url);	
 	
+	if(startIndex.equals("") && searchString.equals("")){
+	    url = request.getContextPath()+"/indexSearch.jsp";	   
+	}else if(!startIndex.equals("") && searchString.equals("")){
+	    //check if session is valid
+	    if(session.getAttribute("indexSearchUtils")!=null){
+	        searchUtils = (IndexSearchUtils)session.getAttribute("indexSearchUtils");
+	        searchUtils.setStartIndex(Integer.parseInt(startIndex));
+	    }else{
+	        url = request.getContextPath()+"/indexSearch.jsp";	
+	    }
+	}else {	    
+	    searchQuery = new SearchQuery();
+	    searchQuery.setKeyword(searchString);
+	    if(queryType.equals("")){
+	        searchQuery.setQueryType("HIBERNATE_SEARCH");    
+            	}  
+	    if(pageSize.length()>0){            	
+	       searchUtils.setPageSize(Integer.parseInt(pageSize));
+            }   
+	}
+	
+        if(searchQuery != null){        
+            searchUtils.setSearchQuery(searchQuery);
+        }
+	session.setAttribute("indexSearchUtils", searchUtils);	
+	response.sendRedirect(url);		
 
 %>
 

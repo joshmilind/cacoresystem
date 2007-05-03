@@ -94,7 +94,7 @@ public class IndexSearchUtils {
                     for(StringTokenizer tokens = new StringTokenizer(keyDescription, " ");tokens.hasMoreTokens();){
                         String token = tokens.nextToken();
                         if(key.equalsIgnoreCase(token)){
-                            newSentence += " <b><i> " + token +" </i>></b> ";
+                            newSentence += " <b><i> " + token +" </i></b> ";
                         }else{
                             newSentence += token +" ";
                         }
