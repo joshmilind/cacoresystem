@@ -16,13 +16,6 @@
 		 gov.nih.nci.system.applicationservice.*,
 		 java.lang.reflect.*,
 		 java.util.*" %>
-<%
-	String searchString = "";
-	if(request.getParameter("searchString")!= null){
-		searchString = request.getParameter("searchString");
-	}
-
-%>
 
 <HR COLOR=BLUE>
 <form method=post action="searchpage.jsp" name=form1>
@@ -34,8 +27,8 @@
  		</tr>
  		</tr>
  		<td align=center>
- 			<INPUT TYPE=TEXT name="searchString" value=<%=searchString%> >
-			<INPUT TYPE=HIDDEN NAME="check" VALUE="true">			
+ 			<INPUT TYPE=TEXT name="searchString" value="" >
+			<INPUT TYPE=HIDDEN NAME="check" VALUE="true"> 	
 			<INPUT TYPE=SUBMIT NAME="submit" VALUE="Search">
 			<INPUT TYPE=SUBMIT NAME="reset" VALUE="Reset">			
  		</td>
@@ -44,11 +37,6 @@
  			<INPUT TYPE=CHECKBOX NAME="FULL_TEXT_SEARCH" VALUE="YES"/>Quick Search
  		</td>
  		</tr>
-  		<tr>
-  		<td align=center>
-  			<INPUT TYPE=CHECKBOX NAME="FUZZY_SEARCH" VALUE="YES"/>Fuzzy Search
-  		</td>
- 		</tr>
  	</tr>
 </table>
 	
@@ -56,16 +44,12 @@
 <HR COLOR=BLUE>
 <% 
 try{
-	
+	String searchString = request.getParameter("searchString");
 	String luceneQuery = "NO";
 	String url = null;
 	if(request.getParameter("FULL_TEXT_SEARCH")!=null){
 	 	luceneQuery=request.getParameter("FULL_TEXT_SEARCH");
-	}
-	String fuzzy = "NO";
-	if(request.getParameter("FUZZY_SEARCH")!=null){
-		fuzzy=request.getParameter("FUZZY_SEARCH");
-	}
+	}	
 	String check = request.getParameter("check");
 	
 	String servletPath = request.getServletPath();
@@ -95,10 +79,6 @@ try{
 	if(!luceneQuery.equalsIgnoreCase("yes")){
 		query.setQueryType("HIBERNATE_SEARCH");
 	}
-	System.out.println("Fuzzy query: "+ fuzzy);
-	if(fuzzy.equalsIgnoreCase("yes")){
-		query.setFuzzySearch(true);
-	}
 	
 	List results = appService.search(SearchQuery.class, query);
 	System.out.println("Record counter: "+ results.size());
@@ -113,12 +93,11 @@ try{
 			Object result = results.get(i);
 			
 			java.util.HashMap properties = new java.util.HashMap();
-			if(result.getClass().getName().endsWith("SearchResult")){			
-			
+			if(result.getClass().getName().endsWith("SearchResult")){
+				%>Number of records found: <%=results.size()%><%
 				gov.nih.nci.search.SearchResult r =  (gov.nih.nci.search.SearchResult)result;
 				properties = r.getProperties();	
 				String hit = String.valueOf(r.getHit());
-				
 			%>	
 				<tr><td><B><U><%=hit%>.<%=r.getClassName()%></B></U></td></tr>
 			<%
@@ -130,7 +109,7 @@ try{
 						<tr><td></td><td><%=key%> - <%=value%></td></tr>
 						<%
 					}
-				}				
+				}
 					
 			}else if(result.getClass().getName().endsWith("HashMap")){	
 				System.out.println("Result: "+ result.getClass().getName());
@@ -141,7 +120,7 @@ try{
 					List l = (List) map.get(key);
 					total += l.size();
 					}
-				%>Number of records found : <%=total%><%
+				%>Number of records found: <%=total%><%
 				int counter = 0;
 				for(Iterator it= map.keySet().iterator(); it.hasNext();){
 					String key = (String) it.next();
