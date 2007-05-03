@@ -7,6 +7,7 @@ import gov.nih.nci.common.util.*;
 import gov.nih.nci.common.net.*;
 import org.apache.log4j.Logger;
 import java.util.*;
+import java.io.InputStream;
 
 /*
  * Created on Mar 29, 2007
@@ -155,7 +156,7 @@ public class SearchAPIDAO implements DAO {
 		InputStream is = null;
 		try {
 			 is = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(indexPropertyFile)
+				.getResourceAsStream(indexPropertyFile);
 			properties.load(is);
 			if (properties.size() > 0) {
 				for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
@@ -171,7 +172,7 @@ public class SearchAPIDAO implements DAO {
 		} catch (Exception ex) {
 			throw new Exception(ex.getMessage());
 		}
-		finally () {
+		finally {
 			if (is != null)
 				is.close();
 		}
