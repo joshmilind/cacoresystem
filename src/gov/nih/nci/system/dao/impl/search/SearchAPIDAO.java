@@ -152,9 +152,11 @@ public class SearchAPIDAO implements DAO {
 	private static String[] loadIndexedFields() throws Exception {
 		Properties properties = new Properties();
 		Set<String> fieldList = new HashSet<String>();
+		InputStream is = null;
 		try {
-			properties.load(Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(indexPropertyFile));
+			 is = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(indexPropertyFile)
+			properties.load(is);
 			if (properties.size() > 0) {
 				for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
 					String key = (String) it.next();
@@ -169,13 +171,12 @@ public class SearchAPIDAO implements DAO {
 		} catch (Exception ex) {
 			throw new Exception(ex.getMessage());
 		}
-		String[] searchFields = new String[fieldList.size()];
-		int index = 0;
-		for (Iterator i = fieldList.iterator(); i.hasNext();) {
-			searchFields[index] = (String) i.next();
-			index++;
+		finally () {
+			if (is != null)
+				is.close();
 		}
-		return searchFields;
+
+		return (String[])fieldList.toArray(new String[0]);
 	}
 
 	/**
