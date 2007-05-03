@@ -52,6 +52,7 @@ conf/web/searchResults.jsp -text
 conf/web/searchService.jsp -text
 conf/web/searchUtils.jsp -text
 conf/web/searchpage.jsp -text
+conf/web/styleSheet.css -text svneol=unset#application/octet-stream
 conf/webservice/server-config.wsdd -text svneol=unset#application/octet-stream
 conf/xslt/cacoreFormat.xsl -text
 conf/xslt/evsFormat.xsl -text
