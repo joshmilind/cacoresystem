@@ -30,14 +30,31 @@ public class CLASS implements JETTemplate{
         private static Vector eagerFetchPackages = getEagerFetchPackages();
         
 
-	public boolean isClassIndexed(Classifier klass) {		
-		TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"index_class");
-		if (indexClassTag!=null) {
+	public boolean isClassIndexed(Classifier klass) {	
+		boolean indexClass = false;	
+		TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"index_class");	
+		
+		if (indexClassTag!=null) {			
 			if (indexClassTag.getValue().equalsIgnoreCase("true")) {
-		 	 return true;
+			
+				UmlClass superKlass = null;
+				TaggedValue indexSuperclassTag = null;				
+	
+				if(UML13Utils.getSuperClass((UmlClass)klass)!=null && !UML13Utils.getSuperClass((UmlClass)klass).getName().equals("java.lang.Object")){
+					superKlass = UML13Utils.getSuperClass((UmlClass)klass);
+					indexSuperclassTag = UML13Utils.getTaggedValue(superKlass,"index_class");
+					if(indexSuperclassTag != null ){
+						if(indexSuperclassTag.getValue().equalsIgnoreCase("true")){
+							indexClass = true;
+						}
+					}
+				}else{
+					indexClass = true;
+				}	
+		 	 
 			}
 		}
-		return false;
+		return indexClass;
 	}
 	public boolean isFieldIndexed(Attribute att){
 		boolean isIndexed = false;
@@ -55,6 +72,16 @@ public class CLASS implements JETTemplate{
 			isId = true;
 		}
 		return isId;
+	}
+	public boolean locateId(Classifier klass){
+		boolean locateId = false;
+		for(Iterator i = UML13Utils.getAttributes((UmlClass)klass).iterator(); i.hasNext();){
+			Attribute att = (Attribute)i.next(); 
+			if(att.getName().equalsIgnoreCase("id")){
+				locateId = true;
+			}
+		}
+		return locateId;
 	}
 	
 	public String capFirst(String s){
