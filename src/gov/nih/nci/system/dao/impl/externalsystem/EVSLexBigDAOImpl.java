@@ -2522,20 +2522,22 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 			}
             LexAdapter adapter = getLexAdapterForMeta();
             if(sourceAbbr.equals("*")){
-                if(relation.equalsIgnoreCase("RN") || relation.toUpperCase().equalsIgnoreCase("PAR")){
-                    rc = adapter.getRelatedConcepts(conceptCode, false, relation);
-                }
-                else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
+                if(relation.equalsIgnoreCase("RN")){
+                    rc = adapter.getRelatedConcepts(conceptCode, false, "RB");
+                }else if(relation.toUpperCase().equalsIgnoreCase("PAR")){
+                	 rc = adapter.getRelatedConcepts(conceptCode, false, "CHD");
+                }else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
                     rc = adapter.getRelatedConcepts(conceptCode, true, relation);
                 }
                 else{
                     rc = adapter.getRelatedConcepts(conceptCode, true,null);
                 }
             }else{
-                if(relation.equalsIgnoreCase("RN") || relation.toUpperCase().equalsIgnoreCase("PAR")){
-                    rc = adapter.getRelatedConceptsBySource(conceptCode, false, relation, sourceAbbr);
-                }
-                else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
+                if(relation.equalsIgnoreCase("RN")){
+                    rc = adapter.getRelatedConceptsBySource(conceptCode, false, "RB", sourceAbbr);
+                }else if(relation.toUpperCase().equalsIgnoreCase("PAR")){
+                	rc = adapter.getRelatedConceptsBySource(conceptCode, false, "CHD", sourceAbbr);
+                }else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
                     rc = adapter.getRelatedConceptsBySource(conceptCode, true, relation, sourceAbbr);
                 }else{
                     rc = adapter.getRelatedConceptsBySource(conceptCode, true, null, sourceAbbr);
