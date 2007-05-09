@@ -85,9 +85,7 @@
     <mapping resource="gov/nih/nci/cabio/domain/impl/GenericReporterImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/GenericArray.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/impl/GenericArrayImpl.hbm.xml" />
-    <event type="post-update"><listener class="org.hibernate.search.event.FullTextIndexEventListener"/></event>
-    <event type="post-insert"><listener class="org.hibernate.search.event.FullTextIndexEventListener"/></event>
-    <event type="post-delete"><listener class="org.hibernate.search.event.FullTextIndexEventListener"/></event>
+   
       <mapping resource="gov/nih/nci/cabio/domain/Microarray.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/impl/MicroarrayImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/Reporter.hbm.xml" />
@@ -98,6 +96,9 @@
     <mapping resource="gov/nih/nci/cabio/domain/impl/GeneticMapImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/RelativeLocation.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/impl/RelativeLocationImpl.hbm.xml" />
+     <event type="post-update"><listener class="org.hibernate.search.event.FullTextIndexEventListener"/></event>
+        <event type="post-insert"><listener class="org.hibernate.search.event.FullTextIndexEventListener"/></event>
+    <event type="post-delete"><listener class="org.hibernate.search.event.FullTextIndexEventListener"/></event>
    
   </session-factory>
 </hibernate-configuration>
