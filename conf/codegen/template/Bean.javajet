@@ -59,11 +59,7 @@ public <% if (klass.isAbstract()){%> abstract <%}%> class <%=klass.getName()%>
 <%//Iterate through all the attributes and generate getters and setters for the simple attributes%>
 
 <% 
-	boolean idFound = locateId(klass);
-
-	if(createIndex){
-	%>@DocumentId<%	
-	}
+	boolean idFound = locateId(klass);	
 	for(Iterator i = UML13Utils.getAttributes((UmlClass)klass).iterator(); i.hasNext();){ %>
 	<% Attribute att = (Attribute)i.next(); %>
 	<% String attTypeName = (getQualifiedName(att.getType(), basePkg).startsWith("."))?getQualifiedName(att.getType(), basePkg).substring(1)+att.getName():getQualifiedName(att.getType(), basePkg); %>	
@@ -74,6 +70,7 @@ public <% if (klass.isAbstract()){%> abstract <%}%> class <%=klass.getName()%>
 	if(createIndex){		
 		if(isFieldId(att)){
 %>
+@DocumentId
 @Id
 
 <%
