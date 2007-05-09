@@ -130,7 +130,7 @@ public class TestSearchAPI {
 					.println("Test Case "
 							+ tstCase++
 							+ ": Query for a \"cancer NOT TP53\" across caCORE Domain Objects ");
-			System.out.println("Description:\n The NOT operator excludes documents that contain the term after NOT. NOTE: The symbol ! can be used in place of the word NOT.  In the example, find objects containing 'cancer' and does not contain 'TP53'")
+			System.out.println("Description:\n The NOT operator excludes documents that contain the term after NOT. NOTE: The symbol ! can be used in place of the word NOT.  In the example, find objects containing 'cancer' and does not contain 'TP53'");
 			System.out
 					.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 			try {
