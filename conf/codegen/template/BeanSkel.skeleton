@@ -35,22 +35,21 @@ public class CLASS implements JETTemplate{
 		TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"index_class");	
 		
 		if (indexClassTag!=null) {			
-			if (indexClassTag.getValue().equalsIgnoreCase("true")) {
-			
+			if (indexClassTag.getValue().equalsIgnoreCase("true")) {	
+				indexClass = true;		
 				UmlClass superKlass = null;
-				TaggedValue indexSuperclassTag = null;				
-	
-				if(UML13Utils.getSuperClass((UmlClass)klass)!=null && !UML13Utils.getSuperClass((UmlClass)klass).getName().equals("java.lang.Object")){
+				TaggedValue indexSuperclassTag = null;					
+				if(UML13Utils.getSuperClass((UmlClass)klass)!=null){
 					superKlass = UML13Utils.getSuperClass((UmlClass)klass);
-					indexSuperclassTag = UML13Utils.getTaggedValue(superKlass,"index_class");
-					if(indexSuperclassTag != null ){
-						if(indexSuperclassTag.getValue().equalsIgnoreCase("true")){
-							indexClass = true;
+					if(!superKlass.getName().equals("java.lang.Object") && UML13Utils.getTaggedValue(superKlass,"index_class")!= null){
+						indexSuperclassTag = UML13Utils.getTaggedValue(superKlass,"index_class");
+						if(!indexSuperclassTag.getValue().equalsIgnoreCase("true")){
+							indexClass = false;
 						}
-					}
-				}else{
-					indexClass = true;
-				}	
+					}else if(!superKlass.getName().equals("java.lang.Object") && UML13Utils.getTaggedValue(superKlass,"index_class")== null){
+						indexClass = false;
+					}					
+				}
 		 	 
 			}
 		}
