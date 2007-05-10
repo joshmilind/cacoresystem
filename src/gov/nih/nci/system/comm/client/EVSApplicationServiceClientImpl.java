@@ -62,7 +62,6 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 	final static private String EVS_REMOTE_APPLICATION_SERVICE = "evsService";
 	final static private String EVS_SERVICE_FILE_NAME = "applicationService.xml";
 	private static Logger log= Logger.getLogger(ApplicationServiceClientImpl.class.getName());	
-
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.EVSApplicationService#createObject(java.lang.Object)
 	 */
@@ -122,6 +121,7 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 		String xmlFileString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org/dtd/spring-beans.dtd\"><beans><bean id=\"evsService\" class=\"org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean\"><property name=\"serviceUrl\"><value>" + URL + "</value></property><property name=\"serviceInterface\"><value>gov.nih.nci.system.comm.common.EVSApplicationServiceProxy</value></property></bean></beans>";
 		GenericApplicationContext ctx = new GenericApplicationContext();
 		XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
+		xmlReader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_NONE);
 		InputStream inputStream = new ByteArrayInputStream(xmlFileString.getBytes());
 		InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
 		xmlReader.loadBeanDefinitions(inputStreamResource);

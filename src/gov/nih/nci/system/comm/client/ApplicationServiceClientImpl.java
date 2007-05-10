@@ -99,6 +99,7 @@ public class ApplicationServiceClientImpl extends ApplicationService
 		String xmlFileString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE beans PUBLIC \"-//SPRING//DTD BEAN//EN\" \"http://www.springframework.org/dtd/spring-beans.dtd\"><beans><bean id=\"remoteService\" class=\"org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean\"><property name=\"serviceUrl\"><value>" + URL + "</value></property><property name=\"serviceInterface\"><value>gov.nih.nci.system.comm.common.ApplicationServiceProxy</value></property></bean></beans>";
 		GenericApplicationContext ctx = new GenericApplicationContext();
 		XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
+		xmlReader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_NONE);
 		InputStream inputStream = new ByteArrayInputStream(xmlFileString.getBytes());
 		InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
 		xmlReader.loadBeanDefinitions(inputStreamResource);
