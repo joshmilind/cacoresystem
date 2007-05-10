@@ -38,33 +38,33 @@ public class Indexer extends Thread{
      */
     public void run(){
         long timeLag = 0;
+        int total=0;
         try{
         	long start = System.currentTimeMillis();
         	String hqlQuery = "from "+ persister.getEntityName();
             ScrollableResults results = fullTextSession.createQuery(hqlQuery).setCacheMode(CacheMode.IGNORE).setReadOnly(true).scroll();
-            int breakPoint = 0;
-            while(results.next()){
-                try{
-                    fullTextSession.index(results.get(0));                
-                }catch(Exception ex){
-                    System.out.println("Error indexing: "+ex.getMessage());
-                }            
-                if(breakPoint == 100){                
-                    breakPoint = 0;
-                    fullTextSession.clear();                
-                }
-                breakPoint++;
+            if(results != null){
+            	results.first();
+                int breakPoint = 0;
+                do{
+                	fullTextSession.index(results.get(0));                            
+                    if(breakPoint == 100){                
+                        breakPoint = 0;
+                        fullTextSession.clear();                
+                    }
+                    breakPoint++;
+                }while(results.next());
+                long end = System.currentTimeMillis();
+                timeLag = end - start;
+                results.last();        
+                total = results.getRowNumber();     
             }
-            long end = System.currentTimeMillis();
-            timeLag = end - start;
-            results.last();        
-            log.info("Indexed:  "+ persister.getEntityName() +"\t"+ results.getRowNumber());            
+                   
         }catch(Exception ex){
         	log.error("Error occured while indexing "+ persister.getEntityName() + ex);
         }finally{
-        	log.info("Time taken to index "+ persister.getEntityName()+ "\t"+ timeLag);
-        	fullTextSession.close();
-        	System.exit(1);
+        	log.info("Time taken to index "+ total +"\t"+persister.getEntityName()+ "\tMS:"+ timeLag);
+        	fullTextSession.close();        	
         }   
     }
 
