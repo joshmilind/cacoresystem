@@ -29,7 +29,6 @@ public class SearchORMUtils {
         private static Set fieldList = new HashSet();
         private static Set indexPackage = new HashSet();
         private static final Map sessionMap= new HashMap();
-
         private static  SessionFactory sessionFactory;
         private static  String[] indexedFields;
         private static String propertiesFile = "searchapiconfig.properties";
@@ -38,9 +37,16 @@ public class SearchORMUtils {
             try{
                 //sessionFactory = new AnnotationConfiguration().configure("orm3.cfg.xml").buildSessionFactory();
                 loadProperties();
+                if(ormList.size()==1){
+                    for(Iterator it = ormList.keySet().iterator(); it.hasNext();){
+                        String ormFile = (String)it.next();
+                        sessionFactory = new AnnotationConfiguration().configure(ormFile).buildSessionFactory();
+                        break;
+                    }
+                }
                 for(Iterator it = ormList.keySet().iterator(); it.hasNext();){
                     String ormFile = (String)it.next();
-                    SessionFactory sessionFactory = new AnnotationConfiguration().configure(ormFile).buildSessionFactory();
+                    SessionFactory sf = new AnnotationConfiguration().configure(ormFile).buildSessionFactory();
                     sessionMap.put(ormFile, sessionFactory);
                 }
             }catch(Throwable ex){
@@ -232,5 +238,8 @@ public class SearchORMUtils {
 	   }
 	   public static String[] getIndexedFields(){
 		   return indexedFields;
-		   }
+	  }
+       public static SessionFactory getSessionFactory(){
+           return sessionFactory;
+       }
 }
