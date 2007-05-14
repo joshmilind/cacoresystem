@@ -13,7 +13,7 @@
 
 	String searchString = request.getParameter("searchString")!= null?request.getParameter("searchString"):"";
 	String queryType = request.getParameter("FULL_TEXT_SEARCH")!= null?request.getParameter("FULL_TEXT_SEARCH"):"";
-	String fuzzySearch = request.getParameter("FUZZY_SEARCH")!= null?request.getParameter("FUZZY_SEARCH"):"";
+	String fuzzySearch = request.getParameter("FUZZY_SEARCH")!= null?"true":"false";
 	String pageSize = request.getParameter("PAGE_SIZE")!= null?request.getParameter("PAGE_SIZE"):"";	
 	String startIndex = request.getParameter("startIndex")!= null?request.getParameter("startIndex"):"";	
 	System.out.println("SearchService: "+searchString+queryType+fuzzySearch+pageSize+"\t"+startIndex);	
@@ -21,6 +21,7 @@
 	IndexSearchUtils searchUtils = new IndexSearchUtils();
 	SearchQuery searchQuery = null;
 	String url = request.getContextPath()+"/IndexService";
+	String httpurl = "";
 	
 	if(startIndex.equals("") && searchString.equals("")){
 	    url = request.getContextPath()+"/indexSearch.jsp";	   
@@ -35,12 +36,24 @@
 	}else {	    
 	    searchQuery = new SearchQuery();
 	    searchQuery.setKeyword(searchString);
-	    if(queryType.equals("")){
-	        searchQuery.setQueryType("HIBERNATE_SEARCH");    
-            	}  
 	    if(pageSize.length()>0){            	
-	       searchUtils.setPageSize(Integer.parseInt(pageSize));
-            }   
+	    	       searchUtils.setPageSize(Integer.parseInt(pageSize));
+            } 
+            if(fuzzySearch!=null){
+            		searchQuery.setFuzzySearch(Boolean.valueOf(fuzzySearch).booleanValue());
+            }
+	    if(queryType.equals("")){
+	        searchQuery.setQueryType("HIBERNATE_SEARCH"); 
+	        if(fuzzySearch.equalsIgnoreCase("true")){
+	        	url = request.getContextPath()+"/GetHTML?query=gov.nih.nci.search.SearchQuery&gov.nih.nci.search.SearchQuery[@keyword="+searchString+"%7E][@queryType=HIBERNATE_SEARCH]&pageSize="+searchUtils.getPageSize();
+	        
+	        }else{
+	        	url = request.getContextPath()+"/GetHTML?query=gov.nih.nci.search.SearchQuery&gov.nih.nci.search.SearchQuery[@keyword="+searchString+"][@queryType=HIBERNATE_SEARCH]&pageSize="+searchUtils.getPageSize();
+	        }
+	        
+	        System.out.println("URL: "+ httpurl);
+            }  
+	      
 	}
 	
         if(searchQuery != null){        
