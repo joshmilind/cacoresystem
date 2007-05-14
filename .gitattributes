@@ -47,6 +47,7 @@ conf/web/images/evs.gif -text
 conf/web/images/minisearch.jpg -text
 conf/web/images/sdk.gif -text
 conf/web/images/searchicon.gif -text
+conf/web/images/searchicon.jpg -text
 conf/web/indexSearch.jsp -text
 conf/web/searchResults.jsp -text
 conf/web/searchService.jsp -text
