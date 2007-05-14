@@ -2,7 +2,7 @@ package gov.nih.nci.system.dao.impl.search.utils;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
-
+import java.util.concurrent.*;
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
@@ -32,11 +32,13 @@ public class IndexGenerator{
 
 
     public static void main(String[] args)throws Exception{
+        ExecutorService pool = Executors.newFixedThreadPool(10);
         try{
-            SessionFactory sessionFactory = new AnnotationConfiguration().configure("orm3.cfg.xml").buildSessionFactory();            
-            Set classSet = getIndexedClasses(sessionFactory, "gov.nih.nci.cabio.domain");            
+            SessionFactory sessionFactory = new AnnotationConfiguration().configure("orm3.cfg.xml").buildSessionFactory();
+            Set classSet = getIndexedClasses(sessionFactory, "gov.nih.nci.cabio.domain");
 
             if(classSet.size()>0){
+                /*
                 Thread[] t = new Thread[classSet.size()];
                 int count = 0;
                 for(Iterator i = classSet.iterator(); i.hasNext();){
@@ -45,15 +47,22 @@ public class IndexGenerator{
                     t[count].start();
                     count++;
                 }
+                */
+                for(Iterator i = classSet.iterator(); i.hasNext();){
+                    EntityPersister persister = (EntityPersister)i.next();
+                    pool.execute(new Indexer(sessionFactory,persister));
+                }
             }
 
 
         }catch(Exception ex){
             throw new Exception("Error generating index: "+ ex.getMessage());
-        }
+        }finally{
+            pool.shutdown();
+			}
     }
     /**
-     * Retruns the class names based on the annotations 
+     * Retruns the class names based on the annotations
      * @param sessionFactory
      * @param pkg
      * @return
