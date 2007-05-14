@@ -31,6 +31,7 @@ conf/orm2.cfg.xml -text
 conf/orm3.cfg.xml -text
 conf/resources/server/xml.properties -text
 conf/resources/xml.properties -text
+conf/searchapiconfig.properties -text
 conf/spring/SDKSpringBeanConfig.xml -text
 conf/svr_1/admpriv.bin -text
 conf/svr_1/admpub.bin -text
