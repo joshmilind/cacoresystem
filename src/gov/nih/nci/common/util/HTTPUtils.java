@@ -815,57 +815,63 @@ public String getPackageName(String className) throws Exception{
     className = className.trim();
     String packageName = null;
     String classBeanName = null;
-    if(className.indexOf(".")>1){
-        classBeanName = className.substring(className.lastIndexOf(".")+1);
+    if(className.equals("gov.nih.nci.search.SearchQuery")|| className.equals("SearchQuery")){
+        packageName = "gov.nih.nci.search";
     }
     else{
-        classBeanName = className;
-    }
-    List packages = new ArrayList();
-    
-    try{
-    if(properties != null){
+        if(className.indexOf(".")>1){
+            classBeanName = className.substring(className.lastIndexOf(".")+1);
+        }
+        else{
+            classBeanName = className;
+        }
+        List packages = new ArrayList();
         
-        for(Iterator i= properties.keySet().iterator(); i.hasNext();){
-            String key = (String)i.next();
-            String value = (String)properties.get(key);
-            String domainName = null;
+        try{
+        if(properties != null){
             
-           
-            if(className.indexOf(".")>1){
-                if(key.equalsIgnoreCase(className)){
-                    packages.add(value);                    
-                }
-            }
-            else{
-                if(key.lastIndexOf(".")>1){
-                    domainName = key.substring(key.lastIndexOf(".")+1);     
-                    if(domainName.equalsIgnoreCase(classBeanName)){
-                        packages.add(value);                        
+            for(Iterator i= properties.keySet().iterator(); i.hasNext();){
+                String key = (String)i.next();
+                String value = (String)properties.get(key);
+                String domainName = null;
+                
+               
+                if(className.indexOf(".")>1){
+                    if(key.equalsIgnoreCase(className)){
+                        packages.add(value);                    
                     }
-                } 
+                }
+                else{
+                    if(key.lastIndexOf(".")>1){
+                        domainName = key.substring(key.lastIndexOf(".")+1);     
+                        if(domainName.equalsIgnoreCase(classBeanName)){
+                            packages.add(value);                        
+                        }
+                    } 
+                }
+                
             }
+        }
+       
+        if(packages.size()>1){
+            String msg = "";
+            for(int i=0; i<packages.size(); i++){
+                msg += (String)packages.get(i)+"<br>";
+            }
+            throw new Exception("Ambiguous Exception: Multiple package names found for "+className + " please specify package name <br>"+msg);
+        }else if(packages.size()<1){
+            throw new Exception("Invalid class name exception: Cannot locate package for "+className);        
+        }
+        else{
+            packageName = (String)packages.get(0);
+        }
+        }catch(Exception ex){
+           // ex.printStackTrace();
+            log.error("Error: "+ ex.getMessage());
+            throw new Exception(ex.getMessage());
             
         }
-    }
-   
-    if(packages.size()>1){
-        String msg = "";
-        for(int i=0; i<packages.size(); i++){
-            msg += (String)packages.get(i)+"<br>";
-        }
-        throw new Exception("Ambiguous Exception: Multiple package names found for "+className + " please specify package name <br>"+msg);
-    }else if(packages.size()<1){
-        throw new Exception("Invalid class name exception: Cannot locate package for "+className);        
-    }
-    else{
-        packageName = (String)packages.get(0);
-    }
-    }catch(Exception ex){
-       // ex.printStackTrace();
-        log.error("Error: "+ ex.getMessage());
-        throw new Exception(ex.getMessage());
-        
+
     }
     
     return packageName;
@@ -1233,7 +1239,10 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
   * @throws Exception
   */
  private boolean isPackageNameValid(String packageName) throws Exception{
-     boolean valid = false;     
+     boolean valid = false; 
+     if(packageName.equals("gov.nih.nci.search")){
+         return true;
+     }
      try{
      if(properties != null){         
          for(Iterator i= properties.keySet().iterator(); i.hasNext();){
@@ -1267,40 +1276,44 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
  private boolean isClassNameValid(String targetClassName) throws Exception{
      boolean valid = false;
      String className = null;
-     if(targetClassName.indexOf(".")>0){
-         className = targetClassName.substring(targetClassName.lastIndexOf(".")+1);
-     }
-     else{
-         className = targetClassName;
+     if(targetClassName.equalsIgnoreCase("gov.nih.nci.search.SearchQuery")||targetClassName.equalsIgnoreCase("SearchQuery") ){
+         valid = true;
+     }else{
+         if(targetClassName.indexOf(".")>0){
+             className = targetClassName.substring(targetClassName.lastIndexOf(".")+1);
+         }
+         else{
+             className = targetClassName;
+         }
+         
+         try{
+         if(properties != null){         
+             for(Iterator i= properties.keySet().iterator(); i.hasNext();){
+                 String key = (String)i.next();
+                 String keyClassName = null;
+                 if(key.indexOf(".")>0){
+                     keyClassName = key.substring(key.lastIndexOf(".")+1);    
+                 }
+                 else{
+                     keyClassName = key;
+                 }
+                 if(className.equals(keyClassName)){
+                    valid = true;
+                    break;
+                  }              
+             }
+         }
+        
+         if(!valid){
+             throw new Exception("Invalid class name : "+ className);
+         }
+         }catch(Exception ex){
+            // ex.printStackTrace();
+             log.error("Error: "+ ex.getMessage());
+             throw new Exception(ex.getMessage());             
+         }     
      }
      
-     try{
-     if(properties != null){         
-         for(Iterator i= properties.keySet().iterator(); i.hasNext();){
-             String key = (String)i.next();
-             String keyClassName = null;
-             if(key.indexOf(".")>0){
-                 keyClassName = key.substring(key.lastIndexOf(".")+1);    
-             }
-             else{
-                 keyClassName = key;
-             }
-             if(className.equals(keyClassName)){
-                valid = true;
-                break;
-              }              
-         }
-     }
-    
-     if(!valid){
-         throw new Exception("Invalid class name : "+ className);
-     }
-     }catch(Exception ex){
-        // ex.printStackTrace();
-         log.error("Error: "+ ex.getMessage());
-         throw new Exception(ex.getMessage());
-         
-     }     
      return valid;
  }
  /*
