@@ -60,6 +60,7 @@ public class HTTPUtils implements Serializable{
     private String servletName = null;
     private String targetPackageName = null; 
     private List results = new ArrayList();    
+    private String connectionUrl = null;
     private Namespace namespace = Namespace.getNamespace("xlink",Constant.XLINK_URL);
     
 
@@ -193,6 +194,18 @@ public void setQueryArguments(String queryText) throws Exception {
 
 }
 
+/**
+ * Sets the server url 
+ */
+public void setConnectionUrl(String url){
+    connectionUrl = url;
+}
+/**
+ * Returns the server url
+ */
+public String getConnectionUrl(){
+    return connectionUrl;
+}
 /**
  * Returns a query
  * @return
@@ -1120,7 +1133,13 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
            results = evsQuery.query(searchPath, criteria, index, counter );           
        }
        else{
-           ApplicationService appService =  ApplicationServiceProvider.getApplicationService();
+           ApplicationService appService =  null;
+           if(connectionUrl == null){
+               appService =  ApplicationServiceProvider.getApplicationService();
+           }else{
+               appService =  ApplicationServiceProvider.getRemoteInstance(connectionUrl +"/http/remoteService");
+           }
+           
            results = appService.search(searchPath, criteria);               
            
        }

@@ -130,6 +130,7 @@ public class HTTPQuery extends HttpServlet{
                 pageNumber = Integer.parseInt(httpUtils.getPageNumber());
             } 
             httpUtils.setServletName(request.getRequestURL().toString());
+            httpUtils.setConnectionUrl(getURL(request));
             
             if(httpUtils.getPageSize() != null){
                 pageSize = Integer.parseInt(httpUtils.getPageSize());           
@@ -378,5 +379,23 @@ public class HTTPQuery extends HttpServlet{
         return syntax;
                 
     }
+    /**
+     * Retruns the URL
+     */
+    private String getURL(HttpServletRequest request)throws ServletException{
+        String url = null;
+        try{
+            String servletPath = request.getServletPath();
+            String queryPath = request.getRequestURL().toString();
+            if(servletPath!=null && queryPath!=null){
+                if(queryPath.indexOf(servletPath)>-1){
+                    url = queryPath.substring(0, queryPath.lastIndexOf(servletPath));
+                }
+            }
+        }catch(Exception ex){
+            throw new ServletException(ex.getMessage());
+        }
+        return url;
+      }
   
 }
