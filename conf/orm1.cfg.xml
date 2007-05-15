@@ -91,8 +91,8 @@
     <mapping resource="gov/nih/nci/cabio/domain/impl/ReporterImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/ProteinDomain.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/impl/ProteinDomainImpl.hbm.xml" />
-    <mapping resource="gov/nih/nci/cabio/domain/GeneticMap.hbm.xml" />
-    <mapping resource="gov/nih/nci/cabio/domain/impl/GeneticMapImpl.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/Marker.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/impl/MarkerImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/RelativeLocation.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/impl/RelativeLocationImpl.hbm.xml" />
   </session-factory>
