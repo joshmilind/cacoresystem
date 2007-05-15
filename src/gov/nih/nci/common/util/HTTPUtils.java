@@ -1134,12 +1134,18 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
        }
        else{
            ApplicationService appService =  null;
-           if(connectionUrl == null){
-               appService =  ApplicationServiceProvider.getApplicationService();
-           }else{
-               appService =  ApplicationServiceProvider.getRemoteInstance(connectionUrl +"/http/remoteService");
-           }
-           
+           try{
+        	   if(connectionUrl != null){
+        		   appService =  ApplicationServiceProvider.getRemoteInstance(connectionUrl +"http/remoteService");        		   
+        	   }else{
+                   appService =  ApplicationServiceProvider.getApplicationService();
+               }
+        	   results = appService.search(searchPath, criteria);
+           }catch(Exception ex){
+        	   log.error("Invalid url: "+connectionUrl + "\t"+ex);
+        	   appService =  ApplicationServiceProvider.getApplicationService();
+        	   results = appService.search(searchPath, criteria);
+           }           
            results = appService.search(searchPath, criteria);               
            
        }
