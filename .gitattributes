@@ -33,6 +33,11 @@ conf/resources/server/xml.properties -text
 conf/resources/xml.properties -text
 conf/searchapiconfig.properties -text
 conf/spring/SDKSpringBeanConfig.xml -text
+conf/spring/applicationContext.xml -text
+conf/spring/evsApplicationService.xml -text
+conf/spring/evsService.xml -text
+conf/spring/evsServiceThickClient.xml -text
+conf/spring/httpinvoker-servlet.xml -text
 conf/svr_1/admpriv.bin -text
 conf/svr_1/admpub.bin -text
 conf/svr_1/config.dct -text svneol=unset#application/octet-stream
