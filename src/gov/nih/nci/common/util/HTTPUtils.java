@@ -1135,8 +1135,8 @@ private String getOntologyLink(String methodName, String criteriaIdValue, String
        else{
            ApplicationService appService =  null;
            try{
-        	   if(connectionUrl != null){
-        		   appService =  ApplicationServiceProvider.getRemoteInstance(connectionUrl +"http/remoteService");        		   
+        	   if(connectionUrl != null && criteria.getClass().getName().equals("gov.nih.nci.search.SearchQuery")){
+        		   appService =  ApplicationServiceProvider.getRemoteInstance(connectionUrl +"/http/remoteService");        		   
         	   }else{
                    appService =  ApplicationServiceProvider.getApplicationService();
                }
