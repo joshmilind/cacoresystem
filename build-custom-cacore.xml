@@ -373,6 +373,7 @@
 		<copy todir="${cacore_home}/output" overwrite="true">
 			<fileset dir="${dir.output.project.package}" />
 		</copy>
+		<antcall target="package-index-generator"/>
 		<!--
 			<antcall target="generate-index"/>
 		-->
@@ -420,5 +421,33 @@
 				</zipfileset>
 			</zip>
 		</target>
-
+	<!--  package index generator -->
+	<target name="package-index-generator" >
+		<SDKecho message="Packaging index generator jar file"/>			
+		<mkdir dir="${cacore_home}/output/index" />
+		<delete file="${cacore_home}/output/index/${project_name}-indexgen.jar"/>
+		<jar destfile="${cacore_home}/output/index/${project_name}-indexgen.jar" update="false">
+			<manifest>
+				<attribute name="Generated-By" value="caCORE SDK Code Generator"/>
+				<attribute name="Project-Title" value="${project_name}"/>
+				<attribute name="Model-File" value="${model_filename}"/>
+			</manifest>
+			<fileset dir="${dir.output.project.classes}">
+				<include name="**/search/**/*"/>
+				<exclude name="**/applicationservice/impl/**/*"/>
+				<exclude name="**/webservice/*"/>
+				<exclude name="**/proxy/*"/>
+				<exclude name="**/dao/impl/**/*"/>
+				<exclude name="**/comm/server/*"/>
+				<exclude name="**/mgmt/**/*"/>
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${dir.output.project.src}">
+				<include name="indexedFields.properties"/>
+				<include name="hibernate.properties"/>
+				<include name="*.cfg.xml"/>								
+			</fileset>
+			
+		</jar>
+	</target>
 </project>
