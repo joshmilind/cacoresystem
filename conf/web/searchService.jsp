@@ -16,7 +16,10 @@
 	String fuzzySearch = request.getParameter("FUZZY_SEARCH")!= null?"true":"false";
 	String pageSize = request.getParameter("PAGE_SIZE")!= null?request.getParameter("PAGE_SIZE"):"";	
 	String startIndex = request.getParameter("startIndex")!= null?request.getParameter("startIndex"):"";	
-	System.out.println("SearchService: "+searchString+queryType+fuzzySearch+pageSize+"\t"+startIndex);	
+	String words = request.getParameter("WORDS")!= null?request.getParameter("WORDS"):"";	
+	String exclude = request.getParameter("EXCLUDE_TEXT")!= null?request.getParameter("EXCLUDE_TEXT"):"";	
+	System.out.println("SearchService: "+searchString+queryType+fuzzySearch+pageSize+"\t"+startIndex);
+	
 	
 	IndexSearchUtils searchUtils = new IndexSearchUtils();
 	SearchQuery searchQuery = null;
@@ -35,7 +38,28 @@
 	    }
 	}else {	    
 	    searchQuery = new SearchQuery();
-	    searchQuery.setKeyword(searchString);
+	    String query = "";
+	    if(!words.equals("")){
+	    	for(StringTokenizer st = new StringTokenizer(searchString," ");st.hasMoreTokens();){
+	    		String token = st.nextToken();
+	    		if(words.equals("WITH_ALL") && exclude.equals("")){
+				query+= "+" + token +" ";
+	    		}else if(!exclude.equals("")){
+	    			if(token.equalsIgnoreCase(exclude)){
+	    				query += "-"+token +" "; 
+	    			}else{
+	    				query += token +" ";
+	    			}	    			
+	    		}	    	    	
+	    	}
+	    	
+	    }
+	    if(query.equals("")){
+	    	searchQuery.setKeyword(searchString);
+	    }else{
+	    	searchQuery.setKeyword(query);
+	    }
+	    
 	    if(pageSize.length()>0){            	
 	    	       searchUtils.setPageSize(Integer.parseInt(pageSize));
             } 

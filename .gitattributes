@@ -49,6 +49,7 @@ conf/web/Footer.jsp -text svneol=unset#application/octet-stream
 conf/web/Happy.jsp -text
 conf/web/Header.jsp -text svneol=unset#application/octet-stream
 conf/web/WEB-INF/web.xml -text
+conf/web/advSearch.jsp -text
 conf/web/images/evs.gif -text
 conf/web/images/minisearch.jpg -text
 conf/web/images/sdk.gif -text
