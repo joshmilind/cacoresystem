@@ -8,6 +8,7 @@ import gov.nih.nci.system.dao.impl.search.utils.SearchORMUtils;
 import java.util.*;
 import gov.nih.nci.common.util.*;
 import gov.nih.nci.common.net.*;
+import gov.nih.nci.system.dao.properties.*;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -19,20 +20,22 @@ import org.hibernate.search.FullTextSession;
 /*
  * Created on Apr 18, 2007
  * Shaziya Muhsin
- * 
+ *
  */
 
 public class HibernateSearch implements Searchable{
-    private static Logger log = Logger.getLogger(HibernateSearch.class.getName());    
-    public HibernateSearch() throws Exception {        
+    private static Logger log = Logger.getLogger(HibernateSearch.class.getName());
+    private SearchAPIProperties properties;
+    public HibernateSearch() throws Exception {
+    	properties = SearchAPIProperties.getInstance();
     }
 
     public List query(String queryString) throws DAOException{
         List resultList = null;
         FullTextSession fullTextSession;
- 
+
         try{
-            fullTextSession = org.hibernate.search.Search.createFullTextSession(SearchORMUtils.getSession());
+            fullTextSession = org.hibernate.search.Search.createFullTextSession(SearchAPIProperties.getSession());
         }
         catch(Exception e)
         {
@@ -40,14 +43,14 @@ public class HibernateSearch implements Searchable{
             throw new DAOException("Unable to open session  " + e.getMessage());
         }
       try{
-          String keyword = queryString;          
+          String keyword = queryString;
           System.out.println("Quering for "+ keyword);
           org.apache.lucene.queryParser.QueryParser parser = new MultiFieldQueryParser(getIndexedFields(), new StandardAnalyzer());//
           org.apache.lucene.search.Query luceneQuery = parser.parse( keyword );
           Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
-          resultList = fullTextQuery.list();          
-                
-             
+          resultList = fullTextQuery.list();
+
+
         }
         catch (JDBCException ex)
         {
@@ -80,10 +83,10 @@ public class HibernateSearch implements Searchable{
         return resultList;
     }
 
-    
-    
+
+
     private String[] getIndexedFields() throws Exception{
-        return SearchAPIDAO.getIndexedFields();
+        return properties.getIndexedFields();
     }
 
 }
