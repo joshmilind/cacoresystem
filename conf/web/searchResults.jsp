@@ -55,7 +55,7 @@
 			<INPUT TYPE=HIDDEN NAME="FULL_TEXT_SEARCH" value="FULL_TEXT_SEARCH">
  		</td>
  		
-<tr bgColor="#FAF8CC"><td align=left><%=searchUtils.getResultCounter()%> records found</td><td align=right>
+<tr bgColor="#FAF8CC"><td align=left width=25%><%=searchUtils.getResultCounter()%> records found</td><td align=right>
 <%
 if(startIndex != null){
 	searchUtils.setStartIndex(Integer.parseInt(startIndex));
@@ -123,29 +123,21 @@ if(searchUtils.getSearchQuery().getQueryType().equals("FULL_TEXT_SEARCH")){
 							}
 						}
 					}		
-					if(infoText != null && infoText.trim().length()>10){
-						String num = String.valueOf(i);
-						%>						
-						<tr><td><div class="apara"><%=infoText%></div>
-						<a href="searchResults.jsp?expand=true&recordNumber=<%=num%>"><div class="alink">more...</div></a>
-						</p>
-						<br></td></tr>
-						<%
-					}else{
+					
 					for(Iterator it=result.getProperties().keySet().iterator();it.hasNext();){
 						String key = (String) it.next();
 						String value = (String)result.getProperties().get(key);
 						if(!key.equalsIgnoreCase("_hibernate_class")){
-							%>
-							<br>
+							%>							
 							<table style="word-break:break-all;table-layout:fixed" >
-							<tr><td cellpadding=2><div class="apara"><b><i><%=key%>:</b></i> <%=value%></div></td></tr>
+							<tr><td width=25%></td><td cellpadding=2><div class="apara"><b><i><%=key%>:</b></i> <%=value%></div></td></tr>
 							</table>
 							<%
 						}
-					}}
+					}
 
 		}
+		%><hr><%
 			
 	}
 }else{
