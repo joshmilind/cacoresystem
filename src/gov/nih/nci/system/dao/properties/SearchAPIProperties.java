@@ -4,12 +4,15 @@ import gov.nih.nci.system.dao.impl.search.utils.Indexer;
 import java.io.*;
 import java.util.*;
 
+import org.hibernate.*;
+import org.hibernate.cfg.*;
+
 import org.apache.log4j.Logger;
 
 /*
  * Created on May 16, 2007
  * ShaziyaMuhsin
- * 
+ *
  */
 public class SearchAPIProperties {
     private volatile static SearchAPIProperties properties;
@@ -17,10 +20,12 @@ public class SearchAPIProperties {
     private static String[] indexedFields;
     private static String pkgs;
     private static Logger log = Logger.getLogger(SearchAPIProperties.class.getName());
-    
+    private static SessionFactory sessionFactory;
+    private static int counter = 0;
+
 
     private SearchAPIProperties() {}
-    
+
     public static SearchAPIProperties getInstance(){
         try{
             if(properties == null){
@@ -30,11 +35,14 @@ public class SearchAPIProperties {
                     }
                 }
                 loadProperties("searchapiconfig.properties");
+                configureSession();
+                counter++;
+                System.out.println(counter + ". SearchAPIProperties instantiated <<<<<<< ");
             }
         }catch(Exception ex){
             log.error("Unable to initialize Search API Properties: "+ ex);
         }
-        
+
         return properties;
     }
     private static void loadProperties(String propertiesFileName) throws Exception{
@@ -44,7 +52,7 @@ public class SearchAPIProperties {
         try{
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFileName);
             properties.load(is);
-            
+
             for(Iterator it = properties.keySet().iterator(); it.hasNext();){
                 String key = (String)it.next();
                 String value = properties.getProperty(key);
@@ -76,8 +84,8 @@ public class SearchAPIProperties {
         }else{
             fieldList = getFieldNames(indexedPropertyFiles);
         }
-        
-        
+
+
         if(fieldList.size()>0){
             int counter = 0;
             indexedFields = new String[fieldList.size()];
@@ -85,7 +93,7 @@ public class SearchAPIProperties {
                 indexedFields[counter]= (String) it.next();
                 counter++;
             }
-        }       
+        }
 
     }
     private static Set getFieldNames(String fileName) throws Exception{
@@ -112,7 +120,17 @@ public class SearchAPIProperties {
         }
         return fieldList;
     }
-    public String[] getIndexedFields(){        
+    private static void configureSession() throws Exception{
+    	if(ormFileName != null){
+    		sessionFactory = new AnnotationConfiguration().configure(ormFileName).buildSessionFactory();
+    	}else{
+    		throw new Exception("Unable to create session");
+    	}
+    }
+    public static Session getSession(){
+    	return sessionFactory.openSession();
+    }
+    public String[] getIndexedFields(){
         return indexedFields;
     }
     public String getOrmFileName(){
