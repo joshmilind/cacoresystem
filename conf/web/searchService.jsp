@@ -44,20 +44,40 @@
 	    		String token = st.nextToken();
 	    		if(words.equals("WITH_ALL") && exclude.equals("")){
 				query+= "+" + token +" ";
-	    		}else if(!exclude.equals("")){
+	    		}else if(words.equals("WITH_ALL") && exclude.length()>0){
+	    			if(token.equalsIgnoreCase(exclude)){
+	    				query += "-"+token +" "; 
+	    			}else{
+	    				query += "+"+token +" ";
+	    			}	    			
+	    		}else if(words.equals("WITH_ANY") && exclude.length()>0){
 	    			if(token.equalsIgnoreCase(exclude)){
 	    				query += "-"+token +" "; 
 	    			}else{
 	    				query += token +" ";
-	    			}	    			
+	    			}   
 	    		}	    	    	
-	    	}
+	    	}	    	
 	    	
 	    }
+	    
 	    if(query.equals("")){
-	    	searchQuery.setKeyword(searchString);
-	    }else{
+	    	query = searchString;
+	    	if(!exclude.equals("")){
+	    		if(query.toLowerCase().indexOf(exclude.toLowerCase())<0){
+	    			query = "-"+ searchString;
+	    		}else{
+	    			query += " -"+ exclude;
+	    		}	    		
+	    	}
 	    	searchQuery.setKeyword(query);
+	    }else{
+	    	if(!exclude.equals("")){
+	    		if(query.toLowerCase().indexOf(exclude.toLowerCase())<0){
+	    			query += "-"+ exclude;
+	    		}
+	      	}
+	      	searchQuery.setKeyword(query);	    	
 	    }
 	    
 	    if(pageSize.length()>0){            	

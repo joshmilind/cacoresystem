@@ -46,23 +46,35 @@
  			<img src="images/searchicon.jpg" name="caCORE Search API" border="0" align=middle>
  		</td>
  		</tr>
- 		</tr>
+ 		
+ 				
+ 		<tr>
  		<td align=center>
  			<INPUT TYPE=TEXT SIZE=60 name="searchString" value=<%=searchString%> >					
 			<INPUT TYPE=SUBMIT NAME="search" VALUE="Search">					
  		</td>
  		<tr>
- 		<td align=center>
+ 		</table>
+ 		<table align=center>
+		<tr>
+		 		<td> <INPUT TYPE=RADIO VALUE=WITH_ALL NAME=WORDS> match all words<br>
+		 		     <INPUT TYPE=RADIO VALUE=WITH_ANY NAME=WORDS CHECKED> match any of the words<br>
+		 		     <INPUT TYPE=RADIO VALUE=EXCLUDE NAME=EXCLUDE CHECKED> exclude word
+		 		     <INPUT TYPE=TEXT name="EXCLUDE_TEXT" value="" >
+		 		</td>
+		 		</tr>
+ 		
+ 		<td>
  			<INPUT TYPE=CHECKBOX NAME="FULL_TEXT_SEARCH" VALUE="FULL_TEXT_SEARCH" CHECKED/>Full Text Search
  		</td>
  		</tr>
   		<tr>
-  		<td align=center>
+  		<td >
   			<INPUT TYPE=CHECKBOX NAME="FUZZY_SEARCH" VALUE="YES"/>Fuzzy Search
   		</td>
  		</tr>
  		<tr>
-  		<td align=center>
+  		<td>
   			Number of records per page <SELECT NAME="PAGE_SIZE">
   			<OPTION>10</OPTION>
   			<OPTION>20</OPTION>
