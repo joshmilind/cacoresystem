@@ -1,4 +1,4 @@
-package src.gov.nih.nci.common.util.search;
+package gov.nih.nci.common.util.search;
 
 import org.hibernate.CacheMode;
 import org.hibernate.ScrollMode;

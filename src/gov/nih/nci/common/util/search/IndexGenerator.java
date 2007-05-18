@@ -1,4 +1,4 @@
-package src.gov.nih.nci.common.util.search;
+package gov.nih.nci.common.util.search;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
