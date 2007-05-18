@@ -32,12 +32,7 @@ public class SearchAPIDAO implements DAO {
 	/**
 	 * Constructor
 	 */
-	public SearchAPIDAO() {
-		try {
-			indexedFields = loadIndexedFields();
-		} catch (Exception ex) {
-			log.error(ex);
-		}
+	public SearchAPIDAO() {		
 	}
 
 	/**
@@ -56,7 +51,16 @@ public class SearchAPIDAO implements DAO {
 				searchService = (Searchable) ObjectFactory
 						.getObject(searchQuery.getQueryType());
 			}
-			resultList = searchService.query(getQueryString(searchQuery));
+            if(searchQuery.getSort()!=null){
+                if(searchQuery.getSort().getSortByClassName()){
+                    resultList = searchService.query(getQueryString(searchQuery),searchQuery.getSort());
+                }else{
+                    resultList = searchService.query(getQueryString(searchQuery));
+                }
+            }else{
+                resultList = searchService.query(getQueryString(searchQuery));
+            }            
+	
 		} catch (Exception ex) {
 			throw new DAOException(ex.getMessage());
 		}
@@ -144,49 +148,5 @@ public class SearchAPIDAO implements DAO {
 		return keyword.toString();
 	}
 
-	/**
-	 * Returns the field names that are indexed
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	private static String[] loadIndexedFields() throws Exception {
-		Properties properties = new Properties();
-		Set<String> fieldList = new HashSet<String>();
-		InputStream is = null;
-		try {
-			 is = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(indexPropertyFile);
-			properties.load(is);
-			if (properties.size() > 0) {
-				for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
-					String key = (String) it.next();
-					StringTokenizer st = new StringTokenizer(properties
-							.getProperty(key), ";");
-					while (st.hasMoreTokens()) {
-						fieldList.add(st.nextToken());
-					}
-				}
-			}
 
-		} catch (Exception ex) {
-			throw new Exception(ex.getMessage());
-		}
-		finally {
-			if (is != null)
-				is.close();
-		}
-
-		return (String[])fieldList.toArray(new String[0]);
-	}
-
-	/**
-	 * Returns the field names that are indexed
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public static String[] getIndexedFields() throws Exception {
-		return indexedFields;
-	}
 }
