@@ -100,6 +100,13 @@ public class SearchQuery implements Serializable {
         
         return h;
     }
+    private Sort sort = null;
+    public void setSort(Sort sorter){
+        sort = sorter;
+    }
+    public Sort getSort(){
+        return sort;
+    }
 
     
 
