@@ -902,6 +902,7 @@ src/gov/nih/nci/common/util/ObjectBridge.java -text
 src/gov/nih/nci/common/util/PrintUtils.java -text
 src/gov/nih/nci/common/util/SVGManipulator.java -text
 src/gov/nih/nci/common/util/SearchUtils.java -text
+src/gov/nih/nci/common/util/search/IndexGenerator.java -text
 src/gov/nih/nci/common/util/search/IndexSearchUtils.java -text
 src/gov/nih/nci/evs/query/EVSQuery.java -text
 src/gov/nih/nci/evs/query/EVSQueryImpl.java -text
