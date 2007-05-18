@@ -3,7 +3,7 @@ package gov.nih.nci.system.dao.impl.search.service;
 import gov.nih.nci.search.*;
 import gov.nih.nci.search.RangeFilter;
 import gov.nih.nci.system.dao.*;
-import gov.nih.nci.system.dao.impl.search.SearchAPIDAO;
+import gov.nih.nci.system.dao.properties.*;
 import java.util.*;
 import java.io.*;
 
@@ -51,13 +51,28 @@ public class FullTextSearch implements Searchable {
         return results;
 
     }
+    public List query(String searchString, gov.nih.nci.search.Sort sort)throws DAOException{
+        List results = new ArrayList();
+        try{
+            Hits hits = luceneSearch(searchString);
+            if(sort.getSortByClassName()){                            
+                results = getOrganizedSearchResults(hits, searchString);                
+            }else{
+                results = getSearchResults(hits, searchString);
+            }            
+        }catch(Exception ex){
+            throw new DAOException(ex.getMessage());
+        }
+        return results;
+    }
         /**
          * Returns the field names that are indexed
          * @return
          * @throws Exception
          */
-    private String[] getIndexedFields() throws Exception{               
-            return SearchAPIDAO.getIndexedFields();
+    private String[] getIndexedFields() throws Exception{ 
+            SearchAPIProperties properties = SearchAPIProperties.getInstance();
+            return properties.getIndexedFields();
         }
         
     /**

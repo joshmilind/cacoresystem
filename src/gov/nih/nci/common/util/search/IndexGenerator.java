@@ -25,11 +25,7 @@ import org.hibernate.search.Search;
 
 public class IndexGenerator{
 
-	//Create thread pool
-    //Check if thread pool is empty
-    //Check if thread pool is full
-    //Assign operation to thread pool
-
+	
 
     public static void main(String[] args)throws Exception{
         ExecutorService pool = Executors.newFixedThreadPool(10);
@@ -37,17 +33,7 @@ public class IndexGenerator{
             SessionFactory sessionFactory = new AnnotationConfiguration().configure("orm3.cfg.xml").buildSessionFactory();
             Set classSet = getIndexedClasses(sessionFactory, "gov.nih.nci.cabio.domain");
 
-            if(classSet.size()>0){
-                /*
-                Thread[] t = new Thread[classSet.size()];
-                int count = 0;
-                for(Iterator i = classSet.iterator(); i.hasNext();){
-                    EntityPersister persister = (EntityPersister)i.next();
-                    t[count] = new Indexer(sessionFactory,persister);
-                    t[count].start();
-                    count++;
-                }
-                */
+            if(classSet.size()>0){               
                 for(Iterator i = classSet.iterator(); i.hasNext();){
                     EntityPersister persister = (EntityPersister)i.next();
                     pool.execute(new Indexer(sessionFactory,persister));

@@ -12,4 +12,5 @@ import gov.nih.nci.system.dao.*;
  */
 public interface Searchable {
     public List query(String searchString) throws DAOException;
+    public List query(String searchString, Sort sort) throws DAOException;
 }

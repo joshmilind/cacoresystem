@@ -904,6 +904,7 @@ src/gov/nih/nci/common/util/SVGManipulator.java -text
 src/gov/nih/nci/common/util/SearchUtils.java -text
 src/gov/nih/nci/common/util/search/IndexGenerator.java -text
 src/gov/nih/nci/common/util/search/IndexSearchUtils.java -text
+src/gov/nih/nci/common/util/search/Indexer.java -text
 src/gov/nih/nci/evs/query/EVSQuery.java -text
 src/gov/nih/nci/evs/query/EVSQueryImpl.java -text
 src/gov/nih/nci/search/RangeFilter.java -text

@@ -2,8 +2,7 @@ package gov.nih.nci.system.dao.impl.search.service;
 
 import gov.nih.nci.search.SearchQuery;
 import gov.nih.nci.system.dao.*;
-import gov.nih.nci.system.dao.impl.search.SearchAPIDAO;
-import gov.nih.nci.system.dao.impl.search.utils.SearchORMUtils;
+
 
 import java.util.*;
 import gov.nih.nci.common.util.*;
@@ -84,7 +83,18 @@ public class HibernateSearch implements Searchable{
     }
 
 
-
+    public List query(String searchString, gov.nih.nci.search.Sort sort) throws DAOException{
+        List results = new ArrayList();
+        if(sort != null){
+            if(sort.getSortByClassName()){
+                //sort results
+                results = query(searchString);
+            }else{
+                results = query(searchString);
+            }
+        }
+        return results;
+    }
     private String[] getIndexedFields() throws Exception{
         return properties.getIndexedFields();
     }
