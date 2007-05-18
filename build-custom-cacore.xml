@@ -269,7 +269,7 @@
 	<target name="generate-index" if="generate_index_yes">	
 	<SDKecho message="Generating indexes"/>
 		<mkdir dir="${index_base}" />
-		<java classname="gov.nih.nci.system.dao.impl.search.utils.IndexGenerator" fork="true" maxmemory="1024m">
+		<java classname="gov.nih.nci.common.util.search.IndexGenerator" fork="true" maxmemory="1024m">
 			<classpath refid="classpath"/>
 			<classpath>
 				<pathelement location="${dir.output.project.src}" />
@@ -278,7 +278,39 @@
 			
 		</java>
 	</target>
-
+	<!--  package index generator -->
+		<target name="package-index-generator" >
+			<SDKecho message="Packaging index generator jar file"/>			
+			<mkdir dir="${cacore_home}/output/index" />
+			<delete file="${cacore_home}/output/index/${project_name}-indexgen.jar"/>
+			<jar destfile="${cacore_home}/output/index/${project_name}-indexgen.jar" update="false">
+				<manifest>
+					<attribute name="Generated-By" value="caCORE SDK Code Generator"/>
+					<attribute name="Project-Title" value="${project_name}"/>
+					<attribute name="Model-File" value="${model_filename}"/>
+					<attribute name="Main-class" value="gov.nih.nci.common.util.search.IndexGenerator"/>
+				</manifest>
+				<fileset dir="${dir.output.project.classes}">
+					<include name="**/search/**/*"/>
+					<exclude name="**/applicationservice/impl/**/*"/>
+					<exclude name="**/webservice/*"/>
+					<exclude name="**/proxy/*"/>
+					<exclude name="**/dao/impl/**/*"/>
+					<exclude name="**/comm/server/*"/>
+					<exclude name="**/mgmt/**/*"/>
+					<include name="**/*"/>
+				</fileset>
+				
+				
+			</jar>
+			<copy todir="${cacore_home}/output/index" overwrite="true">
+					<fileset dir="${dir.output.project.src}">
+					<include name="indexedFields.properties"/>
+					<include name="hibernate.properties"/>
+					<include name="*.cfg.xml"/>								
+				</fileset>
+				</copy>
+		</target>
 	<!-- client package -->
 	<target name="-package-client-resources.custom" if="package-client-resources.custom.use">
 		<SDKecho message="Packaging caCORE client resources"/>
@@ -421,33 +453,5 @@
 				</zipfileset>
 			</zip>
 		</target>
-	<!--  package index generator -->
-	<target name="package-index-generator" >
-		<SDKecho message="Packaging index generator jar file"/>			
-		<mkdir dir="${cacore_home}/output/index" />
-		<delete file="${cacore_home}/output/index/${project_name}-indexgen.jar"/>
-		<jar destfile="${cacore_home}/output/index/${project_name}-indexgen.jar" update="false">
-			<manifest>
-				<attribute name="Generated-By" value="caCORE SDK Code Generator"/>
-				<attribute name="Project-Title" value="${project_name}"/>
-				<attribute name="Model-File" value="${model_filename}"/>
-			</manifest>
-			<fileset dir="${dir.output.project.classes}">
-				<include name="**/search/**/*"/>
-				<exclude name="**/applicationservice/impl/**/*"/>
-				<exclude name="**/webservice/*"/>
-				<exclude name="**/proxy/*"/>
-				<exclude name="**/dao/impl/**/*"/>
-				<exclude name="**/comm/server/*"/>
-				<exclude name="**/mgmt/**/*"/>
-				<include name="**/*"/>
-			</fileset>
-			<fileset dir="${dir.output.project.src}">
-				<include name="indexedFields.properties"/>
-				<include name="hibernate.properties"/>
-				<include name="*.cfg.xml"/>								
-			</fileset>
-			
-		</jar>
-	</target>
+	
 </project>
