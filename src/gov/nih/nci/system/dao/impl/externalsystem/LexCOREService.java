@@ -1,34 +1,46 @@
 package gov.nih.nci.system.dao.impl.externalsystem;
 
-import org.LexGrid.LexBIG.LexBIGService.*;
-import org.LexGrid.LexBIG.Extensions.Query.*;
-import org.LexGrid.LexBIG.DataModel.Collections.*;
-import org.LexGrid.LexBIG.Extensions.Generic.*;
-import org.LexGrid.LexBIG.History.*;
-import org.LexGrid.LexBIG.LexBIGService.*;
-import org.LexGrid.codingSchemes.*;
-
-import org.LexGrid.LexBIG.DataModel.Core.*;
-import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.*;
-import org.LexGrid.LexBIG.DataModel.Collections.*;
-import org.LexGrid.LexBIG.DataModel.Core.*;
-import org.LexGrid.LexBIG.DataModel.InterfaceElements.CodingSchemeRendering;
-import org.LexGrid.LexBIG.Exceptions.LBException;
-import org.LexGrid.LexBIG.Exceptions.LBInvocationException;
-import org.LexGrid.LexBIG.Impl.LexBIGServiceImpl;
-import org.LexGrid.LexBIG.LexBIGService.*;
-import org.LexGrid.concepts.*;
-import org.LexGrid.codingSchemes.*;
-import org.LexGrid.LexBIG.Utility.*;
-import org.LexGrid.naming.*;
-import org.LexGrid.valueDomains.ValueDomain;
-//import gov.nih.nci.evs.lex.CodedNodeSet;
-//import gov.nih.nci.evs.lex.CodedNodeSetImpl;
-
 import gov.nih.nci.system.dao.properties.EVSProperties;
 
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+
+import org.LexGrid.LexBIG.DataModel.Collections.CodingSchemeRenderingList;
+import org.LexGrid.LexBIG.DataModel.Collections.ConceptReferenceList;
+import org.LexGrid.LexBIG.DataModel.Collections.ExtensionDescriptionList;
+import org.LexGrid.LexBIG.DataModel.Collections.LocalNameList;
+import org.LexGrid.LexBIG.DataModel.Collections.ModuleDescriptionList;
+import org.LexGrid.LexBIG.DataModel.Collections.ResolvedConceptReferenceList;
+import org.LexGrid.LexBIG.DataModel.Collections.SortDescriptionList;
+import org.LexGrid.LexBIG.DataModel.Collections.ValueDomainRenderingList;
+import org.LexGrid.LexBIG.DataModel.Core.CodingSchemeSummary;
+import org.LexGrid.LexBIG.DataModel.Core.CodingSchemeVersionOrTag;
+import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
+import org.LexGrid.LexBIG.DataModel.Core.ValueDomainVersionOrTag;
+import org.LexGrid.LexBIG.DataModel.InterfaceElements.CodingSchemeRendering;
+import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.SortContext;
+import org.LexGrid.LexBIG.Exceptions.LBException;
+import org.LexGrid.LexBIG.Extensions.Generic.GenericExtension;
+import org.LexGrid.LexBIG.Extensions.Query.Filter;
+import org.LexGrid.LexBIG.Extensions.Query.Sort;
+import org.LexGrid.LexBIG.History.HistoryService;
+import org.LexGrid.LexBIG.Impl.LexBIGServiceImpl;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeGraph;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceManager;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
+import org.LexGrid.LexBIG.LexBIGService.ValueDomainEntryNodeSet;
+import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
+import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
+import org.LexGrid.codingSchemes.CodingScheme;
+import org.LexGrid.concepts.CodedEntry;
+import org.LexGrid.naming.SupportedProperty;
+import org.LexGrid.valueDomains.ValueDomain;
+import org.apache.log4j.Logger;
 
 /*
  * Created on Jan 31, 2007
@@ -36,15 +48,16 @@ import org.apache.log4j.*;
  *
  */
 public class LexCOREService {
-    private static Logger log = Logger.getLogger(LexCOREService.class.getName());
-    private static LexCOREService lexCOREService = new LexCOREService();
-    private String defaultName = "NCI_Thesaurus";
-    private static HashMap codingSchemeSummaryList = new HashMap();
-    private static HashMap codingSchemeList = new HashMap();
+    
+    private static final Logger log = Logger.getLogger(LexCOREService.class);
+    private static final String defaultName = "NCI_Thesaurus";
     private static LexBIGService lbs;
+    
+    private final HashMap codingSchemeSummaryList = new HashMap();
+    private final HashMap codingSchemeList = new HashMap();
     private CodingSchemeSummary codingSchemeSummary = new CodingSchemeSummary();
     private CodingScheme codingScheme = new CodingScheme();
-
+    
     public LexCOREService(){
         try{    Hashtable hashTable = new Hashtable();
                 EVSProperties evsProperties = EVSProperties.getInstance(hashTable);
@@ -60,7 +73,7 @@ public class LexCOREService {
             setCodingScheme(defaultName);
 
         }catch(Exception e){
-            log.info(e.getMessage());
+            e.printStackTrace();
         }
     }
     public LexCOREService(String name){
@@ -76,17 +89,17 @@ public class LexCOREService {
             setCodingSchemeSummary(name);
             setCodingScheme(name);
         }catch(Exception e){
-            log.info(e.getMessage());
+            e.printStackTrace();
         }
     }
-    private static void init(String name)throws Exception{
+    
+    private void init(String name) throws Exception{
         lbs = new LexBIGServiceImpl();
         loadCodingSchemeSummaryList();
         loadCodingSchemeList();
     }
 
-
-    private static void loadCodingSchemeSummaryList() throws Exception{
+    private void loadCodingSchemeSummaryList() throws Exception{
         log.info("loadCodingSchemeSummaryList");
         CodingSchemeRenderingList schemes = lbs.getSupportedCodingSchemes();
         CodingSchemeRendering[] csr = schemes.getCodingSchemeRendering();
@@ -94,6 +107,7 @@ public class LexCOREService {
             CodingSchemeSummary css = csr[i].getCodingSchemeSummary();
             codingSchemeSummaryList.put(css.getFormalName(), css);
             log.info("CodingSchemeSumary: "+ css.getFormalName());
+
         }
      }
 
@@ -131,8 +145,6 @@ public class LexCOREService {
         }
         log.info("Size: "+codingSchemeList.size());
         return (CodingScheme)codingSchemeList.get(csName);
-
-        //return (CodingScheme)codingSchemeList.get(0);
     }
     public List getAllCodingSchemes(){
         List results = new ArrayList();
@@ -141,7 +153,8 @@ public class LexCOREService {
         }
         return results;
     }
-    private static void loadCodingSchemeList()throws Exception{
+    
+    private void loadCodingSchemeList() throws Exception {
         if(codingSchemeSummaryList.size()>0){
             for(Iterator i = codingSchemeSummaryList.keySet().iterator(); i.hasNext();){
                 String key = (String)i.next();
