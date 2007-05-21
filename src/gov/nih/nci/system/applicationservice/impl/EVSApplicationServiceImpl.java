@@ -537,7 +537,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
      }
 
@@ -547,7 +547,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public CodedNodeSet  getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException{
@@ -556,7 +556,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public Filter   getFilter(java.lang.String name) throws LBException {
@@ -565,7 +565,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }     
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public  ExtensionDescriptionList    getFilterExtensions() {
@@ -583,7 +583,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }   
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     } 
     public ExtensionDescriptionList   getGenericExtensions() {
@@ -601,7 +601,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     } 
     public java.util.Date     getLastUpdateTime() throws LBInvocationException{
@@ -610,6 +610,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }    
         catch (Exception e)
         {
+             e.printStackTrace();
              throw new LBInvocationException(e.getMessage(), null);
         }
     }
@@ -628,7 +629,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }     
     } 
     public LexBIGServiceManager   getServiceManager(java.lang.Object credentials)throws LBException {
@@ -637,7 +638,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }    
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     } 
     public LexBIGServiceMetadata  getServiceMetadata() throws LBException{
@@ -646,7 +647,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public Sort   getSortAlgorithm(java.lang.String name) throws LBException {
@@ -655,7 +656,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public SortDescriptionList    getSortAlgorithms(SortContext context) {
@@ -673,6 +674,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }    
         catch (Exception e)
         {
+             e.printStackTrace();
              throw new LBInvocationException(e.getMessage(), null);
         }
     } 
@@ -682,6 +684,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }   
         catch (Exception e)
         {
+             e.printStackTrace();
              throw new LBInvocationException(e.getMessage(), null);
         }
     } 
@@ -691,7 +694,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }    
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public ValueDomainNodeSet  getValueDomains(boolean activeOnly) throws LBException {
@@ -700,7 +703,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }     
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException{
@@ -709,7 +712,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
     public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
@@ -718,7 +721,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }   
         catch (Exception e)
         {
-             throw new LBException(e.getMessage());
+             throw new LBException(e.getMessage(), e);
         }
     }
 
