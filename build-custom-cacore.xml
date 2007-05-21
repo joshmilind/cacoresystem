@@ -281,9 +281,14 @@
 	<!--  package index generator -->
 		<target name="package-index-generator" >
 			<SDKecho message="Packaging index generator jar file"/>			
-			<mkdir dir="${cacore_home}/output/index" />
-			<delete file="${cacore_home}/output/index/${project_name}-indexgen.jar"/>
-			<jar destfile="${cacore_home}/output/index/${project_name}-indexgen.jar" update="false">
+			<mkdir dir="${cacore_home}/output/indexGenerator" />
+			<mkdir dir="${cacore_home}/output/indexGenerator/conf" />
+			<mkdir dir="${cacore_home}/output/indexGenerator/lib" />
+			<copy tofile="${cacore_home}/output/indexGenerator/build.xml" file="${dir.custom}/demo/build_index.xml" overwrite="true"/>
+			
+			<delete file="${cacore_home}/output/indexGenerator/lib/${project_name}-indexgen.jar"/>
+			
+			<jar destfile="${cacore_home}/output/indexGenerator/lib/${project_name}-indexgen.jar" update="false">
 				<manifest>
 					<attribute name="Generated-By" value="caCORE SDK Code Generator"/>
 					<attribute name="Project-Title" value="${project_name}"/>
@@ -299,17 +304,46 @@
 					<exclude name="**/comm/server/*"/>
 					<exclude name="**/mgmt/**/*"/>
 					<include name="**/*"/>
-				</fileset>
-				
-				
+				</fileset>	
+				<fileset dir="${dir.output.project.src}">
+					<include name="**/**/*.hbm.xml"/>
+				</fileset>				
 			</jar>
-			<copy todir="${cacore_home}/output/index" overwrite="true">
+		
+			<copy todir="${cacore_home}/output/indexGenerator/conf" overwrite="true">
 					<fileset dir="${dir.output.project.src}">
 					<include name="indexedFields.properties"/>
 					<include name="hibernate.properties"/>
+					<include name="searchapiconfig.properties"/>
 					<include name="*.cfg.xml"/>								
 				</fileset>
-				</copy>
+			</copy>
+			<copy todir="${cacore_home}/output/indexGenerator/lib" overwrite="true">
+				<fileset dir="${dir.lib}">
+					<include name="antlr*.jar"/>
+					<include name="log4j*.jar"/>
+					<include name="commons-logging*.jar"/>					
+					<include name="dom4j*.jar"/>					
+					<include name="asm*.jar"/>
+					<include name="cglib*.jar"/>
+					<include name="commons-*.jar"/>
+					<include name="ehcache*.jar"/>
+					<include name="jta.jar"/>
+					<include name="ojdbc*.jar"/>
+					
+				</fileset>
+				<fileset dir="${dir.custom.lib}">
+					<include name="hibernate*.jar"/>
+					<include name="ejb*.jar"/>	
+					<include name="lucene*.jar"/>
+				</fileset>
+			</copy>
+			<!--   war     -->
+			<zip destfile="${cacore_home}/output/indexgen.zip">
+				<zipfileset dir="${cacore_home}/output/indexGenerator" prefix="indexGenerator">
+							<include name="**/*"/>							
+						</zipfileset>
+					</zip>
 		</target>
 	<!-- client package -->
 	<target name="-package-client-resources.custom" if="package-client-resources.custom.use">
