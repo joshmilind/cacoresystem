@@ -317,6 +317,7 @@
 					<include name="searchapiconfig.properties"/>
 					<include name="*.cfg.xml"/>								
 				</fileset>
+				<fileset dir="${dir.output.conf.resources.client}" includes="${file.logger.properties}"/>
 			</copy>
 			<copy todir="${cacore_home}/output/indexGenerator/lib" overwrite="true">
 				<fileset dir="${dir.lib}">
@@ -343,7 +344,7 @@
 				<zipfileset dir="${cacore_home}/output/indexGenerator" prefix="indexGenerator">
 							<include name="**/*"/>							
 						</zipfileset>
-					</zip>
+				</zip>
 		</target>
 	<!-- client package -->
 	<target name="-package-client-resources.custom" if="package-client-resources.custom.use">
