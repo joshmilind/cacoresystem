@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ****************************************************************************************************-->
+<!--                                 caCORE API Client Demo Build Script				                 -->
+<!-- ****************************************************************************************************-->
+<project name="caCORE API Client Demo" default="rundemo" basedir=".">
+
+	<property name="conf.dir" value="conf" />
+	<property name="lib.dir" value="lib" />
+	<property name="src.dir" value="." />
+	<property name="numberTimeToRun" value="1" />
+	<property name="timeDelayInSecond" value="15" />
+	<property file="conf/hibernate.properties"/>
+	<path id="cp">
+		<fileset dir="lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement path="${conf.dir}" />
+	</path>
+
+	<!-- ************************************************************************************************-->
+	<!--    Run caBIO Client Demo                                                                        -->
+	<!-- ************************************************************************************************-->
+	<target name="runindex">
+		<mkdir dir="${hibernate.search.default.indexBase}"/>
+		<java classname="gov.nih.nci.common.util.search.IndexGenerator" fork="true">
+			<classpath refid="cp" />
+			<classpath>
+				<pathelement location="${src.dir}" />
+			</classpath>
+			<sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties" />
+		</java>
+
+	</target>
+
+	<!-- ************************************************************************************************-->
+	
+</project>
