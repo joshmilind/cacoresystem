@@ -21,7 +21,7 @@ public class WSQuery {
     private String fileName = "CORESystem.properties";
     private int maximumRecordsPerQuery = 1000;
     private int recordsPerQuery = 1000;
-    private String version = "3.2";
+    private String version = "4.0";
     private boolean processOntology = true;
     private String beanFileName = "cacoreBeans.properties";
     private WSTransformer transformer = null;
@@ -238,6 +238,34 @@ public class WSQuery {
           }
           return wsObject;
           
+      }
+      public List query(gov.nih.nci.search.SearchQuery searchQuery,  int startIndex, int recordCounter)throws Exception{
+          List alteredResults = new ArrayList();
+          ApplicationService app = ApplicationServiceProvider.getLocalInstance();
+          List results = app.search("gov.nih.nci.search.SearchQuery", searchQuery);
+          if(results.size()>0){
+              if(results.get(0).getClass().getName().equals("gov.nih.nci.search.SearchResult")){
+                 return results; 
+              }
+              else{
+                  List resultList = new ArrayList();
+                  if(results.size()>= startIndex){
+                      if(recordCounter <=0 || recordCounter > (startIndex + recordsPerQuery) ){
+                          recordCounter = startIndex + recordsPerQuery;
+                      }
+                    for(int i= startIndex;( i<=(recordCounter + startIndex) && i<results.size()); i++){
+                        resultList.add(results.get(i));
+                      }
+                  }
+                  if(resultList.size()>0){
+                      alteredResults = transformer.generateWSResults(resultList);
+                      }                  
+              }
+          }
+          return alteredResults;
+      }
+      public List query(gov.nih.nci.search.SearchQuery criteria) throws Exception{
+          return query(criteria.getClass().getName(),criteria, 0,0 );
       }
 
 }
