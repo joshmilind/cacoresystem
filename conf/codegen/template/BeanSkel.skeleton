@@ -32,7 +32,7 @@ public class CLASS implements JETTemplate{
 
 	public boolean isClassIndexed(Classifier klass) {	
 		boolean indexClass = false;	
-		TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"index_class");	
+		TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"ca_index_class");	
 		
 		if (indexClassTag!=null) {			
 			if (indexClassTag.getValue().equalsIgnoreCase("true")) {	
@@ -41,12 +41,12 @@ public class CLASS implements JETTemplate{
 				TaggedValue indexSuperclassTag = null;					
 				if(UML13Utils.getSuperClass((UmlClass)klass)!=null){
 					superKlass = UML13Utils.getSuperClass((UmlClass)klass);
-					if(!superKlass.getName().equals("java.lang.Object") && UML13Utils.getTaggedValue(superKlass,"index_class")!= null){
-						indexSuperclassTag = UML13Utils.getTaggedValue(superKlass,"index_class");
+					if(!superKlass.getName().equals("java.lang.Object") && UML13Utils.getTaggedValue(superKlass,"ca_index_class")!= null){
+						indexSuperclassTag = UML13Utils.getTaggedValue(superKlass,"ca_index_class");
 						if(!indexSuperclassTag.getValue().equalsIgnoreCase("true")){
 							indexClass = false;
 						}
-					}else if(!superKlass.getName().equals("java.lang.Object") && UML13Utils.getTaggedValue(superKlass,"index_class")== null){
+					}else if(!superKlass.getName().equals("java.lang.Object") && UML13Utils.getTaggedValue(superKlass,"ca_index_class")== null){
 						indexClass = false;
 					}					
 				}
@@ -57,7 +57,7 @@ public class CLASS implements JETTemplate{
 	}
 	public boolean isFieldIndexed(Attribute att){
 		boolean isIndexed = false;
-		TaggedValue indexAttTag = UML13Utils.getTaggedValue(att,"indexed");
+		TaggedValue indexAttTag = UML13Utils.getTaggedValue(att,"ca_index_attribute");
 		if(indexAttTag!=null){
 			if(indexAttTag.getValue().equalsIgnoreCase("true")){
 				isIndexed = true;
@@ -223,38 +223,7 @@ public class CLASS implements JETTemplate{
 	}
 	
 	
-/*
-	public boolean isClassIndexed(Classifier klass) {		
-		TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"index_class");
-		if (indexClassTag!=null) {
-			if (indexClassTag.getValue().equalsIgnoreCase("true")) {
-		 	 return true;
-			}
-		}
-		return false;
-	}
-*/
-	/*
-	public boolean isFieldIndexed(Attribute att){
-		boolean isIndexed = false;
-		TaggedValue indexAttTag = UML13Utils.getTaggedValue(att,"indexed");
-		if(indexAttTag!=null){
-			if(indexAttTag.getValue().equalsIgnoreCase("true")){
-				isIndexed = true;
-			}
-		}
-		return isIndexed;
-	}
-	*/
-	/*
-	public boolean isFieldId(Attribute att){
-		boolean isId = false;
-		if(att.getName().equalsIgnoreCase("id")){
-			isId = true;
-		}
-		return isId;
-	}
-	*/
+
 	
 	
 }
