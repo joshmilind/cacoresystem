@@ -51,10 +51,12 @@ conf/web/Header.jsp -text svneol=unset#application/octet-stream
 conf/web/WEB-INF/web.xml -text
 conf/web/advSearch.jsp -text
 conf/web/images/evs.gif -text
+conf/web/images/largesearchlogo.jpg -text
 conf/web/images/minisearch.jpg -text
 conf/web/images/sdk.gif -text
 conf/web/images/searchicon.gif -text
 conf/web/images/searchicon.jpg -text
+conf/web/images/smallsearchlogo.jpg -text
 conf/web/indexSearch.jsp -text
 conf/web/searchResults.jsp -text
 conf/web/searchService.jsp -text
