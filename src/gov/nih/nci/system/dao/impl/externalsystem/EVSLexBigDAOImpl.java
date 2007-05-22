@@ -604,7 +604,7 @@ public class EVSLexBigDAOImpl implements DAO
 		int limit = 1;
 		int matchOption = 0;
 		String matchType = "";
-		int ASDIndex = 1;
+		int ASDIndex = 0;
 		Vector v = new Vector();
 		ArrayList list = new ArrayList();
 		try
