@@ -952,5 +952,10 @@ src/gov/nih/nci/system/webservice/EVSWSTransformer.java -text
 src/gov/nih/nci/system/webservice/EVSWebService.java -text
 src/gov/nih/nci/system/webservice/WSQuery.java -text
 src/gov/nih/nci/system/webservice/WSTransformer.java -text
+test/build.xml -text
 test/jmeter/TestPlan.jmx -text
 test/jmeter/testObjects.txt -text
+test/lib/junit-4.3.1.jar -text
+test/src/gov/nih/nci/cabio/AllTests.java -text
+test/src/gov/nih/nci/cabio/ArraysTest.java -text
+test/src/gov/nih/nci/cabio/DefectTest.java -text
