@@ -161,6 +161,8 @@
 				<include name="**/webservice/**/*.java" />
 				<include name="**/evs/service/*.java" />
 			</fileset>
+            <fileset dir="${dir.output.project}/conf/spring" 
+                    includes="evsApplicationService.xml"/>
 		</copy>
 		<!-- The SDK puts the conf generated files in 'src'(?) Copying from conf to src for proper packaging -->
 		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
