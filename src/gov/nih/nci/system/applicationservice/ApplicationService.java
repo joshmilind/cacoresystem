@@ -64,6 +64,8 @@ public abstract class ApplicationService
 
 	public abstract List evsSearch(EVSQuery evsCriterion) throws ApplicationException;
     
+    public abstract List search(gov.nih.nci.search.SearchQuery searchQuery) throws ApplicationException;
+    
     public abstract boolean exist(String bigId) throws ApplicationException;
     public abstract Object getDataObject(String bigId) throws ApplicationException;
 

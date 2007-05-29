@@ -80,6 +80,9 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 	public List evsSearch(EVSQuery evsCriterion) throws ApplicationException {
 		return applicationServiceProxy.evsSearch(getClientInfo(), evsCriterion);
 	}
+    public List search(gov.nih.nci.search.SearchQuery searchQuery) throws ApplicationException {
+        return applicationServiceProxy.search(getClientInfo(), searchQuery);
+    }
 
 	/* (non-Javadoc)
 	 * @see gov.nih.nci.system.applicationservice.EVSApplicationService#exist(java.lang.String)

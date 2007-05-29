@@ -283,6 +283,17 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
 			throw new ApplicationException(e.getMessage());
 		}
 	}
+    public List search(gov.nih.nci.search.SearchQuery searchQuery) throws ApplicationException
+    {
+        try
+        {
+            return this.applicationServiceBusinessImpl.search(searchQuery);
+        }
+        catch (Exception e)
+        {
+            throw new ApplicationException(e.getMessage());
+        }
+    }
 
     public boolean exist(String bigId) throws ApplicationException
     {

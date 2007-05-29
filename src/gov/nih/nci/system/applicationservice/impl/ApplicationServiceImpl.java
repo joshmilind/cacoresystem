@@ -248,17 +248,28 @@ public class ApplicationServiceImpl extends ApplicationService
 	 * 
 	 * @see gov.nih.nci.system.applicationservice.ApplicationService#evsSearch(gov.nih.nci.evs.query.EVSQuery)
 	 */
-	public List evsSearch(EVSQuery evsCriterion) throws ApplicationException
+	public List search(gov.nih.nci.search.SearchQuery searchQuery) throws ApplicationException
 	{
 		try
 		{
-			return this.applicationServiceBusinessImpl.evsSearch(evsCriterion);
+			return this.applicationServiceBusinessImpl.search(searchQuery);
 		}
 		catch (Exception e)
 		{
 			throw new ApplicationException(e.getMessage());
 		}
 	}
+    public List evsSearch(EVSQuery evsCriterion) throws ApplicationException
+    {
+        try
+        {
+            return this.applicationServiceBusinessImpl.evsSearch(evsCriterion);
+        }
+        catch (Exception e)
+        {
+            throw new ApplicationException(e.getMessage());
+        }
+    }
 
     public boolean exist(String bigId) throws ApplicationException
     {

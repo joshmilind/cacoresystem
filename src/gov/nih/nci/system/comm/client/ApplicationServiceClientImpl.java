@@ -224,6 +224,13 @@ public class ApplicationServiceClientImpl extends ApplicationService
 	{
 		return applicationServiceProxy.evsSearch(getClientInfo(), evsCriterion);
 	}
+    
+    public List search(gov.nih.nci.search.SearchQuery searchQuery) throws ApplicationException
+    {
+        return applicationServiceProxy.search(getClientInfo(), searchQuery);
+    }
+    
+    
     public boolean exist(String bigId) throws ApplicationException
     {
         return applicationServiceProxy.exist(bigId);

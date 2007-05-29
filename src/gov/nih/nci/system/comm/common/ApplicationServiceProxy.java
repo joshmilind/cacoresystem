@@ -44,6 +44,8 @@ public interface ApplicationServiceProxy
 	
 	public abstract List evsSearch(ClientInfo clientInfo, EVSQuery evsCriterion) throws ApplicationException;
     
+    public abstract List search(ClientInfo clientInfo,gov.nih.nci.search.SearchQuery searchQuery) throws ApplicationException;
+    
     public abstract boolean exist(String bigId) throws ApplicationException;
     
     public abstract Object getDataObject(ClientInfo clientInfo, String bigId) throws ApplicationException;

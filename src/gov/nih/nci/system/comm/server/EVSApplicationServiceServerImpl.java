@@ -181,6 +181,13 @@ public class EVSApplicationServiceServerImpl implements EVSApplicationServicePro
 		return applicationService.evsSearch(evsCriterion);
 	}
     
+    public List search(ClientInfo clientInfo, gov.nih.nci.search.SearchQuery searchQuery) throws ApplicationException
+    {
+        ClientInfoThreadVariable.setClientInfo(clientInfo);
+        
+        return applicationService.search(searchQuery);
+    }
+    
     public boolean exist(String bigId) throws ApplicationException
     {           
         return applicationService.exist(bigId);

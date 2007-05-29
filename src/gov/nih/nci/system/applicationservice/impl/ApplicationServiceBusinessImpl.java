@@ -343,6 +343,17 @@ public class ApplicationServiceBusinessImpl {
 		
 		return results;
 	}
+    public List search(gov.nih.nci.search.SearchQuery searchQuery) throws Exception {
+        List results = null;
+        Response response;
+        Request request = new Request(searchQuery);
+        request.setDomainObjectName(searchQuery.getClass().getName());
+
+        response = query(request);
+        results = (List) response.getResponse();
+        
+        return results;
+    }
 
     public boolean exist(String bigId) throws Exception {
         boolean exist = false;
@@ -740,6 +751,9 @@ public class ApplicationServiceBusinessImpl {
 }
 
 // $Log: not supported by cvs2svn $
+// Revision 1.19  2007/05/01 20:51:54  shaziyam
+// GF5979: support SearchQuery
+//
 // Revision 1.18  2007/04/17 13:25:15  safrant
 // GF5376: extended ApplicationService to EVSApplicationService
 //
