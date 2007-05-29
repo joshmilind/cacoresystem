@@ -105,6 +105,11 @@ public class WSQuery {
           }
           else{
               results = getResultSet(targetClassName, criteria);
+              if(results.size()>0){
+                  if(results.get(0).getClass().getName().equals("gov.nih.nci.search.SearchResult")){
+                     return results; 
+                  }
+              }
               List resultList = new ArrayList();
 
               if(results.size()>= startIndex){
@@ -239,32 +244,7 @@ public class WSQuery {
           return wsObject;
           
       }
-      public List query(gov.nih.nci.search.SearchQuery searchQuery,  int startIndex, int recordCounter)throws Exception{
-          List alteredResults = new ArrayList();
-          ApplicationService app = ApplicationServiceProvider.getLocalInstance();
-          List results = app.search("gov.nih.nci.search.SearchQuery", searchQuery);
-          if(results.size()>0){
-              if(results.get(0).getClass().getName().equals("gov.nih.nci.search.SearchResult")){
-                 return results; 
-              }
-              else{
-                  List resultList = new ArrayList();
-                  if(results.size()>= startIndex){
-                      if(recordCounter <=0 || recordCounter > (startIndex + recordsPerQuery) ){
-                          recordCounter = startIndex + recordsPerQuery;
-                      }
-                    for(int i= startIndex;( i<=(recordCounter + startIndex) && i<results.size()); i++){
-                        resultList.add(results.get(i));
-                      }
-                  }
-                  if(resultList.size()>0){
-                      alteredResults = transformer.generateWSResults(resultList);
-                      }                  
-              }
-          }
-          return alteredResults;
-      }
-     
+           
       public List search(gov.nih.nci.search.SearchQuery searchQuery)throws Exception{
           return queryObject(searchQuery.getClass().getName(), searchQuery);
       }
