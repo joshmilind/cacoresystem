@@ -3,7 +3,7 @@ package gov.nih.nci.system.dao.impl.search.service;
 import gov.nih.nci.search.*;
 import gov.nih.nci.search.RangeFilter;
 import gov.nih.nci.system.dao.*;
-import gov.nih.nci.system.dao.properties.*;
+import gov.nih.nci.common.util.search.*;
 import java.util.*;
 import java.io.*;
 
@@ -37,16 +37,10 @@ public class FullTextSearch implements Searchable {
     public List query(String searchString)throws DAOException{ 
         List results = new ArrayList();
         try{
-            long start = System.currentTimeMillis();
             Hits hits = luceneSearch(searchString);
-            long end = System.currentTimeMillis();
-            System.out.println("Time to Query MS: "+ (end - start));
-            start = System.currentTimeMillis();
             results = getSearchResults(hits, searchString);
-            end = System.currentTimeMillis();
-            System.out.println("Time to Organize Results MS: "+ (end - start));
         }catch(Exception ex){
-            throw new DAOException(ex.getMessage());
+            throw new DAOException(ex);
         }
         return results;
 
@@ -61,7 +55,7 @@ public class FullTextSearch implements Searchable {
                 results = getSearchResults(hits, searchString);
             }            
         }catch(Exception ex){
-            throw new DAOException(ex.getMessage());
+            throw new DAOException(ex);
         }
         return results;
     }
@@ -139,7 +133,7 @@ public class FullTextSearch implements Searchable {
                 query = parser.parse(searchString);                
                 hits = multiSearcher.search(query);
             }catch(Exception ex){
-                throw new Exception(ex.getMessage());
+                throw new Exception(ex);
             }
             return hits;
         }
@@ -186,7 +180,7 @@ public class FullTextSearch implements Searchable {
                         resultList.add(result);                        
                     }
             }catch(Exception ex){
-                throw new Exception(ex.getMessage());
+                throw new Exception(ex);
             }
             return resultList;
         }
@@ -225,7 +219,7 @@ public class FullTextSearch implements Searchable {
                     }                    
                     resultList.add(map);
             }catch(Exception ex){
-                throw new Exception(ex.getMessage());
+                throw new Exception(ex);
             }
             return resultList;
         }

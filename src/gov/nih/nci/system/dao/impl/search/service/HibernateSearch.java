@@ -7,7 +7,7 @@ import gov.nih.nci.system.dao.*;
 import java.util.*;
 import gov.nih.nci.common.util.*;
 import gov.nih.nci.common.net.*;
-import gov.nih.nci.system.dao.properties.*;
+import gov.nih.nci.common.util.search.*;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -38,18 +38,15 @@ public class HibernateSearch implements Searchable{
         }
         catch(Exception e)
         {
-            log.error("Unable to open session " + e.getMessage());
-            throw new DAOException("Unable to open session  " + e.getMessage());
+            log.error("Unable to open session " + e);
+            throw new DAOException("Unable to open session  " + e);
         }
       try{
-          String keyword = queryString;
-          System.out.println("Quering for "+ keyword);
+          String keyword = queryString;          
           org.apache.lucene.queryParser.QueryParser parser = new MultiFieldQueryParser(getIndexedFields(), new StandardAnalyzer());//
           org.apache.lucene.search.Query luceneQuery = parser.parse( keyword );
           Query fullTextQuery = fullTextSession.createFullTextQuery(luceneQuery);
           resultList = fullTextQuery.list();
-
-
         }
         catch (JDBCException ex)
         {
