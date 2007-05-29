@@ -221,7 +221,14 @@
 	<target name="-build-system.custom" if="build-system.custom.use" />
 	<target name="-compile-beans.custom" if="compile-beans.custom.use" />
 	<target name="-package-client-jar.custom" if="package-client-jar.custom.use" />
-	<target name="-package-thickclient-resources.custom" if="package-thickclient-resources.custom.use" />
+	<target name="-package-thickclient-resources.custom" if="package-thickclient-resources.custom.use" >
+		<copy todir="${dir.output.project.package.thickclient}/conf" overwrite="true">
+				<fileset dir="${dir.output.project.src}">
+				     <include name="evsApplicationService.xml"/>
+				</fileset>
+				</copy>
+				<copy tofile="${dir.output.project.package.thickclient}/conf/evsService.xml" file="${dir.output.conf.spring}/evsServiceThickClient.xml" overwrite="true"/>		
+	</target>
 	<target name="-package-war.custom" if="package-war.custom.use" />
 	<target name="-generate-xml-mapping.custom" if="generate-xml-mapping.custom.use"/>
 	
@@ -362,6 +369,9 @@
 				<include name="lgModel.jar"/>
 				<include name="lgUtility.jar"/>
 			</fileset>
+		</copy>
+		<copy todir="${dir.output.project.package.client}/conf" overwrite="true">
+			<fileset dir="${dir.output.conf.spring}" includes="evsService.xml"/>
 		</copy>
 	</target>
 	
