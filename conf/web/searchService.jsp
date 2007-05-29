@@ -18,7 +18,6 @@
 	String startIndex = request.getParameter("startIndex")!= null?request.getParameter("startIndex"):"";	
 	String words = request.getParameter("WORDS")!= null?request.getParameter("WORDS"):"";	
 	String exclude = request.getParameter("EXCLUDE_TEXT")!= null?request.getParameter("EXCLUDE_TEXT"):"";	
-	System.out.println("SearchService: "+searchString+queryType+fuzzySearch+pageSize+"\t"+startIndex);
 	
 	
 	IndexSearchUtils searchUtils = new IndexSearchUtils();
@@ -94,9 +93,7 @@
 	        }else{
 	        	url = request.getContextPath()+"/GetHTML?query=gov.nih.nci.search.SearchQuery&gov.nih.nci.search.SearchQuery[@keyword="+searchString+"][@queryType=HIBERNATE_SEARCH]&pageSize="+searchUtils.getPageSize();
 	        }
-	        
-	        System.out.println("URL: "+ httpurl);
-            }  
+        }  
 	      
 	}
 	
