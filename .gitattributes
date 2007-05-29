@@ -29,6 +29,7 @@ conf/hibernate/hibernate.properties -text
 conf/orm1.cfg.xml -text
 conf/orm2.cfg.xml -text
 conf/orm3.cfg.xml -text
+conf/resources/server/CORESystem.properties -text
 conf/resources/server/xml.properties -text
 conf/resources/xml.properties -text
 conf/searchapiconfig.properties -text
