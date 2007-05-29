@@ -45,7 +45,7 @@
 	String adrs = request.getContextPath()+"/indexSearch.jsp";
 	%>
 		<td><a href="<%=adrs%>">
- 			<img src="images/minisearch.jpg" name="caCORE Search API" border="0" align=middle>
+ 			<img src="images/smallsearchlogo.jpg" name="caCORE Search API" border="0" align=middle>
  			</a>
  		</td>
  		
