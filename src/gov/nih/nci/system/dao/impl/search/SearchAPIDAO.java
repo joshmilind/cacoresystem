@@ -48,9 +48,10 @@ public class SearchAPIDAO implements DAO {
 		try {
 			Searchable searchService = null;
 			if (searchQuery.getQueryType() != null) {
-				searchService = (Searchable) ObjectFactory
-						.getObject(searchQuery.getQueryType());
-			}
+				searchService = (Searchable) ObjectFactory.getObject(searchQuery.getQueryType());
+			}else{
+                searchService = (Searchable) ObjectFactory.getObject("FULL_TEXT_SEARCH");
+            }
             if(searchQuery.getSort()!=null){
                 if(searchQuery.getSort().getSortByClassName()){
                     resultList = searchService.query(getQueryString(searchQuery),searchQuery.getSort());
