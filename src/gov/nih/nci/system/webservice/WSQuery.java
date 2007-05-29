@@ -264,8 +264,9 @@ public class WSQuery {
           }
           return alteredResults;
       }
-      public List query(gov.nih.nci.search.SearchQuery criteria) throws Exception{
-          return query(criteria.getClass().getName(),criteria, 0,0 );
+     
+      public List search(gov.nih.nci.search.SearchQuery searchQuery)throws Exception{
+          return queryObject(searchQuery.getClass().getName(), searchQuery);
       }
 
 }
