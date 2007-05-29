@@ -1937,7 +1937,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
             if(source.indexOf("*")>-1){
                 try{
                     //Vector concepts = adapter.findConceptsWithNameMatching(searchTerm, limit);
-                    Concept[] concepts = adapter.searchConcepts(searchTerm, limit,0,"",1,"contains");
+                    Concept[] concepts = adapter.searchConcepts(searchTerm, limit,0,"",0,"contains");
                     for(int x=0; x<concepts.length; x++){
                         MetaThesaurusConcept mtc = buildMetaThesaurusConcept((Concept)concepts[x]);
                         if(source.equals("*")){
