@@ -1,5 +1,5 @@
 package gov.nih.nci.common.util.search;
-import gov.nih.nci.system.dao.impl.search.utils.Indexer;
+
 
 import java.io.*;
 import java.util.*;
