@@ -166,7 +166,10 @@
 		</copy>
 		<!-- The SDK puts the conf generated files in 'src'(?) Copying from conf to src for proper packaging -->
 		<copy todir="${dir.output.project.src}" overwrite="yes" failonerror="false">
-			<fileset dir="${dir.output.conf}" includes="*.xml"/>
+			<fileset dir="${dir.output.conf}">
+				<include name="*.xml" />
+				<include name="searchapiconfig.properties" />
+			</fileset>
 		</copy>
 		<copy todir="${dir.output.project.web}" overwrite="true">
 			<fileset dir="${dir.custom.conf}" includes="**/*"/>
