@@ -58,6 +58,9 @@ public class EVSLexBigDAOImpl implements DAO
 {
 	private static Logger log = Logger.getLogger(EVSLexBigDAOImpl.class.getName());
     private static HashMap <String, LexAdapter> adapters = new HashMap<String, LexAdapter>();
+
+    private static HashMap <Integer, String> namespaceId2VocabularyName_Map = new HashMap<Integer, String>();
+
     private static HashMap <String, Vocabulary>vocabularies = new HashMap<String, Vocabulary>();
     private final static String defaultVocabularyName = "NCI_Thesaurus";
     private final static String metaVocabularyName = "NCI MetaThesaurus";
@@ -290,7 +293,8 @@ public class EVSLexBigDAOImpl implements DAO
                 try{
                     adapter = new LexAdapter();
                     adapter.setVocabulary(defaultVocabularyName);
-                    vocabs = adapter.getVocabularyNames();
+                    //vocabs = adapter.getVocabularyNames();
+                    vocabs = adapter.getLocalNames(); 
                 }catch(Exception ex){
                     log.error("Unable to connect to LexBig Server - check server log for details\n"+ ex.getMessage() );
                 }
@@ -601,7 +605,7 @@ public class EVSLexBigDAOImpl implements DAO
 		int limit = 1;
 		int matchOption = 0;
 		String matchType = "";
-		int ASDIndex = 1;
+		int ASDIndex = 0;
 		Vector v = new Vector();
 		ArrayList list = new ArrayList();
 		try
@@ -635,11 +639,11 @@ public class EVSLexBigDAOImpl implements DAO
 	        	if(matchOption==0){
                     try{
                         concepts = ((LexAdapter)adapters.get(vocabularyName)).searchConcepts(searchTerm, limit,"contains");
-                    }catch(Exception e){                        
+                    }catch(Exception e){
                         if(e.getMessage() != null){
                             throw new DAOException(getException(ex));
                         }
-                    }	        		
+                    }
 		        }
 	        	else{
 	        		throw new DAOException(getException(ex));
@@ -659,7 +663,7 @@ public class EVSLexBigDAOImpl implements DAO
             if(e.getMessage() != null){
                 log.error(e.getMessage());
                 throw new DAOException(getException(e.getMessage()));
-            }		    	
+            }
 		}
 		return new Response(list);
 	}
@@ -772,12 +776,8 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 		  	try
 			{
 				LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
-
-				if((roles != null) && (roles.size() > 0)){
-				   tree = adapter.getTree(rootName, direction, depthLevel, attrib, isaFlag, roles);
-
-				}
-                if(tree == null){
+				tree = adapter.getTree(rootName, direction, depthLevel, attrib, isaFlag, roles);
+				if(tree == null){
                     throw new DAOException("Unable to generate Tree  - LexBIG Exception");
 
                 }
@@ -1938,7 +1938,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
             if(source.indexOf("*")>-1){
                 try{
                     //Vector concepts = adapter.findConceptsWithNameMatching(searchTerm, limit);
-                    Concept[] concepts = adapter.searchConcepts(searchTerm, limit,0,"",1,"contains");
+                    Concept[] concepts = adapter.searchConcepts(searchTerm, limit,0,"",0,"contains");
                     for(int x=0; x<concepts.length; x++){
                         MetaThesaurusConcept mtc = buildMetaThesaurusConcept((Concept)concepts[x]);
                         if(source.equals("*")){
@@ -1982,7 +1982,7 @@ private Response searchMetaThesaurus(HashMap map) throws Exception
         if(e != null){
             log.error("Error: searchMetaThesaurus - "+e.getMessage());
             throw new DAOException (getException( e.getMessage()));
-        }		
+        }
 	}
 
 	return new Response(list);
@@ -2523,20 +2523,22 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 			}
             LexAdapter adapter = getLexAdapterForMeta();
             if(sourceAbbr.equals("*")){
-                if(relation.equalsIgnoreCase("RN") || relation.toUpperCase().equalsIgnoreCase("PAR")){
-                    rc = adapter.getRelatedConcepts(conceptCode, false, relation);
-                }
-                else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
+                if(relation.equalsIgnoreCase("RN")){
+                    rc = adapter.getRelatedConcepts(conceptCode, false, "RB");
+                }else if(relation.toUpperCase().equalsIgnoreCase("PAR")){
+                	 rc = adapter.getRelatedConcepts(conceptCode, false, "CHD");
+                }else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
                     rc = adapter.getRelatedConcepts(conceptCode, true, relation);
                 }
                 else{
                     rc = adapter.getRelatedConcepts(conceptCode, true,null);
                 }
             }else{
-                if(relation.equalsIgnoreCase("RN") || relation.toUpperCase().equalsIgnoreCase("PAR")){
-                    rc = adapter.getRelatedConceptsBySource(conceptCode, false, relation, sourceAbbr);
-                }
-                else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
+                if(relation.equalsIgnoreCase("RN")){
+                    rc = adapter.getRelatedConceptsBySource(conceptCode, false, "RB", sourceAbbr);
+                }else if(relation.toUpperCase().equalsIgnoreCase("PAR")){
+                	rc = adapter.getRelatedConceptsBySource(conceptCode, false, "CHD", sourceAbbr);
+                }else if(relation.equalsIgnoreCase("CHD") || relation.toUpperCase().equalsIgnoreCase("RB")){
                     rc = adapter.getRelatedConceptsBySource(conceptCode, true, relation, sourceAbbr);
                 }else{
                     rc = adapter.getRelatedConceptsBySource(conceptCode, true, null, sourceAbbr);
@@ -3401,7 +3403,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    }
    */
 
-   private gov.nih.nci.evs.domain.Silo convertSilo(gov.nih.nci.dtsrpc.client.Silo dtsSilo){
+   //private gov.nih.nci.evs.domain.Silo convertSilo(gov.nih.nci.dtsrpc.client.Silo dtsSilo){
+   private gov.nih.nci.evs.domain.Silo convertSilo(gov.nih.nci.lexrpc.client.Silo dtsSilo){
        gov.nih.nci.evs.domain.Silo silo = new gov.nih.nci.evs.domain.Silo();
        silo.setId(dtsSilo.getId());
        silo.setName(dtsSilo.getName());
@@ -3596,6 +3599,17 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
        treeNode.setTraverseDown(concept.getTraverseDown());
        return treeNode;
        }
+
+
+   private gov.nih.nci.evs.domain.TreeNode convertTreeNode(gov.nih.nci.lexrpc.client.TreeNode node){
+       gov.nih.nci.evs.domain.TreeNode treeNode = new gov.nih.nci.evs.domain.TreeNode();
+       //treeNode.setName(concept.getTreeNode().getName());
+       //treeNode.setIsA(concept.getTreeNode().getIsA());
+       //treeNode.setLinks(concept.getLinks());
+       //treeNode.setTraverseDown(concept.getTraverseDown());
+       return treeNode;
+       }
+
 
    /**
     * Retrievs all the parent concepts for a given concept
@@ -4295,5 +4309,617 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
    	}
    	return (new Response(list));
    }
+
+
+
+
+
+private Response getDefinitionCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		Vector ret_obj = adapter.getDefinitionCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_obj != null) {
+			Vector evs_obj = convertDefinitionCollection(ret_obj);
+			for (int i=0; i<evs_obj.size(); i++)
+			{
+				list.add(evs_obj.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+private Response getSourceCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		Vector ret_obj = adapter.getSourceCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_obj != null) {
+			Vector evs_obj = convertSourceCollection(ret_obj);
+			for (int i=0; i<evs_obj.size(); i++)
+			{
+				list.add(evs_obj.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+
+private Response getSemanticTypeVectorbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String code = null;
+	ArrayList list = new ArrayList();
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("code"))
+				code = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		Vector ret_obj = adapter.getSemanticTypeCollectionbyCode(vocabularyName, code);
+
+		if (ret_obj != null) {
+			Vector evs_obj = convertSemanticTypeCollection(ret_obj);
+			for (int i=0; i<evs_obj.size(); i++)
+			{
+				list.add(evs_obj.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+
+private Response getSemanticTypeCollectionbyCui (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String cui = null;
+	ArrayList list = new ArrayList();
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("code"))
+				cui = (String) map.get(key);
+		}
+		String vocabularyName = "NCI_MetaThesaurus";//namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		Vector ret_obj = adapter.getSemanticTypeCollectionbyCode(vocabularyName, cui);
+
+		if (ret_obj != null) {
+			Vector evs_obj = convertSemanticTypeCollection(ret_obj);
+			for (int i=0; i<evs_obj.size(); i++)
+			{
+				list.add(evs_obj.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+
+private Response getSynonymCollectionbyCui (HashMap map) throws Exception
+{
+	return getAtomCollectionbyCui (map);
+}
+
+
+private Response getAtomCollectionbyCui (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String cui = null;
+	ArrayList list = new ArrayList();
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("cui"))
+				cui = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		Vector ret_obj = adapter.getAtomCollectionbyCode(vocabularyName, cui);
+		if (ret_obj != null) {
+			Vector evs_obj = convertAtomCollection(ret_obj);
+			for (int i=0; i<evs_obj.size(); i++)
+			{
+				list.add(evs_obj.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+private Response getHistoryCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	Vector ret_vec = null;
+	Vector evs_vec = null;
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		ret_vec = adapter.getHistoryCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_vec != null) {
+			evs_vec = convertHistoryCollection(ret_vec);
+			for (int i=0; i<evs_vec.size(); i++)
+			{
+				list.add(evs_vec.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+
+private Response getRoleCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	Vector ret_vec = null;
+	Vector evs_vec = null;
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		ret_vec = adapter.getRoleCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_vec != null) {
+			evs_vec = convertRoleCollection(ret_vec);
+			for (int i=0; i<evs_vec.size(); i++)
+			{
+				list.add(evs_vec.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+
+private Response getInverseRoleCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	Vector ret_vec = null;
+	Vector evs_vec = null;
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		ret_vec = adapter.getInverseRoleCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_vec != null) {
+			evs_vec = convertRoleCollection(ret_vec);
+			for (int i=0; i<evs_vec.size(); i++)
+			{
+				list.add(evs_vec.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+private Response getInverseAssociationCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	Vector ret_vec = null;
+	Vector evs_vec = null;
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		ret_vec = adapter.getInverseAssociationCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_vec != null) {
+			evs_vec = convertRoleCollection(ret_vec);
+			for (int i=0; i<evs_vec.size(); i++)
+			{
+				list.add(evs_vec.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+
+private Response getAssociationCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	Vector ret_vec = null;
+	Vector evs_vec = null;
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		ret_vec = adapter.getAssociationCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_vec != null) {
+			evs_vec = convertAssociationCollection(ret_vec);
+			for (int i=0; i<evs_vec.size(); i++)
+			{
+				list.add(evs_vec.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+private Response getPropertyCollectionbyCode (HashMap map) throws Exception
+{
+	int namespaceId = -1;
+	String conceptCode = null;
+	ArrayList list = new ArrayList();
+	Vector ret_vec = null;
+	Vector evs_vec = null;
+	try {
+		for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+		{
+			String key = (String)iter.next();
+			String name = key.substring(key.indexOf("$")+1, key.length());
+			if(name.equalsIgnoreCase("namespaceId"))
+				namespaceId = ((Integer)map.get(key)).intValue();
+			else if(name.equalsIgnoreCase("conceptCode"))
+				conceptCode = (String) map.get(key);
+		}
+		String vocabularyName = namespaceId2VocabularyName(namespaceId);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		ret_vec = adapter.getPropertyCollectionbyCode(vocabularyName, conceptCode);
+		if (ret_vec != null) {
+			evs_vec = convertPropertyCollection(ret_vec);
+			for (int i=0; i<evs_vec.size(); i++)
+			{
+				list.add(evs_vec.elementAt(i));
+			}
+		}
+	} catch(Exception e) {
+		log.error(e.getMessage());
+		throw new DAOException (getException(e.getMessage()));
+	}
+    return (new Response(list));
+}
+
+
+private Vocabulary convertVocabulary (String vocabulary) {
+	Vocabulary vocab = new Vocabulary();
+	vocab.setName(vocabulary);
+	return vocab;
+
+}
+
+
+private Vector convertAssociationCollection (Vector dtsrpcAssociations) {
+	return convertAssociations(dtsrpcAssociations);
+}
+
+
+private Vector convertPropertyCollection (Vector nciProps) {
+	return convertProperties(nciProps);
+}
+
+
+private Vector convertSiloCollection (Vector v) {
+	Vector u = new Vector();
+	for (int i=0; i<v.size(); i++)
+	{
+		gov.nih.nci.evs.domain.Silo silo = convertSilo((gov.nih.nci.lexrpc.client.Silo) v.elementAt(i));
+		u.add(silo);
+	}
+    return u;
+}
+
+
+private Vector convertQualifierCollection (Vector dtsrpcQualifiers) {
+    return convertQualifiers(dtsrpcQualifiers);
+}
+
+
+private Vector convertDefinitionCollection (Vector v) {
+	Vector u = new Vector();
+	for (int i=0; i<v.size(); i++)
+	{
+		gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) v.elementAt(i);
+		Definition definition = new Definition();
+		definition.setDefinition(property.getValue());
+		gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();
+		Vector qCollection = property.getQualifierCollection();
+		for(int q=0; q< qCollection.size(); q++){
+			gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
+			if(qualifier.getName().toLowerCase().equalsIgnoreCase("source")){
+				source.setAbbreviation(qualifier.getValue());
+			}else if(qualifier.getName().toLowerCase().equalsIgnoreCase("source-code")){
+				source.setCode(qualifier.getValue());
+			}
+		}
+		definition.setSource(source);
+		u.add(definition);
+	}
+	return u;
+ }
+
+
+private Vector convertSourceCollection (Vector v) {
+	Vector u = new Vector();
+	for (int i=0; i<v.size(); i++)
+	{
+		gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) v.elementAt(i);
+		if(property.getName().toUpperCase().equalsIgnoreCase("SOURCE")) {
+			Source source = new Source();
+			source.setAbbreviation(property.getValue());
+			u.add(source);
+	    }
+	}
+	return u;
+}
+
+
+private Vector convertSemanticTypeCollection (Vector v) {
+	Vector u = new Vector();
+	for (int i=0; i<v.size(); i++)
+	{
+		gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) v.elementAt(i);
+		if(property.getName().toUpperCase().equalsIgnoreCase("SEMANTIC_TYPE")) {
+			SemanticType sType = new SemanticType();
+			sType.setName(property.getValue());
+			u.add(sType);
+	    }
+	}
+	return u;
+}
+
+
+private Vector convertAtomCollection (Vector v) {
+	Vector u = new Vector();
+	for (int i=0; i<v.size(); i++)
+	{
+		gov.nih.nci.lexrpc.client.Property property = (gov.nih.nci.lexrpc.client.Property) v.elementAt(i);
+		if(property.getName().toUpperCase().equalsIgnoreCase("FULL_SYN")) {
+			gov.nih.nci.evs.domain.Atom atom = new gov.nih.nci.evs.domain.Atom();
+			atom.setName(property.getValue());
+			//atom.setCode(metaConcept.getCode());
+			Vector qCollection = property.getQualifierCollection();
+			for(int q=0; q< qCollection.size(); q++){
+				gov.nih.nci.lexrpc.client.Qualifier qualifier = (gov.nih.nci.lexrpc.client.Qualifier)qCollection.get(q);
+				gov.nih.nci.evs.domain.Source source = new gov.nih.nci.evs.domain.Source();
+				if(qualifier.getName().toLowerCase().equalsIgnoreCase("source")){
+					source.setAbbreviation(qualifier.getValue());
+				}else if(qualifier.getName().toLowerCase().equalsIgnoreCase("source-code")){
+					source.setCode(qualifier.getValue());
+				}
+				if(source.getAbbreviation()!=null){
+					//sourceMap.put(source.getAbbreviation(), source);
+					atom.setSource(source);
+					atom.setOrigin(source.getAbbreviation());
+				}
+			}
+			u.add(atom);
+	    }
+	}
+	return u;
+}
+
+
+/*
+private Vector convertHistoryCollection (Vector v) {
+	Vector historyVector = new Vector();
+	for (int i=0; i<v.size(); i++) {
+		String actionDate = (String) v.get(i);
+		StringTokenizer st = new StringTokenizer(actionDate, "|");
+		while(st.hasMoreTokens()){
+			String action = st.nextToken();
+			Date aDate = stringToDate(st.nextToken());
+			gov.nih.nci.evs.domain.History h = new gov.nih.nci.evs.domain.History();
+			h.setEditAction(action);
+			h.setEditActionDate(aDate);
+			Vector ref = new Vector();
+			if(action.equalsIgnoreCase("retire") ||action.equalsIgnoreCase("merge")){
+				ref = adapter.getCodeActionChildren(conceptCode, aDate);
+			}else if(action.equalsIgnoreCase("split")){
+				ref = adapter.getCodeActionParents(conceptCode, aDate);
+			}
+			String refCodes = "";
+			for(int r=0; r<ref.size(); r++){
+				refCodes += (String)ref.get(r);
+			}
+			if(refCodes.length()>0){
+				h.setReferenceCode(refCodes);
+			}
+
+			if(initialDate != null && finalDate == null){
+				if(initialDate.equals(aDate) || aDate.after(initialDate)){
+					historyVector.add(h);
+				}
+			}else if(initialDate == null && finalDate != null){
+				if(finalDate.equals(aDate) || aDate.before(finalDate)){
+					historyVector.add(h);
+				}
+			}else if(initialDate != null && finalDate != null ){
+				if(initialDate.equals(aDate) ||(aDate.after(initialDate) && aDate.before(finalDate)) || aDate.equals(finalDate)){
+					historyVector.add(h);
+				}
+			}else if(initialDate == null && finalDate == null){
+				historyVector.add(h);
+			}
+
+			historyVector.add(h);
+
+		}
+	}
+	return historyVector;
+}
+*/
+
+// Place holders
+private Vector convertHistoryCollection (Vector v) {
+	Vector historyVector = new Vector();
+	return historyVector;
+}
+
+
+private SecurityToken convertSecurityToken (String token) {
+	return new SecurityToken();
+}
+
+
+private Vector convertRoleCollection (Vector nciRoles) {
+	return convertRoles(nciRoles);
+
+}
+
+private EdgeProperties convertEdgeProperties (gov.nih.nci.lexrpc.client.TreeNode node) {
+    return new EdgeProperties();
+}
+
+private Source convertSource (String sab)  {
+	try {
+		HashMap map = new HashMap();
+		List metaSources = (List)getMetaSources(map).getResponse();
+		for(int i=0; i<metaSources.size(); i++) {
+			Source source = (Source)metaSources.get(i);
+			String sourceName = source.getAbbreviation();
+			if(sourceName.equalsIgnoreCase(sab)) {
+				return source;
+			}
+		}
+    } catch (Exception e) {
+		e.printStackTrace();
+	}
+	return null;
+}
+
+
+private String namespaceId2VocabularyName(int namespaceId)
+{
+	Integer id = new Integer(namespaceId);
+	if (namespaceId2VocabularyName_Map.containsKey(id))
+	{
+		return (String) namespaceId2VocabularyName_Map.get(id);
+	}
+	try {
+		String vocabularyName = getLexAdapter(defaultVocabularyName).localName2FormalName(id.toString());
+		if (vocabularyName != null)
+		{
+			namespaceId2VocabularyName_Map.put(id, vocabularyName);
+			return vocabularyName;
+		}
+    } catch (Exception e) {
+		e.printStackTrace();
+	}
+	return null;
+}
+
 
  }
