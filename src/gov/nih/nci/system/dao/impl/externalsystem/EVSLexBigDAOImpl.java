@@ -282,6 +282,7 @@ public class EVSLexBigDAOImpl implements DAO
         try{
             if(adapters.size()<1){
                 LexAdapter adapter = null;
+                Vector vocab_holder = new Vector();
                 Vector vocabs = new Vector();
                 EVSProperties evsProperties = EVSProperties.getInstance(configs);
                 String lg_config_file = null;
@@ -293,25 +294,29 @@ public class EVSLexBigDAOImpl implements DAO
                 try{
                     adapter = new LexAdapter();
                     adapter.setVocabulary(defaultVocabularyName);
-                    //vocabs = adapter.getVocabularyNames();
-                    vocabs = adapter.getLocalNames(); 
+                    vocabs = adapter.getVocabularyNames();
+                    //vocabs = adapter.getLocalNames(); 
                 }catch(Exception ex){
                     log.error("Unable to connect to LexBig Server - check server log for details\n"+ ex.getMessage() );
                 }
                 for(int i=0; i<vocabs.size(); i++){
-                    String vocabName = (String)vocabs.get(i);
-                    LexAdapter lexAdapter = new LexAdapter();
-                    try{
-                        lexAdapter.setVocabulary(vocabName);
-                        adapters.put(vocabName, lexAdapter);
-                        Vocabulary vocabulary = new Vocabulary();
-                        vocabulary.setName(vocabName);
-                        vocabulary.setDescription(lexAdapter.getVocabularyDescription(vocabName));
-                        vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabName));
-                        vocabularies.put(vocabName, vocabulary);
-                    }catch(Exception ex){
-                        log.error("Unable to connect to "+ vocabName);
-                        continue;
+                    String csName = (String)vocabs.get(i);
+                    vocab_holder=adapter.getLocalNames(csName);
+                    for (int j=0;j<vocab_holder.size(); j++){
+                    	LexAdapter lexAdapter = new LexAdapter();
+                    	try{
+                    		String vocabName = (String)vocabs.get(i);
+                    		lexAdapter.setVocabulary(vocabName);
+                    		adapters.put(vocabName, lexAdapter);
+                    		Vocabulary vocabulary = new Vocabulary();
+                    		vocabulary.setName(vocabName);
+                    		vocabulary.setDescription(lexAdapter.getVocabularyDescription(vocabName));
+                    		vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabName));
+                    		vocabularies.put(vocabName, vocabulary);
+                    	}catch(Exception ex){
+                    		log.error("Unable to connect to " + csName);
+                    		continue;
+                    	}
                     }
                 }
             }
