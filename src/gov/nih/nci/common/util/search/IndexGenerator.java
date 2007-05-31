@@ -28,7 +28,8 @@ public class IndexGenerator{
 	
 
     public static void main(String[] args)throws Exception{
-        ExecutorService pool = Executors.newFixedThreadPool(10);
+        int threadCount = getThreadCount()>0 ? getThreadCount():1;
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
         try{
             SessionFactory sessionFactory = new AnnotationConfiguration().configure("orm3.cfg.xml").buildSessionFactory();
             Set classSet = getIndexedClasses(sessionFactory, "gov.nih.nci.cabio.domain");
@@ -72,6 +73,10 @@ public class IndexGenerator{
         return classSet;
     }
 
+    static public int getThreadCount(){
+        SearchAPIProperties properties = SearchAPIProperties.getInstance();
+        return properties.getThreadCount();
+    }
 
 
 }
