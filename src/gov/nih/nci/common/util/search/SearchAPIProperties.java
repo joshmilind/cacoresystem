@@ -21,6 +21,7 @@ public class SearchAPIProperties {
     private static String pkgs;
     private static Logger log = Logger.getLogger(SearchAPIProperties.class.getName());
     private static SessionFactory sessionFactory;
+    private static int threadCount;
     
     private SearchAPIProperties() {}
 
@@ -66,6 +67,12 @@ public class SearchAPIProperties {
                     }                     
                 }else if(key.equalsIgnoreCase("indexed_fields")){
                     populateFields(value);
+                }else if(key.equalsIgnoreCase("thread_count")){
+                    if(!(value == null || value.equals("0"))){
+                        threadCount = Integer.valueOf(value).intValue();
+                    }else{
+                        threadCount = 1;
+                    }                    
                 }
             }
         }catch(Exception ex){
@@ -141,6 +148,9 @@ public class SearchAPIProperties {
     }
     public String getIndxedPackageNames(){
         return pkgs;
+    }
+    public int getThreadCount(){       
+        return threadCount;
     }
 
 }
