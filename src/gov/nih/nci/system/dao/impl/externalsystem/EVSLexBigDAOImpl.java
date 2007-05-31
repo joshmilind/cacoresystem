@@ -293,7 +293,8 @@ public class EVSLexBigDAOImpl implements DAO
                 try{
                     adapter = new LexAdapter();
                     adapter.setVocabulary(defaultVocabularyName);
-                    vocabs = adapter.getVocabularyNames();
+                    //vocabs = adapter.getVocabularyNames();
+                    vocabs = adapter.getLocalNames(); 
                 }catch(Exception ex){
                     log.error("Unable to connect to LexBig Server - check server log for details\n"+ ex.getMessage() );
                 }
