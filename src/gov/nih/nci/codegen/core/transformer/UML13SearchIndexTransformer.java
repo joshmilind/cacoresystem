@@ -103,7 +103,7 @@ public class UML13SearchIndexTransformer implements Transformer, XMLConfigurable
             Classifier klass = (Classifier) i.next();
             String basePkg = _pkgName;
             boolean indexClass = false;
-            TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"index_class");
+            TaggedValue indexClassTag = UML13Utils.getTaggedValue(klass,"ca_index_class");
             if (indexClassTag!=null) {
                 if (indexClassTag.getValue().equalsIgnoreCase("true")) {
                  indexClass=true;
