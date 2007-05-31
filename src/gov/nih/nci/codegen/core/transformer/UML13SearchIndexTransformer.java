@@ -121,7 +121,7 @@ public class UML13SearchIndexTransformer implements Transformer, XMLConfigurable
                 for(Iterator it = UML13Utils.getAttributes((UmlClass)klass).iterator(); it.hasNext();){
 
                     Attribute att = (Attribute)it.next();
-                    TaggedValue indexFieldTag = UML13Utils.getTaggedValue(att,"indexed");
+                    TaggedValue indexFieldTag = UML13Utils.getTaggedValue(att,"ca_index_attribute");
                     if(indexFieldTag!=null){
                         if(indexFieldTag.getValue().equalsIgnoreCase("true")){
                             indexedFields.append(att.getName()+";");
