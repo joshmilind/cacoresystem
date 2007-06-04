@@ -826,6 +826,7 @@ lib/MSSOUserValidator.jar -text
 lib/dtsrpcclient.jar -text
 lib/handle.jar -text
 lib/handlerservice.jar -text
+lib/hibernate-annotations.jar -text
 lib/lbAdmin.jar -text
 lib/lbImpl.jar -text
 lib/lbInterfaces.jar -text
@@ -836,6 +837,7 @@ lib/lgModel.jar -text
 lib/lgRDFConverter.jar -text
 lib/lgUtility.jar -text
 lib/lucene-core-2.0.0.jar -text
+lib/lucene-regex-10-9-06-nightly.jar -text
 lib/lucene-snowball-9-26-06-nightly.jar -text
 models/caCORE3-0-EVS.eap -text
 models/caCORE3-1-EVS.eap -text
