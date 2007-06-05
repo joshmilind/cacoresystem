@@ -89,9 +89,13 @@ public <% if (isAbstract.equals("abstract")) {%> <%=isAbstract%><%}%> class <%=k
 				<%}else{%>
 				evsQuery.get<%=capFirst(att.getName())%>by<%=capFirst(keyAttName)%>(<%=keyAttName%>);
 				<%}%>
-	    		List resultList = (List)appService.evsSearch(evsQuery);	
+	    		List resultList = (List)appService.evsSearch(evsQuery);		    		
 	    		<%if(getQualifiedName(att.getType(), basePkg).endsWith("Vector")){%>
-	    		<%=att.getName()%> = (Vector)resultList;
+	    		<%=att.getName()%> = (Vector)resultList;	    		
+	    		<%}else if(getQualifiedName(att.getType(), basePkg).endsWith("Boolean")){%>	  
+	    		if(resultList.size()>0){
+	    			<%=att.getName()%> = (Boolean)resultList.get(0);	    		
+	    		}
 	    		<%}else{%>			
 				<%=att.getName()%> = (ArrayList)resultList;
 				<%}%>
