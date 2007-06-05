@@ -60,7 +60,7 @@ public class EVSLexBigDAOImpl implements DAO
     private static HashMap <String, LexAdapter> adapters = new HashMap<String, LexAdapter>();
 
     private static HashMap <Integer, String> namespaceId2VocabularyName_Map = new HashMap<Integer, String>();
-
+    private static HashMap <String, String> localName2Urn_Map = new HashMap<String, String>();
     private static HashMap <String, Vocabulary>vocabularies = new HashMap<String, Vocabulary>();
     private final static String defaultVocabularyName = "NCI_Thesaurus";
     private final static String metaVocabularyName = "NCI MetaThesaurus";
@@ -301,8 +301,8 @@ public class EVSLexBigDAOImpl implements DAO
                 }
                 for(int i=0; i<vocabs.size(); i++){
                     String csName = (String)vocabs.get(i);
-                    vocab_holder=adapter.getLocalNames(csName);
-                    for (int j=0;j<vocab_holder.size(); j++){
+//                    vocab_holder=adapter.getLocalNames(csName);
+//                    for (int j=0;j<vocab_holder.size(); j++){
                     	LexAdapter lexAdapter = new LexAdapter();
                     	try{
                     		String vocabName = (String)vocabs.get(i);
@@ -310,14 +310,14 @@ public class EVSLexBigDAOImpl implements DAO
                     		adapters.put(vocabName, lexAdapter);
                     		Vocabulary vocabulary = new Vocabulary();
                     		vocabulary.setName(vocabName);
-                    		vocabulary.setDescription(lexAdapter.getVocabularyDescription(vocabName));
+                    		vocabulary.setDescription(lexAdapter.urn2FormalName(vocabName));
                     		vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabName));
                     		vocabularies.put(vocabName, vocabulary);
                     	}catch(Exception ex){
                     		log.error("Unable to connect to " + csName);
                     		continue;
                     	}
-                    }
+//                    }
                 }
             }
         }catch(Exception ex){
@@ -337,7 +337,7 @@ public class EVSLexBigDAOImpl implements DAO
                 adapters.put(vocabularyName, lexAdapter);
                 Vocabulary vocabulary = new Vocabulary();
                 vocabulary.setName(vocabularyName);
-                vocabulary.setDescription(lexAdapter.getVocabularyDescription(vocabularyName));
+                vocabulary.setDescription(lexAdapter.getVocabularyDescription(lexAdapter.urn2FormalName(vocabularyName)));
                 vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabularyName));
                 vocabularies.put(vocabularyName, vocabulary);
             }catch(Exception ex){
@@ -538,11 +538,15 @@ public class EVSLexBigDAOImpl implements DAO
                 String name = key.substring(key.indexOf("$")+1, key.length());
                 if(name.equalsIgnoreCase("vocabularyName"))
                     vocabularyName = (String)map.get(key);
+                    String urn = localName2Urn(vocabularyName);
             }
             if(vocabularyName != null){
-                if(vocabularies.get(vocabularyName)!= null){
+               if(vocabularies.get(vocabularyName)!= null){
                     vocab = (Vocabulary)vocabularies.get(vocabularyName);
                     vocabList.add(vocab);
+                }else if (vocabularies.get(localName2Urn(vocabularyName))!= null){
+                	vocab = (Vocabulary)vocabularies.get(localName2Urn(vocabularyName));
+                	vocabList.add(vocab);
                 }
             }
 
@@ -578,17 +582,18 @@ public class EVSLexBigDAOImpl implements DAO
 				else if(name.equalsIgnoreCase("inputFlag"))
 					inputFlag = ((Boolean)map.get(key)).booleanValue();
 			}
+			String urn = localName2Urn(vocabularyName);
 			boolean valid = true;
 			DescLogicConcept dlc = new DescLogicConcept();
 			Concept concept = new Concept();
 			if(!inputFlag){
-	       		validateConceptName(conceptName, vocabularyName);
+	       		validateConceptName(conceptName, urn);
 	       	}
 			else{
-	       		validateDLConceptCode(conceptName, vocabularyName);
+	       		validateDLConceptCode(conceptName, urn);
 	       	}
-            Vocabulary vocab = (Vocabulary)vocabularies.get(vocabularyName);
-	       dlc = buildDescLogicConcept(((LexAdapter)adapters.get(vocabularyName)).getConcept(conceptName, inputFlag, 1), vocab);
+            Vocabulary vocab = (Vocabulary)vocabularies.get(urn);
+	       dlc = buildDescLogicConcept(((LexAdapter)adapters.get(urn)).getConcept(conceptName, inputFlag, 1), vocab);
 	       list.add(dlc);
 		}catch(Exception e){
 			log.error("Error: getDescLogicConcept  "+e.getMessage());
@@ -637,13 +642,15 @@ public class EVSLexBigDAOImpl implements DAO
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
 	        Concept[] concepts = null;
+	        String urn = localName2Urn(vocabularyName);
 	        try{
-	        	concepts = ((LexAdapter)adapters.get(vocabularyName)).searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex,"contains");
+	        	
+	        	concepts = ((LexAdapter)adapters.get(urn)).searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex,"contains");
 	        }catch(Exception ex){
                 //System.out.println("EXCEPTION >>>>> "+ ex.getMessage());
 	        	if(matchOption==0){
                     try{
-                        concepts = ((LexAdapter)adapters.get(vocabularyName)).searchConcepts(searchTerm, limit,"contains");
+                        concepts = ((LexAdapter)adapters.get(urn)).searchConcepts(searchTerm, limit,"contains");
                     }catch(Exception e){
                         if(e.getMessage() != null){
                             throw new DAOException(getException(ex));
@@ -655,7 +662,7 @@ public class EVSLexBigDAOImpl implements DAO
 	        	}
 	        }
             if(concepts.length > 0){
-                Vocabulary vocab = (Vocabulary)vocabularies.get(vocabularyName);
+                Vocabulary vocab = (Vocabulary)vocabularies.get(urn);
             	DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
     	        for(int x=0; x<concepts.length; x++){
     	            dlc[x] = new DescLogicConcept();
@@ -1856,7 +1863,8 @@ private Response getConceptByName(HashMap map) throws Exception
 				conceptName = (String)map.get(key);
 
 		}
-        DescLogicConcept dlc = buildDescLogicConcept(getLexAdapter(vocabularyName).findConcept(conceptName), (Vocabulary)vocabularies.get(vocabularyName));
+		String urn = localName2Urn(vocabularyName);
+        DescLogicConcept dlc = buildDescLogicConcept(getLexAdapter(urn).findConcept(conceptName), (Vocabulary)vocabularies.get(urn));
         dlcList.add(dlc);
 	}
 	catch(Exception e)
@@ -4926,5 +4934,28 @@ private String namespaceId2VocabularyName(int namespaceId)
 	return null;
 }
 
+private String localName2Urn(String localName)
+{
+
+	if (localName2Urn_Map.containsKey(localName))
+	{
+		return (String) namespaceId2VocabularyName_Map.get(localName);
+	}
+	try {
+		String urn = getLexAdapter(defaultVocabularyName).localName2Urn(localName);
+		if (urn != null)
+		{
+			localName2Urn_Map.put(localName, urn);
+			if (!localName2Urn_Map.containsKey(urn))
+			{
+				localName2Urn_Map.put(urn,urn);
+			}
+			return urn;
+		}
+    } catch (Exception e) {
+		e.printStackTrace();
+	}
+	return null;
+}
 
  }
