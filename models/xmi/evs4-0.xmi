@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1252"?>
-<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2007-04-09 16:12:26">
+<XMI xmi.version="1.1" xmlns:UML="omg.org/UML1.3" timestamp="2007-06-05 11:12:56">
 	<XMI.header>
 		<XMI.documentation>
 			<XMI.exporter>Enterprise Architect</XMI.exporter>
@@ -581,8 +581,8 @@
 																				<UML:TaggedValue tag="privatedata5" value="EDGE=4;SX=-1;SY=-1;EX=-1;EY=-1;"/>
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified associations for this DescLogicConcept" xmi.id="EAID_13C33FE9_FACF_445c_BA2A_C1AF11364CDB"/>
-																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_2DA321FB_C1F3_4df5_86EB_5F9BBFB07BB6"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the associations of this DescLogicConcept" xmi.id="EAID_9A7B10A8_1BD6_47ae_B12D_2E4B75D06ED4"/>
+																				<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_DE145111_837B_4d4f_B8FF_E9B854B67097"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_E55B53F2_EBF4_4a34_A712_CC0FB4450D22">
@@ -722,6 +722,7 @@
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the Semantic Types of this MetaThesaurusConcept" xmi.id="EAID_11C61344_A089_4773_8A4E_3B0E1A252C9A"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the Semantic Types for this MetaThesaurusConcept" xmi.id="EAID_32B9E5A5_0490_4800_88CA_F92C33996248"/>
+																				<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_4E1056AD_C1F4_4c27_83E7_8AE315CE41EC"/>
 																				<UML:TaggedValue tag="association-end-type" value="java.util.List" xmi.id="EAID_AC0DBBDD_4035_4782_B794_CAAEE561E74B"/>
 																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_B55C1C93_922D_4507_B794_3D78A08BCB31"/>
 																			</UML:ModelElement.taggedValue>
@@ -1268,9 +1269,9 @@
 																				<UML:TaggedValue tag="ea_targetID" value="63"/>
 																				<UML:TaggedValue tag="privatedata5" value="EDGE=1;SX=-11;SY=-3;EX=0;EY=0;"/>
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
+																				<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_27E95499_A196_4728_A6DF_AE3494E069FA"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified properties for this DescLogicConcept" xmi.id="EAID_3890E6A1_3AAC_45d8_8807_4D86451852FC"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the properties of this DescLogicConcept" xmi.id="EAID_67E1622E_9436_4df2_B2BF_6C93ED558BB8"/>
-																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_F611F756_1BBD_4de2_9647_8FAD78167B7F"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_E55B53F2_EBF4_4a34_A712_CC0FB4450D22">
@@ -1500,7 +1501,7 @@
 																				<UML:TaggedValue tag="association-end-type" value="java.util.List" xmi.id="EAID_11761813_9483_45cb_9FD8_2CDBE6DEA879"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified Sources for this MetaThesaurusConcept" xmi.id="EAID_14AC64C3_F7D7_4085_992E_806C595B3E15"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns Sources of this MetaThesaurusConcept" xmi.id="EAID_4125A0F0_F3D6_4ba7_AEA2_0037DE86E7F6"/>
-																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_47D679E6_E06A_41b5_96AB_DFEEF6999607"/>
+																				<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_B2EFA700_45AD_4a11_8263_997C61C46426"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_BDF7914F_69CD_41de_9B63_E3AE3122601C">
@@ -1992,9 +1993,9 @@
 																						<UML:TaggedValue tag="ea_localid" value="61"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
 																						<UML:TaggedValue tag="documentation-set-method" value="Sets the spcified synonymCollection for this MetaThesaurusConcept" xmi.id="EAID_0382C9EF_C2EE_435a_9DFC_6F983D59DFC7"/>
-																						<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_5AECAAE0_9D96_4e7b_A263_C95703BC86D9"/>
 																						<UML:TaggedValue tag="documentation-get-method" value="Returns the sysnonymCollection for this MetaThesaurusConcept" xmi.id="EAID_6421D1A6_D0C4_464f_B74B_5EC7829965A9"/>
 																						<UML:TaggedValue tag="documentation" value="Specifies sysnonyms for the concept" xmi.id="EAID_A61C1C27_0A10_4c12_B066_4DA3E5FE9D08"/>
+																						<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_ABB43129_BD25_4d82_8334_CED796ADFDE8"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
 																			</UML:Classifier.feature>
@@ -2020,8 +2021,8 @@
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the Definitions of this MetaThesaurusConcept" xmi.id="EAID_33FCF67E_2CC2_413d_8809_2B7690767A52"/>
 																				<UML:TaggedValue tag="association-end-type" value="java.util.ArrayList" xmi.id="EAID_4E538A12_E1D5_4ee1_8BBF_F5AD824DD945"/>
-																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_74D8D3DE_40A5_43b5_A9FC_9E7CFFA05C19"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified Definitions for this MetaThesaurusConcept" xmi.id="EAID_9586A3E3_10BA_472e_9A74_D0816B8168F2"/>
+																				<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_CED1216C_2224_4cee_8C5A_26A83244E33C"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_BDF7914F_69CD_41de_9B63_E3AE3122601C">
@@ -2071,10 +2072,10 @@
 																				<UML:TaggedValue tag="ea_sourceID" value="61"/>
 																				<UML:TaggedValue tag="ea_targetID" value="138"/>
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
-																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_02A0BF30_E33C_48ec_A3DA_E151253EE327"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the Atoms of this MetaThesaurusConcept" xmi.id="EAID_4159F353_BA72_4788_B95F_7EC4C2F5CCEF"/>
 																				<UML:TaggedValue tag="association-end-type" value="java.util.List" xmi.id="EAID_85E8E0C7_DE9E_4d2d_B080_B331D27E34DC"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified Atoms for this MetaThesaurusConcept" xmi.id="EAID_D375399C_767D_47e5_92B1_D33F03B0B5B5"/>
+																				<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_D8511217_B28E_418a_9878_D0A437F24102"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_BDF7914F_69CD_41de_9B63_E3AE3122601C">
@@ -2803,9 +2804,9 @@
 																				<UML:TaggedValue tag="ea_targetID" value="64"/>
 																				<UML:TaggedValue tag="privatedata5" value="SX=0;SY=-1;EX=0;EY=-1;"/>
 																				<UML:TaggedValue tag="virtualInheritance" value="0"/>
-																				<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_12887010_DA33_43b3_A945_357E4137DABA"/>
 																				<UML:TaggedValue tag="otherend-get-method" value="Returns the roles of this DescLogicConcept" xmi.id="EAID_19727F58_6264_4d0f_A514_2CEDEF696EC4"/>
 																				<UML:TaggedValue tag="otherend-set-method" value="Sets the specified roles for this DescLogicConcept" xmi.id="EAID_CBDF6168_9E51_4780_95D7_D026EA5E9331"/>
+																				<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_F4E9491F_95CE_49b6_AF93_7BED4BBA623C"/>
 																			</UML:ModelElement.taggedValue>
 																			<UML:Association.connection>
 																				<UML:AssociationEnd visibility="public" aggregation="none" isOrdered="false" isNavigable="false" type="EAID_E55B53F2_EBF4_4a34_A712_CC0FB4450D22">
@@ -3067,6 +3068,7 @@
 																						<UML:TaggedValue tag="ea_guid" value="{E59030EE-0DB8-41ef-BBB1-4152080102C8}"/>
 																						<UML:TaggedValue tag="ea_localid" value="12"/>
 																						<UML:TaggedValue tag="styleex" value="volatile=0;"/>
+																						<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_708E5AF5_E146_4d89_9117_45331F700B7A"/>
 																						<UML:TaggedValue tag="documentation" value="Sets this value to 'true' if a concept has children" xmi.id="EAID_81855A12_9CD0_44af_848E_21D1C0846318"/>
 																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified hasChildren value for this DescLogicConcept" xmi.id="EAID_87D4A19D_CF74_478a_B2BF_FC8E34D33B33"/>
 																						<UML:TaggedValue tag="documentation-get-method" value="Returns the hasChildren value for this DescLogicConcept" xmi.id="EAID_9876B24F_1473_409d_A42B_8998A9F691F5"/>
@@ -3103,6 +3105,7 @@
 																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified hasParent value for this DescLogicConcept" xmi.id="EAID_44CE084B_A2C7_40bf_8B87_999AC704890C"/>
 																						<UML:TaggedValue tag="documentation" value="This value is set to 'true' if a concept has a parent" xmi.id="EAID_55980C7C_D2EE_423e_A7CC_EDFC136E3B63"/>
 																						<UML:TaggedValue tag="depricate-method" value="true" xmi.id="EAID_89A8B272_4650_4804_ADCA_2BFC28B543C8"/>
+																						<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_E27228B4_2781_432e_972C_38366AA40CEC"/>
 																						<UML:TaggedValue tag="documentation-get-method" value="Returns the hasParent value for this DescLogicConcept" xmi.id="EAID_F01445E3_ACC1_403a_B1CF_3A45E7424532"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
@@ -3132,8 +3135,8 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{93CA899A-E664-4f01-B34D-AB257CE3DFC8}"/>
 																						<UML:TaggedValue tag="ea_localid" value="101"/>
-																						<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_3DEEF186_233C_4047_8EDE_D31436A4A1BA"/>
 																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified inverse association value for this DescLogicConcept" xmi.id="EAID_7F19017B_8BBF_4a52_A4C6_18F2E9D39C9C"/>
+																						<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_ABAD8C7C_1069_44c8_B159_79432BC8B0BC"/>
 																						<UML:TaggedValue tag="documentation" value="This attribute holds association information between concepts" xmi.id="EAID_D20531AD_FCD9_4b7f_B75E_36FE24FB708E"/>
 																						<UML:TaggedValue tag="documentation-get-method" value="Returns the inverse association information of this DescLogicConcept" xmi.id="EAID_ED2B89A6_DBCF_4e9a_8676_A27800E56D38"/>
 																					</UML:ModelElement.taggedValue>
@@ -3164,9 +3167,9 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{781211A6-CDF1-4d0a-8AF8-CE14C1C742BA}"/>
 																						<UML:TaggedValue tag="ea_localid" value="76"/>
-																						<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_28AEDDC9_727D_4339_A728_232146A70B56"/>
 																						<UML:TaggedValue tag="documentation-get-method" value="Returns the inverse role value for this DescLogicConcept" xmi.id="EAID_4D3E7426_53AB_4652_9031_52AFB2561A6F"/>
 																						<UML:TaggedValue tag="documentation" value="Stores the inverse relationship between two concepts" xmi.id="EAID_64DA86D7_C754_4c13_B105_199AF8E8C1F5"/>
+																						<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_D2DA12F1_2A7C_43d8_BEC8_D6D92667C3AD"/>
 																						<UML:TaggedValue tag="documentation-set-method" value="Sets the specified inverse role value for this DescLogicConcept" xmi.id="EAID_D51543F6_721A_48ce_B16B_E111A36F43D7"/>
 																					</UML:ModelElement.taggedValue>
 																				</UML:Attribute>
@@ -3293,7 +3296,7 @@
 																						<UML:TaggedValue tag="duplicates" value="0"/>
 																						<UML:TaggedValue tag="ea_guid" value="{814A8BD8-1835-42b1-B557-5F951830BC34}"/>
 																						<UML:TaggedValue tag="ea_localid" value="87"/>
-																						<UML:TaggedValue tag="lazy" value="true" xmi.id="EAID_40AE1945_244F_4c60_BE39_4FBC14BCBE74"/>
+																						<UML:TaggedValue tag="lazy_load" value="true" xmi.id="EAID_05F0024B_9D39_4cc5_8660_789F7C809F33"/>
 																						<UML:TaggedValue tag="documentation-get-method" value="@deprecated  - Returns the SemanticTypes of this DescLogicConcept" xmi.id="EAID_56535E4B_54EA_4d9d_9995_F4C1885C7EE4"/>
 																						<UML:TaggedValue tag="deprecated" value="@deprecated  - The preferred way of getting a semantic type is by using the getPropertyCollection method. 'Semantic_Type' is the name of a property in a DescLogicConcept. " xmi.id="EAID_57489B34_B14C_4c5d_A115_811B2002FD04"/>
 																						<UML:TaggedValue tag="documentation-set-method" value="@deprecated  - Sets the specified Semantic Types for this DescLogicConcept" xmi.id="EAID_584AA389_90AE_4b2b_8A85_B6637E10DC94"/>
