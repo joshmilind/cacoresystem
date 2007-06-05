@@ -294,7 +294,7 @@ public class EVSLexBigDAOImpl implements DAO
                     adapter = new LexAdapter();
                     adapter.setVocabulary(defaultVocabularyName);
                     vocabs = adapter.getVocabularyNames();
-                    //vocabs = adapter.getLocalNames(); 
+                    //vocabs = adapter.getLocalNames();
                 }catch(Exception ex){
                     log.error("Unable to connect to LexBig Server - check server log for details\n"+ ex.getMessage() );
                 }
@@ -4921,5 +4921,59 @@ private String namespaceId2VocabularyName(int namespaceId)
 	return null;
 }
 
+
+   	private Response getHasParentsbyCode(HashMap map)throws Exception{
+		int namespaceId = -1;
+		String conceptCode = null;
+		ArrayList list = new ArrayList();
+		Vector ret_vec = null;
+		Vector evs_vec = null;
+		try {
+			for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+			{
+				String key = (String)iter.next();
+				String name = key.substring(key.indexOf("$")+1, key.length());
+				if(name.equalsIgnoreCase("namespaceId"))
+					namespaceId = ((Integer)map.get(key)).intValue();
+				else if(name.equalsIgnoreCase("conceptCode"))
+					conceptCode = (String) map.get(key);
+			}
+			String vocabularyName = namespaceId2VocabularyName(namespaceId);
+			LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+			Boolean retval = adapter.hasParents(vocabularyName, conceptCode);
+			list.add(retval);
+		} catch(Exception e) {
+			log.error(e.getMessage());
+			throw new DAOException (getException(e.getMessage()));
+		}
+		return (new Response(list));
+   	}
+
+   	private Response getHasChildrenbyCode(HashMap map)throws Exception{
+		int namespaceId = -1;
+		String conceptCode = null;
+		ArrayList list = new ArrayList();
+		Vector ret_vec = null;
+		Vector evs_vec = null;
+		try {
+			for(Iterator iter=map.keySet().iterator(); iter.hasNext();)
+			{
+				String key = (String)iter.next();
+				String name = key.substring(key.indexOf("$")+1, key.length());
+				if(name.equalsIgnoreCase("namespaceId"))
+					namespaceId = ((Integer)map.get(key)).intValue();
+				else if(name.equalsIgnoreCase("conceptCode"))
+					conceptCode = (String) map.get(key);
+			}
+			String vocabularyName = namespaceId2VocabularyName(namespaceId);
+			LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+			Boolean retval = adapter.hasChildren(vocabularyName, conceptCode);
+			list.add(retval);
+		} catch(Exception e) {
+			log.error(e.getMessage());
+			throw new DAOException (getException(e.getMessage()));
+		}
+		return (new Response(list));
+   	}
 
  }

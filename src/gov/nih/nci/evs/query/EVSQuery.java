@@ -797,4 +797,9 @@ public interface EVSQuery extends Serializable{
     public void getInverseAssociationCollectionbyCode(int namespaceId, String conceptCode);
 
     public void getVocabularybyCode(int namespaceId, String conceptCode);
+
+    public void getHasParentsbyCode(int namespaceId, String cui);
+
+    public void getHasChildrenbyCode(int namespaceId, String cui);
+
 }

@@ -1089,4 +1089,16 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
     	descLogicValues.put("getVocabularybyCode$namespaceId", namespaceId);
     	descLogicValues.put("getVocabularybyCode$conceptCode", conceptCode);
 	}
+
+    public void getHasParentsbyCode(int namespaceId, String conceptCode){
+    	descLogicValues.put("getHasParentsbyCode$namespaceId", namespaceId);
+    	descLogicValues.put("getHasParentsbyCode$conceptCode", conceptCode);
+	}
+
+    public void getHasChildrenbyCode(int namespaceId, String conceptCode){
+    	descLogicValues.put("getHasChildrenbyCode$namespaceId", namespaceId);
+    	descLogicValues.put("getHasChildrenbyCode$conceptCode", conceptCode);
+	}
+
+
 }
