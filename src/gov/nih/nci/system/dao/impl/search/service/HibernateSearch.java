@@ -21,14 +21,27 @@ import org.hibernate.search.FullTextSession;
  * Shaziya Muhsin
  *
  */
+/**
+ * HibernateSearch performs text based queries by synchronizing the document index with the database, 
+ * and returns domain objects back to the user. This class implements the Hibernate search engine. 
+ */
 
 public class HibernateSearch implements Searchable{
     private static Logger log = Logger.getLogger(HibernateSearch.class.getName());
     private SearchAPIProperties properties;
+    /**
+     * Default constructor
+     */
     public HibernateSearch() throws Exception {
     	properties = SearchAPIProperties.getInstance();
     }
 
+    /**
+     * Performs queries on the underlying database
+     * @param queryString
+     * @return
+     * @throws DAOException
+     */
     public List query(String queryString) throws DAOException{
         List resultList = null;
         FullTextSession fullTextSession;
@@ -78,8 +91,13 @@ public class HibernateSearch implements Searchable{
         }
         return resultList;
     }
-
-
+/**
+ * Executes queries 
+ * @param searchString
+ * @param sort
+ * @return returns sorted results
+ * @throws DAOException
+ */
     public List query(String searchString, gov.nih.nci.search.Sort sort) throws DAOException{
         List results = new ArrayList();
         if(sort != null){
