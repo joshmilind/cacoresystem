@@ -654,7 +654,7 @@ public class EVSLexBigDAOImpl implements DAO
             	DescLogicConcept[] dlc = new DescLogicConcept[concepts.length];
     	        for(int x=0; x<concepts.length; x++){
     	            dlc[x] = new DescLogicConcept();
-    	            dlc[x] = buildDescLogicConcept(concepts[x], vocab);
+    	            dlc[x] = buildDescLogicConcept(concepts[x], ASDIndex, vocab);
     	            list.add(dlc[x]);
     	        }
             }
@@ -784,10 +784,11 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 
                 DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getRoot();
                 Concept rootConcept = (Concept)root.getUserObject();
-                DescLogicConcept dlRoot = buildDescLogicConcept(rootConcept);
+                //DescLogicConcept dlRoot = buildDescLogicConcept(rootConcept);
+                DescLogicConcept dlRoot = buildDescLogicConcept(rootConcept, attributes);
 
 
-                DefaultMutableTreeNode dlTree = new DefaultMutableTreeNode(buildDescLogicConcept(rootConcept), true);
+                DefaultMutableTreeNode dlTree = new DefaultMutableTreeNode(buildDescLogicConcept(rootConcept, attributes), true);
                 int childCounter = tree.getChildCount();
 
                 if(root.getChildCount()>0){
@@ -3538,31 +3539,66 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 	* @return Returns a response
 	* @throws Exception
     */
-
    private DescLogicConcept buildDescLogicConcept(gov.nih.nci.lexrpc.client.Concept concept){
+		return buildDescLogicConcept(concept, 1);
+   }
+
+   /**
+    * Converts a dtsrpc Concept object to a DescLogicConcept object
+    * @param concept dtsrpc concept object
+	* @return Returns a response
+	* @throws Exception
+    */
+   private DescLogicConcept buildDescLogicConcept(gov.nih.nci.lexrpc.client.Concept concept,
+        int asdIndex){
    		DescLogicConcept dlc = new DescLogicConcept();
    		dlc.setName(concept.getName());
    		dlc.setCode(concept.getCode());
-   		dlc.setPropertyCollection(convertProperties(concept.getProperties()));
-   		dlc.setRoleCollection(convertRoles(concept.getRoles()));
-   		dlc.setInverseRoleCollection(convertRoles(concept.getInverseRoles()));
+   		if (asdIndex == 1 || asdIndex == 3)
+   		{
+   		   dlc.setPropertyCollection(convertProperties(concept.getProperties()));
+   		   dlc.setSemanticTypeVector(getDLSemanticTypes(dlc));
+	    }
+
+   		if (asdIndex == 1 || asdIndex == 2)
+   		{
+   		   dlc.setRoleCollection(convertRoles(concept.getRoles()));
+   		   dlc.setInverseRoleCollection(convertRoles(concept.getInverseRoles()));
+	    }
+
         dlc.setNamespaceId(concept.getNamespaceId());
-   		dlc.setHasParents(concept.getHasParents());
-		dlc.setHasChildren(concept.getHasChildren());
-		dlc.setIsRetired(concept.getIsRetired());
-		dlc.setAssociationCollection(convertAssociations(concept.getAssociationCollection()));
-        dlc.setInverseAssociationCollection(convertAssociations(concept.getInverseAssociationCollection()));
+
+   		if (asdIndex == 1)
+   		{
+			dlc.setHasParents(concept.getHasParents());
+			dlc.setHasChildren(concept.getHasChildren());
+			dlc.setIsRetired(concept.getIsRetired());
+	    }
+
+		if (asdIndex == 4)
+		{
+			dlc.setAssociationCollection(convertAssociations(concept.getAssociationCollection()));
+			dlc.setInverseAssociationCollection(convertAssociations(concept.getInverseAssociationCollection()));
+	    }
 
 		if(concept.getTreeNode()!=null){
 			dlc.setEdgeProperties(convertEdgeProperties(concept));
 			dlc.setTreeNode(convertTreeNode(concept));
-		 }
-		dlc.setSemanticTypeVector(getDLSemanticTypes(dlc));
+		}
+
    		return dlc;
    	}
 
    private DescLogicConcept buildDescLogicConcept(gov.nih.nci.lexrpc.client.Concept concept, Vocabulary vocab){
-       DescLogicConcept dlc = buildDescLogicConcept(concept);
+       //DescLogicConcept dlc = buildDescLogicConcept(concept);
+       //dlc.setVocabulary(vocab);
+       return buildDescLogicConcept(concept, 1, vocab);
+       //return dlc;
+   }
+
+   private DescLogicConcept buildDescLogicConcept(gov.nih.nci.lexrpc.client.Concept concept, int AsdIndex,
+       Vocabulary vocab){
+       DescLogicConcept dlc = buildDescLogicConcept(concept, AsdIndex);
        dlc.setVocabulary(vocab);
        return dlc;
    }
@@ -3657,7 +3693,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 		   	}
 
    	   		for(int i=0 ;i<superConcepts.length; i++)   	   		{
-   	   		    DescLogicConcept dlc = buildDescLogicConcept(superConcepts[i]);
+   	   		    //DescLogicConcept dlc = buildDescLogicConcept(superConcepts[i]);
+   	   		    DescLogicConcept dlc = buildDescLogicConcept(superConcepts[i], asdIndex);
    	   			typeList.add(dlc);
    	   		}
 
@@ -3717,7 +3754,8 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 
 			for(int i=0; i<concepts.length; i++){
 				DescLogicConcept dlc = new DescLogicConcept();
-				dlc = buildDescLogicConcept(concepts[i]);
+				//dlc = buildDescLogicConcept(concepts[i]);
+				dlc = buildDescLogicConcept(concepts[i], asdIndex);
 				typeList.add(dlc);
 				}
 
