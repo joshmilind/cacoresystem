@@ -3,7 +3,7 @@
 <beans default-lazy-init="false" default-dependency-check="none" default-autowire="no">
 	  <bean name="ORM1" class="gov.nih.nci.system.dao.impl.orm.ORMDAOImpl" singleton="true"/>
 	  <bean name="ORM2" class="gov.nih.nci.system.dao.impl.orm.ORMDAOImpl" singleton="true"/> 
-	  <bean name="EVS" class="@EVSDAOCLASS@" singleton="false"/> 
+	  <bean name="EVS" class="gov.nih.nci.system.dao.impl.externalsystem.EVSLexBigDAOImpl" singleton="false"/> 
 	  <bean name="MedDRA" class="gov.nih.nci.system.dao.security.MedDRASecurity" singleton="true"/> 
 	  <bean name="ServiceLocator" class="gov.nih.nci.system.servicelocator.ServiceLocator" singleton="true"/>	
 </beans>

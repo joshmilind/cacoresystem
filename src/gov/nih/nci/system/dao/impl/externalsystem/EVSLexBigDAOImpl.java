@@ -199,6 +199,7 @@ public class EVSLexBigDAOImpl implements DAO
     private Response queryEVS(Hashtable config, HashMap tokenCollection, HashMap mapValues) throws Exception{
         Response response = null;
         String vocabularyName = getVocabularyName(mapValues);
+//        String urn = vocabularyName2urn(vocabularyName);
         String methodName = getMethodName(mapValues);
         Method method = this.getClass().getDeclaredMethod(methodName, new Class[] { HashMap.class });
         if (method == null) {
@@ -287,65 +288,81 @@ public class EVSLexBigDAOImpl implements DAO
                 EVSProperties evsProperties = EVSProperties.getInstance(configs);
                 String lg_config_file = null;
                 if(evsProperties.getConfigFileLocation() != null){
-                    lg_config_file = evsProperties.getConfigFileLocation();
-                    System.setProperty("LG_CONFIG_FILE", lg_config_file);
+                	lg_config_file = evsProperties.getConfigFileLocation();
+                	System.setProperty("LG_CONFIG_FILE", lg_config_file);
                 }
                 log.debug("CONFIG FILE LOCATION: "+ lg_config_file);
                 try{
-                    adapter = new LexAdapter();
-                    adapter.setVocabulary(defaultVocabularyName);
-                    vocabs = adapter.getVocabularyNames();
-                    //vocabs = adapter.getLocalNames(); 
+                	adapter = new LexAdapter();
+                	adapter.setVocabulary(defaultVocabularyName);
+                	vocabs = adapter.getVocabularyNames();
+                	//vocabs = adapter.getLocalNames(); 
                 }catch(Exception ex){
-                    log.error("Unable to connect to LexBig Server - check server log for details\n"+ ex.getMessage() );
+                	log.error("Unable to connect to LexBig Server - check server log for details\n"+ ex.getMessage() );
                 }
                 for(int i=0; i<vocabs.size(); i++){
-                    String csName = (String)vocabs.get(i);
-//                    vocab_holder=adapter.getLocalNames(csName);
-//                    for (int j=0;j<vocab_holder.size(); j++){
-                    	LexAdapter lexAdapter = new LexAdapter();
-                    	try{
-                    		String vocabName = (String)vocabs.get(i);
-                    		lexAdapter.setVocabulary(vocabName);
-                    		adapters.put(vocabName, lexAdapter);
-                    		Vocabulary vocabulary = new Vocabulary();
-                    		vocabulary.setName(vocabName);
-                    		vocabulary.setDescription(lexAdapter.urn2FormalName(vocabName));
-                    		vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabName));
-                    		vocabularies.put(vocabName, vocabulary);
-                    	}catch(Exception ex){
-                    		log.error("Unable to connect to " + csName);
-                    		continue;
-                    	}
-//                    }
+                	String vocabName = (String)vocabs.get(i);
+                	LexAdapter lexAdapter = new LexAdapter();
+                	try{
+                		lexAdapter.setVocabulary(vocabName);
+                		adapters.put(vocabName, lexAdapter);
+                		Vocabulary vocabulary = new Vocabulary();
+                		vocabulary.setName(vocabName);
+                		vocabulary.setDescription(lexAdapter.urn2csName(vocabName));
+                		vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabName));
+                		vocabularies.put(vocabName, vocabulary);
+                	}catch(Exception ex){
+                		log.error("Unable to connect to " +  vocabName);
+                		continue;
+                	}
                 }
             }
         }catch(Exception ex){
             throw new DAOException(getException(ex));
         }
         }
+    
+    /**
+     * Returns an the urn of a codingScheme when given the name.
+     * @param vocabularyName
+     */
+    private String vocabularyName2urn(String name){
+    	try{
+    		LexAdapter lexAdapter = getLexAdapter(defaultVocabularyName);
+    		String urn = lexAdapter.localName2Urn(name);
+    		if (urn == null) urn = lexAdapter.formalName2urn(name);
+    		if (urn == null) urn = lexAdapter.csName2urn(name);
+    		return urn;		
+        } catch (Exception e) {
+    	    e.printStackTrace();
+        }        
+        return null;
+    }
     /**
      * Returns an instance of LexAdapter for the specified vocabulary
      * @param vocabularyName
      */
     private LexAdapter getLexAdapter(String vocabularyName) throws DAOException{
-        LexAdapter lexAdapter = null;
-        if(adapters.get(vocabularyName)==null){
-            try{
-                lexAdapter = new LexAdapter();
-                lexAdapter.setVocabulary(vocabularyName);
-                adapters.put(vocabularyName, lexAdapter);
+    	LexAdapter lexAdapter = new LexAdapter();    	
+		String urn = lexAdapter.localName2Urn(vocabularyName);
+		if (urn == null) urn = lexAdapter.formalName2urn(vocabularyName);
+		if (urn == null) urn = lexAdapter.csName2urn(vocabularyName);
+    	if (urn == null) return null;
+        if(adapters.get(urn)==null){        	
+           try{
+                lexAdapter.setVocabulary(urn);
+                adapters.put(urn, lexAdapter);
                 Vocabulary vocabulary = new Vocabulary();
-                vocabulary.setName(vocabularyName);
-                vocabulary.setDescription(lexAdapter.getVocabularyDescription(lexAdapter.urn2FormalName(vocabularyName)));
-                vocabulary.setNamespaceId(lexAdapter.getNamespaceId(vocabularyName));
+                vocabulary.setName(urn);
+                vocabulary.setDescription(lexAdapter.getVocabularyDescription(urn));
+                vocabulary.setNamespaceId(lexAdapter.getNamespaceId(urn));
                 vocabularies.put(vocabularyName, vocabulary);
             }catch(Exception ex){
                 log.error(vocabularyName +" " + ex.getMessage());
                 throw new DAOException(getException("Unable to connect to Vocabulary "+ vocabularyName));
             }
         }else{
-          lexAdapter = (LexAdapter)adapters.get(vocabularyName);
+          lexAdapter = (LexAdapter)adapters.get(urn);
         }
         return lexAdapter;
     }
@@ -642,7 +659,7 @@ public class EVSLexBigDAOImpl implements DAO
 	        	throw new DAOException(getException(" searchTerm cannot be null"));
 	        }
 	        Concept[] concepts = null;
-	        String urn = localName2Urn(vocabularyName);
+	        String urn = vocabularyName2urn(vocabularyName);
 	        try{
 	        	
 	        	concepts = ((LexAdapter)adapters.get(urn)).searchConcepts(searchTerm, limit, matchOption, matchType,ASDIndex,"contains");
@@ -787,7 +804,7 @@ private DefaultMutableTreeNode getTree(String vocabularyName, String rootName, b
 
 		  	try
 			{
-				LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+				LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 				tree = adapter.getTree(rootName, direction, depthLevel, attrib, isaFlag, roles);
 				if(tree == null){
                     throw new DAOException("Unable to generate Tree  - LexBIG Exception");
@@ -884,7 +901,7 @@ private Response getConceptWithPropertyMatching(HashMap map) throws Exception
 		}
 
 
-		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 
 		v=adapter.findConceptsWithPropertyMatching(propertyName, propertyValue, limit);
 
@@ -944,7 +961,7 @@ private Response getConceptWithSiloMatching(HashMap map) throws Exception
 
 
 
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 
 		v=adapter.findConceptsWithSiloMatching(searchTerm, limit);
 
@@ -995,7 +1012,7 @@ private Response getDescLogicConceptNameByCode(HashMap map) throws Exception
 				conceptCode = (String)map.get(key);
 		}
 
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 
 		conceptName = adapter.getConceptNameByCode(conceptCode);
 		if(conceptName != null){
@@ -1045,7 +1062,7 @@ private Response isSubConcept(HashMap map) throws Exception
 		}
 
 
-		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 		isSub=adapter.isChild(conceptName1,conceptName2);
         if(isSub==null){
             isSub = false;
@@ -1084,7 +1101,7 @@ private Response isRetired(HashMap map) throws Exception
 			else if(name.equalsIgnoreCase("conceptCode"))
 				conceptCode = (String)map.get(key);
 		}
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 		retired = adapter.isRetired(conceptCode);
 	}
 	catch(Exception e)
@@ -1128,7 +1145,7 @@ private Response getPropertyValues(HashMap map) throws Exception
 				propertyName = (String)map.get(key);
 		}
 
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 		values = adapter.getPropertyValues(conceptName, propertyName);
 
 		if(values != null){
@@ -1185,7 +1202,7 @@ private Response getAncestors(HashMap map) throws Exception
 				fBaseLineDate = (String)map.get(key);
 		}
 
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 		ancestors = adapter.getAncestorCodes(conceptCode, flag, stringToDate(iBaseLineDate), stringToDate(fBaseLineDate));
 
 		if(ancestors.size()> 0){
@@ -1242,7 +1259,7 @@ private Response getSubConcepts(HashMap map) throws Exception
 				outputFlag = (Boolean)map.get(key);
 		}
 
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 		subConcepts = adapter.getSubConcepts(conceptName, inputFlag, outputFlag);
 
 		if(subConcepts != null){
@@ -1301,7 +1318,7 @@ private Response getSuperConcepts(HashMap map) throws Exception
 		}
 
 
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 		superConcepts = adapter.getSuperConcepts(conceptName, inputFlag, outputFlag);
 
 		if(superConcepts.size()>0){
@@ -1355,7 +1372,7 @@ private Response getRolesByConceptName(HashMap map) throws Exception
 		}
 		if(!StringHelper.hasValue(conceptName))
         	throw new DAOException("conceptName cannot be null");
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
 		roles = adapter.getRolesByConceptName(conceptName);
 		if(roles != null){
 
@@ -1410,7 +1427,7 @@ private Response getPropertiesByConceptName(HashMap map) throws Exception
 		}
 		if(!StringHelper.hasValue(conceptName))
         	throw new DAOException("conceptName cannot be null");
-        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName);
+        LexAdapter adapter = (LexAdapter)adapters.get(vocabularyName2urn(vocabularyName));
         properties = adapter.getPropertiesByConceptName(conceptName);
 		if(properties == null){
 			log.info("No properties found....");
@@ -4343,7 +4360,7 @@ private Response getDefinitionCollectionbyCode (HashMap map) throws Exception
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		Vector ret_obj = adapter.getDefinitionCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_obj != null) {
 			Vector evs_obj = convertDefinitionCollection(ret_obj);
@@ -4375,7 +4392,7 @@ private Response getSourceCollectionbyCode (HashMap map) throws Exception
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		Vector ret_obj = adapter.getSourceCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_obj != null) {
 			Vector evs_obj = convertSourceCollection(ret_obj);
@@ -4408,7 +4425,7 @@ private Response getSemanticTypeVectorbyCode (HashMap map) throws Exception
 				code = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		Vector ret_obj = adapter.getSemanticTypeCollectionbyCode(vocabularyName, code);
 
 		if (ret_obj != null) {
@@ -4442,7 +4459,7 @@ private Response getSemanticTypeCollectionbyCui (HashMap map) throws Exception
 				cui = (String) map.get(key);
 		}
 		String vocabularyName = "NCI_MetaThesaurus";//namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		Vector ret_obj = adapter.getSemanticTypeCollectionbyCode(vocabularyName, cui);
 
 		if (ret_obj != null) {
@@ -4482,7 +4499,7 @@ private Response getAtomCollectionbyCui (HashMap map) throws Exception
 				cui = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		Vector ret_obj = adapter.getAtomCollectionbyCode(vocabularyName, cui);
 		if (ret_obj != null) {
 			Vector evs_obj = convertAtomCollection(ret_obj);
@@ -4516,7 +4533,7 @@ private Response getHistoryCollectionbyCode (HashMap map) throws Exception
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		ret_vec = adapter.getHistoryCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_vec != null) {
 			evs_vec = convertHistoryCollection(ret_vec);
@@ -4551,7 +4568,7 @@ private Response getRoleCollectionbyCode (HashMap map) throws Exception
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		ret_vec = adapter.getRoleCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_vec != null) {
 			evs_vec = convertRoleCollection(ret_vec);
@@ -4586,7 +4603,7 @@ private Response getInverseRoleCollectionbyCode (HashMap map) throws Exception
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		ret_vec = adapter.getInverseRoleCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_vec != null) {
 			evs_vec = convertRoleCollection(ret_vec);
@@ -4620,7 +4637,7 @@ private Response getInverseAssociationCollectionbyCode (HashMap map) throws Exce
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		ret_vec = adapter.getInverseAssociationCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_vec != null) {
 			evs_vec = convertRoleCollection(ret_vec);
@@ -4655,7 +4672,7 @@ private Response getAssociationCollectionbyCode (HashMap map) throws Exception
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		ret_vec = adapter.getAssociationCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_vec != null) {
 			evs_vec = convertAssociationCollection(ret_vec);
@@ -4689,7 +4706,7 @@ private Response getPropertyCollectionbyCode (HashMap map) throws Exception
 				conceptCode = (String) map.get(key);
 		}
 		String vocabularyName = namespaceId2VocabularyName(namespaceId);
-		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName);
+		LexAdapter adapter = (LexAdapter) adapters.get(vocabularyName2urn(vocabularyName));
 		ret_vec = adapter.getPropertyCollectionbyCode(vocabularyName, conceptCode);
 		if (ret_vec != null) {
 			evs_vec = convertPropertyCollection(ret_vec);
@@ -4939,7 +4956,7 @@ private String localName2Urn(String localName)
 
 	if (localName2Urn_Map.containsKey(localName))
 	{
-		return (String) namespaceId2VocabularyName_Map.get(localName);
+		return (String) localName2Urn_Map.get(localName);
 	}
 	try {
 		String urn = getLexAdapter(defaultVocabularyName).localName2Urn(localName);
