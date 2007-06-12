@@ -38,6 +38,15 @@
     <target name="alltests" depends="build">
 		<junit printsummary="yes" fork="yes">
 	      <classpath refid="libs" />
+		  <formatter type="xml"/>
+
+		  <test name="gov.nih.nci.cabio.AllTests"/>
+		</junit>
+	</target>
+
+    <target name="alltests-plain" depends="build">
+		<junit printsummary="yes" fork="yes">
+	      <classpath refid="libs" />
 		  <formatter type="plain"/>
 
 		  <test name="gov.nih.nci.cabio.AllTests"/>
