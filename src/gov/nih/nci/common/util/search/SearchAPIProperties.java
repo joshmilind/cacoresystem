@@ -22,6 +22,7 @@ public class SearchAPIProperties {
     private static Logger log = Logger.getLogger(SearchAPIProperties.class.getName());
     private static SessionFactory sessionFactory;
     private static int threadCount;
+    private static HashMap indexProperties;
     
     private SearchAPIProperties() {}
 
@@ -84,7 +85,7 @@ public class SearchAPIProperties {
     }
     
     private static void populateFields(String indexedPropertyFiles) throws Exception{
-        Set fieldList = new HashSet();
+        Set fieldList = new HashSet();        
         if(indexedPropertyFiles.indexOf(";")>0){
             for(StringTokenizer st = new StringTokenizer(indexedPropertyFiles,";");st.hasMoreTokens();){
                 String fieldsPropertiesFile = st.nextToken();
@@ -108,6 +109,7 @@ public class SearchAPIProperties {
 
     }
     private static Set getFieldNames(String fileName) throws Exception{
+        indexProperties = new HashMap();
         Set fieldList = new HashSet();
         Properties properties = new Properties();
         InputStream is = null;
@@ -121,6 +123,7 @@ public class SearchAPIProperties {
                 for(StringTokenizer st = new StringTokenizer(fields,";");st.hasMoreTokens();){
                     fieldList.add(st.nextToken());
                 }
+                indexProperties.put(key, fields);
             }
         }catch(Exception ex){
            log.error(ex.getMessage());
@@ -151,6 +154,9 @@ public class SearchAPIProperties {
     }
     public int getThreadCount(){       
         return threadCount;
+    }
+    public HashMap getIndexProperties(){
+        return indexProperties;
     }
 
 }

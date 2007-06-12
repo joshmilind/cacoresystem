@@ -3,11 +3,12 @@ package gov.nih.nci.common.util.search;
 import org.hibernate.CacheMode;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.apache.log4j.*;
+import java.util.*;
 
 /*
  * Created on Apr 11, 2007
@@ -17,55 +18,84 @@ import org.apache.log4j.*;
 
  /**
   * Generates lucene indexes for the java beans
-  */        
+  */
 public class Indexer extends Thread{
 
     private FullTextSession fullTextSession;
-    private EntityPersister persister;    
+    private EntityPersister persister;
+    private String hqlQuery;
     private static Logger log = Logger.getLogger(Indexer.class.getName());
     /**
      * Generates an index for the specified entity
-     * @param session
-     * @param entity
-     */
-    public Indexer(SessionFactory session, EntityPersister entity) {        
-        fullTextSession = Search.createFullTextSession(session.openSession());
-        persister = entity;             
+    *
+    public Indexer(Session session, EntityPersister entity) {
+        fullTextSession = Search.createFullTextSession(session);
+        persister = entity;
     }
-    
+    */
+    public Indexer(Session session, EntityPersister entity, String query) {
+        fullTextSession = Search.createFullTextSession(session);
+        persister = entity;
+        hqlQuery = query;
+    }
+
     /**
      * Generates lucene documents
      */
     public void run(){
         long timeLag = 0;
-        int total=0;
+        int total=0;       
+        
+        Long count = 0l;
         try{
-        	long start = System.currentTimeMillis();
-        	String hqlQuery = "from "+ persister.getEntityName();
-            ScrollableResults results = fullTextSession.createQuery(hqlQuery).setCacheMode(CacheMode.IGNORE).setReadOnly(true).scroll();
-            if(results != null){
-            	results.first();
-                int breakPoint = 0;
-                do{
-                	fullTextSession.index(results.get(0));                            
-                    if(breakPoint == 100){                
-                        breakPoint = 0;
-                        fullTextSession.clear();                
-                    }
-                    breakPoint++;
-                }while(results.next());
+        	long start = System.currentTimeMillis();            
+            String countQuery = "Select count(*) from "+ persister.getEntityName();
+            try{
+                count = (Long)fullTextSession.iterate(countQuery).next();                
+            }catch(Exception e){
+                log.error(e);
+            }
+            org.hibernate.Query query = fullTextSession.createQuery(hqlQuery);
+            if(count > 100000){
+                for(int startIndex = 0, interval = 10000, endIndex = interval + startIndex; startIndex < count; startIndex = endIndex, endIndex += interval){
+                    query.setFirstResult(startIndex);
+                	query.setMaxResults(interval);
+                    log.info("\t\tIndexing "+ startIndex +"\t - "+ endIndex+"\t"+ persister.getEntityName());
+                	for(Iterator iResults = query.list().iterator();iResults.hasNext();){
+					    Object result = iResults.next();
+					    fullTextSession.index(result);
+					}
+					fullTextSession.clear();
+                }
                 long end = System.currentTimeMillis();
                 timeLag = end - start;
-                results.last();        
-                total = results.getRowNumber();     
+                log.info("Time taken to index "+ count +"\t"+persister.getEntityName()+ "\tMS:"+ timeLag);
+            }else{
+                ScrollableResults results = query.setCacheMode(CacheMode.IGNORE).setReadOnly(true).scroll();
+                if(results != null){
+                    results.first();
+                    int breakPoint = 0;
+                    do{
+                        fullTextSession.index(results.get(0));
+                        if(breakPoint == 100){
+                            breakPoint = 0;
+                            fullTextSession.clear();
+                        }
+                        breakPoint++;
+                    }while(results.next());
+                    long end = System.currentTimeMillis();
+                    timeLag = end - start;
+                    results.last();
+                    total = results.getRowNumber();
+                }
+                log.info("Time taken to index "+ total +"\t"+persister.getEntityName()+ "\tMS:"+ timeLag);
             }
-                   
+
         }catch(Exception ex){
-        	log.error("Error occured while indexing "+ persister.getEntityName() + ex);
+            log.error("Error occured while indexing "+ persister.getEntityName() + ex);                    	
         }finally{
-        	log.info("Time taken to index "+ total +"\t"+persister.getEntityName()+ "\tMS:"+ timeLag);
-        	fullTextSession.close();        	
-        }   
+        	fullTextSession.close();
+        }
     }
 
 }
