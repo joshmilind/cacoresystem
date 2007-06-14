@@ -15,7 +15,6 @@ import java.util.*;
  * Shaziya Muhsin
  *
  */
-
  /**
   * Generates lucene indexes for the java beans
   */
@@ -24,19 +23,19 @@ public class Indexer extends Thread{
     private FullTextSession fullTextSession;
     private EntityPersister persister;
     private String hqlQuery;
+    private int interval = 10000;
     private static Logger log = Logger.getLogger(Indexer.class.getName());
     /**
      * Generates an index for the specified entity
-    *
-    public Indexer(Session session, EntityPersister entity) {
+    */    
+    public Indexer(Session session, EntityPersister entity, int max) {
         fullTextSession = Search.createFullTextSession(session);
         persister = entity;
-    }
-    */
-    public Indexer(Session session, EntityPersister entity, String query) {
-        fullTextSession = Search.createFullTextSession(session);
-        persister = entity;
-        hqlQuery = query;
+        hqlQuery = "from "+ entity.getEntityName();
+        if(max > 0){
+            interval = max;
+        }
+        
     }
 
     /**
@@ -54,19 +53,20 @@ public class Indexer extends Thread{
                 count = (Long)fullTextSession.iterate(countQuery).next();                
             }catch(Exception e){
                 log.error(e);
-            }
+            }   
             org.hibernate.Query query = fullTextSession.createQuery(hqlQuery);
-            if(count > 100000){
-                for(int startIndex = 0, interval = 10000, endIndex = interval + startIndex; startIndex < count; startIndex = endIndex, endIndex += interval){
+            System.out.println(".");
+            if(count > 100000){                
+                for(int startIndex = 0, endIndex = interval + startIndex; startIndex < count; startIndex = endIndex, endIndex += interval){
                     query.setFirstResult(startIndex);
                 	query.setMaxResults(interval);
-                    log.info("\t\tIndexing "+ startIndex +"\t - "+ endIndex+"\t"+ persister.getEntityName());
+                    //log.info("\t\tIndexing "+ startIndex +"- "+ (endIndex - 1)+"\t"+ persister.getEntityName());
                 	for(Iterator iResults = query.list().iterator();iResults.hasNext();){
 					    Object result = iResults.next();
 					    fullTextSession.index(result);
-					}
-					fullTextSession.clear();
+					}					
                 }
+                fullTextSession.clear();
                 long end = System.currentTimeMillis();
                 timeLag = end - start;
                 log.info("Time taken to index "+ count +"\t"+persister.getEntityName()+ "\tMS:"+ timeLag);

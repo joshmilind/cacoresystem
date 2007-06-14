@@ -38,32 +38,22 @@ public class IndexGenerator{
             BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
             String input = stdin.readLine();
             String ormFileName = properties.getOrmFileName()!=null?properties.getOrmFileName(): "orm3.cfg.xml";
-            String pkgName = properties.getIndxedPackageNames() != null ? properties.getIndxedPackageNames() : "gov.nih.nci.cabio.domain";            
+            String pkgName = properties.getIndxedPackageNames() != null ? properties.getIndxedPackageNames() : "gov.nih.nci.cabio.domain";  
+            int max = properties.getMaxRecordsPerQuery()>0 ? properties.getMaxRecordsPerQuery(): 1000;
             SessionFactory sessionFactory = new AnnotationConfiguration().configure(ormFileName).buildSessionFactory();
             Set classSet = getIndexedClasses(sessionFactory, pkgName);
             if(classSet.size()>0){   
                 for(Iterator i = classSet.iterator(); i.hasNext();){
-                    EntityPersister persister = (EntityPersister)i.next();
-                    String fields = (String)indexFields.get(persister.getEntityName());
-                    String hqlQuery = null;                
-                    if(fields.length() > 0){
-                        fields = fields.indexOf(";")>0? fields.replace(";",","): fields;
-                        if(fields.endsWith(",")){
-                            fields = fields.substring(0, fields.lastIndexOf(","));
-                        }
-                        hqlQuery = "Select "+ fields +" from "+ persister.getEntityName();
-                    }else{                        
-                        continue;
-                    }                                      
+                    EntityPersister persister = (EntityPersister)i.next();                                               
                     if(input.length()> 0 && input != null ){
                         if(input.equals("*") || input.indexOf("*")>-1){
-                            pool.execute(new Indexer(sessionFactory.openSession(),persister, hqlQuery));
+                            pool.execute(new Indexer(sessionFactory.openSession(),persister, max));
                         }else if(input.equals(persister.getEntityName())){
-                           pool.execute(new Indexer(sessionFactory.openSession(),persister, hqlQuery));
+                           pool.execute(new Indexer(sessionFactory.openSession(),persister, max));
                            break;
                         }
                     }else{
-                        pool.execute(new Indexer(sessionFactory.openSession(),persister, hqlQuery));
+                        pool.execute(new Indexer(sessionFactory.openSession(),persister, max));
                     }
                 }
                 
