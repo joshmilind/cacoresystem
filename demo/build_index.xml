@@ -2,14 +2,14 @@
 <!-- ****************************************************************************************************-->
 <!--                                 caCORE API Client Demo Build Script				                 -->
 <!-- ****************************************************************************************************-->
-<project name="caCORE API Client Demo" default="rundemo" basedir=".">
+<project name="caCORE API Client Demo" default="init" basedir=".">
 
 	<property name="conf.dir" value="conf" />
 	<property name="lib.dir" value="lib" />
 	<property name="src.dir" value="." />
 	<property name="numberTimeToRun" value="1" />
-	<property name="timeDelayInSecond" value="15" />
-	<property file="conf/hibernate.properties"/>
+	<property name="timeDelayInSecond" value="15" />	
+	<property file="conf/searchapiconfig.properties"/>
 	<path id="cp">
 		<fileset dir="lib">
 			<include name="**/*.jar" />
@@ -20,8 +20,8 @@
 	<!-- ************************************************************************************************-->
 	<!--    Run caBIO Client Demo                                                                        -->
 	<!-- ************************************************************************************************-->
-	<target name="runindex">
-		<mkdir dir="${hibernate.search.default.indexBase}"/>
+	<target name="runindex" depends="init">		
+		<mkdir dir="${index_location}"/>
 		<java classname="gov.nih.nci.common.util.search.IndexGenerator" fork="true">
 			<classpath refid="cp" />
 			<classpath>
@@ -30,6 +30,12 @@
 			<sysproperty key="log4j.configuration" value="${conf.dir}/log4j.properties" />
 		</java>
 
+	</target>
+	
+	<target name="init">
+		<replace dir="${conf.dir}">
+			<replacefilter token="@INDEXBASE@" value="${index_location}" />
+		</replace>
 	</target>
 
 	<!-- ************************************************************************************************-->
