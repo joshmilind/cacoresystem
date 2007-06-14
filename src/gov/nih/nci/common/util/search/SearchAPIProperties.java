@@ -23,6 +23,7 @@ public class SearchAPIProperties {
     private static SessionFactory sessionFactory;
     private static int threadCount;
     private static HashMap indexProperties;
+    private static int maxRecordsPerQuery;
     
     private SearchAPIProperties() {}
 
@@ -74,6 +75,13 @@ public class SearchAPIProperties {
                     }else{
                         threadCount = 1;
                     }                    
+                }else if(key.equalsIgnoreCase("max_records_perquery")){
+                    if(value == null || value.equals("0")){
+                        maxRecordsPerQuery = Integer.valueOf(value).intValue();
+                    }else{
+                        maxRecordsPerQuery = 1000;
+                    }
+                     
                 }
             }
         }catch(Exception ex){
@@ -157,6 +165,9 @@ public class SearchAPIProperties {
     }
     public HashMap getIndexProperties(){
         return indexProperties;
+    }
+    public int getMaxRecordsPerQuery(){
+        return maxRecordsPerQuery;
     }
 
 }
