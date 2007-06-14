@@ -24,6 +24,7 @@ public class SearchAPIProperties {
     private static int threadCount;
     private static HashMap indexProperties;
     private static int maxRecordsPerQuery;
+    private static String indexLocation;
     
     private SearchAPIProperties() {}
 
@@ -80,8 +81,9 @@ public class SearchAPIProperties {
                         maxRecordsPerQuery = Integer.valueOf(value).intValue();
                     }else{
                         maxRecordsPerQuery = 1000;
-                    }
-                     
+                    }                     
+                }else if(key.equalsIgnoreCase("index_location")){
+                    indexLocation = value;
                 }
             }
         }catch(Exception ex){
@@ -168,6 +170,9 @@ public class SearchAPIProperties {
     }
     public int getMaxRecordsPerQuery(){
         return maxRecordsPerQuery;
+    }
+    public String getIndexLocation(){
+        return indexLocation;
     }
 
 }
