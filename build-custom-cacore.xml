@@ -324,12 +324,13 @@
 		
 			<copy todir="${cacore_home}/output/indexGenerator/conf" overwrite="true">
 					<fileset dir="${dir.output.project.src}">
-					<include name="indexedFields.properties"/>
-					<include name="hibernate.properties"/>
-					<include name="searchapiconfig.properties"/>
-					<include name="*.cfg.xml"/>								
-				</fileset>
-				<fileset dir="${dir.output.conf.resources.client}" includes="${file.logger.properties}"/>
+						<include name="indexedFields.properties"/>
+						<!-- include name="hibernate.properties"/ -->
+						<include name="searchapiconfig.properties"/>
+						<include name="*.cfg.xml"/>								
+					</fileset>
+					<fileset dir="${dir.output.conf.resources.client}" includes="${file.logger.properties}"/>
+				<fileset dir="${dir.custom}/conf/hibernate" includes="hibernate.properties"/>
 			</copy>
 			<copy todir="${cacore_home}/output/indexGenerator/lib" overwrite="true">
 				<fileset dir="${dir.lib}">
