@@ -55,12 +55,12 @@ public class Indexer extends Thread{
                 log.error(e);
             }   
             org.hibernate.Query query = fullTextSession.createQuery(hqlQuery);
-            System.out.println(".");
+            System.out.print(".");
             if(count > 100000){                
                 for(int startIndex = 0, endIndex = interval + startIndex; startIndex < count; startIndex = endIndex, endIndex += interval){
                     query.setFirstResult(startIndex);
                 	query.setMaxResults(interval);
-                    //log.info("\t\tIndexing "+ startIndex +"- "+ (endIndex - 1)+"\t"+ persister.getEntityName());
+                    log.info("\t\tIndexing "+ startIndex +"- "+ (endIndex - 1)+"\t"+ persister.getEntityName());
                 	for(Iterator iResults = query.list().iterator();iResults.hasNext();){
 					    Object result = iResults.next();
 					    fullTextSession.index(result);
