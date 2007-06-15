@@ -3,24 +3,28 @@
  */
 package gov.nih.nci.system.applicationservice;
 
-import gov.nih.nci.common.util.HQLCriteria;
-import gov.nih.nci.evs.query.EVSQuery;
-import gov.nih.nci.system.query.cql.CQLQuery;
-
-import java.util.List;
-
-import org.hibernate.criterion.DetachedCriteria;
-
-import org.LexGrid.LexBIG.LexBIGService.*;
-import org.LexGrid.LexBIG.Extensions.Query.*;
-import org.LexGrid.LexBIG.DataModel.Collections.*;
-import org.LexGrid.LexBIG.Extensions.Generic.*;
-import org.LexGrid.LexBIG.History.*;
-import org.LexGrid.LexBIG.LexBIGService.*;
-import org.LexGrid.codingSchemes.*;
-import org.LexGrid.LexBIG.DataModel.Core.*;
-import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.*;
-import org.LexGrid.LexBIG.Exceptions.*;
+import org.LexGrid.LexBIG.DataModel.Collections.CodingSchemeRenderingList;
+import org.LexGrid.LexBIG.DataModel.Collections.ExtensionDescriptionList;
+import org.LexGrid.LexBIG.DataModel.Collections.ModuleDescriptionList;
+import org.LexGrid.LexBIG.DataModel.Collections.SortDescriptionList;
+import org.LexGrid.LexBIG.DataModel.Collections.ValueDomainRenderingList;
+import org.LexGrid.LexBIG.DataModel.Core.CodingSchemeVersionOrTag;
+import org.LexGrid.LexBIG.DataModel.Core.ValueDomainVersionOrTag;
+import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.SortContext;
+import org.LexGrid.LexBIG.Exceptions.LBException;
+import org.LexGrid.LexBIG.Exceptions.LBInvocationException;
+import org.LexGrid.LexBIG.Extensions.Generic.GenericExtension;
+import org.LexGrid.LexBIG.Extensions.Query.Filter;
+import org.LexGrid.LexBIG.Extensions.Query.Sort;
+import org.LexGrid.LexBIG.History.HistoryService;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeGraph;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceManager;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
+import org.LexGrid.LexBIG.LexBIGService.ValueDomainEntryNodeSet;
+import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
+import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 
 /**
@@ -106,10 +110,17 @@ public abstract class EVSApplicationService extends ApplicationService
 	
 	
         public abstract CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException ;
-        public abstract CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException ;
+        
+        /** 
+         * @deprecated Not implemented here since it is deprecated in the LexBIGService interface.  
+         */
+        public CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly) throws LBException { 
+        	throw new UnsupportedOperationException(); 
+        }
+        
         public abstract CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException;
         public abstract Filter   getFilter(java.lang.String name)throws LBException ;
-        public abstract  ExtensionDescriptionList    getFilterExtensions() ;
+        public abstract ExtensionDescriptionList    getFilterExtensions() ;
         public abstract GenericExtension   getGenericExtension(java.lang.String name)throws LBException ; 
         public abstract ExtensionDescriptionList   getGenericExtensions() ; 
         public abstract HistoryService     getHistoryService(java.lang.String codingScheme)throws LBException ; 
@@ -126,6 +137,6 @@ public abstract class EVSApplicationService extends ApplicationService
         public abstract ValueDomainNodeSet   getValueDomains(boolean activeOnly) throws LBException;
         public abstract CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException ; 
         public abstract ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws LBException ; 
-
-
+        public abstract Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception;
+        
 }

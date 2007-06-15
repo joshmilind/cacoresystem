@@ -10,6 +10,7 @@ import gov.nih.nci.system.applicationservice.ApplicationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Properties;
 
 import org.LexGrid.LexBIG.DataModel.Collections.CodingSchemeRenderingList;
@@ -35,6 +36,7 @@ import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
 import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 import org.apache.log4j.Logger;
+import org.springframework.util.ClassUtils;
 
 /**
  * @author safrant
@@ -42,6 +44,7 @@ import org.apache.log4j.Logger;
  */
 public class EVSApplicationServiceBusinessImpl extends
 		ApplicationServiceBusinessImpl {
+    
 	private static String httpAddress;
 
 	private static EVSApplicationServiceBusinessImpl applicationService = new EVSApplicationServiceBusinessImpl();
@@ -54,7 +57,7 @@ public class EVSApplicationServiceBusinessImpl extends
 
 //	private boolean inputImplFlag;
 
-	private static Logger log = Logger.getLogger(EVSApplicationServiceBusinessImpl.class.getName());
+	private static Logger log = Logger.getLogger(EVSApplicationServiceBusinessImpl.class);
 
 //	private boolean caseSensitivityFlag; // by default it is case
 	
@@ -150,9 +153,6 @@ public class EVSApplicationServiceBusinessImpl extends
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(codingScheme, versionOrTag);
      }
 
-    public  CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException, ApplicationException, Exception {
-        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(codingScheme, versionOrTag, activeOnly);
-    }
     public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException, ApplicationException {
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(nodeSet);
     }
@@ -209,5 +209,44 @@ public class EVSApplicationServiceBusinessImpl extends
     }
     public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException, ApplicationException, Exception {
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).resolveValueDomain(valueDomain, versionOrTag);
+    }
+    
+    /**
+     * Execute the given method on the specified LexBig object. 
+     * @param object 
+     * @param methodName
+     * @param parameterClasses
+     * @param args
+     * @return
+     * @throws Exception
+     */
+    public Object executeRemotely(Object object, String methodName, 
+                    String[] parameterClasses, Object[] args) 
+                    throws Exception {
+        
+        log.info("executing method "+methodName+" on "+object);
+
+        if (!object.getClass().getName().startsWith("org.LexGrid.LexBIG.Impl")) {
+            log.warn("executeRemotely called for non-LexBig object: "+
+                    object.getClass().getName());
+            throw new SecurityException(
+                "Cannot execute method on non-LexBig object");
+        }
+
+        try {
+            int i = 0;
+            Class[] parameterTypes = new Class[parameterClasses.length];
+            for(String paramClass : parameterClasses) {
+                parameterTypes[i++] = ClassUtils.forName(paramClass);
+            }
+            
+            Method objMethod = object.getClass().getMethod(
+                methodName, parameterTypes);
+            return objMethod.invoke(object, args);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

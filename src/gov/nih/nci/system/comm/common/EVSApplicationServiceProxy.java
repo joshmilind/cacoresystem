@@ -24,11 +24,8 @@ import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 
 public interface EVSApplicationServiceProxy extends ApplicationServiceProxy {
-
-	/****************************/
     
-    public abstract CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException ;
-    public abstract CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException ;
+    public abstract CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException;
     public abstract CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException;
     public abstract Filter   getFilter(java.lang.String name)throws LBException ;
     public abstract  ExtensionDescriptionList    getFilterExtensions();
@@ -48,5 +45,6 @@ public interface EVSApplicationServiceProxy extends ApplicationServiceProxy {
     public abstract ValueDomainNodeSet  getValueDomains(boolean activeOnly) throws LBException;
     public abstract CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException ; 
     public abstract ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws LBException ; 
-	
+    public abstract Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception;
+    
 }

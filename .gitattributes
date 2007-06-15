@@ -929,6 +929,8 @@ src/gov/nih/nci/system/comm/common/ApplicationServiceProxy.java -text
 src/gov/nih/nci/system/comm/common/EVSApplicationServiceProxy.java -text
 src/gov/nih/nci/system/comm/server/ApplicationServiceServerImpl.java -text
 src/gov/nih/nci/system/comm/server/EVSApplicationServiceServerImpl.java -text
+src/gov/nih/nci/system/dao/aop/LexBigMethodInterceptor.java -text
+src/gov/nih/nci/system/dao/aop/RemoteMethodInterceptor.java -text
 src/gov/nih/nci/system/dao/cache/EVSCacheManager.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/DAS2DAOImpl.java -text
 src/gov/nih/nci/system/dao/impl/externalsystem/EVSDTSDAOImpl.java -text

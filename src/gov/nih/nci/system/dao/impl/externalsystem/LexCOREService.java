@@ -1,5 +1,6 @@
 package gov.nih.nci.system.dao.impl.externalsystem;
 
+import gov.nih.nci.system.dao.aop.LexBigMethodInterceptor;
 import gov.nih.nci.system.dao.properties.EVSProperties;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import org.LexGrid.concepts.CodedEntry;
 import org.LexGrid.naming.SupportedProperty;
 import org.LexGrid.valueDomains.ValueDomain;
 import org.apache.log4j.Logger;
+import org.springframework.aop.framework.ProxyFactory;
 
 /*
  * Created on Jan 31, 2007
@@ -254,22 +256,34 @@ public class LexCOREService {
         log.info("Properties: "+ results.size());
         return results;
     }
-    public List getSupportedProperty()throws Exception{
+    
+    public List getSupportedProperty() throws Exception{
         return getSupportedProperty(defaultName);
     }
-    public CodedNodeSet getCodedNodeSet(String propertyName)throws Exception{
-        return lbs.getCodingSchemeConcepts(defaultName, null, true);
-    }
-    /*******************************************/
-    public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws Exception {
-        return lbs.getCodingSchemeConcepts(codingScheme, versionOrTag, true);
-     }
 
-    public  CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws Exception {
-         return lbs.getCodingSchemeConcepts(codingScheme, versionOrTag, activeOnly);
+    private CodedNodeSet getProxy(Class interfaceClass, Object obj) throws Exception{
+        log.info("Creating AOP proxy for "+interfaceClass.getName());
+        ProxyFactory pfb = new ProxyFactory(obj);
+        pfb.addInterface(interfaceClass);
+        pfb.addAdvice(new LexBigMethodInterceptor());
+        return (CodedNodeSet)pfb.getProxy();
     }
+    
+    public CodedNodeSet getCodedNodeSet(String propertyName) throws Exception{
+        return getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(defaultName, null));
+    }
+
+    public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws Exception {
+        return getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(codingScheme, versionOrTag));
+    }
+
     public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException {
-         return lbs.getCodingSchemeConcepts(nodeSet);
+        try {
+            return getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(nodeSet));   
+        }
+        catch (Exception e) {
+            throw new LBException("Error creating proxy",e);
+        }
     }
     public Filter   getFilter(java.lang.String name)throws Exception {
        return lbs.getFilter(name);

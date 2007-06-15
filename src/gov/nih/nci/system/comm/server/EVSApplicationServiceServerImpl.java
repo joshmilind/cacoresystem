@@ -1,6 +1,16 @@
 package gov.nih.nci.system.comm.server;
 
-import java.util.Date;
+import gov.nih.nci.common.util.ClientInfo;
+import gov.nih.nci.common.util.ClientInfoThreadVariable;
+import gov.nih.nci.common.util.HQLCriteria;
+import gov.nih.nci.common.util.SecurityConfiguration;
+import gov.nih.nci.evs.query.EVSQuery;
+import gov.nih.nci.system.applicationservice.ApplicationException;
+import gov.nih.nci.system.applicationservice.EVSApplicationService;
+import gov.nih.nci.system.comm.common.EVSApplicationServiceProxy;
+import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.system.server.mgmt.SecurityEnabler;
+
 import java.util.List;
 
 import org.LexGrid.LexBIG.DataModel.Collections.CodingSchemeRenderingList;
@@ -28,18 +38,6 @@ import org.LexGrid.valueDomains.ValueDomain;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import gov.nih.nci.common.util.ClientInfo;
-import gov.nih.nci.common.util.ClientInfoThreadVariable;
-import gov.nih.nci.common.util.Constant;
-import gov.nih.nci.common.util.HQLCriteria;
-import gov.nih.nci.common.util.SecurityConfiguration;
-import gov.nih.nci.evs.query.EVSQuery;
-import gov.nih.nci.system.applicationservice.ApplicationException;
-import gov.nih.nci.system.applicationservice.EVSApplicationService;
-import gov.nih.nci.system.comm.common.EVSApplicationServiceProxy;
-import gov.nih.nci.system.query.cql.CQLQuery;
-import gov.nih.nci.system.server.mgmt.SecurityEnabler;
 
 public class EVSApplicationServiceServerImpl implements EVSApplicationServiceProxy {
 
@@ -254,9 +252,6 @@ public class EVSApplicationServiceServerImpl implements EVSApplicationServicePro
         return applicationService.getCodingSchemeConcepts(codingScheme, versionOrTag);
      }
 
-    public  CodedNodeSet getCodingSchemeConcepts(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, boolean activeOnly)throws LBException {
-        return applicationService.getCodingSchemeConcepts(codingScheme, versionOrTag, activeOnly);
-    }
     public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet)throws LBException {
         return applicationService.getCodingSchemeConcepts(nodeSet);
     }
@@ -314,5 +309,8 @@ public class EVSApplicationServiceServerImpl implements EVSApplicationServicePro
     public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
         return applicationService.resolveValueDomain(valueDomain, versionOrTag);
     }
-
+    public Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception {
+        return applicationService.executeRemotely(object, methodName, parameterClasses, args);  
+    }
+    
 }
