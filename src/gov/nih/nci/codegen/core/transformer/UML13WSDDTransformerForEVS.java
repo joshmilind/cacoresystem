@@ -186,7 +186,7 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
         cache.append("\n");
     	cache.append("	<parameter name=\"extraClasses\"");
     	cache.append("\n");
-    	cache.append("	value=\"gov.nih.nci.search.SearchQuery,gov.nih.nci.search.SearchQuery,java.lang.Enum,java.util.HashSet");
+    	cache.append("	value=\"gov.nih.nci.search.SearchQuery,gov.nih.nci.search.SearchResult,java.lang.Enum,java.util.HashSet,java.util.HashMap");
         if(evsClasses != null && createEVS){
         	cache.append(","+evsClasses);
         }
@@ -289,7 +289,8 @@ public class UML13WSDDTransformerForEVS implements Transformer , XMLConfigurable
             String searchResult = "<beanMapping xmlns:nciSearch=\"urn:search.nci.nih.gov\" qname=\"nciSearch:SearchResult\" languageSpecificType=\"java:gov.nih.nci.search.SearchResult\"/>\n";
             String sort = "<beanMapping xmlns:nciSearch=\"urn:search.nci.nih.gov\" qname=\"nciSearch:Sort\" languageSpecificType=\"java:gov.nih.nci.search.Sort\"/>\n";
             String rangeFilter = "<beanMapping xmlns:nciSearch=\"urn:search.nci.nih.gov\" qname=\"nciSearch:RangeFilter\" languageSpecificType=\"java:gov.nih.nci.search.RangeFilter\"/>\n";
-            cache.append(searchQuery + searchResult + sort + rangeFilter);
+            String map = "<beanMapping xmlns:nciSearch=\"urn:search.nci.nih.gov\" qname=\"nciSearch:HashMap\" languageSpecificType=\"java:java.util.HashMap\"/>\n";
+            cache.append(searchQuery + searchResult + sort + rangeFilter + map);
         }catch(Exception ex){
             ex.printStackTrace();
         }
