@@ -392,7 +392,8 @@ public class WSTransformer {
               }
           }
           if(searchClassName == null){
-              throw new Exception("Invalid class name: "+ targetClassName);
+              //throw new Exception("Invalid class name: "+ targetClassName);
+              searchClassName = targetClassName;
           }
           return searchClassName;
       }
