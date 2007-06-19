@@ -4,6 +4,7 @@ import gov.nih.nci.system.applicationservice.EVSApplicationService;
 
 import java.lang.annotation.Annotation;
 
+import org.LexGrid.LexBIG.Impl.logging.LoggerFactory;
 import org.LexGrid.LexBIG.Utility.Remote;
 
 /**
@@ -14,6 +15,10 @@ import org.LexGrid.LexBIG.Utility.Remote;
  */
 public class LexBigMethodInterceptor extends RemoteMethodInterceptor {
 
+    static {
+        LoggerFactory.setLightweight(true);
+    }
+    
     @Override
     public Object executeRemotely(Object object, String method, 
             String[] paramClasses, Object[] args) throws Exception {
@@ -26,5 +31,5 @@ public class LexBigMethodInterceptor extends RemoteMethodInterceptor {
     public Class<? extends Annotation> getAnnotationClass() {
         return Remote.class;
     }
-    
+
 }
