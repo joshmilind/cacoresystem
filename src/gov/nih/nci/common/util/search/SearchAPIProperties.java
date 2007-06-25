@@ -78,9 +78,9 @@ public class SearchAPIProperties {
                     }                    
                 }else if(key.equalsIgnoreCase("max_records_perquery")){
                     if(value == null || value.equals("0")){
-                        maxRecordsPerQuery = Integer.valueOf(value).intValue();
-                    }else{
                         maxRecordsPerQuery = 1000;
+                    }else{
+                        maxRecordsPerQuery = Integer.valueOf(value).intValue();;
                     }                     
                 }else if(key.equalsIgnoreCase("index_location")){
                     indexLocation = value;
