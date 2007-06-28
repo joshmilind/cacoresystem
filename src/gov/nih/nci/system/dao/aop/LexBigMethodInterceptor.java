@@ -5,11 +5,12 @@ import gov.nih.nci.system.applicationservice.EVSApplicationService;
 import java.lang.annotation.Annotation;
 
 import org.LexGrid.LexBIG.Impl.logging.LoggerFactory;
-import org.LexGrid.LexBIG.Utility.Remote;
+import org.LexGrid.LexBIG.Utility.LgClientSideSafe;
 
 /**
- * Implementation of a RemoteMethodInterceptor that executes @Remote methods 
- * using the EVSApplicationService.
+ * Implementation of a RemoteMethodInterceptor that executes methods
+ * using the EVSApplicationService, unless they have the 
+ * @LgClientSideSafe annotation.  
  * 
  * @author <a href="mailto:rokickik@mail.nih.gov">Konrad Rokicki</a>
  */
@@ -29,7 +30,7 @@ public class LexBigMethodInterceptor extends RemoteMethodInterceptor {
 
     @Override
     public Class<? extends Annotation> getAnnotationClass() {
-        return Remote.class;
+        return LgClientSideSafe.class;
     }
 
 }

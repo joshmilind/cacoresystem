@@ -8,8 +8,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 /**
- * An AOP method interceptor that remotely executes methods marked with some 
- * given annotation. All other methods proceed normally.
+ * An AOP method interceptor that remotely executes methods unless they
+ * are marked with some given annotation. 
  * 
  * @author <a href="mailto:rokickik@mail.nih.gov">Konrad Rokicki</a>
  */
@@ -24,25 +24,25 @@ public abstract class RemoteMethodInterceptor
             method.getParameterTypes());
         
         if (methodImpl.isAnnotationPresent(getAnnotationClass())) {
-
-            System.out.println("calling remotely: "+methodImpl.getName());
-            
-            int i = 0;
-            String[] paramClasses = 
-                new String[methodImpl.getParameterTypes().length];
-            
-            for(Class paramClass : methodImpl.getParameterTypes()) {
-                if (paramClass == null) continue;
-                paramClasses[i++] = paramClass.getName();
-            }
-
-            return executeRemotely(invocation.getThis(), 
-                methodImpl.getName(), paramClasses, invocation.getArguments());
+            System.out.println("calling locally: "+methodImpl.getName());
+            return invocation.proceed();
         }
 
-        System.out.println("calling locally: "+methodImpl.getName());
+        System.out.println("calling remotely: "+methodImpl.getName());
         
-        return invocation.proceed();
+        int i = 0;
+        String[] paramClasses = 
+            new String[methodImpl.getParameterTypes().length];
+        
+        for(Class paramClass : methodImpl.getParameterTypes()) {
+            if (paramClass == null) continue;
+            paramClasses[i++] = paramClass.getName();
+        }
+
+        return executeRemotely(invocation.getThis(), 
+            methodImpl.getName(), paramClasses, invocation.getArguments());
+        
+
     }
     
     /**
