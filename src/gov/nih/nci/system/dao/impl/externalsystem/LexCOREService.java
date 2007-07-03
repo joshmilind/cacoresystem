@@ -261,7 +261,7 @@ public class LexCOREService {
         return getSupportedProperty(defaultName);
     }
 
-    private CodedNodeSet getProxy(Class interfaceClass, Object obj) throws Exception{
+    private Object getProxy(Class interfaceClass, Object obj) throws Exception{
         log.info("Creating AOP proxy for "+interfaceClass.getName());
         ProxyFactory pfb = new ProxyFactory(obj);
         pfb.addInterface(interfaceClass);
@@ -270,88 +270,87 @@ public class LexCOREService {
     }
     
     public CodedNodeSet getCodedNodeSet(String propertyName) throws Exception{
-        return getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(defaultName, null));
+        return (CodedNodeSet)getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(defaultName, null));
     }
 
     public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws Exception {
-        return getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(codingScheme, versionOrTag));
+        return (CodedNodeSet)getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(codingScheme, versionOrTag));
     }
 
-    public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException {
-        try {
-            return getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(nodeSet));   
-        }
-        catch (Exception e) {
-            throw new LBException("Error creating proxy",e);
-        }
+    public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws Exception {
+       return (CodedNodeSet)getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(nodeSet));   
     }
-    public Filter   getFilter(java.lang.String name)throws Exception {
-       return lbs.getFilter(name);
-       // return null;
+    
+    public Filter getFilter(java.lang.String name)throws Exception {
+       return (Filter)getProxy(Filter.class, lbs.getFilter(name));
     }
-    public  ExtensionDescriptionList    getFilterExtensions()throws Exception{
-        return lbs.getFilterExtensions();
-        //return null;
-        }
-    public GenericExtension   getGenericExtension(java.lang.String name)throws Exception{
-        return lbs.getGenericExtension(name);
-        //return null;
+    
+    public  ExtensionDescriptionList getFilterExtensions() throws Exception{
+        return (ExtensionDescriptionList)getProxy(ExtensionDescriptionList.class, lbs.getFilterExtensions());
     }
-    public ExtensionDescriptionList   getGenericExtensions()throws Exception {
-        return lbs.getGenericExtensions();
-        //return null;
+    
+    public GenericExtension getGenericExtension(java.lang.String name)throws Exception{
+        return (GenericExtension)getProxy(GenericExtension.class, lbs.getGenericExtension(name));
     }
-    public HistoryService     getHistoryService(java.lang.String codingScheme)throws Exception{
-        return lbs.getHistoryService(codingScheme);
-        //return null;
+    
+    public ExtensionDescriptionList getGenericExtensions()throws Exception {
+        return (ExtensionDescriptionList)getProxy(ExtensionDescriptionList.class, lbs.getGenericExtensions());
     }
-    public java.util.Date     getLastUpdateTime()throws Exception{
+    
+    public HistoryService getHistoryService(java.lang.String codingScheme)throws Exception{
+        return (HistoryService)getProxy(HistoryService.class, lbs.getHistoryService(codingScheme));
+    }
+    
+    public java.util.Date getLastUpdateTime()throws Exception{
         return lbs.getLastUpdateTime();
-        //return null;
     }
-    public ModuleDescriptionList  getMatchAlgorithms() throws Exception{
-        return lbs.getMatchAlgorithms();
-        //return null;
+    
+    public ModuleDescriptionList getMatchAlgorithms() throws Exception{
+        return (ModuleDescriptionList)getProxy(ModuleDescriptionList.class, lbs.getMatchAlgorithms());
     }
-    public CodedNodeGraph     getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws Exception{
-        return lbs.getNodeGraph(codingScheme,versionOrTag,relationsName);
-        //return null;
+    
+    public CodedNodeGraph getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws Exception{
+        return (CodedNodeGraph)getProxy(CodedNodeGraph.class, lbs.getNodeGraph(codingScheme,versionOrTag,relationsName));
     }
-    public LexBIGServiceManager   getServiceManager(java.lang.Object credentials)throws Exception{
+    
+    public LexBIGServiceManager getServiceManager(java.lang.Object credentials)throws Exception{
         //return lbs.getServiceManager(credentials);
         return null;
     }
-    public LexBIGServiceMetadata  getServiceMetadata() throws Exception{
-        return lbs.getServiceMetadata();
-        //return null;
+    
+    public LexBIGServiceMetadata getServiceMetadata() throws Exception{
+        return (LexBIGServiceMetadata)getProxy(LexBIGServiceMetadata.class, lbs.getServiceMetadata());
     }
-    public Sort   getSortAlgorithm(java.lang.String name)throws Exception {
-        return lbs.getSortAlgorithm(name);
-        //return null;
+    
+    public Sort getSortAlgorithm(java.lang.String name)throws Exception {
+        return (Sort)getProxy(Sort.class, lbs.getSortAlgorithm(name));
     }
-    public SortDescriptionList    getSortAlgorithms(SortContext context)throws Exception{
-        return lbs.getSortAlgorithms(context);
-        //return null;
+    
+    public SortDescriptionList getSortAlgorithms(SortContext context)throws Exception {
+        return (SortDescriptionList)getProxy(SortDescriptionList.class, lbs.getSortAlgorithms(context));
     }
-    public CodingSchemeRenderingList   getSupportedCodingSchemes()throws Exception{
+    
+    public CodingSchemeRenderingList getSupportedCodingSchemes()throws Exception{
         return lbs.getSupportedCodingSchemes();
-       // return null;
     }
-    public ValueDomainRenderingList  getSupportedValueDomains() throws Exception {
+    
+    public ValueDomainRenderingList getSupportedValueDomains() throws Exception {
         return lbs.getSupportedValueDomains();
     }
-    public ValueDomainEntryNodeSet  getValueDomainEntries(ValueDomainNodeSet nodeSet) throws Exception {
-        return lbs.getValueDomainEntries(nodeSet);
+    
+    public ValueDomainEntryNodeSet getValueDomainEntries(ValueDomainNodeSet nodeSet) throws Exception {
+        return (ValueDomainEntryNodeSet)getProxy(ValueDomainEntryNodeSet.class, lbs.getValueDomainEntries(nodeSet));
     }
-    public ValueDomainNodeSet  getValueDomains(boolean activeOnly) throws Exception {
-        return lbs.getValueDomains(activeOnly);
+    
+    public ValueDomainNodeSet getValueDomains(boolean activeOnly) throws Exception {
+        return (ValueDomainNodeSet)getProxy(ValueDomainNodeSet.class, lbs.getValueDomains(activeOnly));
     }
-    public CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws Exception {
+    
+    public CodingScheme resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws Exception {
         return lbs.resolveCodingScheme(codingScheme, versionOrTag);
-        //return null;
     }
-    public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws Exception {
+    
+    public ValueDomain resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws Exception {
         return lbs.resolveValueDomain(valueDomain, versionOrTag);
-        //return null;
     }
 }

@@ -153,7 +153,7 @@ public class EVSApplicationServiceBusinessImpl extends
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(codingScheme, versionOrTag);
      }
 
-    public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException, ApplicationException {
+    public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws Exception, ApplicationException {
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getCodingSchemeConcepts(nodeSet);
     }
     public Filter   getFilter(java.lang.String name)throws LBException, ApplicationException, Exception  {
