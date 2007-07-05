@@ -87,8 +87,12 @@
     <mapping resource="gov/nih/nci/cabio/domain/impl/GenericArrayImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/Microarray.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/impl/MicroarrayImpl.hbm.xml" />
-    <mapping resource="gov/nih/nci/cabio/domain/Reporter.hbm.xml" />
-    <mapping resource="gov/nih/nci/cabio/domain/impl/ReporterImpl.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/ArrayReporter.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/impl/ArrayReporterImpl.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/Exon.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/impl/ExonImpl.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/Transcript.hbm.xml" />
+    <mapping resource="gov/nih/nci/cabio/domain/impl/TranscriptImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/ProteinDomain.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/impl/ProteinDomainImpl.hbm.xml" />
     <mapping resource="gov/nih/nci/cabio/domain/Marker.hbm.xml" />
