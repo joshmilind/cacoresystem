@@ -38,6 +38,7 @@ import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceManager;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainEntryNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
+import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
 import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 import org.apache.log4j.Logger;
@@ -575,6 +576,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }   
         catch (Exception e)
         {
+            e.printStackTrace();
              return null;
         }
         }
@@ -593,6 +595,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         }
         catch (Exception e)
         {
+            e.printStackTrace();
              return null;
         }
     }
@@ -621,6 +624,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         } 
         catch (Exception e)
         {
+            e.printStackTrace();
              return null;
         }
     }
@@ -666,6 +670,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         } 
         catch (Exception e)
         {
+            e.printStackTrace();
              return null;
         }
     } 
@@ -679,7 +684,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
              throw new LBInvocationException(e.getMessage(), null);
         }
     } 
-    public ValueDomainRenderingList  getSupportedValueDomains() throws LBInvocationException {
+    public ValueDomainRenderingList getSupportedValueDomains() throws LBInvocationException {
         try {
         return this.applicationServiceBusinessImpl.getSupportedValueDomains();
         }   
@@ -689,7 +694,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
              throw new LBInvocationException(e.getMessage(), null);
         }
     } 
-    public ValueDomainEntryNodeSet  getValueDomainEntries(ValueDomainNodeSet nodeSet) throws LBException{
+    public ValueDomainEntryNodeSet getValueDomainEntries(ValueDomainNodeSet nodeSet) throws LBException{
         try {
         return this.applicationServiceBusinessImpl.getValueDomainEntries(nodeSet);
         }    
@@ -698,7 +703,7 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
              throw new LBException(e.getMessage(), e);
         }
     }
-    public ValueDomainNodeSet  getValueDomains(boolean activeOnly) throws LBException {
+    public ValueDomainNodeSet getValueDomains(boolean activeOnly) throws LBException {
         try {
         return this.applicationServiceBusinessImpl.getValueDomains(activeOnly);
         }     
@@ -707,23 +712,26 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
              throw new LBException(e.getMessage(), e);
         }
     }
-    public CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException{
+    public CodingScheme resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException{
         try {
-        return this.applicationServiceBusinessImpl.resolveCodingScheme(codingScheme, versionOrTag);
+            return this.applicationServiceBusinessImpl.resolveCodingScheme(codingScheme, versionOrTag);
         }
         catch (Exception e)
         {
              throw new LBException(e.getMessage(), e);
         }
     }
-    public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
+    public ValueDomain resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
         try {
-        return this.applicationServiceBusinessImpl.resolveValueDomain(valueDomain, versionOrTag);
+            return this.applicationServiceBusinessImpl.resolveValueDomain(valueDomain, versionOrTag);
         }   
-        catch (Exception e)
-        {
+        catch (Exception e) {
              throw new LBException(e.getMessage(), e);
         }
+    }
+
+    public ConvenienceMethods getConvenienceMethods() throws Exception {
+        return this.applicationServiceBusinessImpl.getConvenienceMethods();
     }
     
     public Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception {

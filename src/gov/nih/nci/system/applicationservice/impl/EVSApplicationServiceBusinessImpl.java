@@ -33,6 +33,7 @@ import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceManager;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainEntryNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
+import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
 import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 import org.apache.log4j.Logger;
@@ -161,7 +162,7 @@ public class EVSApplicationServiceBusinessImpl extends
     }
     public  ExtensionDescriptionList    getFilterExtensions() throws Exception{
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getFilterExtensions();
-        }
+    }
     public GenericExtension   getGenericExtension(java.lang.String name) throws ApplicationException, Exception{
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getGenericExtension(name);
     } 
@@ -210,7 +211,9 @@ public class EVSApplicationServiceBusinessImpl extends
     public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException, ApplicationException, Exception {
         return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).resolveValueDomain(valueDomain, versionOrTag);
     }
-    
+    public ConvenienceMethods getConvenienceMethods() throws Exception {
+        return ((gov.nih.nci.system.dao.impl.externalsystem.LexCOREService)ObjectFactory.getObject("LexService")).getConvenienceMethods();
+    }
     /**
      * Execute the given method on the specified LexBig object. 
      * @param object 
@@ -226,7 +229,7 @@ public class EVSApplicationServiceBusinessImpl extends
         
         log.info("executing method "+methodName+" on "+object);
 
-        if (!object.getClass().getName().startsWith("org.LexGrid.LexBIG.Impl")) {
+        if (!object.getClass().getName().startsWith("org.LexGrid.LexBIG")) {
             log.warn("executeRemotely called for non-LexBig object: "+
                     object.getClass().getName());
             throw new SecurityException(

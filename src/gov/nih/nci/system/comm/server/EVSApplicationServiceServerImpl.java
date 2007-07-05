@@ -33,6 +33,7 @@ import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceManager;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainEntryNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
+import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
 import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 import org.hibernate.criterion.DetachedCriteria;
@@ -308,6 +309,9 @@ public class EVSApplicationServiceServerImpl implements EVSApplicationServicePro
     }
     public ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws LBException {
         return applicationService.resolveValueDomain(valueDomain, versionOrTag);
+    }
+    public ConvenienceMethods getConvenienceMethods() throws Exception {
+        return applicationService.getConvenienceMethods();
     }
     public Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception {
         return applicationService.executeRemotely(object, methodName, parameterClasses, args);  

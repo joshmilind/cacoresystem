@@ -24,6 +24,7 @@ import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceManager;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainEntryNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
+import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
 import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 
@@ -136,7 +137,8 @@ public abstract class EVSApplicationService extends ApplicationService
         public abstract ValueDomainEntryNodeSet   getValueDomainEntries(ValueDomainNodeSet nodeSet) throws LBException ;
         public abstract ValueDomainNodeSet   getValueDomains(boolean activeOnly) throws LBException;
         public abstract CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException ; 
-        public abstract ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws LBException ; 
+        public abstract ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws LBException ;
+        public abstract ConvenienceMethods getConvenienceMethods() throws Exception;
         public abstract Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception;
         
 }

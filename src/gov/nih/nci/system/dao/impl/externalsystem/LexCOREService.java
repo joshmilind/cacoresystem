@@ -1,6 +1,5 @@
 package gov.nih.nci.system.dao.impl.externalsystem;
 
-import gov.nih.nci.system.dao.aop.LexBigMethodInterceptor;
 import gov.nih.nci.system.dao.properties.EVSProperties;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
 import org.LexGrid.LexBIG.DataModel.Core.ValueDomainVersionOrTag;
 import org.LexGrid.LexBIG.DataModel.InterfaceElements.CodingSchemeRendering;
 import org.LexGrid.LexBIG.DataModel.InterfaceElements.types.SortContext;
-import org.LexGrid.LexBIG.Exceptions.LBException;
 import org.LexGrid.LexBIG.Extensions.Generic.GenericExtension;
 import org.LexGrid.LexBIG.Extensions.Query.Filter;
 import org.LexGrid.LexBIG.Extensions.Query.Sort;
@@ -42,7 +40,6 @@ import org.LexGrid.concepts.CodedEntry;
 import org.LexGrid.naming.SupportedProperty;
 import org.LexGrid.valueDomains.ValueDomain;
 import org.apache.log4j.Logger;
-import org.springframework.aop.framework.ProxyFactory;
 
 /*
  * Created on Jan 31, 2007
@@ -260,45 +257,37 @@ public class LexCOREService {
     public List getSupportedProperty() throws Exception{
         return getSupportedProperty(defaultName);
     }
-
-    private Object getProxy(Class interfaceClass, Object obj) throws Exception{
-        log.info("Creating AOP proxy for "+interfaceClass.getName());
-        ProxyFactory pfb = new ProxyFactory(obj);
-        pfb.addInterface(interfaceClass);
-        pfb.addAdvice(new LexBigMethodInterceptor());
-        return (CodedNodeSet)pfb.getProxy();
-    }
     
     public CodedNodeSet getCodedNodeSet(String propertyName) throws Exception{
-        return (CodedNodeSet)getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(defaultName, null));
+        return lbs.getCodingSchemeConcepts(defaultName, null);
     }
 
     public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws Exception {
-        return (CodedNodeSet)getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(codingScheme, versionOrTag));
+        return lbs.getCodingSchemeConcepts(codingScheme, versionOrTag);
     }
 
     public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws Exception {
-       return (CodedNodeSet)getProxy(CodedNodeSet.class, lbs.getCodingSchemeConcepts(nodeSet));   
+       return lbs.getCodingSchemeConcepts(nodeSet);   
     }
     
     public Filter getFilter(java.lang.String name)throws Exception {
-       return (Filter)getProxy(Filter.class, lbs.getFilter(name));
+       return lbs.getFilter(name);
     }
     
-    public  ExtensionDescriptionList getFilterExtensions() throws Exception{
-        return (ExtensionDescriptionList)getProxy(ExtensionDescriptionList.class, lbs.getFilterExtensions());
+    public  ExtensionDescriptionList getFilterExtensions() throws Exception {
+        return lbs.getFilterExtensions();
     }
     
     public GenericExtension getGenericExtension(java.lang.String name)throws Exception{
-        return (GenericExtension)getProxy(GenericExtension.class, lbs.getGenericExtension(name));
+        return lbs.getGenericExtension(name);
     }
     
     public ExtensionDescriptionList getGenericExtensions()throws Exception {
-        return (ExtensionDescriptionList)getProxy(ExtensionDescriptionList.class, lbs.getGenericExtensions());
+        return lbs.getGenericExtensions();
     }
     
     public HistoryService getHistoryService(java.lang.String codingScheme)throws Exception{
-        return (HistoryService)getProxy(HistoryService.class, lbs.getHistoryService(codingScheme));
+        return lbs.getHistoryService(codingScheme);
     }
     
     public java.util.Date getLastUpdateTime()throws Exception{
@@ -306,31 +295,30 @@ public class LexCOREService {
     }
     
     public ModuleDescriptionList getMatchAlgorithms() throws Exception{
-        return (ModuleDescriptionList)getProxy(ModuleDescriptionList.class, lbs.getMatchAlgorithms());
+        return lbs.getMatchAlgorithms();
     }
     
     public CodedNodeGraph getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws Exception{
-        return (CodedNodeGraph)getProxy(CodedNodeGraph.class, lbs.getNodeGraph(codingScheme,versionOrTag,relationsName));
+        return lbs.getNodeGraph(codingScheme,versionOrTag,relationsName);
     }
     
-    public LexBIGServiceManager getServiceManager(java.lang.Object credentials)throws Exception{
-        //return lbs.getServiceManager(credentials);
-        return null;
+    public LexBIGServiceManager getServiceManager(java.lang.Object credentials) throws Exception{
+        return lbs.getServiceManager(credentials);
     }
     
     public LexBIGServiceMetadata getServiceMetadata() throws Exception{
-        return (LexBIGServiceMetadata)getProxy(LexBIGServiceMetadata.class, lbs.getServiceMetadata());
+        return lbs.getServiceMetadata();
     }
     
     public Sort getSortAlgorithm(java.lang.String name)throws Exception {
-        return (Sort)getProxy(Sort.class, lbs.getSortAlgorithm(name));
+        return lbs.getSortAlgorithm(name);
     }
     
     public SortDescriptionList getSortAlgorithms(SortContext context)throws Exception {
-        return (SortDescriptionList)getProxy(SortDescriptionList.class, lbs.getSortAlgorithms(context));
+        return lbs.getSortAlgorithms(context);
     }
     
-    public CodingSchemeRenderingList getSupportedCodingSchemes()throws Exception{
+    public CodingSchemeRenderingList getSupportedCodingSchemes() throws Exception{
         return lbs.getSupportedCodingSchemes();
     }
     
@@ -339,18 +327,22 @@ public class LexCOREService {
     }
     
     public ValueDomainEntryNodeSet getValueDomainEntries(ValueDomainNodeSet nodeSet) throws Exception {
-        return (ValueDomainEntryNodeSet)getProxy(ValueDomainEntryNodeSet.class, lbs.getValueDomainEntries(nodeSet));
+        return lbs.getValueDomainEntries(nodeSet);
     }
     
     public ValueDomainNodeSet getValueDomains(boolean activeOnly) throws Exception {
-        return (ValueDomainNodeSet)getProxy(ValueDomainNodeSet.class, lbs.getValueDomains(activeOnly));
+        return lbs.getValueDomains(activeOnly);
     }
     
-    public CodingScheme resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws Exception {
+    public CodingScheme resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws Exception {
         return lbs.resolveCodingScheme(codingScheme, versionOrTag);
     }
     
-    public ValueDomain resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws Exception {
+    public ValueDomain resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag) throws Exception {
         return lbs.resolveValueDomain(valueDomain, versionOrTag);
+    }
+    
+    public ConvenienceMethods getConvenienceMethods() throws Exception {
+        return new ConvenienceMethods(lbs);
     }
 }
