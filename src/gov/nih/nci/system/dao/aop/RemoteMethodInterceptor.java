@@ -39,10 +39,20 @@ public abstract class RemoteMethodInterceptor
             paramClasses[i++] = paramClass.getName();
         }
 
-        return executeRemotely(invocation.getThis(), 
+        Object ret = executeRemotely(invocation.getThis(), 
             methodImpl.getName(), paramClasses, invocation.getArguments());
         
-
+        if (ret.getClass().getName().startsWith("java")) {
+            // never try to proxy Java classes
+            return ret;
+        }
+        
+        if (ret.getClass().isAnnotationPresent(getAnnotationClass())) {
+            return ret;
+        }
+        else {
+            return getProxy(ret);
+        }
     }
     
     /**
@@ -54,14 +64,21 @@ public abstract class RemoteMethodInterceptor
      * @return The method's return value
      * @throws Exception
      */
-    public abstract Object executeRemotely(Object object, String method, 
+    protected abstract Object executeRemotely(Object object, String method, 
                     String[] paramClasses, Object[] args) throws Exception;
 
+    /**
+     * Returns an AOP proxy for the given object. 
+     * @param object the object to be proxied
+     * @return a proxy
+     */
+    protected abstract Object getProxy(Object object);
+    
     /**
      * Implement this to return the annotation class we should check for. 
      * Methods with this annotation will be executed remotely.
      * @return an annotation class
      */
-    public abstract Class<? extends Annotation> getAnnotationClass();
+    protected abstract Class<? extends Annotation> getAnnotationClass();
     
 }

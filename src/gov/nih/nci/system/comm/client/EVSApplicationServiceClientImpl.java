@@ -367,14 +367,6 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
      }
 
      private Object getProxy(Class interfaceClass, Object obj) {
-         ProxyFactory pfb = new ProxyFactory(obj);
-         if (interfaceClass.isInterface()) {
-             pfb.addInterface(interfaceClass);
-         }
-         else {
-             pfb.setProxyTargetClass(true);
-         }
-         pfb.addAdvice(new LexBigMethodInterceptor());
-         return pfb.getProxy();
+         return LexBigMethodInterceptor.createProxy(obj);
      }
 }

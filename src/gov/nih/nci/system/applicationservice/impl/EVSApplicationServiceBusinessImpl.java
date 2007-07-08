@@ -229,7 +229,7 @@ public class EVSApplicationServiceBusinessImpl extends
         
         log.info("executing method "+methodName+" on "+object);
 
-        if (!object.getClass().getName().startsWith("org.LexGrid.LexBIG")) {
+        if (!object.getClass().getName().startsWith("org.LexGrid")) {
             log.warn("executeRemotely called for non-LexBig object: "+
                     object.getClass().getName());
             throw new SecurityException(
