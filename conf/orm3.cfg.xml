@@ -6,7 +6,7 @@
 	<!-- properties -->
 	<!--<property name="show_sql">true</property>-->
 	<property name="dialect">org.hibernate.dialect.Oracle9Dialect</property>
-	<property name="connection.datasource">java:cabio-dev</property>
+	<property name="connection.datasource">java:cabio</property>
 	<property name="hibernate.cache.provider_class"> org.hibernate.cache.EhCacheProvider</property>
 	
     <mapping resource="gov/nih/nci/common/provenance/domain/Provenance.hbm.xml" />
