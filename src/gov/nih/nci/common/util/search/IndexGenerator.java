@@ -1,20 +1,20 @@
 package gov.nih.nci.common.util.search;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
-import java.util.*;
-import java.io.*;
-import java.util.concurrent.*;
-import org.hibernate.CacheMode;
-import org.hibernate.Query;
-import org.hibernate.ScrollMode;
-import org.hibernate.ScrollableResults;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
+import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.persister.entity.EntityPersister;
-import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 
 /*
