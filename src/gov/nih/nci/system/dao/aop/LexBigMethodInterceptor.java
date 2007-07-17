@@ -53,21 +53,22 @@ public class LexBigMethodInterceptor extends RemoteMethodInterceptor {
     public static Object createProxy(Object obj) {
         ProxyFactory pfb = new ProxyFactory(obj);
         
-        Class[] interfaces = obj.getClass().getInterfaces();
-        int countInterfaces = 0;
-        for(Class iclass : interfaces) {
-            if (iclass != Serializable.class) {
-                countInterfaces++;
-            }
-        }
-        
-        if (countInterfaces == 0) {
-            // No real interfaces found, 
-            // so let's use CGLIB to proxy the class itself.
-            pfb.setProxyTargetClass(true);
-        }
-        
+//        Class[] interfaces = obj.getClass().getInterfaces();
+//        int countInterfaces = 0;
+//        for(Class iclass : interfaces) {
+//            if (iclass != Serializable.class) {
+//                countInterfaces++;
+//            }
+//        }
+//        
+//        if (countInterfaces == 0) {
+//            // No real interfaces found, 
+//            // so let's use CGLIB to proxy the class itself.
+//        }
+
+        pfb.setProxyTargetClass(true);
         pfb.addAdvice(new LexBigMethodInterceptor());
         return pfb.getProxy();
+        
     }
 }
