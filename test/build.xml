@@ -30,7 +30,8 @@
 
     <target name="build" depends="init" 
             description="This target compiles the project.">
-        <javac srcdir="${src.dir}" destdir="${build.dir}" encoding="cp1252">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" 
+            encoding="cp1252" debug="true" debuglevel="lines,vars,source">
             <classpath refid="libs"/>
         </javac>        
     </target>
