@@ -42,6 +42,8 @@ public abstract class RemoteMethodInterceptor
         Object ret = executeRemotely(invocation.getThis(), 
             methodImpl.getName(), paramClasses, invocation.getArguments());
         
+        if (ret == null) return null;
+        
         if (ret.getClass().getName().startsWith("java")) {
             // never try to proxy Java classes
             return ret;
