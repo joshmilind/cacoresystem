@@ -24,16 +24,26 @@ public class Indexer extends Thread{
     private EntityPersister persister;
     private String hqlQuery;
     private int interval = 10000;
-    private static Logger log = Logger.getLogger(Indexer.class.getName());
+    private int startIndex =0;
+    private long endIndex =0;
+    static Logger log = Logger.getLogger(Indexer.class.getName());
     /**
      * Generates an index for the specified entity
     */    
-    public Indexer(Session session, EntityPersister entity, int max) {
+    public Indexer(Session session, EntityPersister entity, int start, int max, long end) {
         fullTextSession = Search.createFullTextSession(session);
         persister = entity;
         hqlQuery = "from "+ entity.getEntityName();
         if(max > 0){
             interval = max;
+        }
+        if(start> 0){
+            startIndex = start;
+        }
+        if(end > 0){
+            endIndex = end;            
+        }else{
+            endIndex = start + interval;
         }
         
     }
@@ -47,31 +57,14 @@ public class Indexer extends Thread{
         
         Long count = 0l;
         try{
-        	long start = System.currentTimeMillis();            
-            String countQuery = "Select count(*) from "+ persister.getEntityName();
-            try{
-                count = (Long)fullTextSession.iterate(countQuery).next();                
-            }catch(Exception e){
-                log.error(e);
-            }   
+        	long start = System.currentTimeMillis();  
             org.hibernate.Query query = fullTextSession.createQuery(hqlQuery);
             System.out.print(".");
-            if(count > 100000){                
-                for(int startIndex = 0, endIndex = interval + startIndex; startIndex < count; startIndex = endIndex, endIndex += interval){
-                    query.setFirstResult(startIndex);
-                	query.setMaxResults(interval);
-                    log.info("\t\tIndexing "+ startIndex +"- "+ (endIndex - 1)+"\t"+ persister.getEntityName());
-                	for(Iterator iResults = query.list().iterator();iResults.hasNext();){
-					    Object result = iResults.next();
-					    fullTextSession.index(result);
-					}					
-                }
-                fullTextSession.clear();
-                long end = System.currentTimeMillis();
-                timeLag = end - start;
-                log.info("Time taken to index "+ count +"\t"+persister.getEntityName()+ "\tMS:"+ timeLag);
-            }else{
-                ScrollableResults results = query.setCacheMode(CacheMode.IGNORE).setReadOnly(true).scroll();
+            query.setFirstResult(startIndex);
+            query.setMaxResults(interval);
+            log.info("\t\tStart :"+ startIndex +"\t"+ (startIndex + interval)+"\t"+ persister.getEntityName());
+            System.out.println("\t\tStart :"+ startIndex +"\t"+ (startIndex + interval)+"\t"+ persister.getEntityName());
+            ScrollableResults results = query.setCacheMode(CacheMode.IGNORE).setReadOnly(true).scroll();
                 if(results != null){
                     results.first();
                     int breakPoint = 0;
@@ -89,7 +82,7 @@ public class Indexer extends Thread{
                     total = results.getRowNumber();
                 }
                 log.info("Time taken to index "+ total +"\t"+persister.getEntityName()+ "\tMS:"+ timeLag);
-            }
+                //log.info("Indexed: "+ persister.getEntityName() +": " + interval);
 
         }catch(Exception ex){
             log.error("Error occured while indexing "+ persister.getEntityName() + ex);                    	

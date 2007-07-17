@@ -39,21 +39,50 @@ public class IndexGenerator{
             String input = stdin.readLine();
             String ormFileName = properties.getOrmFileName()!=null?properties.getOrmFileName(): "orm3.cfg.xml";
             String pkgName = properties.getIndxedPackageNames() != null ? properties.getIndxedPackageNames() : "gov.nih.nci.cabio.domain";  
-            int max = properties.getMaxRecordsPerQuery()>0 ? properties.getMaxRecordsPerQuery(): 1000;
+            int max = properties.getMaxRecordsPerQuery()>0 ? properties.getMaxRecordsPerQuery(): 10000;
             SessionFactory sessionFactory = new AnnotationConfiguration().configure(ormFileName).buildSessionFactory();
+            log.info("Maximum records per query:  "+ properties.getMaxRecordsPerQuery());
+            log.info("Indexing package: "+ properties.getIndxedPackageNames());
+            log.info("Reading ORM file : "+ properties.getOrmFileName());
             Set classSet = getIndexedClasses(sessionFactory, pkgName);
-            if(classSet.size()>0){   
+            if(classSet.size()>0){ 
+                long count = 0L;
                 for(Iterator i = classSet.iterator(); i.hasNext();){
-                    EntityPersister persister = (EntityPersister)i.next();                                               
-                    if(input.length()> 0 && input != null ){
+                    EntityPersister persister = (EntityPersister)i.next();
+                    String countQuery = "Select count(*) from "+ persister.getEntityName();
+                    try{
+                        count = (Long)Search.createFullTextSession(sessionFactory.openSession()).iterate(countQuery).next();                
+                    }catch(Exception e){
+                        throw new Exception(e);
+                    }                                             
+                    if(input.length()> 0 && input != null ){                        
                         if(input.equals("*") || input.indexOf("*")>-1){
-                            pool.execute(new Indexer(sessionFactory.openSession(),persister, max));
+                            pool.execute(new Indexer(sessionFactory.openSession(),persister, 0, max, count));
                         }else if(input.equals(persister.getEntityName())){
-                           pool.execute(new Indexer(sessionFactory.openSession(),persister, max));
+                            if(count > max){   
+                                log.info(persister.getEntityName() +" : "+ count +" records found" +"\t"+ max);
+                                for(int startIndex = 0, endIndex = max + startIndex; startIndex < count; startIndex = endIndex, endIndex += max){                                
+                                    pool.execute(new Indexer(sessionFactory.openSession(),persister, startIndex, max, count));
+                                    //log.info("\tIndexing: "+ startIndex +" - "+ endIndex +" of "+ persister.getEntityName());
+                                } 
+                            }else{
+                                log.info(persister.getEntityName() +" : "+ count +" records found" +"\t"+ max);
+                                pool.execute(new Indexer(sessionFactory.openSession(),persister, 0, max, count));
+                            }                           
                            break;
                         }
                     }else{
-                        pool.execute(new Indexer(sessionFactory.openSession(),persister, max));
+                        log.info(persister.getEntityName() +" : "+ count +" records found" +"\t"+ max);
+                        if(count > max){                                                        
+                            for(int startIndex = 0, endIndex = max + startIndex; startIndex < count; startIndex = endIndex, endIndex += max){                                
+                                pool.execute(new Indexer(sessionFactory.openSession(),persister, startIndex, max, count));
+                                //log.info("\tIndexing: "+ startIndex +" - "+ endIndex +" of "+ persister.getEntityName());
+                            } 
+                        }else{
+                            //log.info(persister.getEntityName() +" : "+ count +" records found" +"\t"+ max);
+                            pool.execute(new Indexer(sessionFactory.openSession(),persister, 0, max, count));
+                        }
+                        
                     }
                 }
                 
