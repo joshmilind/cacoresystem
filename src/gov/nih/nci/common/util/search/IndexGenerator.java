@@ -25,9 +25,7 @@ import org.hibernate.search.Search;
 
 
 public class IndexGenerator{
-
-	
-
+    private static Logger log = Logger.getLogger(IndexGenerator.class.getName());
     public static void main(String[] args)throws Exception{
         int threadCount = getThreadCount()>0 ? getThreadCount():1;
         ExecutorService pool = Executors.newFixedThreadPool(threadCount);
