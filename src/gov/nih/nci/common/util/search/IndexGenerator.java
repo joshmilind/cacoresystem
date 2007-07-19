@@ -16,7 +16,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.search.Search;
-
+import org.apache.log4j.*;
 /*
  * Created on Apr 3, 2007
  * Shaziya Muhsin
