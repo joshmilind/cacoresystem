@@ -1,7 +1,7 @@
 package gov.nih.nci.cabio;
 
 import gov.nih.nci.cabio.domain.SNP;
-import gov.nih.nci.cabio.domain.SNPReporter;
+import gov.nih.nci.cabio.domain.SNPArrayReporter;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 import gov.nih.nci.system.applicationservice.ApplicationServiceProvider;
 
@@ -38,7 +38,7 @@ public class DefectTest extends TestCase {
         assertEquals("SNPs",1,resultList.size());
         snp = (SNP)resultList.get(0);
         
-        assertEquals("locations",2,snp.getLocationCollection().size());
+        assertEquals("locations",1,snp.getLocationCollection().size());
     }
 
     /**
@@ -48,12 +48,12 @@ public class DefectTest extends TestCase {
      */
     public void testGF6418() throws Exception {
 
-        SNPReporter reporter = new SNPReporter();
+        SNPArrayReporter reporter = new SNPArrayReporter();
         reporter.setName("SNP_A-1705928");
-        List resultList = appService.search(SNPReporter.class, reporter);
+        List resultList = appService.search(SNPArrayReporter.class, reporter);
     
         assertEquals("Reporters",1,resultList.size());
-        reporter = (SNPReporter)resultList.get(0);
+        reporter = (SNPArrayReporter)resultList.get(0);
 
         assertNotNull("SNP is null",reporter.getSNP());
     }
