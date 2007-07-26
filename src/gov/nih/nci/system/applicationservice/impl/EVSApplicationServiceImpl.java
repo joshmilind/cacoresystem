@@ -38,7 +38,6 @@ import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceManager;
 import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainEntryNodeSet;
 import org.LexGrid.LexBIG.LexBIGService.ValueDomainNodeSet;
-import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
 import org.LexGrid.codingSchemes.CodingScheme;
 import org.LexGrid.valueDomains.ValueDomain;
 import org.apache.log4j.Logger;
@@ -728,10 +727,6 @@ public class EVSApplicationServiceImpl extends EVSApplicationService {
         catch (Exception e) {
              throw new LBException(e.getMessage(), e);
         }
-    }
-
-    public ConvenienceMethods getConvenienceMethods() throws Exception {
-        return this.applicationServiceBusinessImpl.getConvenienceMethods();
     }
     
     public Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception {

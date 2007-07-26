@@ -47,5 +47,4 @@ public interface EVSApplicationServiceProxy extends ApplicationServiceProxy {
     public abstract CodingScheme   resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException ; 
     public abstract ValueDomain   resolveValueDomain(java.lang.String valueDomain, ValueDomainVersionOrTag versionOrTag)throws LBException ; 
     public abstract Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception;
-    public abstract ConvenienceMethods getConvenienceMethods() throws Exception;
 }
