@@ -284,58 +284,58 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
 	/*****************************/
     
      public CodedNodeSet getCodingSchemeConcepts(String codingScheme, CodingSchemeVersionOrTag versionOrTag)throws LBException {
-         return (CodedNodeSet)getProxy(CodedNodeSet.class, 
+         return (CodedNodeSet)getProxy(
              applicationServiceProxy.getCodingSchemeConcepts(codingScheme, versionOrTag));
      }
      public  CodedNodeSet getCodingSchemeConcepts(ValueDomainEntryNodeSet nodeSet) throws LBException {
-         return (CodedNodeSet)getProxy(CodedNodeSet.class, 
+         return (CodedNodeSet)getProxy(
              applicationServiceProxy.getCodingSchemeConcepts(nodeSet));
      }
      public Filter getFilter(java.lang.String name) throws LBException {
-         return (Filter)getProxy(Filter.class, 
+         return (Filter)getProxy(
              applicationServiceProxy.getFilter(name));
      }
      public  ExtensionDescriptionList  getFilterExtensions(){
-         return (ExtensionDescriptionList)getProxy(ExtensionDescriptionList.class, 
+         return (ExtensionDescriptionList)getProxy(
              applicationServiceProxy.getFilterExtensions());
      }
      public GenericExtension getGenericExtension(java.lang.String name)throws LBException {
-         return (GenericExtension)getProxy(GenericExtension.class, 
+         return (GenericExtension)getProxy(
              applicationServiceProxy.getGenericExtension(name));
      } 
      public ExtensionDescriptionList getGenericExtensions(){
-         return (ExtensionDescriptionList)getProxy(ExtensionDescriptionList.class, 
+         return (ExtensionDescriptionList)getProxy(
              applicationServiceProxy.getGenericExtensions());
      }
      public HistoryService getHistoryService(java.lang.String codingScheme)throws LBException {
-         return (HistoryService)getProxy(HistoryService.class, 
+         return (HistoryService)getProxy(
              applicationServiceProxy.getHistoryService(codingScheme));
      } 
      public java.util.Date getLastUpdateTime() throws LBInvocationException {
          return applicationServiceProxy.getLastUpdateTime();
      }
      public ModuleDescriptionList getMatchAlgorithms(){
-         return (ModuleDescriptionList)getProxy(ModuleDescriptionList.class, 
+         return (ModuleDescriptionList)getProxy(
              applicationServiceProxy.getMatchAlgorithms());
      }
      public CodedNodeGraph getNodeGraph(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag, java.lang.String relationsName)throws LBException {
-         return (CodedNodeGraph)getProxy(CodedNodeGraph.class, 
+         return (CodedNodeGraph)getProxy(
              applicationServiceProxy.getNodeGraph(codingScheme,versionOrTag,relationsName));
      } 
      public LexBIGServiceManager getServiceManager(java.lang.Object credentials)throws LBException {
-         return (LexBIGServiceManager)getProxy(LexBIGServiceManager.class, 
+         return (LexBIGServiceManager)getProxy(
              applicationServiceProxy.getServiceManager(credentials));
      } 
      public LexBIGServiceMetadata getServiceMetadata() throws LBException {
-         return (LexBIGServiceMetadata)getProxy(LexBIGServiceMetadata.class, 
+         return (LexBIGServiceMetadata)getProxy(
              applicationServiceProxy.getServiceMetadata());
      }
      public Sort getSortAlgorithm(java.lang.String name) throws LBException {
-         return (Sort)getProxy(Sort.class, 
+         return (Sort)getProxy(
              applicationServiceProxy.getSortAlgorithm(name));
      }
      public SortDescriptionList getSortAlgorithms(SortContext context) {
-         return (SortDescriptionList)getProxy(SortDescriptionList.class, 
+         return (SortDescriptionList)getProxy(
              applicationServiceProxy.getSortAlgorithms(context));
      } 
      public CodingSchemeRenderingList getSupportedCodingSchemes()throws LBInvocationException {
@@ -345,11 +345,11 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
          return applicationServiceProxy.getSupportedValueDomains();
      }
      public ValueDomainEntryNodeSet getValueDomainEntries(ValueDomainNodeSet nodeSet) throws LBException {
-         return (ValueDomainEntryNodeSet)getProxy(ValueDomainEntryNodeSet.class, 
+         return (ValueDomainEntryNodeSet)getProxy(
              applicationServiceProxy.getValueDomainEntries(nodeSet));
      }
      public ValueDomainNodeSet getValueDomains(boolean activeOnly) throws LBException{
-         return (ValueDomainNodeSet)getProxy(ValueDomainNodeSet.class, 
+         return (ValueDomainNodeSet)getProxy(
              applicationServiceProxy.getValueDomains(activeOnly));
      }
      public CodingScheme resolveCodingScheme(java.lang.String codingScheme, CodingSchemeVersionOrTag versionOrTag) throws LBException {
@@ -359,14 +359,13 @@ public class EVSApplicationServiceClientImpl extends EVSApplicationService {
          return applicationServiceProxy.resolveValueDomain(valueDomain, versionOrTag);
      }	
      public ConvenienceMethods getConvenienceMethods() throws Exception {
-         return (ConvenienceMethods)getProxy(ConvenienceMethods.class, 
-          applicationServiceProxy.getConvenienceMethods());
+         return (ConvenienceMethods)getProxy(new ConvenienceMethods(this));
      }
      public Object executeRemotely(Object object, String methodName, String[] parameterClasses, Object[] args) throws Exception {
          return applicationServiceProxy.executeRemotely(object, methodName, parameterClasses, args);            
      }
 
-     private Object getProxy(Class interfaceClass, Object obj) {
+     private Object getProxy(Object obj) {
          return LexBigMethodInterceptor.createProxy(obj);
      }
 }
