@@ -297,6 +297,7 @@
 			<mkdir dir="${cacore_home}/output/indexGenerator/conf" />
 			<mkdir dir="${cacore_home}/output/indexGenerator/lib" />
 			<copy tofile="${cacore_home}/output/indexGenerator/build.xml" file="${dir.custom}/demo/build_index.xml" overwrite="true"/>
+			<copy tofile="${cacore_home}/output/indexGenerator/README.TXT" file="${dir.custom}/conf/README_index.TXT" overwrite="true"/>
 			
 			<delete file="${cacore_home}/output/indexGenerator/lib/${project_name}-indexgen.jar"/>
 			
@@ -321,17 +322,17 @@
 					<include name="**/**/*.hbm.xml"/>
 				</fileset>				
 			</jar>
-		
+			
 			<copy todir="${cacore_home}/output/indexGenerator/conf" overwrite="true">
 					<fileset dir="${dir.output.project.src}">
-						<include name="indexedFields.properties"/>
-						<!-- include name="hibernate.properties"/ -->
-						<include name="searchapiconfig.properties"/>
-						<include name="*.cfg.xml"/>								
+						<include name="indexedFields.properties"/>						
+						<include name="searchapiconfig.properties"/>														
 					</fileset>
 					<fileset dir="${dir.output.conf.resources.client}" includes="${file.logger.properties}"/>
-				<fileset dir="${dir.custom}/conf/hibernate" includes="hibernate.properties"/>
+					<fileset dir="${dir.custom}/conf/hibernate" includes="hibernate.properties"/>
+					<fileset dir="${dir.custom}/conf" includes="orm3_idxgen.xml"/>
 			</copy>
+			<copy tofile="${cacore_home}/output/indexGenerator/conf/orm3.cfg.xml" file="${dir.custom}/conf/orm3_idxgen.xml" overwrite="true"/>
 			<copy todir="${cacore_home}/output/indexGenerator/lib" overwrite="true">
 				<fileset dir="${dir.lib}">
 					<include name="antlr*.jar"/>
