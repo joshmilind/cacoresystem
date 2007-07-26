@@ -35,7 +35,13 @@
 	<target name="init">
 		<replace dir="${conf.dir}">
 			<replacefilter token="@INDEXBASE@" value="${index_location}" />
+			<replacefilter token="@CONNECTION_URL@" value="${connection_url}" />
+			<replacefilter token="@DRIVER@" value="${connection_driver}" />
+			<replacefilter token="@USER_NAME@" value="${user_name}" />
+			<replacefilter token="@PASSWORD@" value="${password}" />
+			<replacefilter token="@SHOWSQL@" value="${show_sql}" />
 		</replace>
+		<copy tofile="${conf.dir}/orm3.cfg.xml" file="${conf.dir}/orm3_idxgen.xml" overwrite="true"/>
 	</target>
 
 	<!-- ************************************************************************************************-->
