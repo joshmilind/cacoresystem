@@ -107,9 +107,12 @@ public class SearchAPIDAO implements DAO {
 	 */
 	private String getQueryString(SearchQuery searchQuery) throws DAOException {
 		StringBuffer keyword = new StringBuffer();
-		try {
+		try {            
 			if (searchQuery.getKeyword() != null) {
 				keyword = new StringBuffer(searchQuery.getKeyword());
+                if(keyword.toString().startsWith("*") || keyword.toString().startsWith("?")){
+                    throw new Exception("FreestyleLM Search does not support leading wildcard characters");
+                }
 				if (searchQuery.getFuzzySearch()) {
 					keyword.append("~");
 				}
