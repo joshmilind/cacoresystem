@@ -1,7 +1,5 @@
 package gov.nih.nci.system.dao.aop;
 
-import gov.nih.nci.system.comm.client.ApplicationServiceClientImpl;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
