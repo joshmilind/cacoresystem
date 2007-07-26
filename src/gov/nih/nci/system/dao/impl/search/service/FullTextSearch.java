@@ -96,6 +96,7 @@ public class FullTextSearch implements Searchable {
             if(properties.size()>0){
                 indexFileLocation = properties.getProperty("hibernate.search.default.indexBase");
             }
+            log.info("Index Location: "+ indexFileLocation);
             return indexFileLocation;
         }
     /**
@@ -109,6 +110,7 @@ public class FullTextSearch implements Searchable {
             for(int i=0; i< files.length; i++){                    
                 searchers[i]=new IndexSearcher(FSDirectory.getDirectory(files[i],false));
             }
+            log.info("Number of Searchers: "+ files.length);
             return new ParallelMultiSearcher(searchers);            
         }
     
@@ -127,13 +129,18 @@ public class FullTextSearch implements Searchable {
             String indexRoot = getIndexLocation();
            
             try{
-                multiSearcher = getIndexSearchers();
+                try{
+                    multiSearcher = getIndexSearchers();
+                }catch(Exception ex){
+                    throw new Exception("Unable to get lucene searchers "+ ex);
+                }                
                 String searchFields[] = getIndexedFields();
                 QueryParser parser = new MultiFieldQueryParser(searchFields, new StandardAnalyzer());
                 query = parser.parse(searchString);                
                 hits = multiSearcher.search(query);
+                multiSearcher.close();
             }catch(Exception ex){
-                throw new Exception(ex);
+                throw new Exception("Lucene Search Error : "+ex);
             }
             return hits;
         }
