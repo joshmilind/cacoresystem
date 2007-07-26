@@ -5,6 +5,7 @@
 /build-custom-cacore.xml -text
 /build.xml -text
 conf/DAOConfig.xml -text
+conf/README_index.TXT -text
 conf/codegen/control-files/beanevsgeneration.xml -text
 conf/codegen/control-files/beanevswsgeneration.xml -text
 conf/codegen/control-files/beangeneration_cacore.xml -text
