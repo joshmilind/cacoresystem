@@ -6,6 +6,7 @@ import gov.nih.nci.system.dao.*;
 import gov.nih.nci.common.util.search.*;
 import java.util.*;
 import java.io.*;
+import org.apache.log4j.*;
 
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.document.*;
@@ -24,6 +25,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 public class FullTextSearch implements Searchable {
     String indexPropertyFile = "indexedFields.properties";
+    static Logger log = Logger.getLogger(FullTextSearch.class.getName());
 
     /**
      * Constructor
