@@ -51,7 +51,7 @@ storage_type = "sql"
 sql_settings = { sql_url = "jdbc:oracle:thin:@cbiodb2-d.nci.nih.gov:1521:cbdev" 
 			 sql_driver = "oracle.jdbc.driver.OracleDriver" 
 			 sql_login = "cabiodev" 
-                 	 sql_passwd = "dev!234" 
+                 	 sql_passwd = "cabiodev505" 
                    sql_read_only = "no"} 
 }
 "IDSvcInterface_class" = "net.handle.server.HandleRepositoryIDInterface"
