@@ -19,8 +19,7 @@ public class DefectTest extends TestCase {
 
     private ApplicationService appService;
     
-    protected void setUp() throws Exception {
-        String localUrl = "http://127.0.0.1:8080/cacore40/http/remoteService";     
+    protected void setUp() throws Exception {   
         appService = ApplicationServiceProvider.getApplicationService();
     }
 
