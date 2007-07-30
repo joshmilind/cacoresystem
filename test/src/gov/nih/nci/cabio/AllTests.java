@@ -10,6 +10,7 @@ public class AllTests {
         //$JUnit-BEGIN$
         suite.addTestSuite(ArraysTest.class);
         suite.addTestSuite(DefectTest.class);
+        suite.addTestSuite(GridIdTest.class);
         //$JUnit-END$
         return suite;
     }
