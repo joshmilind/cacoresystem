@@ -892,10 +892,6 @@ models/xmi/evs3-2.xmi -text svneol=unset#application/octet-stream
 models/xmi/evs4-0.xmi -text svneol=unset#application/octet-stream
 models/xmi/fixed_evs3-1.xmi -text
 models/xmi/fixed_evs3-2.xmi -text svneol=unset#application/octet-stream
-orm/gov/nih/nci/cabio/domain/Location.hbm.xml -text
-orm/gov/nih/nci/cabio/domain/impl/LocationImpl.hbm.xml -text
-orm/gov/nih/nci/common/provenance/domain/Provenance.hbm.xml -text
-orm/gov/nih/nci/common/provenance/domain/impl/ProvenanceImpl.hbm.xml -text
 src/gov/nih/nci/codegen/core/transformer/UML13CastorMappingTransformerForCACORE.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13DAOTransformer.java -text
 src/gov/nih/nci/codegen/core/transformer/UML13SchemaTransformerForEVS.java -text
