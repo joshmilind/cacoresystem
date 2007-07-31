@@ -4,6 +4,7 @@
 **************************************************************************** -->
 <project name="caCORE Unit Tests" default="alltests" basedir=".">
 
+	<property name="test" value="GridIdTest"/>
     <property name="client.dir" value="../output/client"/>
     <property name="lib.dir" value="lib"/>
     <property name="src.dir" value="src"/>
@@ -51,6 +52,15 @@
 		  <formatter type="plain"/>
 
 		  <test name="gov.nih.nci.cabio.AllTests"/>
+		</junit>
+	</target>
+
+    <target name="run" depends="build">
+		<junit printsummary="yes" fork="yes">
+	      <classpath refid="libs" />
+		  <formatter type="plain"/>
+
+		  <test name="gov.nih.nci.cabio.${test}"/>
 		</junit>
 	</target>
 	
