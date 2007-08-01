@@ -30,6 +30,11 @@
 	<target name="-create-output-dirs.custom" if="create-output-dirs.custom.use" />
 	
 	<target name="-init-project.custom" if="init-project.custom.use">
+
+		<SDKecho message="Creating custom directories if necessary" />
+		<mkdir dir="${dir.src.custom.orm}" />
+		<mkdir dir="${dir.custom.orm}" />
+			
 		<SDKecho message="Copying files required by caCORE API to SDK directory" />
 		<copy todir="${dir.model}" overwrite="no" failonerror="false">
 			<fileset dir="${dir.custom.model}">
