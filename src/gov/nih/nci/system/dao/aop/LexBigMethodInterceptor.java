@@ -4,9 +4,9 @@ import gov.nih.nci.system.applicationservice.EVSApplicationService;
 
 import java.lang.reflect.Method;
 
+import org.LexGrid.annotations.LgAdminFunction;
+import org.LexGrid.annotations.LgClientSideSafe;
 import org.LexGrid.LexBIG.Impl.logging.LoggerFactory;
-import org.LexGrid.LexBIG.Utility.LgAdminFunction;
-import org.LexGrid.LexBIG.Utility.LgClientSideSafe;
 import org.springframework.aop.framework.ProxyFactory;
 
 /**
