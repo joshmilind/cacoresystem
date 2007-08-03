@@ -2220,6 +2220,7 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
 					}
 				}
             LexAdapter adapter = getLexAdapterForMeta();
+            /*
             validateMetaConceptCode(code, adapter);
             Concept metaConcept = adapter.findConceptByCode(code, 1);
             MetaThesaurusConcept mtc = buildMetaThesaurusConcept((Concept)metaConcept);
@@ -2241,6 +2242,17 @@ private MetaThesaurusConcept buildMetaThesaurusConcept(Concept metaConcept) thro
                     }
                 }
 			}
+			*/
+
+            // KLO, 080207
+            Vector v = adapter.findConceptsWithSourceCodeMatching(sourceAbbr, code, 1);
+            if (v == null || v.size() == 0)
+            {
+				return new Response(list);
+			}
+            Concept metaConcept = (Concept) v.elementAt(0);
+            MetaThesaurusConcept mtc = buildMetaThesaurusConcept((Concept)metaConcept);
+            list.add(mtc);
 		}
 		catch(Exception e)
 		{
