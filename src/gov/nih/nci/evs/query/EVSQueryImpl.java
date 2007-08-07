@@ -1060,7 +1060,7 @@ public class EVSQueryImpl implements EVSQuery, Serializable {
 	}
 
     public void getPropertyCollectionbyCode(int namespaceId, String conceptCode){
-    	descLogicValues.put("getPropertyCollectionbyCode$namespaceId", conceptCode);
+    	descLogicValues.put("getPropertyCollectionbyCode$namespaceId", namespaceId);
     	descLogicValues.put("getPropertyCollectionbyCode$conceptCode", conceptCode);
 	}
 
