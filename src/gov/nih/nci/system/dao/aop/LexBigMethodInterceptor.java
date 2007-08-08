@@ -30,13 +30,13 @@ public class LexBigMethodInterceptor extends RemoteMethodInterceptor {
     }
 
     @Override
-    protected boolean isClientSafe(Method method) {
-        return method.isAnnotationPresent(LgClientSideSafe.class);
-    }
-
-    @Override
-    protected boolean isClientSafe(Class clazz) {
-        return clazz.isAnnotationPresent(LgClientSideSafe.class);
+    protected boolean isClientSafe(Object object) {
+        if (object instanceof Method) {
+            return ((Method)object).isAnnotationPresent(LgClientSideSafe.class);
+        }
+        else {
+            return ((Class)object).isAnnotationPresent(LgClientSideSafe.class);
+        }
     }
     
     @Override

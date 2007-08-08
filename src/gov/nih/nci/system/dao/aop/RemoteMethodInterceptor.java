@@ -124,19 +124,12 @@ public abstract class RemoteMethodInterceptor
     protected abstract Object getProxy(Object object);
     
     /**
-     * Returns true if the given method is safe to execute on the client.
+     * Returns true if the given class or method is safe to execute on the 
+     * client.
      * @param method
      * @return
      */
-    protected abstract boolean isClientSafe(Method method);
-
-    /**
-     * Returns true if the given class is safe to pass to the client without 
-     * wrapping in a proxy. This also means all the methods are client safe.
-     * @param method
-     * @return
-     */
-    protected abstract boolean isClientSafe(Class method);
+    protected abstract boolean isClientSafe(Object object);
 
     /**
      * Allows for an opportunity for the subclass to throw an 
