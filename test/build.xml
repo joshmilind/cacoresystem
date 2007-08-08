@@ -21,14 +21,14 @@
         </fileset>
     </path>
 
-    <target name="init">
-        <mkdir dir="${build.dir}" />
-    </target>
-        	
     <target name="clean">
         <delete dir="${build.dir}" quiet="true"/>
     </target>
 
+    <target name="init" depends="clean">
+        <mkdir dir="${build.dir}" />
+    </target>
+    	
     <target name="build" depends="init" 
             description="This target compiles the project.">
         <javac srcdir="${src.dir}" destdir="${build.dir}" 
