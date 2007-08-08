@@ -58,15 +58,20 @@ public class LexCOREService {
     private CodingScheme codingScheme = new CodingScheme();
     
     public LexCOREService(){
-        try{    Hashtable hashTable = new Hashtable();
-                EVSProperties evsProperties = EVSProperties.getInstance(hashTable);
-                String lg_config_file = null;
-                if(evsProperties.getConfigFileLocation() != null){
-                    lg_config_file = evsProperties.getConfigFileLocation();
-                    System.setProperty("LG_CONFIG_FILE", lg_config_file);
-                }
-
-            log.error("Not an error LexCore- Config file location: "+  System.getProperty("LG_CONFIG_FILE"));
+        try {    
+            
+            Hashtable hashTable = new Hashtable();
+            EVSProperties evsProperties = EVSProperties.getInstance(hashTable);
+            String lg_config_file = null;
+            if(evsProperties.getConfigFileLocation() != null){
+                lg_config_file = evsProperties.getConfigFileLocation();
+                System.setProperty("LG_CONFIG_FILE", lg_config_file);
+            }
+            else {
+                log.error("LG_CONFIG_FILE is null");
+            }
+            
+            log.info("Config file location: "+  System.getProperty("LG_CONFIG_FILE"));
             init(defaultName);
             setCodingSchemeSummary(defaultName);
             setCodingScheme(defaultName);
@@ -76,14 +81,19 @@ public class LexCOREService {
         }
     }
     public LexCOREService(String name){
-        try{    Hashtable hashTable = new Hashtable();
-                EVSProperties evsProperties = EVSProperties.getInstance(hashTable);
-                String lg_config_file = null;
-                if(evsProperties.getConfigFileLocation() != null){
-                    lg_config_file = evsProperties.getConfigFileLocation();
-                    System.setProperty("LG_CONFIG_FILE", lg_config_file);
-                }
-            log.error("Not an error LexCore- Config file location: "+  System.getProperty("LG_CONFIG_FILE"));
+        try{    
+            Hashtable hashTable = new Hashtable();
+            EVSProperties evsProperties = EVSProperties.getInstance(hashTable);
+            String lg_config_file = null;
+            if(evsProperties.getConfigFileLocation() != null){
+                lg_config_file = evsProperties.getConfigFileLocation();
+                System.setProperty("LG_CONFIG_FILE", lg_config_file);
+            }
+            else {
+                log.error("LG_CONFIG_FILE is null");
+            }
+            
+            log.info("Config file location: "+  System.getProperty("LG_CONFIG_FILE"));
             init(name);
             setCodingSchemeSummary(name);
             setCodingScheme(name);

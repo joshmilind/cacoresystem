@@ -35,7 +35,7 @@ public class EVSProperties {
 			}			
 		}
 		return evsProperties;
-		}
+	}
 	
 	public Metaphrase getMetaphrase() throws Exception{
 		Metaphrase metaphrase = null;
@@ -43,10 +43,10 @@ public class EVSProperties {
 			metaphrase = new RMIMetaphrase("//" + metaServer + "/RemoteMetaphrase", database, userName, password);
 		}catch(Exception ex){
             log.error("Unable to connect to server: "+ metaServer +"\tdatabase: "+ database +"\tUser: "+ userName +"\tPassword: "+ password);
-			throw new Exception("Unable to connecto to Metaphrase Server "+ ex.getMessage());
+			throw new Exception("Unable to connect to Metaphrase Server "+ ex.getMessage());
 		}
 		return metaphrase;
-		}
+	}
 	
 	public DTSRPCClient getDtsrpcConnection() throws Exception{
 		DTSRPCClient dtsrpc = null;
@@ -56,8 +56,8 @@ public class EVSProperties {
 		if(dtsrpc == null){
 			throw new Exception("Unable to connect to the DTSRPC Server: "+ dtsServer);
 		}
-		return dtsrpc ;
-		}
+		return dtsrpc;
+	}
 	
     public String getConfigFileLocation() throws Exception{
         return lexBigConfigFileLocation;
@@ -72,6 +72,7 @@ public class EVSProperties {
 				properties.load(fis);				
 			}
 		}catch(Exception ex){		
+            ex.printStackTrace();
 		}
 		for(Iterator i = properties.keySet().iterator(); i.hasNext();){
 			String key = (String)i.next();
