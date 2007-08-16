@@ -1,6 +1,26 @@
 import gov.nih.nci.system.applicationservice.*;
 import java.util.*;
 import java.text.*;
+
+
+
+import org.LexGrid.LexBIG.History.HistoryService;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeGraph;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGService;
+import org.LexGrid.LexBIG.LexBIGService.LexBIGServiceMetadata;
+import org.LexGrid.LexBIG.LexBIGService.CodedNodeSet.SearchDesignationOption;
+import org.LexGrid.LexBIG.Utility.Constructors;
+import org.LexGrid.LexBIG.Utility.ConvenienceMethods;
+import org.LexGrid.LexBIG.Utility.LBConstants;
+import org.LexGrid.LexBIG.DataModel.Collections.SystemReleaseList;
+import org.LexGrid.LexBIG.DataModel.Core.AbsoluteCodingSchemeVersionReference;
+import org.LexGrid.LexBIG.DataModel.Core.CodingSchemeVersionOrTag;
+import org.LexGrid.LexBIG.DataModel.Core.ConceptReference;
+import org.LexGrid.LexBIG.DataModel.Core.ResolvedConceptReference;
+import org.LexGrid.LexBIG.Exceptions.LBParameterException;
+import org.LexGrid.versions.SystemRelease;
+
 import gov.nih.nci.common.util.*;
 import gov.nih.nci.evs.domain.*;
 import gov.nih.nci.evs.query.*;
@@ -20,7 +40,7 @@ public class TestEVS {
 			String genUrl = "http://@WEB_SERVER_NAME@:@WEB_SERVER_PORT@/@PROJECT_NAME@/http/remoteService";
 			
             //ApplicationService appService = ApplicationService.getRemoteInstance(prodUrl);
-			ApplicationService appService = ApplicationServiceProvider.getApplicationService();
+			EVSApplicationService appService = EVSApplicationServiceProvider.getApplicationService();
 
 
 		try
@@ -31,14 +51,18 @@ public class TestEVS {
                 evsQuery[i] = new EVSQueryImpl();
             }
             PrintUtils print = new PrintUtils();
-		    String vocabularyName = "NCI_Thesaurus";           
+		    String vocabularyName = "NCI_Thesaurus"; 
+		    String localName = "40010";
             String searchTerm = "blood*";            
             String conceptName = "Heart";
-            String conceptCode = "C12434";
+            String conceptCode = "C12434";   //Blood
+            String relatedCode = "C12909";  //Hematopoietic System
+            String approxCode = "C48589"; // "Base of the Heart"
             String sourceAbbr = "*";
             String cui = "C0392895";
             Vector roles = new Vector();
-            roles.add("Anatomic_Structure_Is_Physical_Part_Of");
+            String role = "Anatomic_Structure_Is_Physical_Part_Of";
+            roles.add(role);
 
 			//Create Security token
             gov.nih.nci.evs.security.SecurityToken token = new gov.nih.nci.evs.security.SecurityToken();
@@ -126,7 +150,6 @@ public class TestEVS {
             evsQuery[75].getRelatedConcepts("CL287739",  sourceAbbr,  "RN");   
                         
             
-            
             for(int i=1; i<76; i++){                
                 evsQuery[i].addSecurityToken("MedDRA", token);
                 String method = getMethodName((EVSQueryImpl)evsQuery[i]);
@@ -147,8 +170,135 @@ public class TestEVS {
                 System.out.println("\n==================================================================");
             }
             
+            
+            
+            //Distributed LexBIG calls
+            LexBIGService lbsi = ServiceHolder.instance().getLexBIGService();            
+            
+            
+            //Test CodedNodeGraph
+            CodedNodeGraph cng = lbsi.getNodeGraph(vocabularyName, null, "Relations");
+            boolean isTrue = true;
+            isTrue=cng.areCodesRelated(Constructors.createNameAndValue(role, null), Constructors.createConceptReference(conceptCode, vocabularyName), Constructors.createConceptReference(relatedCode, vocabularyName),true).booleanValue();
+            System.out.println("CodedNodeGraph.areCodesRelated = "+ isTrue);            
+            isTrue=cng.areCodesRelated(Constructors.createNameAndValue("hasSubtype", null), Constructors.createConceptReference(conceptCode, vocabularyName), Constructors.createConceptReference(relatedCode, vocabularyName),true).booleanValue();
+            System.out.println("CodedNodeGraph.areCodesRelated should be False = "+ isTrue);            
+            ConceptReference[] cr = cng.listCodeRelationships(Constructors.createConceptReference(conceptCode, vocabularyName), Constructors.createConceptReference(relatedCode, vocabularyName), false).getConceptReference();
+            if (cr.length == 1)
+            {
+            	System.out.println("Concept relationships correctly calculated");         	
+            }
+            for (int i = 0; i < cr.length; i++)
+            {
+                if (cr[i].getConceptCode().equals(role) && cr[i].getCodingScheme().equals(vocabularyName))
+                {
+                    System.out.println("Concept relationships contain the correct relation");
+                }
+            }            
+            isTrue = cng.isCodeInGraph(Constructors.createConceptReference(conceptCode, vocabularyName)).booleanValue();
+            System.out.println("CodedNodeGraph.isCodeInGraph = "+ isTrue);            
+            isTrue = cng.isCodeInGraph(Constructors.createConceptReference(conceptCode, localName)).booleanValue();
+            System.out.println("Using localname CodedNodeGraph.isCodeInGraph = "+ isTrue);            
+        
+            //Test Filter Extension
+            ConvenienceMethods cm = new ConvenienceMethods(lbsi);
+            try
+            {
+                TestFilterRM.register();
+            }
+            catch (LBParameterException e)
+            {
+                //can happen if is already registered by another test.
+            }
+            ResolvedConceptReference[] rcr =  cng.resolveAsList(null, true, false, -1, -1, null, null, null, cm.createLocalNameList(TestFilterRM.name_), -1).getResolvedConceptReference();
+            if (rcr.length>0)
+            {
+            	System.out.println("Filtered results returned");
+            }
+            ResolvedConceptReference ref = null;
+            for (int i = 0; i < rcr.length && ref == null; i++)
+            {
+            	System.out.println(rcr[i].getEntityDescription());
+            }
 
-/*******************************************************************/
+            //Test CodedNodeSet
+            CodedNodeSet cns = lbsi.getCodingSchemeConcepts(vocabularyName, null);
+            cns.restrictToMatchingProperties(Constructors.createLocalNameList("textualPresentation"), null, conceptName,
+                    "contains", null);
+            rcr = cns.resolveToList(null, null, null, 50).getResolvedConceptReference();          
+            int firstPass = rcr.length;
+            System.out.println("Length of contains query = " + firstPass);
+            CodedNodeSet cns2 = lbsi.getCodingSchemeConcepts(vocabularyName, null);
+            cns2.restrictToMatchingProperties(Constructors.createLocalNameList("textualPresentation"), null, conceptName,
+                    "exactMatch", null);
+            rcr = cns2.resolveToList(null, null, null, 50).getResolvedConceptReference();          
+            int secondPass = rcr.length;
+            if (secondPass <firstPass)
+            {
+            	System.out.println("Length of exactMatch query less than contains = "+ secondPass);
+            }
+            else if (secondPass == firstPass)
+            {
+            	System.out.println("Length of exactMatch query equals contains query");
+            }
+            else
+            {
+            	System.out.println("Warning: Length of exactMatch query greater than contains = " + secondPass);
+            }
+            
+            // Perform concept lookup by coding scheme name/tag; verify that 'Chrysler' is not included         
+            CodingSchemeVersionOrTag production = new CodingSchemeVersionOrTag();
+            production.setTag(LBConstants.KnownTags.PRODUCTION.toString());
+            cns = ServiceHolder.instance().getLexBIGService().getCodingSchemeConcepts(vocabularyName, production);
+            cns.restrictToCodes(Constructors.createConceptReferenceList(new String[]{"Chrysler"}, vocabularyName));
+            rcr = cns.resolveToList(null, null, null, 0).getResolvedConceptReference();
+            if (rcr.length ==0)
+            {
+            	System.out.println("Chrysler not found in vocabulary " + vocabularyName);
+            }
+            else
+            {
+             	System.out.println("Warning: Chrysler found in vocabulary " + vocabularyName);
+            }
+            
+            //Test vocabulary metadata
+            LexBIGServiceMetadata md = ServiceHolder.instance().getLexBIGService().getServiceMetadata();
+            AbsoluteCodingSchemeVersionReference[] acsvrl = md.listCodingSchemes()
+                    .getAbsoluteCodingSchemeVersionReference();
+
+            if (acsvrl.length >= 2) System.out.println("Metadata returned");
+            for (int i = 0; i < acsvrl.length; i++)
+            {
+            	System.out.println(acsvrl[i].getCodingSchemeURN()+":"+ acsvrl[i].getCodingSchemeVersion());
+            }
+            
+            //Test History.  Only will work if the tested vocabulary has history installed
+            HistoryService hs = lbsi.getHistoryService("urn:oid:2.16.840.1.113883.3.26.1.1"); //urn for NCI_Thesaurus
+            SystemReleaseList srl = hs.getBaselines(null, null);
+            if (srl.getSystemReleaseCount()>0)
+            {
+            	System.out.println("History records returned");
+            	SystemRelease sr = hs.getLatestBaseline();
+            	System.out.println("Latest release is " + sr.getReleaseId());
+            }
+
+            //Test approximate search
+            cns = ServiceHolder.instance().getLexBIGService()
+                          .getCodingSchemeConcepts(vocabularyName, null);
+            cns.restrictToMatchingDesignations("heaart base", SearchDesignationOption.ALL, "DoubleMetaphoneLuceneQuery", null);
+            rcr = cns.resolveToList(null, null, null, 0).getResolvedConceptReference();
+            // should have found the concept code C48589 - "Base of the Heart"
+            boolean found = false;
+            for (int i = 0; i < rcr.length; i++)
+            {
+            	if (rcr[i].getConceptCode().equals(approxCode))
+            	{
+            		found = true;
+            		System.out.println("Match found = " + rcr[i].getEntityDescription());
+            	}
+            }
+            
+            /*******************************************************************/
 
 		}		catch(Exception ex){
 			System.out.println("Test client throws Exception = "+ ex);
@@ -173,4 +323,5 @@ public class TestEVS {
         return methodName;
     }
 
+    
 }//end class

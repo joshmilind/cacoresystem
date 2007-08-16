@@ -72,13 +72,17 @@ conf/xslt/evsFormat.xsl -text
 custom/src/gov/nih/nci/cadsr/domain/Context.java -text
 demo/EVSMonitor.java -text
 demo/EVSWSClient.java -text
+demo/ServiceHolder.java -text
 demo/TestCQL.java -text
 demo/TestClient.java -text
 demo/TestDLB.java -text
 demo/TestDSR.java -text
 demo/TestEVS.java -text
+demo/TestFilterRM.java -text
 demo/TestSVG.java -text
 demo/TestSearchAPI.java -text
+demo/TestServerConfig.java -text
+demo/TestServerConfigReader.java -text
 demo/TestXML.java -text
 demo/WSTestClient.java -text
 demo/build_client.xml -text
