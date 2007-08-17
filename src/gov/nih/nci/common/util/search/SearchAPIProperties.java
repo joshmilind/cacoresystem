@@ -40,7 +40,7 @@ public class SearchAPIProperties {
                 configureSession();   
             }
         }catch(Exception ex){
-            log.error("Unable to initialize Search API Properties: ");
+            log.error("Unable to initialize Search API Properties: "+ ex);
         }
 
         return properties;
@@ -56,6 +56,7 @@ public class SearchAPIProperties {
             for(Iterator it = properties.keySet().iterator(); it.hasNext();){
                 String key = (String)it.next();
                 String value = properties.getProperty(key);
+                log.info("\tProperties > "+ key +":"+value);
                 if(key.equalsIgnoreCase("orm_files")){
                     if(value.indexOf(";")>0){
                         ormFileName = value.substring(0,value.indexOf(";"));
@@ -69,7 +70,8 @@ public class SearchAPIProperties {
                         pkgs = value;
                     }                     
                 }else if(key.equalsIgnoreCase("indexed_fields")){
-                    populateFields(value);
+                    //populateFields(value);
+                	loadFields(value);
                 }else if(key.equalsIgnoreCase("thread_count")){
                     if(!(value == null || value.equals("0"))){
                         threadCount = Integer.valueOf(value).intValue();
@@ -87,7 +89,7 @@ public class SearchAPIProperties {
                 }
             }
         }catch(Exception ex){
-            throw new Exception(ex.getMessage());
+            throw new Exception("Error Loading properties: "+ex);
         }
         finally{
             is.close();
@@ -116,7 +118,39 @@ public class SearchAPIProperties {
                 counter++;
             }
         }
-
+    }
+    private static void loadFields(String propertyFileName) throws Exception{
+    	Properties properties = new Properties();
+    	Set fieldList = new HashSet();
+    	 try{
+    		 InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertyFileName);
+             properties.load(is);
+             is.close();
+             for(Iterator it = properties.keySet().iterator(); it.hasNext();){
+            	 String key = (String)it.next();
+                 String value = properties.getProperty(key);
+                 for(StringTokenizer st = new StringTokenizer(value,";");st.hasMoreTokens();){
+                     String field = st.nextToken();
+                     if(field!= null){
+                         fieldList.add(field);
+                     }
+                 }
+             }
+             if(fieldList.size()>0){
+            	 indexedFields = new String[fieldList.size()];
+            	 int counter = 0;
+            	 for(Iterator i= fieldList.iterator(); i.hasNext();){
+            		 String s = (String)i.next();
+            		 indexedFields[counter]= new String(s);
+            		 counter++;
+            	 }
+            	 log.info("Field count: "+ indexedFields.length);
+            	
+             }
+         }catch(Exception ex){
+        	 throw new Exception("SearchAPIProperties Unable to load fields " + ex);
+         }
+         
     }
     private static Set getFieldNames(String fileName) throws Exception{
         indexProperties = new HashMap();
@@ -146,6 +180,7 @@ public class SearchAPIProperties {
     private static void configureSession() throws Exception{
     	if(ormFileName != null){
     		sessionFactory = new AnnotationConfiguration().configure(ormFileName).buildSessionFactory();
+    		log.info("configure sessionFactory - complete");
     	}else{
     		throw new Exception("Unable to create session");
     	}

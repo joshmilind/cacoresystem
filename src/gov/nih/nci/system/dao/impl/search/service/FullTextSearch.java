@@ -26,6 +26,7 @@ import org.apache.lucene.store.FSDirectory;
 public class FullTextSearch implements Searchable {
     String indexPropertyFile = "indexedFields.properties";
     static Logger log = Logger.getLogger(FullTextSearch.class.getName());
+    
 
     /**
      * Constructor
@@ -68,9 +69,52 @@ public class FullTextSearch implements Searchable {
          */
     private String[] getIndexedFields() throws Exception{ 
             SearchAPIProperties properties = SearchAPIProperties.getInstance();
-            return properties.getIndexedFields();
+            String[] idxFields = null;
+            try{
+            	idxFields = properties.getIndexedFields();
+            }catch(Exception ex){
+            	log.info(ex);
+            	//debug
+            	idxFields = loadFields(indexPropertyFile);
+            }
+            return idxFields;
         }
-        
+   
+    //debug
+    private String[] loadFields(String propertyFileName) throws Exception{
+    	Properties properties = new Properties();
+    	Set fieldList = new HashSet();
+    	 try{
+    		 InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertyFileName);
+             properties.load(is);
+             is.close();
+             for(Iterator it = properties.keySet().iterator(); it.hasNext();){
+            	 String key = (String)it.next();
+                 String value = properties.getProperty(key);
+                 for(StringTokenizer st = new StringTokenizer(value,";");st.hasMoreTokens();){
+                     String field = st.nextToken();
+                     if(field!= null){
+                         fieldList.add(field);
+                     }
+                 }
+             }
+             if(fieldList.size()>0){
+            	 String[] fields = new String[fieldList.size()];
+            	 int counter = 0;
+            	 for(Iterator i= fieldList.iterator(); i.hasNext();){
+            		 String s = (String)i.next();
+            		 fields[counter]= new String(s);
+            		 counter++;
+            	 }
+            	 log.info("Field count: "+ fields.length);
+            	 return fields;
+             }
+         }catch(Exception ex){
+        	 throw new Exception("Unable to load fields " + ex);
+         }
+         return null;
+    }
+    
     /**
      * Returns a list of subdirectories located within the given root directory
      * @param indexRoot
