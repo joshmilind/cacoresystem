@@ -179,15 +179,19 @@ public class FullTextSearch implements Searchable {
                     multiSearcher = getIndexSearchers();
                 }catch(Exception ex){
                     throw new Exception("Unable to get lucene searchers "+ ex);
-                }                
+                }         
+                System.out.println("Loading search fields");
                 String searchFields[] = getIndexedFields();
+                System.out.println("Search fields "+ searchFields.toString());
                 QueryParser parser = new MultiFieldQueryParser(searchFields, new StandardAnalyzer());
                 query = parser.parse(searchString);                
                 hits = multiSearcher.search(query);
+                System.out.println("Number of hits found: "+ hits.length());
                 multiSearcher.close();
             }catch(Exception ex){
                 throw new Exception("Lucene Search Error : "+ex);
             }
+            log.info("returning hits");
             return hits;
         }
         
@@ -201,8 +205,10 @@ public class FullTextSearch implements Searchable {
     private SearchResult getSearchResult(Document doc, int i, String keyword){
             SearchResult result = new SearchResult();
             HashMap<String,String> properties = new HashMap<String, String>();
+            log.info("getSearchResult");
             for(Enumeration e = doc.fields(); e.hasMoreElements(); ){
-                org.apache.lucene.document.Field field = (org.apache.lucene.document.Field)e.nextElement();        
+                org.apache.lucene.document.Field field = (org.apache.lucene.document.Field)e.nextElement();
+                log.info("DATA: "+ field.name() +"\t"+ field.stringValue());
                 properties.put(field.name(), field.stringValue());
                 if(field.name().equalsIgnoreCase("_hibernate_class")){
                     result.setClassName(field.stringValue());
@@ -215,6 +221,7 @@ public class FullTextSearch implements Searchable {
             int num = i;
             result.setHit(num);
             result.setKeyword(keyword);
+            System.out.println("Returning search result");
             return result;
         }
     /**
@@ -225,16 +232,19 @@ public class FullTextSearch implements Searchable {
      * @throws Exception
      */
     public List getSearchResults(Hits hits, String searchString) throws Exception{
-            List<SearchResult> resultList = new ArrayList<SearchResult>();            
+            List<SearchResult> resultList = new ArrayList<SearchResult>();    
+            System.out.println("Processing lucene document.....");
             try{
                 for(int i=0; i< hits.length(); i++){
                         Document doc = hits.doc(i);
+                        System.out.println("Document: "+ doc.toString());
                         SearchResult result = getSearchResult(doc,i,searchString);
                         resultList.add(result);                        
                     }
             }catch(Exception ex){
                 throw new Exception(ex);
             }
+            System.out.println("Returning: "+ resultList.size());
             return resultList;
         }
     /**
