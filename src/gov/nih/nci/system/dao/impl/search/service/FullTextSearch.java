@@ -40,8 +40,9 @@ public class FullTextSearch implements Searchable {
     public List query(String searchString)throws DAOException{ 
         List results = new ArrayList();
         try{
-            Hits hits = luceneSearch(searchString);
-            results = getSearchResults(hits, searchString);
+            results = luceneSearch(searchString);
+            //results = getSearchResults(hits, searchString);
+            
         }catch(Exception ex){
             throw new DAOException(ex);
         }
@@ -51,11 +52,11 @@ public class FullTextSearch implements Searchable {
     public List query(String searchString, gov.nih.nci.search.Sort sort)throws DAOException{
         List results = new ArrayList();
         try{
-            Hits hits = luceneSearch(searchString);
+            results = luceneSearch(searchString);
             if(sort.getSortByClassName()){                            
-                results = getOrganizedSearchResults(hits, searchString);                
+              //  results = getOrganizedSearchResults(hits, searchString);                
             }else{
-                results = getSearchResults(hits, searchString);
+                //results = getSearchResults(hits, searchString);
             }            
         }catch(Exception ex){
             throw new DAOException(ex);
@@ -166,13 +167,14 @@ public class FullTextSearch implements Searchable {
      * @return
      * @throws Exception
      */
-    public Hits luceneSearch(String searchString) throws Exception{
+    public List  luceneSearch(String searchString) throws Exception{
             
             ParallelMultiSearcher multiSearcher = null;
             Query query = null;
             IndexReader reader;
             Hits hits = null;
             String indexRoot = getIndexLocation();
+            List results = new ArrayList();
            
             try{
                 try{
@@ -186,14 +188,17 @@ public class FullTextSearch implements Searchable {
                 QueryParser parser = new MultiFieldQueryParser(searchFields, new StandardAnalyzer());
                 query = parser.parse(searchString);                
                 hits = multiSearcher.search(query);
+                results = getSearchResults(hits, searchString);
                 System.out.println("Number of hits found: "+ hits.length());
                 multiSearcher.close();
             }catch(Exception ex){
                 throw new Exception("Lucene Search Error : "+ex);
             }
             log.info("returning hits");
-            return hits;
+            return results;
         }
+    
+   
         
     /**
      * Returns a SearchResult object for a given document
@@ -235,12 +240,14 @@ public class FullTextSearch implements Searchable {
             List<SearchResult> resultList = new ArrayList<SearchResult>();    
             System.out.println("Processing lucene document.....");
             try{
+              
                 for(int i=0; i< hits.length(); i++){
                         Document doc = hits.doc(i);
                         System.out.println("Document: "+ doc.toString());
                         SearchResult result = getSearchResult(doc,i,searchString);
                         resultList.add(result);                        
                     }
+              
             }catch(Exception ex){
                 throw new Exception(ex);
             }
@@ -254,6 +261,7 @@ public class FullTextSearch implements Searchable {
      * @return
      * @throws Exception
      */
+    /*
     public List getOrganizedSearchResults(Hits hits, String searchString) throws Exception{
             List<HashMap> resultList = new ArrayList<HashMap>();
             HashMap<String,List> map = new HashMap<String,List>();
@@ -286,6 +294,6 @@ public class FullTextSearch implements Searchable {
             }
             return resultList;
         }
-
+*/
 
 }
