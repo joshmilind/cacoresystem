@@ -22,7 +22,7 @@
       <enableCache>true</enableCache>
       <dtsrpcServer>ncidts.nci.nih.gov</dtsrpcServer>
       <port>6560</port>
-      <metaphraseServer>ncimeta-api.nci.nih.gov</metaphraseServer>
+      <metaphraseServer>ncimeta-api-dataqa.nci.nih.gov</metaphraseServer>
       <database>NCI</database>
       <username>Guest</username>
       <password>NCI-EVS</password>
