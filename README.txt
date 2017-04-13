@@ -1,4 +1,3 @@
-
 HOW TO BUILD THE caCORE APIs
 
 1.  Check out/download the caCORE SDK CVS project (cacoresdk).
