@@ -2,7 +2,7 @@
 <project name="caCOREAPI" default="help" basedir="../cacoresdk">
 	<description>Build script for caCORE APIs</description>
 
-	<!--  SET basedir PROPERTY ABOVE TO HOME DIRECTORY OF SDK -->
+	< !--  SET basedir PROPERTY ABOVE TO HOME DIRECTORY OF SDK -->
 	<property name="cacore_home" value="../cacoresystem" />
 	<property name="file.build.custom" value="${cacore_home}/build-custom-cacore.xml" />
 	<property name="file.properties.custom" value="${cacore_home}/build-custom-cacore.properties" />
