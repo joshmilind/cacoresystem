@@ -1,5 +1,6 @@
 * text=auto !eol
 /.project -text
+/CGAP.zexp -text
 /README.txt -text
 /build-custom-cacore.properties -text
 /build-custom-cacore.xml -text
@@ -962,3 +963,4 @@ test/src/gov/nih/nci/cabio/ArraysTest.java -text
 test/src/gov/nih/nci/cabio/DefectTest.java -text
 test/src/gov/nih/nci/cabio/GridIdTest.java -text
 test/src/gov/nih/nci/cabio/GridIdTestBase.java -text
+*.zexp filter=lfs diff=lfs merge=lfs -text
